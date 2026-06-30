@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    // ── Target & Output ────────────────────────────────────────────────────
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+
+    // ── Module Resolution ─────────────────────────────────────────────────
+    // "bundler" handles package.json "exports" conditions (Firebase 12+)
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+
+    // ── JSX ───────────────────────────────────────────────────────────────
+    "jsx": "react-jsx",
+
+    // ── Strict ───────────────────────────────────────────────────────────
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    // ── Class Fields ──────────────────────────────────────────────────────
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+
+    // ── JS interop ────────────────────────────────────────────────────────
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // ── Types ─────────────────────────────────────────────────────────────
+    // vite/client and vite-plugin-pwa/client are loaded via
+    // /// <reference> in src/vite-env.d.ts — do NOT put them here.
+    // @types/node is needed for __dirname in vite.config.ts.
+    "types": ["node"],
+
+    // ── Paths ─────────────────────────────────────────────────────────────
+    "paths": {
+      "@/*": ["./*"]
+    },
+
+    // ── Perf ─────────────────────────────────────────────────────────────
+    "skipLibCheck": true
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

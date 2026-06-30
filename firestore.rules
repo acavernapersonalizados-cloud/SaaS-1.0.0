@@ -1,0 +1,155 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function getUserPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+    function isAdmin() {
+      let adminEmail = "ricoslim@gmail.com";
+      return isAuthenticated() && (
+        request.auth.token.email == adminEmail ||
+        (exists(getUserPath()) && get(getUserPath()).data.get('role', '') == 'ADMIN')
+      );
+    }
+    function isGerente() {
+      return isAuthenticated() &&
+             exists(getUserPath()) &&
+             get(getUserPath()).data.get('role', '') == 'GERENTE';
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function hasStoreAccess(storeId) {
+      return isAuthenticated() && storeId != null && (
+        isAdmin() || (
+          exists(getUserPath()) &&
+          get(getUserPath()).data.get('status', '') == 'aprovado' &&
+          get(getUserPath()).data.get('storeIds', []).hasAny([storeId])
+        )
+      );
+    }
+
+    // ── Existing collections (unchanged) ────────────────────────────────────
+
+    match /stores/{storeId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(storeId);
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (hasStoreAccess(storeId) && isGerente());
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin() || (isGerente() && get(getUserPath()).data.get('storeIds', []).hasAny(resource.data.get('storeIds', [])));
+      allow create: if isAdmin() ||
+                    (isGerente() && request.resource.data.get('role', '') != 'ADMIN') ||
+                    (isOwner(userId) && request.resource.data.get('role', '') == 'OPERADOR' && request.resource.data.get('status', '') == 'pendente');
+      allow update: if isAdmin() ||
+                    (isGerente() && resource.data.get('role', '') != 'ADMIN' && request.resource.data.get('role', '') != 'ADMIN') ||
+                    (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone']));
+      allow delete: if isAdmin() || (isGerente() && resource.data.get('role', '') != 'ADMIN');
+    }
+
+    match /costBases/{storeId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(storeId);
+      allow write: if isAdmin() || (hasStoreAccess(storeId) && isGerente());
+    }
+
+    match /materials/{materialId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /products/{productId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /quotes/{quoteId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /clients/{clientId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /suppliers/{supplierId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    // ── New collections ──────────────────────────────────────────────────────
+
+    match /laserJobs/{jobId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /laserMachines/{machineId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /printers/{printerId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /printJobs/{jobId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    }
+
+    match /stockMovements/{movId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create: if isAuthenticated(); // created by automations on quote approval
+      allow update, delete: if isAdmin();
+    }
+
+
+    match /stockReservations/{resId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /purchaseList/{itemId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
