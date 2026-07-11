@@ -37,25 +37,7 @@ const DEFAULT_MACHINES: Omit<LaserMachineProfile, 'id' | 'storeId' | 'createdAt'
       'Borracha', 'Bambu', 'Madeira balsa', 'Cortiça', 'Personalizado'
     ],
   },
-  {
-    label: 'Creality Falcon 2 Pro 22W (Hi Combo)',
-    laserType: 'Diodo 455nm',
-    powerW: 22,
-    powerConsumptionW: 120,
-    workAreaW: 400, workAreaH: 415,
-    maxSpeedMmMin: 25000,
-    diodeLifeH: 10000,
-    moduleReplacementCost: 580,
-    isDefault: true,
-    materials: [
-      'MDF 3mm', 'MDF 6mm', 'MDF 9mm', 'Compensado 3mm', 'Compensado 6mm',
-      'Acrílico (com película)', 'Couro', 'Couro sintético',
-      'EVA', 'Papel', 'Papelão', 'Tecido', 'Feltro', 'Borracha',
-      'Bambu', 'Madeira balsa', 'Cortiça', 'Inox (gravação)',
-      'Anodizado', 'Vidro (gravação)', 'Pedra (gravação)', 'Personalizado'
-    ],
-  },
-];
+ ];
 
 export function LaserCalculator() {
   const { activeStore } = useStore();
