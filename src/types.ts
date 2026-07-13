@@ -254,14 +254,24 @@ export interface User {
   createdAt: string;
 }
 
-export type Channel = 'Shopee' | 'Mercado Livre' | 'Instagram' | 'Venda Direta' | 'Atacado';
+export type Channel =
+  | 'Shopee'
+  | 'Mercado Livre'
+  | 'Instagram'
+  | 'Venda Direta'
+  | 'Atacado'
+  | 'iFood'
+  | '99Food';
 
 export const CHANNELS: Record<Channel, number> = {
-  'Shopee': 20,
-  'Mercado Livre': 18,
-  'Instagram': 0,
-  'Venda Direta': 0,
-  'Atacado': 5,
+  // Taxas atualizadas 2025
+  'Venda Direta':   0,   // sem taxa
+  'Instagram':      0,   // sem taxa
+  'Atacado':        5,   // negociado diretamente
+  'Shopee':        20,   // comissão Shopee Maker/normal
+  'Mercado Livre': 16,   // Clássico até R$79 = 16%; Full = 19% — usando Clássico como base
+  'iFood':         27,   // plano Entrega Própria ~12% + taxa de serviço ~15%
+  '99Food':        25,   // comissão parceiro 99Food
 };
 
 // ── Stock Reservation ──────────────────────────────────────────────────────
