@@ -147,6 +147,20 @@ service cloud.firestore {
       allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
     }
 
+    match /papelariaJobs/{jobId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+    }
+
+    match /cestaJobs/{jobId} {
+      allow list: if isAuthenticated();
+      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
+      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;

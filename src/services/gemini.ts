@@ -129,3 +129,53 @@ export async function rewriteDescription(quoteDetails: {
     O tom deve ser profissional, elegante e persuasivo, destacando a qualidade artesanal.`
   );
 }
+
+export async function analyzePapelariaPrice(
+  jobName: string,
+  totalCost: number,
+  manualPrice: number
+): Promise<string | null> {
+  const profit = manualPrice - totalCost;
+  const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
+
+  return generate(
+    `Você é um consultor especializado em papelaria personalizada para pequenos negócios brasileiros.
+
+Analise a precificação deste trabalho de papelaria (convites, cadernos, agendas, kits personalizados):
+- Trabalho: ${jobName}
+- Custo total calculado (material + impressão + acabamento + montagem): R$ ${totalCost.toFixed(2)}
+- Preço cobrado: R$ ${manualPrice.toFixed(2)}
+- Lucro: R$ ${profit.toFixed(2)}
+- Margem: ${margin.toFixed(1)}%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de papelaria personalizada no Brasil
+3. Uma dica prática de precificação para este tipo de trabalho`
+  );
+}
+
+export async function analyzeCestaPrice(
+  jobName: string,
+  totalCost: number,
+  manualPrice: number
+): Promise<string | null> {
+  const profit = manualPrice - totalCost;
+  const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
+
+  return generate(
+    `Você é um consultor especializado em cestas e kits personalizados para pequenos negócios brasileiros.
+
+Analise a precificação desta cesta/kit personalizado:
+- Cesta: ${jobName}
+- Custo total calculado (produtos internos + embalagem + montagem): R$ ${totalCost.toFixed(2)}
+- Preço cobrado: R$ ${manualPrice.toFixed(2)}
+- Lucro: R$ ${profit.toFixed(2)}
+- Margem: ${margin.toFixed(1)}%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de cestas personalizadas no Brasil
+3. Uma dica prática de precificação para este tipo de produto`
+  );
+}

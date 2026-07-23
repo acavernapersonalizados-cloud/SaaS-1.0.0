@@ -16,27 +16,43 @@ import {
   Layers, ChevronDown, ChevronUp, Info, Edit2, Save
 } from 'lucide-react';
 
-const ELECTRICITY_RATE_DEFAULT = 0.78938; // Enel São Paulo B1: TUSD + TE, sem tributos e bandeira
+const ELECTRICITY_RATE_DEFAULT = 0.85; // R$/kWh média Brasil
 
 // ── Perfis padrão (seed) ─────────────────────────────────────────────────────
 const DEFAULT_MACHINES: Omit<LaserMachineProfile, 'id' | 'storeId' | 'createdAt'>[] = [
   {
     label: 'Two Trees TS2 10W',
-    laserType: 'Diodo 445±5nm',
+    laserType: 'Diodo 450nm',
     powerW: 10,
-    powerConsumptionW: 96,
-    workAreaW: 450, workAreaH: 450,
-    maxSpeedMmMin: 10000,
+    powerConsumptionW: 60,
+    workAreaW: 430, workAreaH: 400,
+    maxSpeedMmMin: 24000,
     diodeLifeH: 10000,
     moduleReplacementCost: 280,
     isDefault: true,
     materials: [
       'MDF 3mm', 'MDF 6mm', 'Compensado 3mm', 'Compensado 6mm',
-      'Acrílico escuro/opaco', 'Couro', 'Couro sintético',
+      'Acrílico (com película)', 'Couro', 'Couro sintético',
       'EVA', 'Papel', 'Papelão', 'Tecido', 'Feltro',
-      'Borracha', 'Bambu', 'Madeira balsa', 'Cortiça',
-      'Alumínio anodizado (gravação)', 'Metal pintado (gravação)',
-      'Vidro revestido (gravação)', 'Pedra (gravação)', 'Personalizado'
+      'Borracha', 'Bambu', 'Madeira balsa', 'Cortiça', 'Personalizado'
+    ],
+  },
+  {
+    label: 'Creality Falcon 2 Pro 22W (Hi Combo)',
+    laserType: 'Diodo 455nm',
+    powerW: 22,
+    powerConsumptionW: 120,
+    workAreaW: 400, workAreaH: 415,
+    maxSpeedMmMin: 25000,
+    diodeLifeH: 10000,
+    moduleReplacementCost: 580,
+    isDefault: true,
+    materials: [
+      'MDF 3mm', 'MDF 6mm', 'MDF 9mm', 'Compensado 3mm', 'Compensado 6mm',
+      'Acrílico (com película)', 'Couro', 'Couro sintético',
+      'EVA', 'Papel', 'Papelão', 'Tecido', 'Feltro', 'Borracha',
+      'Bambu', 'Madeira balsa', 'Cortiça', 'Inox (gravação)',
+      'Anodizado', 'Vidro (gravação)', 'Pedra (gravação)', 'Personalizado'
     ],
   },
 ];
@@ -88,10 +104,6 @@ export function LaserCalculator() {
 
   // ── Seed default machines ──────────────────────────────────────────────────
   const seedDefaultMachines = async (storeId: string) => {
-    // Remove somente o perfil padrão incorreto que existia anteriormente.
-    const obsoleteMachineId = `default_${storeId}_creality_falcon_2_pro_22w_(hi_combo)`;
-    await deleteDoc(doc(db, 'laserMachines', obsoleteMachineId)).catch(() => undefined);
-
     for (const m of DEFAULT_MACHINES) {
       const id = `default_${storeId}_${m.label.replace(/\s+/g, '_').toLowerCase()}`;
       const ref = doc(db, 'laserMachines', id);

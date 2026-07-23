@@ -21,6 +21,8 @@ import { PrintCalculator } from './components/PrintCalculator';
 import { PurchaseList } from './components/PurchaseList';
 import { ProductionPanel } from './components/ProductionPanel';
 import { PublicCatalog } from './components/PublicCatalog';
+import { PapelariaCalculator } from './components/PapelariaCalculator';
+import { CestaCalculator } from './components/CestaCalculator';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -65,6 +67,8 @@ function AppContent() {
       case 'print3d': return <PrintCalculator />;
       case 'purchases': return <PurchaseList />;
       case 'production': return <ProductionPanel />;
+      case 'papelaria': return <PapelariaCalculator />;
+      case 'cestas': return <CestaCalculator />;
       case 'stores': return isAdmin ? <Stores /> : <AccessDenied />;
       case 'users': return (isAdmin || isGerente) ? <Users /> : <AccessDenied />;
       case 'backup': return isAdmin ? <Backup /> : <AccessDenied />;

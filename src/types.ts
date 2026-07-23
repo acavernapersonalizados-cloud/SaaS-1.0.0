@@ -254,24 +254,14 @@ export interface User {
   createdAt: string;
 }
 
-export type Channel =
-  | 'Shopee'
-  | 'Mercado Livre'
-  | 'Instagram'
-  | 'Venda Direta'
-  | 'Atacado'
-  | 'iFood'
-  | '99Food';
+export type Channel = 'Shopee' | 'Mercado Livre' | 'Instagram' | 'Venda Direta' | 'Atacado';
 
 export const CHANNELS: Record<Channel, number> = {
-  // Taxas atualizadas 2025
-  'Venda Direta':   0,   // sem taxa
-  'Instagram':      0,   // sem taxa
-  'Atacado':        5,   // negociado diretamente
-  'Shopee':        20,   // comissão Shopee Maker/normal
-  'Mercado Livre': 16,   // Clássico até R$79 = 16%; Full = 19% — usando Clássico como base
-  'iFood':         27,   // plano Entrega Própria ~12% + taxa de serviço ~15%
-  '99Food':        25,   // comissão parceiro 99Food
+  'Shopee': 20,
+  'Mercado Livre': 18,
+  'Instagram': 0,
+  'Venda Direta': 0,
+  'Atacado': 5,
 };
 
 // ── Stock Reservation ──────────────────────────────────────────────────────
@@ -315,4 +305,61 @@ export interface PurchaseListItem {
   purchasedAt?: string;
   purchasedQty?: number;
   purchasedPrice?: number;
+}
+
+// ── Papelaria Personalizada ─────────────────────────────────────────────────
+// Segue o mesmo padrão de LaserJob/PrintJob: job avulso, sem alterar coleções existentes.
+export interface PapelariaMaterialItem {
+  id: string;
+  name: string;         // Ex: "Papel Color Plus 180g", "Adesivo Vinil", "Wire-o 1/4"
+  unitCost: number;      // custo por unidade/folha/metro
+  quantity: number;
+}
+
+export interface PapelariaJob {
+  id: string;
+  storeId: string;
+  name: string;
+  printQuantity: number;         // quantidade de folhas/peças impressas
+  printedAreaCm2?: number;       // área impressa, se relevante para custo de tinta
+  materials: PapelariaMaterialItem[];
+  laminationCost?: number;       // BOPP, hot stamping, etc.
+  bindingCost?: number;          // wire-o, espiral, elástico, cola
+  assemblyTimeMin: number;
+  finishingTimeMin: number;
+  packagingTimeMin: number;
+  hourlyRate: number;
+  quantity: number;              // quantidade de kits/conjuntos finais
+  manualPrice?: number | null;
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// ── Cestas Personalizadas ────────────────────────────────────────────────────
+export interface CestaItem {
+  id: string;
+  name: string;           // produto dentro da cesta
+  unitCost: number;
+  quantity: number;
+  supplierName?: string;
+}
+
+export interface CestaJob {
+  id: string;
+  storeId: string;
+  name: string;
+  items: CestaItem[];             // produtos internos
+  packagingCost?: number;         // celofane, caixa, palha, papel seda
+  ribbonCost?: number;            // fitas e laços
+  tagCost?: number;               // etiqueta/tag
+  assemblyTimeMin: number;
+  hourlyRate: number;
+  deliveryCost?: number;          // frete/entrega
+  commissionPct?: number;         // comissão de vendedor, se houver
+  quantity: number;               // quantidade de cestas
+  manualPrice?: number | null;
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
 }

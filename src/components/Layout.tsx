@@ -21,7 +21,9 @@ import {
   Zap,
   Printer,
   ShoppingCart,
-  Factory
+  Factory,
+  FileText,
+  Gift
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
@@ -86,6 +88,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
     { id: 'pricing', label: 'Precificação', icon: Calculator, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'laser', label: 'Corte a Laser', icon: Zap, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'print3d', label: 'Impressão 3D', icon: Printer, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { id: 'papelaria', label: 'Papelaria', icon: FileText, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { id: 'cestas', label: 'Cestas', icon: Gift, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'production', label: 'Produção', icon: Factory, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'purchases', label: 'Lista de Compras', icon: ShoppingCart, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'history', label: 'Histórico', icon: History, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
