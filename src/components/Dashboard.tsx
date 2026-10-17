@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, where, doc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, Product, CostBase } from '../types';
-import { formatCurrency, formatPercent, cn } from '../lib/utils';
+import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -91,9 +91,7 @@ export function Dashboard() {
   const kpis = calcCatalogKPIs(products, materials, costs);
 
   // ── Low stock ─────────────────────────────────────────────────────────────
-  const lowStockItems = materials.filter(
-    m => (m.stockQuantity || 0) <= (m.minStockQuantity || 0) && (m.minStockQuantity || 0) > 0,
-  );
+  const lowStockItems = materials.filter(isLowStock);
 
   // ── Chart: top products by revenue ───────────────────────────────────────
   const productRevenue: Record<string, number> = {};

@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CostBase } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
+import { MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -136,12 +137,14 @@ export function CostBaseSettings() {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-neutral-700 flex items-center gap-2">
-              Meta de Lucro (%)
+              Meta de Lucro (% do preço)
               <Info className="w-4 h-4 text-neutral-400" />
             </label>
             <div className="relative">
               <input
                 type="number"
+                min={0}
+                max={MAX_MARGIN_PERCENT}
                 value={costs.profitGoal !== undefined && costs.profitGoal !== null ? costs.profitGoal : ''}
                 onChange={e => setCosts({ ...costs, profitGoal: Number(e.target.value) })}
                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
@@ -150,7 +153,10 @@ export function CostBaseSettings() {
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">%</span>
             </div>
-            <p className="text-[10px] text-neutral-400">Margem de lucro desejada sobre o custo.</p>
+            <p className="text-[10px] text-neutral-400">
+              Quanto do preço de venda vira lucro, já descontadas as taxas do canal (0 a {MAX_MARGIN_PERCENT}%). Ex.:
+              50% com custo de R$ 10 dá preço de R$ 20.
+            </p>
           </div>
 
           <div className="bg-neutral-900 p-6 rounded-2xl flex flex-col justify-center gap-2 text-white shadow-lg">

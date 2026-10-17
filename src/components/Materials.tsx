@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency, isLowStock } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -106,11 +106,24 @@ export function Materials() {
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
     const isActuallyPackage = newMaterial.isPackage || newMaterial.unit === 'pct';
-    if (!activeStore || !newMaterial.name || !newMaterial.purchasePrice) return;
+    if (!activeStore) {
+      addToast('Selecione uma loja antes de cadastrar materiais.', 'error');
+      return;
+    }
+    if (!newMaterial.name || !newMaterial.purchasePrice) {
+      addToast('Preencha o nome e um preço de compra maior que zero.', 'error');
+      return;
+    }
 
     // Validation
-    if (!isActuallyPackage && !newMaterial.purchaseQuantity) return;
-    if (isActuallyPackage && !newMaterial.packageQuantity) return;
+    if (!isActuallyPackage && !newMaterial.purchaseQuantity) {
+      addToast('Informe uma quantidade comprada maior que zero.', 'error');
+      return;
+    }
+    if (isActuallyPackage && !newMaterial.packageQuantity) {
+      addToast('Informe a quantidade de itens no pacote (maior que zero).', 'error');
+      return;
+    }
 
     const quantity = isActuallyPackage ? newMaterial.packageQuantity || 1 : newMaterial.purchaseQuantity!;
     const unitCost = newMaterial.purchasePrice / quantity;
@@ -376,7 +389,7 @@ export function Materials() {
                   </td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
                     {material.stockQuantity} {material.unit}
-                    {material.stockQuantity <= (material.minStockQuantity || 0) && (
+                    {isLowStock(material) && (
                       <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                         BAIXO
                       </span>

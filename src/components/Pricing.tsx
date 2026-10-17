@@ -3,7 +3,7 @@ import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } fr
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, CostBase, Channel, CHANNELS, Quote, Client, QuoteItem } from '../types';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
-import { calcQuoteItem } from '../lib/pricingEngine';
+import { calcQuoteItem, MAX_MARGIN_PERCENT, MAX_MARGIN_PLUS_FEES_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
@@ -30,6 +30,9 @@ import {
   Trash2,
 } from 'lucide-react';
 import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
+
+// Validade do orçamento: usada na data gravada (e no PDF) e no texto da tela.
+const QUOTE_VALIDITY_DAYS = 5;
 
 export function Pricing() {
   const { activeStore } = useStore();
@@ -175,7 +178,7 @@ export function Pricing() {
   const avgMargin = totalAmount > 0 ? (totalProfit / totalAmount) * 100 : 0;
 
   const handleAddItem = () => {
-    if (!currentItemResults) return;
+    if (!currentItemResults || currentItemResults.invalidMargin) return;
 
     if (editingItemId) {
       // Update existing item
@@ -351,13 +354,20 @@ export function Pricing() {
       return;
     }
 
+    if (allItemsResults.some(r => r.invalidMargin)) {
+      setQuoteError(
+        `Margem + taxa do canal passam de ${MAX_MARGIN_PLUS_FEES_PERCENT}% em um ou mais itens. Reduza a margem ou troque o canal.`,
+      );
+      return;
+    }
+
     setIsGenerating(true);
 
     try {
       const quoteData: any = {
         storeId: activeStore.id,
         date: new Date().toISOString(),
-        expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        expiryDate: new Date(Date.now() + QUOTE_VALIDITY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
         clientName: clientName.trim(),
         clientType,
         items: allItemsResults.map(r => ({
@@ -761,7 +771,7 @@ export function Pricing() {
                 )}
               </button>
               <p className="text-[10px] text-center text-neutral-400 font-bold uppercase tracking-widest">
-                Válido por 7 dias • {CHANNELS[channel]}% de acréscimo canal
+                Válido por {QUOTE_VALIDITY_DAYS} dias • {CHANNELS[channel]}% de acréscimo canal
               </p>
             </div>
 
@@ -852,10 +862,12 @@ export function Pricing() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                    Margem Personalizada (%)
+                    Margem Personalizada (% do preço)
                   </label>
                   <input
                     type="number"
+                    min={0}
+                    max={MAX_MARGIN_PERCENT}
                     value={customMargin !== null ? customMargin : ''}
                     onChange={e => setCustomMargin(e.target.value === '' ? null : Number(e.target.value))}
                     placeholder="Padrão"
@@ -941,6 +953,14 @@ export function Pricing() {
               )}
             </div>
 
+            {currentItemResults?.invalidMargin && (
+              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                Margem ({currentItemResults.margin}%) + taxa do canal ({currentItemResults.platformFee}%) passam de{' '}
+                {MAX_MARGIN_PLUS_FEES_PERCENT}%: não existe preço que dê esse lucro. Reduza a margem ou troque o canal.
+              </div>
+            )}
+
             <div className="pt-6 border-t border-neutral-100 flex items-center justify-between">
               <div className="text-left">
                 <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total do Item</p>
@@ -958,7 +978,7 @@ export function Pricing() {
               </div>
               <button
                 onClick={handleAddItem}
-                disabled={!selectedProductId}
+                disabled={!selectedProductId || !!currentItemResults?.invalidMargin}
                 className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black hover:bg-black transition-all disabled:opacity-50"
               >
                 {editingItemId ? 'Salvar Alterações' : 'Confirmar Item'}

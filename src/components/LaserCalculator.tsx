@@ -3,6 +3,7 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, 
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { clampMargin, priceForMargin } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -31,6 +32,17 @@ import {
 
 const ELECTRICITY_RATE_DEFAULT = 0.78938; // Enel São Paulo B1: TUSD + TE, sem tributos e bandeira
 
+// Materiais da máquina são digitados separados por vírgula ("MDF 3mm, Acrílico 3mm").
+const parseMaterials = (text: string) =>
+  Array.from(
+    new Set(
+      text
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean),
+    ),
+  );
+
 export function LaserCalculator() {
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
@@ -53,6 +65,7 @@ export function LaserCalculator() {
     moduleReplacementCost: 300,
     materials: [],
   });
+  const [machineMaterialsText, setMachineMaterialsText] = useState('');
   const [savingMachine, setSavingMachine] = useState(false);
 
   // ── Job state ────────────────────────────────────────────────────────────────
@@ -131,13 +144,17 @@ export function LaserCalculator() {
   const calc = () => {
     if (!selectedMachine || totalTimeMin <= 0) return null;
     const energyCost = (selectedMachine.powerConsumptionW / 1000) * totalTimeH * electricityRate;
-    const wearCost = (selectedMachine.moduleReplacementCost / selectedMachine.diodeLifeH) * totalTimeH;
+    const wearCost =
+      selectedMachine.diodeLifeH > 0
+        ? (selectedMachine.moduleReplacementCost / selectedMachine.diodeLifeH) * totalTimeH
+        : 0;
     const laborCost = (hourlyRate / 60) * totalTimeMin;
     const matPerUnit = materialCost / Math.max(quantity, 1);
+    // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
     const totalCostUnit = energyCost + wearCost + laborCost + matPerUnit;
-    const totalCostBatch = energyCost + wearCost + laborCost + materialCost;
-    const suggestedUnit = totalCostUnit * (1 + profitMarginPct / 100);
-    const suggestedBatch = totalCostBatch * (1 + profitMarginPct / 100);
+    const totalCostBatch = totalCostUnit * Math.max(quantity, 1);
+    const suggestedUnit = priceForMargin(totalCostUnit, profitMarginPct) ?? 0;
+    const suggestedBatch = suggestedUnit * Math.max(quantity, 1);
     const priceRef = manualPrice ?? suggestedUnit;
     const profit = priceRef - totalCostUnit;
     const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
@@ -162,7 +179,7 @@ export function LaserCalculator() {
     if (!activeStore || !newMachine.label) return;
     setSavingMachine(true);
     try {
-      const data = { ...newMachine, storeId: activeStore.id };
+      const data = { ...newMachine, materials: parseMaterials(machineMaterialsText), storeId: activeStore.id };
       if (editingMachine) {
         await setDoc(doc(db, 'laserMachines', editingMachine.id), {
           ...data,
@@ -190,6 +207,7 @@ export function LaserCalculator() {
         moduleReplacementCost: 300,
         materials: [],
       });
+      setMachineMaterialsText('');
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, 'laserMachines');
     }
@@ -312,6 +330,7 @@ export function LaserCalculator() {
                 moduleReplacementCost: 300,
                 materials: [],
               });
+              setMachineMaterialsText('');
               setShowMachineForm(true);
             }}
             className="flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-all text-sm font-bold"
@@ -368,6 +387,7 @@ export function LaserCalculator() {
                       onClick={() => {
                         setEditingMachine(m);
                         setNewMachine(m);
+                        setMachineMaterialsText((m.materials || []).join(', '));
                         setShowMachineForm(true);
                       }}
                       className="p-1 hover:bg-neutral-200 rounded-lg transition-all"
@@ -410,18 +430,29 @@ export function LaserCalculator() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Material</label>
-                <select
-                  value={material}
-                  onChange={e => setMaterial(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                >
-                  <option value="">Selecione...</option>
-                  {(selectedMachine?.materials || []).map(m => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+                {(selectedMachine?.materials || []).length > 0 ? (
+                  <select
+                    value={material}
+                    onChange={e => setMaterial(e.target.value)}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                  >
+                    <option value="">Selecione...</option>
+                    {(selectedMachine?.materials || []).map(m => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  // Máquina sem lista de materiais: permite digitar para não travar o salvamento.
+                  <input
+                    type="text"
+                    value={material}
+                    onChange={e => setMaterial(e.target.value)}
+                    placeholder="Ex: MDF 3mm"
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                  />
+                )}
               </div>
 
               <div className="space-y-1">
@@ -438,7 +469,7 @@ export function LaserCalculator() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-red-400 rounded-full inline-block" />
-                  Tempo de Corte (min)
+                  Tempo de Corte por peça (min)
                 </label>
                 <input
                   type="number"
@@ -453,7 +484,7 @@ export function LaserCalculator() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-blue-400 rounded-full inline-block" />
-                  Tempo de Gravação (min)
+                  Tempo de Gravação por peça (min)
                 </label>
                 <input
                   type="number"
@@ -495,7 +526,7 @@ export function LaserCalculator() {
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
                   {Math.floor(totalTimeMin / 60) > 0 ? `${Math.floor(totalTimeMin / 60)}h ` : ''}
-                  {(totalTimeMin % 60).toFixed(1)}min total
+                  {(totalTimeMin % 60).toFixed(1)}min por peça
                   {passes > 1 ? ` (${passes} passadas)` : ''}
                 </span>
               </div>
@@ -522,7 +553,13 @@ export function LaserCalculator() {
                       min: 0.1,
                     },
                     { label: 'Valor Hora Trabalho (R$)', value: hourlyRate, set: setHourlyRate, step: 0.5, min: 0 },
-                    { label: 'Margem de Lucro (%)', value: profitMarginPct, set: setProfitMarginPct, step: 1, min: 0 },
+                    {
+                      label: 'Margem de Lucro (% do preço)',
+                      value: profitMarginPct,
+                      set: (v: number) => setProfitMarginPct(clampMargin(v)),
+                      step: 1,
+                      min: 0,
+                    },
                   ].map(f => (
                     <div key={f.label} className="space-y-1">
                       <label className="text-xs font-bold text-neutral-600">{f.label}</label>
@@ -645,7 +682,7 @@ export function LaserCalculator() {
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Sugerido ({profitMarginPct}%)
+                    Sugerido ({profitMarginPct}% do preço)
                   </p>
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}
@@ -826,6 +863,19 @@ export function LaserCalculator() {
                   />
                 </div>
               ))}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-neutral-700">Materiais que a máquina trabalha</label>
+                <input
+                  type="text"
+                  placeholder="Ex: MDF 3mm, Acrílico 3mm, Couro"
+                  value={machineMaterialsText}
+                  onChange={e => setMachineMaterialsText(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                />
+                <p className="text-[10px] text-neutral-400">
+                  Separe por vírgula. Aparecem na lista de materiais do trabalho.
+                </p>
+              </div>
               <button
                 type="submit"
                 disabled={savingMachine}

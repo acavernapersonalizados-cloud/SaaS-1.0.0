@@ -4,6 +4,7 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where }
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CestaJob, CestaItem, Material } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { clampMargin, MAX_MARGIN_PERCENT, priceForMargin } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -127,10 +128,10 @@ export function CestaCalculator() {
     const packagingTotal = packagingCost + ribbonCost + tagCost;
     const subtotalBatch = itemsCost + packagingTotal + laborCost + deliveryCost;
     const totalCostUnit = subtotalBatch / Math.max(quantity, 1);
-    const suggestedBeforeCommission = totalCostUnit * (1 + profitMarginPct / 100);
-    // Comissão aplicada sobre o preço de venda, igual ao padrão de taxa de canal do pricingEngine
-    const suggestedUnit =
-      commissionPct < 100 ? suggestedBeforeCommission / (1 - commissionPct / 100) : suggestedBeforeCommission;
+    // Margem sobre o preço, líquida da comissão: depois da comissão sobra exatamente a margem.
+    const marginPrice = priceForMargin(totalCostUnit, profitMarginPct, commissionPct);
+    const invalidMargin = marginPrice === null;
+    const suggestedUnit = marginPrice ?? 0;
     const suggestedBatch = suggestedUnit * quantity;
     const priceRef = manualPrice ?? suggestedUnit;
     const commissionValue = priceRef * (commissionPct / 100);
@@ -146,6 +147,7 @@ export function CestaCalculator() {
       suggestedBatch,
       profit,
       margin,
+      invalidMargin,
       commissionValue,
     };
   };
@@ -508,13 +510,13 @@ export function CestaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (%)</label>
+                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (% do preço)</label>
                 <input
                   type="number"
                   min="0"
-                  max="500"
+                  max={MAX_MARGIN_PERCENT}
                   value={profitMarginPct}
-                  onChange={e => setProfitMarginPct(Number(e.target.value))}
+                  onChange={e => setProfitMarginPct(clampMargin(Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
@@ -649,8 +651,14 @@ export function CestaCalculator() {
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Sugerido ({profitMarginPct}%)
+                    Sugerido ({profitMarginPct}% do preço)
                   </p>
+                  {result.invalidMargin && (
+                    <p className="text-[11px] font-bold text-red-600">
+                      Margem + comissão passam de 95%: não existe preço que dê esse lucro. Reduza a margem ou a
+                      comissão.
+                    </p>
+                  )}
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}
                     <span className="text-sm font-medium">/cesta</span>
