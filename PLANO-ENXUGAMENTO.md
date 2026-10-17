@@ -226,6 +226,12 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 | Parar de gravar `followUpStatus` (o campo antigo fica no banco) | baixo |
 | Remover `date-fns`, `motion` e `react-markdown` do `package.json` | baixo |
 | Apagar `docs/` e `index_Old.html` | baixo |
+
+> **Onde o app está publicado (conferido em 17/10/2026, só leitura):** apenas no **Firebase Hosting** —
+> `https://saas-1-0-0.web.app` e `https://saas-1-0-0.firebaseapp.com` (HTTP 200), servindo a pasta `dist/`
+> (`firebase.json` → `"public": "dist"`). O **GitHub Pages está desligado**: a API do GitHub responde
+> `has_pages: false`, `https://acavernapersonalizados-cloud.github.io/SaaS-1.0.0/` dá 404 e não existe branch
+> `gh-pages` (só `main` e `validacao`). Portanto **a pasta `docs/` não é usada em nenhuma publicação**.
 | Apagar `bun.lock` (fica só o `package-lock.json` do npm) | baixo |
 | Apagar `public/manifest.webmanifest` (o real é gerado pelo `vite.config.ts`) | baixo |
 | Pôr `.firebase/` no `.gitignore` e tirar o cache do git | baixo |
