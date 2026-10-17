@@ -4,6 +4,8 @@
 Base: tag `antes-de-enxugar` (commit `f5279f0`). O código é o mesmo publicado em produção (`fed5c89`).
 Regra deste plano: **nenhuma funcionalidade é perdida**. O que está na seção 5 só muda com aprovação.
 
+**Decisões da Etapa 1 (17/10/2026):** aprovados T1, T5, T6, T8, T10, T11 e T12 (entram na Etapa 5); T7 e T9 vão para o estacionamento; T2, T3 e T4 formam a nova **Etapa 7 — Unificar parâmetros de preço**; `.agents/` e `skills-lock.json` ficam.
+
 Números de referência hoje:
 
 | Medida | Valor |
@@ -76,7 +78,7 @@ Componentes de apoio das telas, todos usados: `Layout.tsx` (373, menu e botão "
 | `signInWithGoogle` e `googleProvider` em `firebase.ts:65-68` | 4 linhas | `signInWithGoogle` → só a declaração; `googleProvider` só é usado por ela. O login é por e-mail e senha (`Login.tsx`). |
 | `isFirebaseConfigured` em `firebase.ts:58` | 1 linha | `grep -rnw` → só a declaração. |
 | `type LaserMachineId` em `types.ts:108` | 1 linha | `grep -rnw` → só a declaração. |
-| Campo `discount` no formulário de Fornecedores | 4 pontos (`Suppliers.tsx:47,108,141,299`) | O valor é zerado e copiado, mas **não existe campo na tela** para digitar; sempre grava 0. Decidir na seção 5 (T12): remover ou criar o campo. |
+| Campo `discount` no formulário de Fornecedores | 4 pontos (`Suppliers.tsx:47,108,141,299`) | O valor é zerado e copiado, mas **não existe campo na tela** para digitar; sempre grava 0. **Decidido (T12): remover**, na Etapa 5. |
 | Campo `followUpStatus` do orçamento | 1 ponto (`Pricing.tsx:399`) | Gravado como "Pendente" e **nunca lido** em nenhuma tela. Parar de gravar não perde nada; o valor antigo fica no banco. |
 | `console.log` de depuração | 5 linhas (`Suppliers.tsx:76,78,85,91`, `Layout.tsx:56`) | Mensagens de teste no console. Os 2 de `Users.tsx:99-101` ficam para a seção 5 (T11). |
 | Código comentado | **0 blocos** | Busca por linhas `//` com código e por `/* */` com JSX: nada. Os 103 comentários JSX são títulos de seção (`{/* Header */}`) e ficam. |
@@ -101,7 +103,7 @@ As outras 10 dependências e as 11 devDependencies estão em uso. Exemplos: `fir
 | `public/manifest.webmanifest` | 1 KB | O `vite-plugin-pwa` gera o manifesto a partir do `vite.config.ts` e **sobrescreve** este: o `dist/manifest.webmanifest` publicado tem os ícones do config, não os deste arquivo. |
 | `.firebase/hosting.ZGlzdA.cache` | <1 KB | Cache da Firebase CLI, que muda a cada deploy. Deveria estar no `.gitignore` (hoje não está). |
 | `ATUALIZACAO-MAQUINAS.md` | 2 KB | Notas de uma versão antiga ("Extraia este ZIP…"). Não é lixo de código; decidir se fica. |
-| `.agents/` (84 arquivos) e `skills-lock.json` | 614 KB | Instruções de agentes de IA para Firebase, que não fazem parte do app. **Não remover sem você confirmar** que não usa essas ferramentas. |
+| `.agents/` (84 arquivos) e `skills-lock.json` | 614 KB | Instruções de agentes de IA para Firebase, que não fazem parte do app. **Decisão: ficam.** |
 
 ---
 
@@ -167,22 +169,22 @@ Os 10 somam 8.678 linhas (52% de `src/`).
 
 ---
 
-## 5. Telas — sugestões (nada sai sem sua aprovação)
+## 5. Telas — sugestões e decisões
 
-| # | Onde | O que confunde | Sugestão |
-|---|---|---|---|
-| T1 | Clientes | Os cartões "Total gasto", "Orçamentos" e "Última compra" sempre mostram **R$ 0,00 / 0 / —**: são gravados zerados (`Clients.tsx:144-146`) e nada os atualiza. | Calcular a partir dos orçamentos do cliente, que já são carregados no detalhe, ou remover os cartões. |
-| T2 | Calculadoras | "Valor Hora Trabalho" (25 ou 12) e "Margem de Lucro" (60%) não dependem da **Base de Custos** (R$ 20/h e Meta de Lucro da loja). São duas fontes para o mesmo número. | Usar a Base de Custos como valor inicial, mantendo o campo editável. |
-| T3 | Calculadoras | Tarifa de energia padrão diferente: 0,78938 (Laser) e 0,85 (3D). | Um valor só, guardado na Base de Custos. |
-| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | Uma tabela só de canais, com taxa percentual e fixa. |
-| T5 | Corte a Laser | Largura e altura da peça são gravadas, mas não aparecem na tela (sempre 100 × 100 mm). | Remover do registro ou mostrar os campos. |
-| T6 | Papelaria | "Quantidade de folhas/peças impressas" não muda o cálculo, e o campo `printedAreaCm2` do tipo nunca é usado. | Remover o campo ou usá-lo no custo de impressão. |
-| T7 | Produtos | "Categoria principal (opcional)", em texto livre, convive com as **categorias** múltiplas da tela Categorias. | Ficar só com as categorias. |
-| T8 | Lojas | Dois campos para o logo: envio de imagem e "Logo (URL opcional)". | Ficar só com o envio. |
-| T9 | Estoque × Matéria-prima | Estoque só tem +1/−1 e um contador, e o mesmo saldo é editado em Matéria-prima. | Levar o ajuste rápido para a tela Matéria-prima, ou manter Estoque como atalho. |
-| T10 | Histórico | O botão "Gerar Nota Fiscal" gera um PDF que **não é nota fiscal** (`pdf.ts:256` diz "representação"). Pode confundir o cliente. | Renomear para "Recibo" ou "Comprovante". |
-| T11 | Usuários | Ao aprovar, a função diz notificar por e-mail e WhatsApp, mas só escreve no console (`Users.tsx:97-104`). | Remover a função ou implementar o envio (ver estacionamento). |
-| T12 | Fornecedores | O campo "desconto" existe no registro, mas não há onde digitar (sempre 0). | Remover ou criar o campo. |
+| # | Onde | O que confunde | Decisão (17/10/2026) | Vai para |
+|---|---|---|---|---|
+| T1 | Clientes | Os cartões "Total gasto", "Orçamentos" e "Última compra" sempre mostram **R$ 0,00 / 0 / —**: são gravados zerados (`Clients.tsx:144-146`) e nada os atualiza. | ✅ **Aprovado:** mostrar os valores reais, calculados a partir dos orçamentos do cliente. | Etapa 5 |
+| T2 | Calculadoras | "Valor Hora Trabalho" (25 ou 12) e "Margem de Lucro" (60%) não dependem da **Base de Custos** (R$ 20/h e Meta de Lucro da loja). São duas fontes para o mesmo número. | ➡️ Usar a Base de Custos como valor inicial, mantendo o campo editável. | Etapa 7 |
+| T3 | Calculadoras | Tarifa de energia padrão diferente: 0,78938 (Laser) e 0,85 (3D). | ➡️ Um valor só, guardado na Base de Custos. | Etapa 7 |
+| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | ➡️ Uma tabela só de canais, com taxa percentual e fixa. **Primeiro item da Etapa 7.** | Etapa 7 |
+| T5 | Corte a Laser | Largura e altura da peça são gravadas, mas não aparecem na tela (sempre 100 × 100 mm). | ✅ **Aprovado:** deixar de gravar (trabalhos antigos mantêm o valor no banco). | Etapa 5 |
+| T6 | Papelaria | "Quantidade de folhas/peças impressas" não muda o cálculo, e o campo `printedAreaCm2` do tipo nunca é usado. | ✅ **Aprovado:** tirar o campo da tela (e o `printedAreaCm2` do tipo). | Etapa 5 |
+| T7 | Produtos | "Categoria principal (opcional)", em texto livre, convive com as **categorias** múltiplas da tela Categorias. | 🅿️ Estacionamento. | Seção 7 |
+| T8 | Lojas | Dois campos para o logo: envio de imagem e "Logo (URL opcional)". | ✅ **Aprovado:** tirar o campo de URL. **Logos já cadastradas por URL continuam aparecendo** (o campo `logo` do registro não muda). | Etapa 5 |
+| T9 | Estoque × Matéria-prima | Estoque só tem +1/−1 e um contador, e o mesmo saldo é editado em Matéria-prima. | 🅿️ Estacionamento. | Seção 7 |
+| T10 | Histórico | O botão "Gerar Nota Fiscal" gera um PDF que **não é nota fiscal** (`pdf.ts:256` diz "representação"). Pode confundir o cliente. | ✅ **Aprovado:** renomear para **"Recibo"** (botão, mensagens e título do PDF). | Etapa 5 |
+| T11 | Usuários | Ao aprovar, a função diz notificar por e-mail e WhatsApp, mas só escreve no console (`Users.tsx:97-104`). | ✅ **Aprovado:** remover a função que finge notificar. A notificação real fica no estacionamento. | Etapa 5 |
+| T12 | Fornecedores | O campo "desconto" existe no registro, mas não há onde digitar (sempre 0). | ✅ **Aprovado:** remover (registros antigos mantêm o valor no banco). | Etapa 5 |
 
 ---
 
@@ -203,7 +205,8 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 | Apagar `bun.lock` (fica só o `package-lock.json` do npm) | baixo |
 | Apagar `public/manifest.webmanifest` (o real é gerado pelo `vite.config.ts`) | baixo |
 | Pôr `.firebase/` no `.gitignore` e tirar o cache do git | baixo |
-| `.agents/`, `skills-lock.json`, `ATUALIZACAO-MAQUINAS.md` | **só com sua confirmação** |
+| `.agents/` e `skills-lock.json` | — **ficam** (decisão de 17/10/2026) |
+| `ATUALIZACAO-MAQUINAS.md` | **só com sua confirmação** (ainda não decidido) |
 
 ### Etapa 4 — Unificar duplicação (mesmo comportamento, menos código)
 
@@ -223,8 +226,36 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 | Item | Risco |
 |---|---|
 | Carregar gráficos e PDF só quando usados (Dashboard sob demanda e ajuste do `manualChunks`): carga inicial −45% | médio |
-| Itens da seção 5 que você aprovar (T1–T12) | médio a alto: mudam o que o usuário vê, e T2–T4 mudam valores padrão |
+| T1: Clientes mostram total gasto, nº de orçamentos e última compra reais | baixo |
+| T5: Laser deixa de gravar largura e altura | baixo |
+| T6: Papelaria sem o campo "folhas/peças impressas" | baixo |
+| T8: Lojas sem o campo "Logo (URL)", mantendo a exibição das logos já cadastradas | baixo |
+| T10: "Gerar Nota Fiscal" vira "Recibo" | baixo |
+| T11: remover a notificação falsa ao aprovar usuário | baixo |
+| T12: remover o desconto de fornecedor | baixo |
 | Quebrar `Products.tsx` e `Pricing.tsx` em partes menores, depois das etapas acima | médio |
+
+Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
+
+### Etapa 6 — a definir
+
+Ainda não definida neste documento. A Etapa 7 só começa depois dela.
+
+### Etapa 7 — Unificar parâmetros de preço (T4, T2, T3)
+
+**Só começa depois da Etapa 6.** Estes itens **mudam preços**, então:
+
+1. **Antes de qualquer mudança no código**, gerar uma comparação de preço **antes/depois com produtos e trabalhos reais** das lojas (leitura do banco, sem gravar), mostrando para cada um: preço hoje, preço novo e diferença em R$ e %.
+2. Você aprova a comparação.
+3. Só então aplicar, um item por vez, na ordem abaixo, repetindo a comparação a cada item.
+
+| Ordem | Item | O que muda | Risco |
+|---|---|---|---|
+| 1 | **T4** — uma tabela só de canais de venda (taxa % + taxa fixa), usada por Precificação e Impressão 3D | O preço de orçamentos ou de trabalhos 3D em canais como Shopee e Mercado Livre | alto |
+| 2 | T2 — calculadoras abrem com o valor da hora e a Meta de Lucro da Base de Custos (campos continuam editáveis) | O preço sugerido de quem não alterar os campos | alto |
+| 3 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
+
+Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
 
 ---
 
@@ -234,8 +265,10 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 - **Deploy automático:** cadastrar os secrets `VITE_FIREBASE_*` no GitHub para o merge na `main` voltar a publicar.
 - **Testes automáticos** dos cálculos (motor de preços, 3D, G-code), que hoje são feitos com scripts avulsos.
 - **Follow-up de orçamentos** (era o `checkFollowUps`): lembrete automático via Cloud Functions.
-- **Notificação real ao aprovar usuário** (e-mail ou WhatsApp), ligada ao T11.
-- **Estatísticas do cliente** calculadas no servidor, se a opção do T1 for manter os cartões.
+- **T7 — Categoria principal em Produtos:** ficar só com as categorias múltiplas (exige reclassificar produtos que só têm a categoria em texto).
+- **T9 — Estoque × Matéria-prima:** levar o ajuste rápido +1/−1 para Matéria-prima ou manter Estoque como atalho.
+- **Notificação real ao aprovar usuário** (e-mail ou WhatsApp). O T11 só remove a notificação falsa.
+- **Estatísticas do cliente** calculadas no servidor: o T1 calcula na tela, a partir dos orçamentos; levar para o servidor se ficar lento com muitos orçamentos.
 - **Margem padrão das calculadoras (60%):** avaliar um valor menor, agora que é margem sobre o preço.
 - **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor.
 - **`npm audit`:** a instalação limpa no GitHub mostrou 17 vulnerabilidades em dependências (4 moderadas, 13 altas) na versão antiga; rever na versão atual.
