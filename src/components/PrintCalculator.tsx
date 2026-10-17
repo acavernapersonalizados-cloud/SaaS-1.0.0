@@ -321,8 +321,14 @@ export function PrintCalculator() {
       if (deductStock && materialId) {
         const selectedMaterial = materials.find(item => item.id === materialId);
         if (!selectedMaterial) throw new Error('Material selecionado não encontrado.');
-        const amount =
-          selectedMaterial.unit.toLowerCase() === 'kg' ? (filamentUsedG * quantity) / 1000 : filamentUsedG * quantity;
+        // O peso do filamento está em gramas: só dá para baixar de materiais em kg ou g.
+        const unit = (selectedMaterial.unit || '').toLowerCase();
+        if (unit !== 'kg' && unit !== 'g') {
+          throw new Error(
+            `Não foi possível baixar o estoque: o material está em "${selectedMaterial.unit}". Use kg ou g para filamento.`,
+          );
+        }
+        const amount = unit === 'kg' ? (filamentUsedG * quantity) / 1000 : filamentUsedG * quantity;
         await runTransaction(db, async transaction => {
           const materialRef = doc(db, 'materials', materialId);
           const snapshot = await transaction.get(materialRef);
@@ -349,7 +355,9 @@ export function PrintCalculator() {
     } catch (err) {
       if (
         err instanceof Error &&
-        (err.message.includes('Estoque insuficiente') || err.message.includes('não encontrado'))
+        (err.message.includes('Estoque insuficiente') ||
+          err.message.includes('não encontrado') ||
+          err.message.includes('Não foi possível baixar'))
       )
         addToast(err.message, 'error');
       else handleFirestoreError(err, OperationType.CREATE, 'printJobs');
