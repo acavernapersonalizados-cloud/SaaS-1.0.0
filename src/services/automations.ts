@@ -7,8 +7,9 @@ import { sendWhatsAppMessage, generateStatusMessage } from './whatsapp';
 const RESERVE_STATUSES: QuoteStatus[] = ['Aprovado', 'Em produção'];
 // Statuses that convert reservation → definitive stock deduction
 const CONVERT_STATUSES: QuoteStatus[] = ['Finalizado'];
-// Statuses that release a reservation (not in QuoteStatus — handled defensively)
-const RELEASE_STATUSES = ['Cancelado', 'Rejeitado', 'Expirado'];
+// Statuses that release a reservation. 'Pendente' covers a quote sent back
+// from Aprovado/Em produção; the others are not in QuoteStatus (defensive).
+const RELEASE_STATUSES = ['Pendente', 'Cancelado', 'Rejeitado', 'Expirado'];
 
 async function getActiveReservation(
   quoteId: string,
@@ -131,49 +132,71 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
   // ── 2. CONVERT RESERVATION → DEFINITIVE STOCK DEDUCTION ──────────────────
   if (CONVERT_STATUSES.includes(newStatus) && !quoteData.stockProcessed) {
     const reservation = await getActiveReservation(quoteId, quoteData.storeId);
+    // Finalizado direto de Pendente não tem reserva: calcula a baixa agora.
+    const deductions = reservation ? reservation.reservations : await buildReservations(quoteData);
 
-    if (reservation) {
+    if (deductions.length > 0) {
       try {
         // Tudo em uma transação: leitura do estoque e baixa acontecem de forma
         // atômica, evitando baixa duplicada ou perda de atualização.
-        await runTransaction(db, async tx => {
-          const resRef = doc(db, 'stockReservations', reservation.id);
-          const resSnap = await tx.get(resRef);
-          if (!resSnap.exists() || resSnap.data()?.status !== 'active') return;
+        const applied = await runTransaction(db, async tx => {
+          const resRef = doc(db, 'stockReservations', reservation ? reservation.id : `res_${quoteId}`);
+          if (reservation) {
+            const resSnap = await tx.get(resRef);
+            if (!resSnap.exists() || resSnap.data()?.status !== 'active') return false;
+          }
 
           const quoteNow = await tx.get(quoteRef);
-          if (quoteNow.data()?.stockProcessed) return;
+          if (quoteNow.data()?.stockProcessed) return false;
 
-          const matRefs = reservation.reservations.map(r => doc(db, 'materials', r.materialId));
+          const matRefs = deductions.map(r => doc(db, 'materials', r.materialId));
           const matSnaps = await Promise.all(matRefs.map(ref => tx.get(ref)));
 
           matSnaps.forEach((matSnap, i) => {
             if (!matSnap.exists()) return;
             const currentStock = Number(matSnap.data().stockQuantity) || 0;
             tx.update(matRefs[i], {
-              stockQuantity: Math.max(0, currentStock - reservation.reservations[i].quantity),
+              stockQuantity: Math.max(0, currentStock - deductions[i].quantity),
               updatedAt: new Date().toISOString(),
             });
           });
 
-          tx.update(resRef, { status: 'converted', convertedAt: new Date().toISOString() });
+          const now = new Date().toISOString();
+          if (reservation) {
+            tx.update(resRef, { status: 'converted', convertedAt: now });
+          } else {
+            // Registra a baixa como reserva já convertida, para manter o histórico.
+            tx.set(resRef, {
+              storeId: quoteData.storeId,
+              quoteId,
+              clientName: quoteData.clientName || '',
+              reservations: deductions,
+              status: 'converted',
+              createdAt: now,
+              convertedAt: now,
+            });
+          }
           tx.update(quoteRef, { status: newStatus, stockProcessed: true });
+          return true;
         });
 
-        addDoc(collection(db, 'stockMovements'), {
-          storeId: quoteData.storeId,
-          quoteId,
-          type: 'deduction',
-          reason: `Orçamento ${newStatus}`,
-          deductions: reservation.reservations,
-          createdAt: new Date().toISOString(),
-        }).catch(() => {});
+        if (applied) {
+          addDoc(collection(db, 'stockMovements'), {
+            storeId: quoteData.storeId,
+            quoteId,
+            type: 'deduction',
+            reason: `Orçamento ${newStatus}`,
+            deductions,
+            createdAt: new Date().toISOString(),
+          }).catch(() => {});
 
-        if (phone && productName) {
-          const msg = generateStatusMessage(newStatus, productName);
-          if (msg) sendWhatsAppMessage(phone, msg);
+          if (phone && productName) {
+            const msg = generateStatusMessage(newStatus, productName);
+            if (msg) sendWhatsAppMessage(phone, msg);
+          }
+          return; // transaction already updated status — exit early
         }
-        return; // batch already updated status — exit early
+        // Nada foi baixado (já processado): segue para a atualização simples de status.
       } catch (err) {
         console.warn('[automations] Stock deduction failed, falling through to simple status update:', err);
         // Fall through to simple status update below
