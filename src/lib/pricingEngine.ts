@@ -37,7 +37,7 @@ export interface ProductCostResult {
 }
 
 export interface ProductPricingResult extends ProductCostResult {
-  suggestedPrice: number; // using profitGoal margin
+  suggestedPrice: number; // cost / (1 − profitGoal): profitGoal is the margin on the selling price
   manualPrice: number | null; // null if not set
   effectivePrice: number; // manualPrice ?? suggestedPrice
   profitPerUnit: number; // effectivePrice - totalCost
@@ -68,6 +68,8 @@ export interface QuoteItemCalcResult {
   packageQuantity: number;
   pricePerItem: number;
   customMargin: number | null;
+  /** true quando margem + taxa do canal ≥ 95%: não há preço possível. */
+  invalidMargin: boolean;
   // Snapshots (persist in Firestore for history)
   materialCost: number;
   laborCost: number;
@@ -87,6 +89,23 @@ export interface QuoteItemCalcResult {
  * LOSS       margem < 0%
  */
 export const MAX_CHANNEL_FEE_PERCENT = 95;
+
+/** Margem + taxas acima disso levariam o preço ao infinito. */
+export const MAX_MARGIN_PLUS_FEES_PERCENT = 95;
+/** Limite dos campos de margem/meta de lucro. */
+export const MAX_MARGIN_PERCENT = 90;
+
+/**
+ * Preço para que a margem sobre o preço de venda seja `marginPct`, já
+ * descontadas as taxas percentuais do canal (`feePct`) e as taxas fixas:
+ *   preço = (custo + fixas) / (1 − margem − taxa)
+ * Retorna null quando margem + taxa ≥ MAX_MARGIN_PLUS_FEES_PERCENT.
+ */
+export function priceForMargin(cost: number, marginPct: number, feePct = 0, fixedFees = 0): number | null {
+  const share = (Number(marginPct) || 0) + (Number(feePct) || 0);
+  if (share >= MAX_MARGIN_PLUS_FEES_PERCENT) return null;
+  return ((Number(cost) || 0) + (Number(fixedFees) || 0)) / (1 - share / 100);
+}
 
 export function getProfitStatus(margin: number): ProfitStatusInfo {
   if (margin >= 55)
@@ -181,8 +200,9 @@ export function calcProductPricing(
   const costResult = calcProductCost(product, materials, costs);
   const { totalCost } = costResult;
 
-  const profitGoalPct = Number(costs?.profitGoal) || 30;
-  const suggestedPrice = totalCost > 0 ? totalCost * (1 + profitGoalPct / 100) : 0;
+  // Meta de lucro = margem sobre o preço de venda (não acréscimo sobre o custo).
+  const profitGoalPct = Number(costs?.profitGoal) || 0;
+  const suggestedPrice = totalCost > 0 ? (priceForMargin(totalCost, profitGoalPct) ?? 0) : 0;
 
   const manualPrice: number | null =
     product.manualPrice != null && product.manualPrice > 0 ? Number(product.manualPrice) : null;
@@ -235,8 +255,11 @@ export function calcQuoteItem(
   const rawFeePercent = Number(channelFeePercent) || 0;
   const platformFeePercent = Math.min(Math.max(rawFeePercent, 0), MAX_CHANNEL_FEE_PERCENT);
 
-  // Base unit price accounting for platform fee
-  const baseUnitPrice = (totalProductionCost * (1 + margin / 100)) / (1 - platformFeePercent / 100);
+  // Margem sobre o preço, líquida da taxa do canal: depois de pagar a taxa,
+  // sobra exatamente `margin`% do preço como lucro.
+  const marginPrice = priceForMargin(totalProductionCost, margin, platformFeePercent);
+  const invalidMargin = marginPrice === null;
+  const baseUnitPrice = marginPrice ?? 0;
 
   const finishingValue = (product.finishingOptions || [])
     .filter(o => item.selectedFinishingIds?.includes(o.id))
@@ -290,6 +313,7 @@ export function calcQuoteItem(
     packageQuantity,
     pricePerItem: isFinite(pricePerItem) ? pricePerItem : 0,
     customMargin: item.customMargin ?? null,
+    invalidMargin,
     materialCost,
     laborCost,
     productionCost: totalProductionCost,
