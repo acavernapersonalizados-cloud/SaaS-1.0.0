@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
-import { formatCurrency, isLowStock } from '../lib/utils';
+import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import {
@@ -256,26 +256,28 @@ export function PurchaseList() {
     setSaving(true);
     try {
       const supplier = purchaseForm.supplierId ? suppliers.find(s => s.id === purchaseForm.supplierId) : null;
+      const mat = materials.find(m => m.id === purchasingItem.materialId);
+      // Material em pacote: o formulário pede pacotes, mas estoque e custo são por item.
+      const purchasedUnits = purchaseForm.qty * packageSize(mat);
 
       await updateDoc(doc(db, 'purchaseList', purchasingItem.id), {
         storeId: activeStore.id,
         status: 'purchased',
         purchasedAt: new Date().toISOString(),
-        purchasedQty: purchaseForm.qty,
+        purchasedQty: purchasedUnits,
         purchasedPrice: purchaseForm.price,
         supplierId: purchaseForm.supplierId || purchasingItem.supplierId || null,
         supplierName: supplier?.name || purchasingItem.supplierName || null,
       });
 
-      if (purchaseForm.qty > 0 && purchasingItem.materialId) {
-        const mat = materials.find(m => m.id === purchasingItem.materialId);
+      if (purchasedUnits > 0 && purchasingItem.materialId) {
         if (mat) {
           const updateData: Record<string, any> = {
-            stockQuantity: (Number(mat.stockQuantity) || 0) + purchaseForm.qty,
+            stockQuantity: (Number(mat.stockQuantity) || 0) + purchasedUnits,
             updatedAt: new Date().toISOString(),
           };
           if (purchaseForm.price > 0) {
-            updateData.unitCost = purchaseForm.price / purchaseForm.qty;
+            updateData.unitCost = purchaseForm.price / purchasedUnits;
           }
           await updateDoc(doc(db, 'materials', purchasingItem.materialId), updateData);
         }
@@ -350,6 +352,7 @@ export function PurchaseList() {
 
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
 
+  const purchasePack = packageSize(materials.find(m => m.id === purchasingItem?.materialId));
   const notInList = materials.filter(m => !items.some(i => i.status === 'pending' && i.materialId === m.id));
 
   return (
@@ -565,7 +568,9 @@ export function PurchaseList() {
                         {r.item.status === 'purchased' && r.item.purchasedAt && (
                           <p className="text-xs text-emerald-600 font-medium mt-2">
                             ✓ Comprado em {new Date(r.item.purchasedAt).toLocaleDateString('pt-BR')}
-                            {r.item.purchasedQty ? ` · ${r.item.purchasedQty} ${r.unit}` : ''}
+                            {r.item.purchasedQty
+                              ? ` · ${r.item.purchasedQty} ${packageSize(materials.find(m => m.id === r.item.materialId)) > 1 ? 'itens' : r.unit}`
+                              : ''}
                             {r.item.purchasedPrice ? ` · ${formatCurrency(r.item.purchasedPrice)}` : ''}
                           </p>
                         )}
@@ -576,9 +581,11 @@ export function PurchaseList() {
                           <button
                             onClick={() => {
                               setPurchasingItem(r.item);
+                              const pack = packageSize(materials.find(m => m.id === r.item.materialId));
+                              const qty = pack > 1 ? Math.ceil(r.suggestedQty / pack) : r.suggestedQty;
                               setPurchaseForm({
-                                qty: r.suggestedQty,
-                                price: (Number(r.item.lastPricePaid) || 0) * r.suggestedQty,
+                                qty,
+                                price: (Number(r.item.lastPricePaid) || 0) * qty * pack,
                                 supplierId: r.item.supplierId || '',
                               });
                             }}
@@ -673,7 +680,9 @@ export function PurchaseList() {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-neutral-700">
-                  Quantidade comprada ({purchasingItem.unit})
+                  {purchasePack > 1
+                    ? `Pacotes comprados (1 pacote = ${purchasePack} itens)`
+                    : `Quantidade comprada (${purchasingItem.unit})`}
                 </label>
                 <input
                   type="number"
@@ -696,7 +705,9 @@ export function PurchaseList() {
                 />
                 {purchaseForm.qty > 0 && purchaseForm.price > 0 && (
                   <p className="text-xs text-neutral-400">
-                    Custo unitário: {formatCurrency(purchaseForm.price / purchaseForm.qty)}/{purchasingItem.unit}
+                    {purchasePack > 1
+                      ? `Custo por item: ${formatCurrency(purchaseForm.price / (purchaseForm.qty * purchasePack))} · entram ${purchaseForm.qty * purchasePack} itens no estoque`
+                      : `Custo unitário: ${formatCurrency(purchaseForm.price / purchaseForm.qty)}/${purchasingItem.unit}`}
                   </p>
                 )}
               </div>
