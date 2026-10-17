@@ -77,15 +77,17 @@ Crie dois usuários de teste: um **GERENTE** e um **OPERADOR**, os dois vinculad
 |---|---|
 | Custos Fixos Mensais | 3200 |
 | Horas Produtivas Mensais | 160 |
-| Meta de Lucro (%) | 50 |
+| Meta de Lucro (% do preço) | 50 |
 
 - [ ] O quadro **Valor da Hora Trabalhada** mostra **R$ 20,00** enquanto você digita.
 - [ ] Clicar **Salvar Configurações** → "Base de custos salva com sucesso!".
 - [ ] Recarregar a página → os valores continuam lá.
 - [ ] Horas = 0 → valor da hora mostra **R$ 0,00** (não dá erro).
 
-> Observação: a "Meta de Lucro" funciona como **acréscimo sobre o custo** (custo × 1,50), e não como
-> margem sobre o preço. Com 50% de meta, a margem real fica em 33,3% (veja o teste 8.1).
+> A "Meta de Lucro" é a **margem sobre o preço de venda**, já descontadas as taxas do canal:
+> preço = custo ÷ (1 − meta − taxa). Com 50% e custo de R$ 7,50, o preço é R$ 15,00 (veja o teste 8.1).
+
+- [ ] O texto abaixo do campo explica a regra e o campo aceita de 0 a 90.
 
 ## 6. Fornecedores
 
@@ -126,8 +128,8 @@ Crie **"TESTE Chaveiro"**:
 
 | # | Teste | Resultado esperado |
 |---|---|---|
-| 8.1 | Sem preço manual | Materiais **R$ 1,75** · Mão de obra **R$ 5,00** · Embalagem **R$ 0,75** · Custo total **R$ 7,50** · Preço sugerido **R$ 11,25** · Margem **33,3%** · Status **🟠 Margem Baixa** |
-| 8.2 | Preço de Venda Manual = 15 | Lucro **R$ 7,50** · Margem **50%** · Status **🟡 Bom** |
+| 8.1 | Sem preço manual | Materiais **R$ 1,75** · Mão de obra **R$ 5,00** · Embalagem **R$ 0,75** · Custo total **R$ 7,50** · Preço sugerido **R$ 15,00** · Margem **50%** · Status **🟡 Bom** |
+| 8.2 | Preço de Venda Manual = 12 | Lucro **R$ 4,50** · Margem **37,5%** · Status **🟡 Bom** |
 | 8.3 | Preço Manual = 7 | Lucro **−R$ 0,50** · Margem **−7,1%** · Status **⛔ Prejuízo** · Recomendação cita **R$ 7.50** como preço mínimo |
 | 8.4 | Precificação reversa: preço-alvo 20 | Lucro **R$ 12,50** · Margem **62,5%** · Markup **2,67x** · **🟢 Excelente** |
 | 8.5 | Marcar "pacote" e Quantidade de itens no pacote = 10 | No orçamento, o preço por item = preço do pacote ÷ 10 |
@@ -152,15 +154,17 @@ Use o TESTE Chaveiro, **quantidade 10**, sem margem personalizada (vale a meta d
 
 | # | Canal / ajuste | Preço unitário | Total | Lucro | Margem |
 |---|---|---|---|---|---|
-| 10.1 | Instagram (0%) | **R$ 11,25** | **R$ 112,50** | **R$ 37,50** | **33,3%** |
-| 10.2 | Shopee (20%) | **R$ 14,06** | **R$ 140,63** | **R$ 37,50** | **26,7%** |
-| 10.3 | Mercado Livre (18%) | **R$ 13,72** | **R$ 137,20** | **R$ 37,50** | **27,3%** |
-| 10.4 | Venda Direta + Margem Personalizada 100% | **R$ 15,00** | **R$ 150,00** | **R$ 75,00** | **50%** |
-| 10.5 | Shopee + acabamento Verniz (+R$ 2) | **R$ 16,06** | **R$ 160,63** | **R$ 53,50** | — |
+| 10.1 | Instagram (0%) | **R$ 15,00** | **R$ 150,00** | **R$ 75,00** | **50%** |
+| 10.2 | Shopee (20%) | **R$ 25,00** | **R$ 250,00** | **R$ 125,00** | **50%** |
+| 10.3 | Mercado Livre (18%) | **R$ 23,44** | **R$ 234,38** | **R$ 117,19** | **50%** |
+| 10.4 | Venda Direta + Margem Personalizada 40% | **R$ 12,50** | **R$ 125,00** | **R$ 50,00** | **40%** |
+| 10.5 | Shopee + acabamento Verniz (+R$ 2) | **R$ 27,00** | **R$ 270,00** | **R$ 141,00** | — |
+| 10.6 | Shopee + Margem Personalizada 80% | aviso vermelho "Margem (80%) + taxa do canal (20%) passam de 95%…" e **Confirmar Item** desativado | — | — | — |
 
 Taxas fixas de canal: Shopee 20% · Mercado Livre 18% · Atacado 5% · Instagram e Venda Direta 0%.
 
-- [ ] O lucro fica igual (R$ 37,50) em 10.1–10.3: o app embute a taxa do canal no preço.
+- [ ] A margem fica em **50%** em 10.1–10.3: depois de pagar a taxa do canal, sobra a meta como lucro.
+- [ ] Trocar o canal para Shopee com um item de margem 80% já adicionado e gerar → erro "Margem + taxa do canal passam de 95%…".
 - [ ] Gerar orçamento **sem nome de cliente** → erro "O nome do cliente é obrigatório."
 - [ ] Gerar **sem itens** → erro "Adicione pelo menos um item ao orçamento."
 - [ ] Gerar com cliente "TESTE Cliente", tipo PJ e CNPJ → modal de sucesso, status **Pendente**.
@@ -206,8 +210,8 @@ Quantidade **4** · nas Configurações Avançadas: Tarifa **0,78938** (padrão)
 | 12.0 | Editar a máquina | O campo de materiais mostra "MDF 3mm, Acrílico 3mm"; o select Material do trabalho lista os dois |
 | 12.1 | Tempo total | **30 min por peça** (2 passadas) |
 | 12.2 | Custos por peça | Energia **R$ 0,02** · Desgaste **R$ 0,02** · Mão de obra **R$ 12,50** · Material **R$ 5,00** |
-| 12.3 | Custo e preço por peça | Custo **R$ 17,54** · Sugerido (60%) **R$ 28,07** |
-| 12.4 | Lote (4 peças) | Custo do lote **R$ 70,17** (4 × peça) · Sugerido do lote **R$ 112,28** |
+| 12.3 | Custo e preço por peça | Custo **R$ 17,54** · Sugerido (60% do preço) **R$ 43,86** |
+| 12.4 | Lote (4 peças) | Custo do lote **R$ 70,17** (4 × peça) · Sugerido do lote **R$ 175,44** |
 | 12.5 | "Seu preço por peça" = 15 | Prejuízo **R$ 2,54**/peça · Margem **−17,0%** · Aviso de prejuízo |
 | 12.6 | Salvar o trabalho | "Trabalho salvo!" e ele aparece no histórico |
 | 12.7 | Máquina antiga sem lista de materiais | O campo Material vira texto livre; digitar "MDF" permite salvar |
@@ -234,12 +238,14 @@ Pós-processamento **0,5** h, Embalagem **2**, Outros custos **0** · Canal **Ve
 | # | Teste | Resultado esperado |
 |---|---|---|
 | 13.1 | Detalhamento | Energia **R$ 0,36** · Filamento **R$ 4,20** · Hotend **R$ 0,34** · Mesa **R$ 0,06** · Depreciação **R$ 0,84** · Manutenção **R$ 0,21** · Mão de obra **R$ 6,30** · Embalagem **R$ 2,00** · Taxas **R$ 0,00** |
-| 13.2 | Totais | Custo **R$ 14,31** · Sugerido **R$ 22,89** · Lucro **R$ 8,58** · Margem **37,5%** |
-| 13.3 | Canal **Shopee** (14% + R$ 4 fixo) | Sugerido **R$ 31,27** · Taxas **R$ 8,38** · Lucro **R$ 8,58** · Margem **27,5%** |
-| 13.4 | Quantidade 3 (venda direta) | Custo do lote **R$ 42,92** · Sugerido do lote **R$ 68,67** |
+| 13.2 | Totais | Custo **R$ 14,31** · Sugerido **R$ 35,77** · Lucro **R$ 21,46** · Margem **60%** |
+| 13.3 | Canal **Shopee** (14% + R$ 4 fixo) | Sugerido **R$ 70,41** · Taxas **R$ 13,86** · Lucro **R$ 42,24** · Margem **60%** |
+| 13.4 | Quantidade 3 (venda direta) | Custo do lote **R$ 42,92** · Sugerido do lote **R$ 107,30** |
 | 13.5 | Preço manual 20 (venda direta) | Lucro **R$ 5,69** · Margem **28,5%** |
 | 13.6 | Comissão + pagamento = 120 | O campo trava em **95** |
 | 13.7 | Salvar sem nome | Erro "Preencha nome e tempo de impressão." |
+| 13.8 | Margem 90 + canal Shopee | Aviso vermelho "Margem + taxas do canal passam de 95%…" e sugerido **R$ 0,00** |
+| 13.9 | Digitar margem 150 | O campo volta para **90** |
 
 **Importar G-code:** crie no Bloco de Notas um arquivo `teste.gcode` com este conteúdo:
 
@@ -277,7 +283,7 @@ Valor Hora **25** · Margem **60%**.
 | # | Teste | Resultado esperado |
 |---|---|---|
 | 14.1 | Custo do lote | Materiais R$ 17 + Laminação R$ 8 + Encadernação R$ 5 + Mão de obra R$ 25 = **R$ 55,00** |
-| 14.2 | Por kit | Custo **R$ 11,00** · Sugerido **R$ 17,60** · Lote sugerido **R$ 88,00** · Margem **37,5%** |
+| 14.2 | Por kit | Custo **R$ 11,00** · Sugerido **R$ 27,50** · Lote sugerido **R$ 137,50** · Margem **60%** |
 | 14.3 | "Seu preço por unidade" = 15 | Lucro **R$ 4,00** · Margem **26,7%** |
 | 14.4 | Adicionar "Do estoque": TESTE Fita cetim, quantidade 3 | Entra com custo R$ 1,20 × 3 = R$ 3,60 |
 | 14.5 | Do estoque com quantidade maior que o saldo (ex.: 50) | Aviso em laranja "quantidade acima do estoque atual" (não bloqueia) |
@@ -302,10 +308,11 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 | # | Teste | Resultado esperado |
 |---|---|---|
 | 15.1 | Detalhamento | Produtos **R$ 37,00** · Embalagem **R$ 12,00** · Mão de obra **R$ 12,50** · Frete **R$ 10,00** · Custo total **R$ 71,50** |
-| 15.2 | Preço | Sugerido **R$ 127,11** · Comissão **R$ 12,71** · Lucro **R$ 42,90** · Margem **33,75%** |
-| 15.3 | Comissão 0% | Sugerido **R$ 114,40** |
+| 15.2 | Preço | Sugerido **R$ 238,33** · Comissão **R$ 23,83** · Lucro **R$ 143,00** · Margem **60%** |
+| 15.3 | Comissão 0% | Sugerido **R$ 178,75** |
 | 15.4 | Mesmos dados, Quantidade de Cestas = **2** | Custo por cesta cai para **R$ 35,75**: os itens contam como **total do lote**. Para 2 cestas iguais, dobre as quantidades. |
 | 15.5 | Salvar sem itens | Erro "Preencha nome e adicione ao menos um produto na cesta." |
+| 15.6 | Margem 90 + Comissão 10% | Aviso vermelho "Margem + comissão passam de 95%…" e sugerido **R$ 0,00** |
 
 ## 16. Estoque e Lista de Compras
 
@@ -324,7 +331,7 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 ## 17. Dashboard, Catálogo, Clientes e Backup
 
 **Dashboard** (com só o orçamento da 10.1 aprovado):
-- [ ] Faturamento Aprovado **R$ 112,50** · Lucro Total **R$ 37,50**.
+- [ ] Faturamento Aprovado **R$ 150,00** · Lucro Total **R$ 75,00**.
 - [ ] Pendente de Aprovação = soma dos orçamentos Pendentes.
 - [ ] Barras de status dos produtos (Excelente, Bom, Margem Baixa, Arriscado, Prejuízo, Sem Preço) batem com a tela Produtos.
 
@@ -337,7 +344,7 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 - [ ] Copiar o link → "Link do catálogo copiado!" (formato `http://localhost:5173/catalogo/<id-da-loja>`).
 - [ ] Abrir o link em janela anônima (sem login) → aparecem só produtos com "Mostrar no catálogo" marcado.
 - [ ] Produto com "Mostrar preço" desmarcado → aparece sem preço.
-- [ ] O preço mostrado é o preço efetivo (manual, se houver; senão o sugerido): TESTE Chaveiro = **R$ 11,25**.
+- [ ] O preço mostrado é o preço efetivo (manual, se houver; senão o sugerido): TESTE Chaveiro = **R$ 15,00**.
 - [ ] Botão de WhatsApp abre conversa com o telefone da loja.
 
 **Backup** (só ADMIN):
@@ -374,7 +381,4 @@ Corrigidos na branch `validacao` (confira com os testes indicados):
 8. ✅ **Estoque baixo:** a mesma regra em todas as telas (16.5).
 9. ✅ **Backup:** exporta loja por loja, inclui todas as coleções, grava `_meta` e não mostra "sucesso" quando alguma leitura falha (17). Ainda não testado com o Firebase real.
 10. ✅ **Matéria-prima:** valores 0 agora mostram aviso (7).
-
-Ainda aberto:
-
-11. ❗ **Base de Custos:** a "Meta de Lucro" é acréscimo sobre o custo, não margem sobre o preço (5). Se a meta for 0, Produtos usa 30% no lugar.
+11. ✅ **Meta de Lucro e margens das calculadoras:** agora são margem sobre o preço de venda, líquida das taxas, de 0 a 90% (5, 8, 10, 12–15). Meta 0 vale 0. Os preços sugeridos subiram: confira os valores novos.
