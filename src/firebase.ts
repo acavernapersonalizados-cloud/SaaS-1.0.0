@@ -1,7 +1,25 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import {
+  getAuth,
+  connectAuthEmulator,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  User,
+} from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Desenvolvimento (npm run dev) usa SEMPRE o Firebase Emulator, nunca o banco
+// real. O projeto "demo-*" é um projeto de demonstração do Firebase que não
+// consegue falar com nenhum servidor do Google: se o emulador estiver
+// desligado, o app só mostra erro de conexão. O banco real só existe no build
+// de produção (npm run build), com as variáveis do .env.
+// ─────────────────────────────────────────────────────────────────────────────
+export const USE_EMULATOR = import.meta.env.DEV;
+export const EMULATOR_PROJECT_ID = 'demo-precificaatelie';
+const EMULATOR_HOST = '127.0.0.1';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Firebase — configurado exclusivamente via variáveis de ambiente Vite.
@@ -20,15 +38,25 @@ import { getStorage } from 'firebase/storage';
 // precisa ser modificado.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
-  measurementId: (import.meta.env.VITE_FIREBASE_MEASUREMENT_ID as string) || undefined,
-};
+const firebaseConfig = USE_EMULATOR
+  ? {
+      apiKey: 'demo-api-key',
+      authDomain: `${EMULATOR_PROJECT_ID}.firebaseapp.com`,
+      projectId: EMULATOR_PROJECT_ID,
+      storageBucket: `${EMULATOR_PROJECT_ID}.appspot.com`,
+      messagingSenderId: '000000000000',
+      appId: '1:000000000000:web:demo',
+      measurementId: undefined,
+    }
+  : {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
+      measurementId: (import.meta.env.VITE_FIREBASE_MEASUREMENT_ID as string) || undefined,
+    };
 
 // Validação: se faltar configuração, avisa claramente em vez de quebrar o app
 const REQUIRED_KEYS = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'appId'] as const;
@@ -62,6 +90,13 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
+
+if (USE_EMULATOR) {
+  connectFirestoreEmulator(db, EMULATOR_HOST, 8080);
+  connectAuthEmulator(auth, `http://${EMULATOR_HOST}:9099`, { disableWarnings: true });
+  connectStorageEmulator(storage, EMULATOR_HOST, 9199);
+  console.info(`[Firebase] Modo desenvolvimento: usando o EMULADOR local (projeto ${EMULATOR_PROJECT_ID}).`);
+}
 export const googleProvider = new GoogleAuthProvider();
 
 export { firebaseConfig };

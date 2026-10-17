@@ -34,3 +34,6 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Firebase Emulator (banco local do npm run dev)
+.emulator-data/
