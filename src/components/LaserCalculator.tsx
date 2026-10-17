@@ -143,11 +143,15 @@ export function LaserCalculator() {
   const calc = () => {
     if (!selectedMachine || totalTimeMin <= 0) return null;
     const energyCost = (selectedMachine.powerConsumptionW / 1000) * totalTimeH * electricityRate;
-    const wearCost = (selectedMachine.moduleReplacementCost / selectedMachine.diodeLifeH) * totalTimeH;
+    const wearCost =
+      selectedMachine.diodeLifeH > 0
+        ? (selectedMachine.moduleReplacementCost / selectedMachine.diodeLifeH) * totalTimeH
+        : 0;
     const laborCost = (hourlyRate / 60) * totalTimeMin;
     const matPerUnit = materialCost / Math.max(quantity, 1);
+    // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
     const totalCostUnit = energyCost + wearCost + laborCost + matPerUnit;
-    const totalCostBatch = energyCost + wearCost + laborCost + materialCost;
+    const totalCostBatch = totalCostUnit * Math.max(quantity, 1);
     const suggestedUnit = totalCostUnit * (1 + profitMarginPct / 100);
     const suggestedBatch = totalCostBatch * (1 + profitMarginPct / 100);
     const priceRef = manualPrice ?? suggestedUnit;
@@ -464,7 +468,7 @@ export function LaserCalculator() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-red-400 rounded-full inline-block" />
-                  Tempo de Corte (min)
+                  Tempo de Corte por peça (min)
                 </label>
                 <input
                   type="number"
@@ -479,7 +483,7 @@ export function LaserCalculator() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600 flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-blue-400 rounded-full inline-block" />
-                  Tempo de Gravação (min)
+                  Tempo de Gravação por peça (min)
                 </label>
                 <input
                   type="number"
@@ -521,7 +525,7 @@ export function LaserCalculator() {
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
                   {Math.floor(totalTimeMin / 60) > 0 ? `${Math.floor(totalTimeMin / 60)}h ` : ''}
-                  {(totalTimeMin % 60).toFixed(1)}min total
+                  {(totalTimeMin % 60).toFixed(1)}min por peça
                   {passes > 1 ? ` (${passes} passadas)` : ''}
                 </span>
               </div>
