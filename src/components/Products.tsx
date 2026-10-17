@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy, where, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  getDoc,
+} from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
 import { formatCurrency } from '../lib/utils';
@@ -10,10 +21,32 @@ import { useToast } from '../contexts/ToastContext';
 import { analyzeManualPrice } from '../services/gemini';
 import { uploadProductImage, uploadGalleryImage, deleteImageByUrl } from '../services/imageUpload';
 import { ProductImageUpload } from './ProductImageUpload';
+import { CategoryPicker, CategoryChips, CategoryFilterBar } from './CategoryPicker';
+import { useCategories, categoryNames } from '../hooks/useCategories';
 import {
-  Plus, Trash2, Box, Search, PlusCircle, X, Clock, Package, Edit2,
-  Loader2, Sparkles, DollarSign, TrendingUp, AlertCircle, CheckCircle2,
-  LayoutGrid, Table2, ArrowUpDown, Filter, ArrowRight, BarChart3, Layers, Image
+  Plus,
+  Trash2,
+  Box,
+  Search,
+  PlusCircle,
+  X,
+  Clock,
+  Package,
+  Edit2,
+  Loader2,
+  Sparkles,
+  DollarSign,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle2,
+  LayoutGrid,
+  Table2,
+  ArrowUpDown,
+  Filter,
+  ArrowRight,
+  BarChart3,
+  Layers,
+  Image,
 } from 'lucide-react';
 
 type ViewMode = 'cards' | 'table';
@@ -31,6 +64,8 @@ export function Products() {
 
   // UI state
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
+  const { categories } = useCategories('product');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortAsc, setSortAsc] = useState(true);
@@ -42,9 +77,17 @@ export function Products() {
 
   // Form state
   const emptyProduct: Partial<Product> = {
-    name: '', category: '', materials: [], productionTime: 0,
-    packagingCost: 0, isPackage: false, packageQuantity: 1,
-    finishingOptions: [], accessories: [], manualPrice: null,
+    name: '',
+    category: '',
+    categoryIds: [],
+    materials: [],
+    productionTime: 0,
+    packagingCost: 0,
+    isPackage: false,
+    packageQuantity: 1,
+    finishingOptions: [],
+    accessories: [],
+    manualPrice: null,
   };
   const [newProduct, setNewProduct] = useState<Partial<Product>>(emptyProduct);
   const [materialSearchTerm, setMaterialSearchTerm] = useState('');
@@ -60,27 +103,65 @@ export function Products() {
   const [imageUploading, setImageUploading] = useState(false);
   // ─── Firestore ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!activeStore) { setLoading(false); return; }
+    if (!activeStore) {
+      setLoading(false);
+      return;
+    }
 
     const qP = query(collection(db, 'products'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
-    const unsubP = onSnapshot(qP, snap => {
-      setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
-      setLoading(false);
-    }, err => { handleFirestoreError(err, OperationType.LIST, 'products'); setLoading(false); });
+    const unsubP = onSnapshot(
+      qP,
+      snap => {
+        setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product));
+        setLoading(false);
+      },
+      err => {
+        handleFirestoreError(err, OperationType.LIST, 'products');
+        setLoading(false);
+      },
+    );
 
     const qM = query(collection(db, 'materials'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
-    const unsubM = onSnapshot(qM, snap => {
-      setMaterials(snap.docs.map(d => ({ id: d.id, ...d.data() } as Material)));
-    }, err => handleFirestoreError(err, OperationType.LIST, 'materials'));
+    const unsubM = onSnapshot(
+      qM,
+      snap => {
+        setMaterials(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Material));
+      },
+      err => handleFirestoreError(err, OperationType.LIST, 'materials'),
+    );
 
     // CostBase uses storeId as document ID
-    const unsubCosts = onSnapshot(doc(db, 'costBases', activeStore.id), snap => {
-      if (snap.exists()) setCosts(snap.data() as CostBase);
-      else setCosts(null);
-    }, err => console.warn('costBases:', err));
+    const unsubCosts = onSnapshot(
+      doc(db, 'costBases', activeStore.id),
+      snap => {
+        if (snap.exists()) setCosts(snap.data() as CostBase);
+        else setCosts(null);
+      },
+      err => console.warn('costBases:', err),
+    );
 
-    return () => { unsubP(); unsubM(); unsubCosts(); };
+    return () => {
+      unsubP();
+      unsubM();
+      unsubCosts();
+    };
   }, [activeStore]);
+
+  // Mantém o preço público (catalogPrice) sincronizado com os custos atuais.
+  // Necessário porque o catálogo público não lê mais custos nem materiais.
+  useEffect(() => {
+    if (!activeStore || !costs || products.length === 0) return;
+    const timer = setTimeout(() => {
+      products.forEach(p => {
+        const price = Number(calcProductPricing(p, materials, costs).effectivePrice) || 0;
+        const stored = Number(p.catalogPrice) || 0;
+        if (Math.abs(price - stored) > 0.01) {
+          updateDoc(doc(db, 'products', p.id), { catalogPrice: price }).catch(() => {});
+        }
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [activeStore, products, materials, costs]);
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
   const resetForm = () => {
@@ -94,9 +175,19 @@ export function Products() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeStore || !newProduct.name || !newProduct.category) return;
+    if (!activeStore || !newProduct.name) return;
     try {
-      const productData = { ...newProduct, storeId: activeStore.id, updatedAt: new Date().toISOString() };
+      const pricing = calcProductPricing(newProduct as Product, materials, costs);
+      const productData = {
+        ...newProduct,
+        categoryIds: newProduct.categoryIds || [],
+        // Mantém o campo antigo preenchido para telas/dados legados
+        category: newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', ') || '',
+        storeId: activeStore.id,
+        // Preço público pré-calculado: o catálogo não precisa mais ler custos
+        catalogPrice: Number(pricing.effectivePrice) || 0,
+        updatedAt: new Date().toISOString(),
+      };
       if (editingProduct) {
         await updateDoc(doc(db, 'products', editingProduct.id), productData);
         addToast('Produto atualizado com sucesso!', 'success');
@@ -106,14 +197,23 @@ export function Products() {
       }
       resetForm();
     } catch (err) {
-      handleFirestoreError(err, editingProduct ? OperationType.UPDATE : OperationType.CREATE,
-        editingProduct ? `products/${editingProduct.id}` : 'products');
+      handleFirestoreError(
+        err,
+        editingProduct ? OperationType.UPDATE : OperationType.CREATE,
+        editingProduct ? `products/${editingProduct.id}` : 'products',
+      );
     }
   };
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
-    setNewProduct({ ...product, finishingOptions: product.finishingOptions || [], accessories: product.accessories || [], manualPrice: product.manualPrice ?? null });
+    setNewProduct({
+      ...product,
+      categoryIds: product.categoryIds || [],
+      finishingOptions: product.finishingOptions || [],
+      accessories: product.accessories || [],
+      manualPrice: product.manualPrice ?? null,
+    });
     setAiAnalysis(product.aiPriceAnalysis || '');
     setReversePriceInput(product.manualPrice ? String(product.manualPrice) : '');
     setIsModalOpen(true);
@@ -128,18 +228,27 @@ export function Products() {
       setProductToDelete(null);
     } catch (err) {
       handleFirestoreError(err, OperationType.DELETE, `products/${productToDelete}`);
-    } finally { setIsDeleting(false); }
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleAnalyzePrice = async () => {
-    if (!newProduct.manualPrice || !newProduct.name || !newProduct.category) return;
+    if (!newProduct.manualPrice || !newProduct.name) return;
     const pricing = calcProductPricing(newProduct, materials, costs);
     setAiLoading(true);
     try {
-      const analysis = await analyzeManualPrice(newProduct.name, pricing.totalCost, newProduct.manualPrice, newProduct.category);
+      const analysis = await analyzeManualPrice(
+        newProduct.name,
+        pricing.totalCost,
+        newProduct.manualPrice,
+        newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', '),
+      );
       setAiAnalysis(analysis || '');
       setNewProduct(p => ({ ...p, aiPriceAnalysis: analysis || '' }));
-    } catch { setAiAnalysis('Erro ao analisar. Verifique sua conexão.'); }
+    } catch {
+      setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
+    }
     setAiLoading(false);
   };
 
@@ -151,7 +260,11 @@ export function Products() {
     setImageUploading(true);
     try {
       const { imageUrl, thumbnailUrl } = await uploadProductImage(activeStore.id, editingProduct.id, file);
-      await updateDoc(doc(db, 'products', editingProduct.id), { imageUrl, thumbnailUrl, updatedAt: new Date().toISOString() });
+      await updateDoc(doc(db, 'products', editingProduct.id), {
+        imageUrl,
+        thumbnailUrl,
+        updatedAt: new Date().toISOString(),
+      });
       setNewProduct(p => ({ ...p, imageUrl, thumbnailUrl }));
       addToast('Imagem atualizada!', 'success');
     } catch (err) {
@@ -165,10 +278,16 @@ export function Products() {
     try {
       if (newProduct.imageUrl) await deleteImageByUrl(newProduct.imageUrl).catch(() => {});
       if (newProduct.thumbnailUrl) await deleteImageByUrl(newProduct.thumbnailUrl).catch(() => {});
-      await updateDoc(doc(db, 'products', editingProduct.id), { imageUrl: null, thumbnailUrl: null, updatedAt: new Date().toISOString() });
+      await updateDoc(doc(db, 'products', editingProduct.id), {
+        imageUrl: null,
+        thumbnailUrl: null,
+        updatedAt: new Date().toISOString(),
+      });
       setNewProduct(p => ({ ...p, imageUrl: null, thumbnailUrl: null }));
       addToast('Imagem removida.', 'success');
-    } catch { addToast('Erro ao remover imagem.', 'error'); }
+    } catch {
+      addToast('Erro ao remover imagem.', 'error');
+    }
   };
 
   const handleGalleryImageAdd = async (file: File) => {
@@ -177,7 +296,10 @@ export function Products() {
       return;
     }
     const currentGallery = newProduct.galleryImages || [];
-    if (currentGallery.length >= 6) { addToast('Máximo de 6 imagens na galeria.', 'error'); return; }
+    if (currentGallery.length >= 6) {
+      addToast('Máximo de 6 imagens na galeria.', 'error');
+      return;
+    }
     setImageUploading(true);
     try {
       const url = await uploadGalleryImage(activeStore.id, editingProduct.id, file, currentGallery.length);
@@ -201,7 +323,9 @@ export function Products() {
       await updateDoc(doc(db, 'products', editingProduct.id), { galleryImages, updatedAt: new Date().toISOString() });
       setNewProduct(p => ({ ...p, galleryImages }));
       addToast('Imagem removida da galeria.', 'success');
-    } catch { addToast('Erro ao remover imagem.', 'error'); }
+    } catch {
+      addToast('Erro ao remover imagem.', 'error');
+    }
   };
 
   const addMaterialToProduct = (materialId: string) => {
@@ -210,7 +334,10 @@ export function Products() {
     }
   };
   const updateMaterialQuantity = (materialId: string, quantity: number) => {
-    setNewProduct(p => ({ ...p, materials: (p.materials || []).map(m => m.materialId === materialId ? { ...m, quantity } : m) }));
+    setNewProduct(p => ({
+      ...p,
+      materials: (p.materials || []).map(m => (m.materialId === materialId ? { ...m, quantity } : m)),
+    }));
   };
   const removeMaterialFromProduct = (materialId: string) => {
     setNewProduct(p => ({ ...p, materials: (p.materials || []).filter(m => m.materialId !== materialId) }));
@@ -236,13 +363,17 @@ export function Products() {
 
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortAsc(a => !a);
-    else { setSortField(field); setSortAsc(true); }
+    else {
+      setSortField(field);
+      setSortAsc(true);
+    }
   };
 
   // ─── Derived data ────────────────────────────────────────────────────────────
-  const filteredMaterialsSearch = materials.filter(m =>
-    !newProduct.materials?.some(pm => pm.materialId === m.id) &&
-    (m.name || '').toLowerCase().includes(materialSearchTerm.toLowerCase())
+  const filteredMaterialsSearch = materials.filter(
+    m =>
+      !newProduct.materials?.some(pm => pm.materialId === m.id) &&
+      (m.name || '').toLowerCase().includes(materialSearchTerm.toLowerCase()),
   );
 
   const productsWithPricing = products.map(p => ({
@@ -256,8 +387,11 @@ export function Products() {
     .filter(({ product: p, pricing }) => {
       const matchSearch =
         (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.category || '').toLowerCase().includes(searchTerm.toLowerCase());
+        (p.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        categoryNames(p.categoryIds, categories).some(n => n.toLowerCase().includes(searchTerm.toLowerCase()));
       if (!matchSearch) return false;
+      // Categoria: mostra o produto se ele estiver em QUALQUER categoria marcada
+      if (categoryFilter.length > 0 && !(p.categoryIds || []).some(id => categoryFilter.includes(id))) return false;
       if (filterMode === 'all') return true;
       if (filterMode === 'no_price') return !pricing.hasCosts || pricing.effectivePrice === 0;
       return pricing.profitStatus.status === filterMode;
@@ -275,17 +409,21 @@ export function Products() {
   // Reverse pricing calc
   const reverseNum = parseFloat(reversePriceInput);
   const modalPricing = calcProductPricing(newProduct, materials, costs);
-  const reverseResult = !isNaN(reverseNum) && reverseNum > 0 && modalPricing.totalCost > 0
-    ? calcReversePrice(reverseNum, modalPricing.totalCost)
-    : null;
+  const reverseResult =
+    !isNaN(reverseNum) && reverseNum > 0 && modalPricing.totalCost > 0
+      ? calcReversePrice(reverseNum, modalPricing.totalCost)
+      : null;
 
-  if (!activeStore) return (
-    <div className="flex flex-col items-center justify-center h-96 space-y-4">
-      <div className="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center"><Package className="w-8 h-8 text-neutral-400" /></div>
-      <h2 className="text-xl font-bold text-neutral-900">Selecione uma loja</h2>
-      <p className="text-neutral-500">Você precisa selecionar uma loja para gerenciar os produtos.</p>
-    </div>
-  );
+  if (!activeStore)
+    return (
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <div className="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center">
+          <Package className="w-8 h-8 text-neutral-400" />
+        </div>
+        <h2 className="text-xl font-bold text-neutral-900">Selecione uma loja</h2>
+        <p className="text-neutral-500">Você precisa selecionar uma loja para gerenciar os produtos.</p>
+      </div>
+    );
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
 
   return (
@@ -296,8 +434,10 @@ export function Products() {
           <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Produtos</h1>
           <p className="text-neutral-500 mt-1">Cadastre produtos e visualize sua rentabilidade.</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm"
+        >
           <PlusCircle className="w-5 h-5" /> Novo Produto
         </button>
       </header>
@@ -329,17 +469,28 @@ export function Products() {
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
-            <input type="text" placeholder="Buscar produto ou categoria..."
-              value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" />
+            <input
+              type="text"
+              placeholder="Buscar produto ou categoria..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+            />
+          </div>
+          <div className="w-full md:w-auto">
+            <CategoryFilterBar scope="product" selected={categoryFilter} onChange={setCategoryFilter} />
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setViewMode('cards')}
-              className={`p-2.5 rounded-xl border transition-all ${viewMode === 'cards' ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-400'}`}>
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`p-2.5 rounded-xl border transition-all ${viewMode === 'cards' ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-400'}`}
+            >
               <LayoutGrid className="w-4 h-4" />
             </button>
-            <button onClick={() => setViewMode('table')}
-              className={`p-2.5 rounded-xl border transition-all ${viewMode === 'table' ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-400'}`}>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-2.5 rounded-xl border transition-all ${viewMode === 'table' ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-400'}`}
+            >
               <Table2 className="w-4 h-4" />
             </button>
           </div>
@@ -357,8 +508,11 @@ export function Products() {
               { id: 'good', label: '🟡 Bom', count: kpis.productsGood },
               { id: 'excellent', label: '🟢 Excelente', count: kpis.productsExcellent },
             ].map(f => (
-              <button key={f.id} onClick={() => setFilterMode(f.id as FilterMode)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${filterMode === f.id ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white'}`}>
+              <button
+                key={f.id}
+                onClick={() => setFilterMode(f.id as FilterMode)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${filterMode === f.id ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white'}`}
+              >
                 {f.label} {f.count > 0 && <span className="ml-1 opacity-60">({f.count})</span>}
               </button>
             ))}
@@ -383,14 +537,23 @@ export function Products() {
                     { label: 'Status', field: null },
                     { label: '', field: null },
                   ].map(col => (
-                    <th key={col.label} className="text-left px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider">
+                    <th
+                      key={col.label}
+                      className="text-left px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                    >
                       {col.field ? (
-                        <button onClick={() => handleSort(col.field as SortField)}
-                          className="flex items-center gap-1 hover:text-neutral-900 transition-colors">
+                        <button
+                          onClick={() => handleSort(col.field as SortField)}
+                          className="flex items-center gap-1 hover:text-neutral-900 transition-colors"
+                        >
                           {col.label}
-                          <ArrowUpDown className={`w-3 h-3 ${sortField === col.field ? 'text-neutral-900' : 'text-neutral-300'}`} />
+                          <ArrowUpDown
+                            className={`w-3 h-3 ${sortField === col.field ? 'text-neutral-900' : 'text-neutral-300'}`}
+                          />
                         </button>
-                      ) : col.label}
+                      ) : (
+                        col.label
+                      )}
                     </th>
                   ))}
                 </tr>
@@ -399,22 +562,34 @@ export function Products() {
                 {filteredAndSorted.map(({ product: p, pricing }) => (
                   <tr key={p.id} className="hover:bg-neutral-50 transition-colors group">
                     <td className="px-4 py-3 font-bold text-neutral-900">{p.name}</td>
-                    <td className="px-4 py-3 text-neutral-500 text-xs">{p.category}</td>
+                    <td className="px-4 py-3 text-neutral-500 text-xs">
+                      {categoryNames(p.categoryIds, categories).join(', ') || p.category}
+                    </td>
                     <td className="px-4 py-3 font-mono text-neutral-600 text-xs">
                       {pricing.hasCosts ? formatCurrency(pricing.totalCost) : '—'}
                     </td>
                     <td className="px-4 py-3 font-bold text-neutral-900">
-                      {pricing.effectivePrice > 0 ? formatCurrency(pricing.effectivePrice) : <span className="text-amber-500 text-xs">Sem preço</span>}
+                      {pricing.effectivePrice > 0 ? (
+                        formatCurrency(pricing.effectivePrice)
+                      ) : (
+                        <span className="text-amber-500 text-xs">Sem preço</span>
+                      )}
                     </td>
-                    <td className={`px-4 py-3 font-bold text-xs ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    <td
+                      className={`px-4 py-3 font-bold text-xs ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                    >
                       {pricing.effectivePrice > 0 ? formatCurrency(pricing.profitPerUnit) : '—'}
                     </td>
                     <td className="px-4 py-3">
                       {pricing.effectivePrice > 0 ? (
-                        <span className={`text-xs font-bold ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        <span
+                          className={`text-xs font-bold ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                        >
                           {pricing.margin.toFixed(1)}%
                         </span>
-                      ) : '—'}
+                      ) : (
+                        '—'
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       {pricing.effectivePrice > 0 && (
@@ -425,11 +600,17 @@ export function Products() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleEdit(p)} className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all">
+                        <button
+                          onClick={() => handleEdit(p)}
+                          className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
+                        >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         {(isAdmin || user?.role === 'GERENTE') && (
-                          <button onClick={() => setProductToDelete(p.id)} className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                          <button
+                            onClick={() => setProductToDelete(p.id)}
+                            className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
@@ -438,7 +619,11 @@ export function Products() {
                   </tr>
                 ))}
                 {filteredAndSorted.length === 0 && (
-                  <tr><td colSpan={8} className="px-4 py-16 text-center text-neutral-400 italic">Nenhum produto encontrado.</td></tr>
+                  <tr>
+                    <td colSpan={8} className="px-4 py-16 text-center text-neutral-400 italic">
+                      Nenhum produto encontrado.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
@@ -450,25 +635,40 @@ export function Products() {
       {viewMode === 'cards' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredAndSorted.map(({ product: p, pricing }) => (
-            <div key={p.id} className="bg-white p-6 rounded-2xl border border-neutral-200 hover:border-neutral-400 transition-all group relative flex flex-col">
+            <div
+              key={p.id}
+              className="bg-white p-6 rounded-2xl border border-neutral-200 hover:border-neutral-400 transition-all group relative flex flex-col"
+            >
               {/* Delete btn */}
               {(isAdmin || user?.role === 'GERENTE') && (
-                <button onClick={() => setProductToDelete(p.id)}
-                  className="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={() => setProductToDelete(p.id)}
+                  className="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
 
               {/* Header */}
               <div className="flex items-start gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${pricing.effectivePrice > 0 ? pricing.profitStatus.bg : 'bg-neutral-100'}`}>
-                  <Box className={`w-5 h-5 ${pricing.effectivePrice > 0 ? pricing.profitStatus.color : 'text-neutral-400'}`} />
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${pricing.effectivePrice > 0 ? pricing.profitStatus.bg : 'bg-neutral-100'}`}
+                >
+                  <Box
+                    className={`w-5 h-5 ${pricing.effectivePrice > 0 ? pricing.profitStatus.color : 'text-neutral-400'}`}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-neutral-900 truncate">{p.name}</p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-neutral-400 uppercase tracking-wider font-bold">{p.category}</span>
-                    {p.isPackage && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">Pacote {p.packageQuantity}</span>}
+                    <span className="text-xs text-neutral-400 uppercase tracking-wider font-bold">
+                      {categoryNames(p.categoryIds, categories).join(' · ') || p.category}
+                    </span>
+                    {p.isPackage && (
+                      <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
+                        Pacote {p.packageQuantity}
+                      </span>
+                    )}
                     {pricing.effectivePrice > 0 && (
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${pricing.profitStatus.badge}`}>
                         {pricing.profitStatus.emoji} {pricing.profitStatus.label}
@@ -499,29 +699,52 @@ export function Products() {
                       <span className="text-xs font-bold text-neutral-500">{formatCurrency(pricing.totalCost)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-neutral-400 font-bold uppercase">Sugerido ({costs?.profitGoal ?? '?'}%)</span>
-                      <span className="text-xs font-bold text-emerald-600">{formatCurrency(pricing.suggestedPrice)}</span>
+                      <span className="text-[10px] text-neutral-400 font-bold uppercase">
+                        Sugerido ({costs?.profitGoal ?? '?'}%)
+                      </span>
+                      <span className="text-xs font-bold text-emerald-600">
+                        {formatCurrency(pricing.suggestedPrice)}
+                      </span>
                     </div>
                     {pricing.manualPrice != null && pricing.manualPrice > 0 && (
-                      <div className={`flex items-center justify-between px-3 py-2 rounded-xl border ${pricing.profitStatus.bg} ${pricing.profitStatus.border}`}>
-                        <span className={`text-[10px] font-bold uppercase ${pricing.profitStatus.color}`}>Preço Manual</span>
+                      <div
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl border ${pricing.profitStatus.bg} ${pricing.profitStatus.border}`}
+                      >
+                        <span className={`text-[10px] font-bold uppercase ${pricing.profitStatus.color}`}>
+                          Preço Manual
+                        </span>
                         <div className="flex items-center gap-1.5">
-                          <span className={`text-sm font-black ${pricing.profitStatus.color}`}>{formatCurrency(pricing.manualPrice)}</span>
-                          {pricing.profitPerUnit >= 0 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <AlertCircle className="w-3.5 h-3.5 text-red-500" />}
+                          <span className={`text-sm font-black ${pricing.profitStatus.color}`}>
+                            {formatCurrency(pricing.manualPrice)}
+                          </span>
+                          {pricing.profitPerUnit >= 0 ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                          ) : (
+                            <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                          )}
                         </div>
                       </div>
                     )}
                     <div className="flex items-center justify-between pt-1">
-                      <button onClick={() => handleEdit(p)} className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       {pricing.effectivePrice > 0 && (
                         <div className="flex items-center gap-3 text-xs">
                           <div className="text-right">
                             <span className="text-neutral-400">Lucro </span>
-                            <span className={`font-black ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{formatCurrency(pricing.profitPerUnit)}</span>
+                            <span
+                              className={`font-black ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                            >
+                              {formatCurrency(pricing.profitPerUnit)}
+                            </span>
                           </div>
-                          <div className={`font-black text-sm ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                          <div
+                            className={`font-black text-sm ${pricing.profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                          >
                             {pricing.margin.toFixed(1)}%
                           </div>
                         </div>
@@ -530,7 +753,10 @@ export function Products() {
                   </>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <button onClick={() => handleEdit(p)} className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all">
+                    <button
+                      onClick={() => handleEdit(p)}
+                      className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
+                    >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <span className="text-xs text-amber-500 font-bold">Configure Base de Custos</span>
@@ -551,7 +777,9 @@ export function Products() {
           <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[92vh] flex flex-col">
             {/* Modal header */}
             <div className="flex items-center justify-between px-8 pt-8 pb-0">
-              <h2 className="text-2xl font-bold text-neutral-900">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h2>
+              <h2 className="text-2xl font-bold text-neutral-900">
+                {editingProduct ? 'Editar Produto' : 'Novo Produto'}
+              </h2>
               <button onClick={resetForm} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
                 <X className="w-5 h-5 text-neutral-400" />
               </button>
@@ -559,47 +787,93 @@ export function Products() {
 
             <div className="overflow-y-auto px-8 py-6">
               <form onSubmit={handleAddProduct} className="space-y-8" id="product-form">
-
                 {/* Name + Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Nome do Produto</label>
-                    <input type="text" required value={newProduct.name || ''} onChange={e => setNewProduct(p => ({ ...p, name: e.target.value }))}
-                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none" placeholder="Ex: Caneca Personalizada" />
+                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                      Nome do Produto
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newProduct.name || ''}
+                      onChange={e => setNewProduct(p => ({ ...p, name: e.target.value }))}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      placeholder="Ex: Caneca Personalizada"
+                    />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Categoria</label>
-                    <input type="text" required value={newProduct.category || ''} onChange={e => setNewProduct(p => ({ ...p, category: e.target.value }))}
-                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none" placeholder="Ex: Presentes" />
+                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                      Categoria principal (opcional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newProduct.category || ''}
+                      onChange={e => setNewProduct(p => ({ ...p, category: e.target.value }))}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      placeholder="Ex: Presentes"
+                    />
                   </div>
                 </div>
+
+                <CategoryPicker
+                  scope="product"
+                  value={newProduct.categoryIds || []}
+                  onChange={ids => setNewProduct(p => ({ ...p, categoryIds: ids }))}
+                />
 
                 {/* Production time + Packaging */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Tempo de Produção (min)</label>
-                    <input type="number" required value={newProduct.productionTime || ''} onChange={e => setNewProduct(p => ({ ...p, productionTime: Number(e.target.value) }))}
-                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none" placeholder="Ex: 30" />
+                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                      Tempo de Produção (min)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={newProduct.productionTime || ''}
+                      onChange={e => setNewProduct(p => ({ ...p, productionTime: Number(e.target.value) }))}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      placeholder="Ex: 30"
+                    />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Custo de Embalagem (R$)</label>
-                    <input type="number" step="0.01" required value={newProduct.packagingCost || ''} onChange={e => setNewProduct(p => ({ ...p, packagingCost: Number(e.target.value) }))}
-                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none" placeholder="0,00" />
+                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                      Custo de Embalagem (R$)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={newProduct.packagingCost || ''}
+                      onChange={e => setNewProduct(p => ({ ...p, packagingCost: Number(e.target.value) }))}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      placeholder="0,00"
+                    />
                   </div>
                 </div>
 
                 {/* Package */}
                 <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={newProduct.isPackage || false} onChange={e => setNewProduct(p => ({ ...p, isPackage: e.target.checked }))}
-                      className="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900" />
+                    <input
+                      type="checkbox"
+                      checked={newProduct.isPackage || false}
+                      onChange={e => setNewProduct(p => ({ ...p, isPackage: e.target.checked }))}
+                      className="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    />
                     <span className="text-sm font-bold text-neutral-700">Este produto é um pacote/kit?</span>
                   </label>
                   {newProduct.isPackage && (
                     <div className="space-y-1.5 border-t border-neutral-200 pt-3">
                       <label className="text-xs font-bold text-neutral-600">Quantidade de itens no pacote</label>
-                      <input type="number" min="2" value={newProduct.packageQuantity || ''} onChange={e => setNewProduct(p => ({ ...p, packageQuantity: Number(e.target.value) }))}
-                        className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none" />
+                      <input
+                        type="number"
+                        min="2"
+                        value={newProduct.packageQuantity || ''}
+                        onChange={e => setNewProduct(p => ({ ...p, packageQuantity: Number(e.target.value) }))}
+                        className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      />
                     </div>
                   )}
                 </div>
@@ -609,18 +883,36 @@ export function Products() {
                   <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Materiais</label>
                   <div className="flex items-center gap-2 px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus-within:ring-2 focus-within:ring-neutral-900">
                     <Search className="text-neutral-400 w-4 h-4" />
-                    <input type="text" placeholder="Pesquisar material..." value={materialSearchTerm} onChange={e => setMaterialSearchTerm(e.target.value)}
-                      className="bg-transparent border-none outline-none flex-1 text-sm" />
+                    <input
+                      type="text"
+                      placeholder="Pesquisar material..."
+                      value={materialSearchTerm}
+                      onChange={e => setMaterialSearchTerm(e.target.value)}
+                      className="bg-transparent border-none outline-none flex-1 text-sm"
+                    />
                   </div>
                   <div className="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto">
-                    {filteredMaterialsSearch.length > 0 ? filteredMaterialsSearch.map(m => (
-                      <button key={m.id} type="button" onClick={() => { addMaterialToProduct(m.id); setMaterialSearchTerm(''); }}
-                        className="w-full text-left px-4 py-2.5 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0 flex items-center justify-between">
-                        <span className="font-medium text-sm text-neutral-900">{m.name}</span>
-                        <span className="text-xs text-neutral-400 font-bold">{m.unit} · {formatCurrency(m.unitCost)}</span>
-                      </button>
-                    )) : (
-                      <div className="px-4 py-3 text-sm text-neutral-400 text-center italic">Nenhum material encontrado.</div>
+                    {filteredMaterialsSearch.length > 0 ? (
+                      filteredMaterialsSearch.map(m => (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => {
+                            addMaterialToProduct(m.id);
+                            setMaterialSearchTerm('');
+                          }}
+                          className="w-full text-left px-4 py-2.5 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0 flex items-center justify-between"
+                        >
+                          <span className="font-medium text-sm text-neutral-900">{m.name}</span>
+                          <span className="text-xs text-neutral-400 font-bold">
+                            {m.unit} · {formatCurrency(m.unitCost)}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-neutral-400 text-center italic">
+                        Nenhum material encontrado.
+                      </div>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -628,43 +920,90 @@ export function Products() {
                       const mat = materials.find(m => m.id === pm.materialId);
                       const lineCost = (mat?.unitCost || 0) * (pm.quantity || 0);
                       return (
-                        <div key={pm.materialId} className="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+                        <div
+                          key={pm.materialId}
+                          className="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-100"
+                        >
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-neutral-900 truncate">{mat?.name}</p>
-                            <p className="text-xs text-neutral-400">{mat?.unit} · {formatCurrency(mat?.unitCost || 0)}/un</p>
+                            <p className="text-xs text-neutral-400">
+                              {mat?.unit} · {formatCurrency(mat?.unitCost || 0)}/un
+                            </p>
                           </div>
-                          <input type="number" step="0.01" value={pm.quantity || ''} onChange={e => updateMaterialQuantity(pm.materialId, Number(e.target.value))}
-                            className="w-24 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm text-center font-bold outline-none focus:ring-2 focus:ring-neutral-900" placeholder="Qtd" />
-                          <span className="text-xs font-bold text-emerald-700 w-16 text-right">{formatCurrency(lineCost)}</span>
-                          <button type="button" onClick={() => removeMaterialFromProduct(pm.materialId)} className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors">
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={pm.quantity || ''}
+                            onChange={e => updateMaterialQuantity(pm.materialId, Number(e.target.value))}
+                            className="w-24 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm text-center font-bold outline-none focus:ring-2 focus:ring-neutral-900"
+                            placeholder="Qtd"
+                          />
+                          <span className="text-xs font-bold text-emerald-700 w-16 text-right">
+                            {formatCurrency(lineCost)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeMaterialFromProduct(pm.materialId)}
+                            className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"
+                          >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
                       );
                     })}
                     {!newProduct.materials?.length && (
-                      <div className="text-center py-5 border-2 border-dashed border-neutral-100 rounded-xl text-neutral-400 text-xs italic">Nenhum material adicionado.</div>
+                      <div className="text-center py-5 border-2 border-dashed border-neutral-100 rounded-xl text-neutral-400 text-xs italic">
+                        Nenhum material adicionado.
+                      </div>
                     )}
                   </div>
                 </div>
 
                 {/* Finishing */}
                 <div className="space-y-3 pt-2 border-t border-neutral-100">
-                  <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Acabamentos (opcional)</label>
+                  <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                    Acabamentos (opcional)
+                  </label>
                   <div className="grid grid-cols-3 gap-2">
-                    <input type="text" placeholder="Nome" value={newFinishing.name} onChange={e => setNewFinishing(f => ({ ...f, name: e.target.value }))}
-                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900" />
-                    <input type="number" placeholder="Valor" value={newFinishing.additionalValue || ''} onChange={e => setNewFinishing(f => ({ ...f, additionalValue: Number(e.target.value) }))}
-                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900" />
-                    <button type="button" onClick={addFinishingOption} className="px-3 py-2 bg-neutral-100 text-neutral-900 rounded-xl text-sm font-bold hover:bg-neutral-200 flex items-center justify-center gap-1">
+                    <input
+                      type="text"
+                      placeholder="Nome"
+                      value={newFinishing.name}
+                      onChange={e => setNewFinishing(f => ({ ...f, name: e.target.value }))}
+                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Valor"
+                      value={newFinishing.additionalValue || ''}
+                      onChange={e => setNewFinishing(f => ({ ...f, additionalValue: Number(e.target.value) }))}
+                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={addFinishingOption}
+                      className="px-3 py-2 bg-neutral-100 text-neutral-900 rounded-xl text-sm font-bold hover:bg-neutral-200 flex items-center justify-center gap-1"
+                    >
                       <Plus className="w-3.5 h-3.5" /> Adicionar
                     </button>
                   </div>
                   <div className="space-y-1.5">
                     {newProduct.finishingOptions?.map(o => (
-                      <div key={o.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100">
-                        <div><p className="text-sm font-bold text-neutral-900">{o.name}</p><p className="text-xs text-neutral-500">{formatCurrency(o.additionalValue)}</p></div>
-                        <button type="button" onClick={() => removeFinishingOption(o.id)} className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div
+                        key={o.id}
+                        className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100"
+                      >
+                        <div>
+                          <p className="text-sm font-bold text-neutral-900">{o.name}</p>
+                          <p className="text-xs text-neutral-500">{formatCurrency(o.additionalValue)}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFinishingOption(o.id)}
+                          className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -672,21 +1011,49 @@ export function Products() {
 
                 {/* Accessories */}
                 <div className="space-y-3 pt-2 border-t border-neutral-100">
-                  <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Acessórios (opcional)</label>
+                  <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                    Acessórios (opcional)
+                  </label>
                   <div className="grid grid-cols-3 gap-2">
-                    <input type="text" placeholder="Nome" value={newAccessory.name} onChange={e => setNewAccessory(a => ({ ...a, name: e.target.value }))}
-                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900" />
-                    <input type="number" placeholder="Valor" value={newAccessory.additionalValue || ''} onChange={e => setNewAccessory(a => ({ ...a, additionalValue: Number(e.target.value) }))}
-                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900" />
-                    <button type="button" onClick={addAccessory} className="px-3 py-2 bg-neutral-100 text-neutral-900 rounded-xl text-sm font-bold hover:bg-neutral-200 flex items-center justify-center gap-1">
+                    <input
+                      type="text"
+                      placeholder="Nome"
+                      value={newAccessory.name}
+                      onChange={e => setNewAccessory(a => ({ ...a, name: e.target.value }))}
+                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Valor"
+                      value={newAccessory.additionalValue || ''}
+                      onChange={e => setNewAccessory(a => ({ ...a, additionalValue: Number(e.target.value) }))}
+                      className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={addAccessory}
+                      className="px-3 py-2 bg-neutral-100 text-neutral-900 rounded-xl text-sm font-bold hover:bg-neutral-200 flex items-center justify-center gap-1"
+                    >
                       <Plus className="w-3.5 h-3.5" /> Adicionar
                     </button>
                   </div>
                   <div className="space-y-1.5">
                     {newProduct.accessories?.map(a => (
-                      <div key={a.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100">
-                        <div><p className="text-sm font-bold text-neutral-900">{a.name}</p><p className="text-xs text-neutral-500">{formatCurrency(a.additionalValue)}</p></div>
-                        <button type="button" onClick={() => removeAccessory(a.id)} className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div
+                        key={a.id}
+                        className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100"
+                      >
+                        <div>
+                          <p className="text-sm font-bold text-neutral-900">{a.name}</p>
+                          <p className="text-xs text-neutral-500">{formatCurrency(a.additionalValue)}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAccessory(a.id)}
+                          className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -704,7 +1071,9 @@ export function Products() {
                     <div className="grid grid-cols-3 gap-2 p-4 bg-neutral-50 rounded-2xl border border-neutral-100">
                       <div className="text-center">
                         <p className="text-[10px] text-neutral-400 font-bold uppercase">Material</p>
-                        <p className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.materialCost)}</p>
+                        <p className="text-sm font-black text-neutral-800">
+                          {formatCurrency(modalPricing.materialCost)}
+                        </p>
                       </div>
                       <div className="text-center border-x border-neutral-200">
                         <p className="text-[10px] text-neutral-400 font-bold uppercase">Mão de Obra</p>
@@ -712,52 +1081,81 @@ export function Products() {
                       </div>
                       <div className="text-center">
                         <p className="text-[10px] text-neutral-400 font-bold uppercase">Embalagem</p>
-                        <p className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.packagingCost)}</p>
+                        <p className="text-sm font-black text-neutral-800">
+                          {formatCurrency(modalPricing.packagingCost)}
+                        </p>
                       </div>
                       <div className="col-span-3 pt-2 border-t border-neutral-200 flex items-center justify-between">
                         <span className="text-xs text-neutral-500 font-bold">Custo Total</span>
-                        <span className="text-base font-black text-neutral-900">{formatCurrency(modalPricing.totalCost)}</span>
+                        <span className="text-base font-black text-neutral-900">
+                          {formatCurrency(modalPricing.totalCost)}
+                        </span>
                       </div>
                       <div className="col-span-3 flex items-center justify-between">
-                        <span className="text-xs text-emerald-600 font-bold">Sugerido ({costs.profitGoal}% margem)</span>
-                        <span className="text-base font-black text-emerald-700">{formatCurrency(modalPricing.suggestedPrice)}</span>
+                        <span className="text-xs text-emerald-600 font-bold">
+                          Sugerido ({costs.profitGoal}% margem)
+                        </span>
+                        <span className="text-base font-black text-emerald-700">
+                          {formatCurrency(modalPricing.suggestedPrice)}
+                        </span>
                       </div>
                     </div>
                   )}
 
                   {/* Manual price input */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">Preço de Venda Manual (opcional)</label>
+                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                      Preço de Venda Manual (opcional)
+                    </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold text-sm">R$</span>
-                      <input type="number" step="0.01" min="0"
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold text-sm">
+                        R$
+                      </span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
                         value={newProduct.manualPrice || ''}
                         onChange={e => {
                           const val = e.target.value ? Number(e.target.value) : null;
                           setNewProduct(p => ({ ...p, manualPrice: val }));
                           setReversePriceInput(e.target.value);
                         }}
-                        className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg" placeholder="0,00" />
+                        className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
+                        placeholder="0,00"
+                      />
                     </div>
                   </div>
 
                   {/* ── PRECIFICAÇÃO REVERSA ── */}
                   {reverseResult && (
-                    <div className={`p-4 rounded-2xl border space-y-3 ${reverseResult.profitStatus.bg} ${reverseResult.profitStatus.border}`}>
+                    <div
+                      className={`p-4 rounded-2xl border space-y-3 ${reverseResult.profitStatus.bg} ${reverseResult.profitStatus.border}`}
+                    >
                       <div className="flex items-center justify-between">
-                        <span className={`text-xs font-black uppercase tracking-wider ${reverseResult.profitStatus.color}`}>
+                        <span
+                          className={`text-xs font-black uppercase tracking-wider ${reverseResult.profitStatus.color}`}
+                        >
                           {reverseResult.profitStatus.emoji} {reverseResult.profitStatus.label}
                         </span>
-                        <span className={`text-xs font-bold ${reverseResult.profitStatus.color}`}>{reverseResult.margin.toFixed(1)}% margem</span>
+                        <span className={`text-xs font-bold ${reverseResult.profitStatus.color}`}>
+                          {reverseResult.margin.toFixed(1)}% margem
+                        </span>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div>
                           <p className="text-[10px] text-neutral-500 font-bold uppercase">Custo</p>
-                          <p className="text-sm font-black text-neutral-800">{formatCurrency(reverseResult.totalCost)}</p>
+                          <p className="text-sm font-black text-neutral-800">
+                            {formatCurrency(reverseResult.totalCost)}
+                          </p>
                         </div>
                         <div>
                           <p className="text-[10px] text-neutral-500 font-bold uppercase">Lucro</p>
-                          <p className={`text-sm font-black ${reverseResult.profit >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>{formatCurrency(reverseResult.profit)}</p>
+                          <p
+                            className={`text-sm font-black ${reverseResult.profit >= 0 ? 'text-emerald-700' : 'text-red-700'}`}
+                          >
+                            {formatCurrency(reverseResult.profit)}
+                          </p>
                         </div>
                         <div>
                           <p className="text-[10px] text-neutral-500 font-bold uppercase">Markup</p>
@@ -767,23 +1165,43 @@ export function Products() {
                       {reverseResult.isBelowCost && (
                         <div className="flex items-start gap-2 p-2.5 bg-red-100 rounded-xl">
                           <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-xs text-red-700 font-medium">Preço abaixo do custo! Prejuízo de {formatCurrency(Math.abs(reverseResult.profit))} por unidade. Mínimo: {formatCurrency(reverseResult.breakEvenPrice)}.</p>
+                          <p className="text-xs text-red-700 font-medium">
+                            Preço abaixo do custo! Prejuízo de {formatCurrency(Math.abs(reverseResult.profit))} por
+                            unidade. Mínimo: {formatCurrency(reverseResult.breakEvenPrice)}.
+                          </p>
                         </div>
                       )}
-                      <p className={`text-xs ${reverseResult.profitStatus.color} font-medium`}>{reverseResult.profitStatus.description}</p>
+                      <p className={`text-xs ${reverseResult.profitStatus.color} font-medium`}>
+                        {reverseResult.profitStatus.description}
+                      </p>
                     </div>
                   )}
 
                   {/* AI button */}
                   {newProduct.manualPrice && newProduct.manualPrice > 0 && newProduct.name && (
-                    <button type="button" onClick={handleAnalyzePrice} disabled={aiLoading}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl font-bold hover:from-violet-700 hover:to-purple-800 transition-all disabled:opacity-50 shadow-lg shadow-purple-100">
-                      {aiLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : <><Sparkles className="w-4 h-4" /> Analisar Lucro com IA</>}
+                    <button
+                      type="button"
+                      onClick={handleAnalyzePrice}
+                      disabled={aiLoading}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl font-bold hover:from-violet-700 hover:to-purple-800 transition-all disabled:opacity-50 shadow-lg shadow-purple-100"
+                    >
+                      {aiLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" /> Analisando...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" /> Analisar Lucro com IA
+                        </>
+                      )}
                     </button>
                   )}
                   {aiAnalysis && (
                     <div className="p-4 bg-violet-50 rounded-2xl border border-violet-100 space-y-2">
-                      <div className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-violet-600" /><span className="text-xs font-bold text-violet-700 uppercase tracking-wider">Análise IA</span></div>
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-violet-600" />
+                        <span className="text-xs font-bold text-violet-700 uppercase tracking-wider">Análise IA</span>
+                      </div>
                       <p className="text-sm text-violet-900 leading-relaxed whitespace-pre-line">{aiAnalysis}</p>
                     </div>
                   )}
@@ -816,7 +1234,9 @@ export function Products() {
                   )}
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">Descrição para o Catálogo (opcional)</label>
+                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                      Descrição para o Catálogo (opcional)
+                    </label>
                     <textarea
                       rows={3}
                       value={newProduct.description || ''}
@@ -828,36 +1248,47 @@ export function Products() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">Prazo de Produção (dias)</label>
+                      <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                        Prazo de Produção (dias)
+                      </label>
                       <input
-                        type="number" min="0"
+                        type="number"
+                        min="0"
                         value={newProduct.leadTimeDays ?? ''}
-                        onChange={e => setNewProduct(p => ({ ...p, leadTimeDays: e.target.value ? Number(e.target.value) : null }))}
+                        onChange={e =>
+                          setNewProduct(p => ({ ...p, leadTimeDays: e.target.value ? Number(e.target.value) : null }))
+                        }
                         className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                         placeholder="Ex: 7"
                       />
                     </div>
                     <div className="space-y-3">
                       <label className="flex items-center gap-2 cursor-pointer mt-5">
-                        <input type="checkbox"
+                        <input
+                          type="checkbox"
                           checked={newProduct.showInCatalog !== false}
                           onChange={e => setNewProduct(p => ({ ...p, showInCatalog: e.target.checked }))}
-                          className="w-4 h-4 rounded" />
+                          className="w-4 h-4 rounded"
+                        />
                         <span className="text-xs font-bold text-neutral-600">Exibir no catálogo</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox"
+                        <input
+                          type="checkbox"
                           checked={newProduct.showPrice !== false}
                           onChange={e => setNewProduct(p => ({ ...p, showPrice: e.target.checked }))}
-                          className="w-4 h-4 rounded" />
+                          className="w-4 h-4 rounded"
+                        />
                         <span className="text-xs font-bold text-neutral-600">Exibir preço</span>
                       </label>
                     </div>
                   </div>
                 </div>
 
-                <button type="submit"
-                  className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg">
+                <button
+                  type="submit"
+                  className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg"
+                >
                   {editingProduct ? 'Atualizar Produto' : 'Cadastrar Produto'}
                 </button>
               </form>
@@ -871,16 +1302,36 @@ export function Products() {
         <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
           <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-6 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center gap-4 text-red-600">
-              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center"><Trash2 className="w-6 h-6" /></div>
+              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
+                <Trash2 className="w-6 h-6" />
+              </div>
               <h3 className="text-xl font-bold">Excluir Produto?</h3>
             </div>
-            <p className="text-neutral-600">Esta ação não pode ser desfeita. Produtos em orçamentos existentes não serão afetados (snapshots preservados).</p>
+            <p className="text-neutral-600">
+              Esta ação não pode ser desfeita. Produtos em orçamentos existentes não serão afetados (snapshots
+              preservados).
+            </p>
             <div className="flex gap-3">
-              <button onClick={() => setProductToDelete(null)} disabled={isDeleting}
-                className="flex-1 px-6 py-3 bg-neutral-100 text-neutral-900 rounded-xl font-bold hover:bg-neutral-200 transition-all disabled:opacity-50">Cancelar</button>
-              <button onClick={handleDelete} disabled={isDeleting}
-                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
-                {isDeleting ? <><Loader2 className="w-4 h-4 animate-spin" />Excluindo...</> : 'Confirmar'}
+              <button
+                onClick={() => setProductToDelete(null)}
+                disabled={isDeleting}
+                className="flex-1 px-6 py-3 bg-neutral-100 text-neutral-900 rounded-xl font-bold hover:bg-neutral-200 transition-all disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Excluindo...
+                  </>
+                ) : (
+                  'Confirmar'
+                )}
               </button>
             </div>
           </div>

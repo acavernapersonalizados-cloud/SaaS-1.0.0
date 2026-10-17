@@ -22,20 +22,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const addToast = (message: string, type: ToastType) => {
     const id = Math.random().toString(36).substr(2, 9);
-    setToasts((prev) => {
+    setToasts(prev => {
       // Deduplicate: don't add the same message if it's already visible
-      if (prev.some((t) => t.message === message && t.type === type)) return prev;
+      if (prev.some(t => t.message === message && t.type === type)) return prev;
       // Cap at MAX_TOASTS — remove oldest if over limit
       const next = prev.length >= MAX_TOASTS ? prev.slice(1) : prev;
       return [...next, { id, message, type }];
     });
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+      setToasts(prev => prev.filter(t => t.id !== id));
     }, 5000);
   };
 
   const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts(prev => prev.filter(t => t.id !== id));
   };
 
   useEffect(() => {
@@ -55,15 +55,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ addToast }}>
       {children}
       <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
-        {toasts.map((toast) => (
+        {toasts.map(toast => (
           <div
             key={toast.id}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border animate-in slide-in-from-bottom-5 fade-in duration-300 ${
               toast.type === 'success'
                 ? 'bg-green-50 border-green-200 text-green-800'
                 : toast.type === 'error'
-                ? 'bg-red-50 border-red-200 text-red-800'
-                : 'bg-blue-50 border-blue-200 text-blue-800'
+                  ? 'bg-red-50 border-red-200 text-red-800'
+                  : 'bg-blue-50 border-blue-200 text-blue-800'
             }`}
           >
             {toast.type === 'success' ? (

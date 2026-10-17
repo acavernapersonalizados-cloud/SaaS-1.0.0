@@ -28,13 +28,12 @@ async function compressImage(file: File, maxWidth: number, quality: number): Pro
       canvas.width = Math.round(img.width * scale);
       canvas.height = Math.round(img.height * scale);
       const ctx = canvas.getContext('2d');
-      if (!ctx) { reject(new Error('Canvas not supported')); return; }
+      if (!ctx) {
+        reject(new Error('Canvas not supported'));
+        return;
+      }
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(
-        blob => blob ? resolve(blob) : reject(new Error('Compression failed')),
-        'image/webp',
-        quality
-      );
+      canvas.toBlob(blob => (blob ? resolve(blob) : reject(new Error('Compression failed'))), 'image/webp', quality);
     };
     img.onerror = () => reject(new Error('Image load failed'));
     img.src = url;
@@ -48,7 +47,7 @@ async function compressImage(file: File, maxWidth: number, quality: number): Pro
 export async function uploadProductImage(
   storeId: string,
   productId: string,
-  file: File
+  file: File,
 ): Promise<{ imageUrl: string; thumbnailUrl: string }> {
   const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   if (!allowed.includes(file.type)) {
@@ -75,10 +74,7 @@ export async function uploadProductImage(
     uploadBytes(thumbRef, thumbBlob, { contentType: 'image/webp' }),
   ]);
 
-  const [imageUrl, thumbnailUrl] = await Promise.all([
-    getDownloadURL(mainSnap.ref),
-    getDownloadURL(thumbSnap.ref),
-  ]);
+  const [imageUrl, thumbnailUrl] = await Promise.all([getDownloadURL(mainSnap.ref), getDownloadURL(thumbSnap.ref)]);
 
   return { imageUrl, thumbnailUrl };
 }
@@ -90,7 +86,7 @@ export async function uploadGalleryImage(
   storeId: string,
   productId: string,
   file: File,
-  index: number
+  index: number,
 ): Promise<string> {
   const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   if (!allowed.includes(file.type)) {

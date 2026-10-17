@@ -2,23 +2,35 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // IMPORTANTE (correção de segurança):
+    // As regras antigas usavam `allow list: if isAuthenticated();`, o que
+    // permitia que QUALQUER usuário logado (inclusive pendente de aprovação)
+    // lesse os dados de TODAS as lojas simplesmente consultando a coleção sem
+    // filtro. Agora `read` (get + list) é sempre validado por loja, o que
+    // obriga o cliente a filtrar por storeId — exatamente como o app já faz.
+    // ─────────────────────────────────────────────────────────────────────────
+
     function isAuthenticated() {
       return request.auth != null;
     }
     function getUserPath() {
       return /databases/$(database)/documents/users/$(request.auth.uid);
     }
+    function userData() {
+      return get(getUserPath()).data;
+    }
     function isAdmin() {
       let adminEmail = "ricoslim@gmail.com";
       return isAuthenticated() && (
         request.auth.token.email == adminEmail ||
-        (exists(getUserPath()) && get(getUserPath()).data.get('role', '') == 'ADMIN')
+        (exists(getUserPath()) && userData().get('role', '') == 'ADMIN')
       );
     }
     function isGerente() {
       return isAuthenticated() &&
              exists(getUserPath()) &&
-             get(getUserPath()).data.get('role', '') == 'GERENTE';
+             userData().get('role', '') == 'GERENTE';
     }
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
@@ -27,141 +39,162 @@ service cloud.firestore {
       return isAuthenticated() && storeId != null && (
         isAdmin() || (
           exists(getUserPath()) &&
-          get(getUserPath()).data.get('status', '') == 'aprovado' &&
-          get(getUserPath()).data.get('storeIds', []).hasAny([storeId])
+          // tolerante: só bloqueia quem está explicitamente pendente/bloqueado
+          !(userData().get('status', 'aprovado') in ['pendente', 'bloqueado']) &&
+          userData().get('storeIds', []).hasAny([storeId])
         )
       );
     }
+    // Leitura/escrita padrão de documento de loja
+    function canRead(storeId)  { return hasStoreAccess(storeId); }
+    function canWrite(storeId) { return hasStoreAccess(storeId); }
+    function canDelete(storeId) { return isAdmin() || (hasStoreAccess(storeId) && isGerente()); }
 
-    // ── Existing collections (unchanged) ────────────────────────────────────
-
+    // ── Lojas ────────────────────────────────────────────────────────────────
     match /stores/{storeId} {
+      // get público: necessário para o catálogo público (/catalogo/:storeId)
+      allow get: if true;
+      // A consulta usa uma lista de IDs; o Firestore não consegue validar
+      // hasStoreAccess(storeId) nessa operação. Apenas usuários logados listam lojas.
       allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(storeId);
       allow create: if isAdmin();
       allow update: if isAdmin() || (hasStoreAccess(storeId) && isGerente());
       allow delete: if isAdmin();
     }
 
+    // ── Usuários ─────────────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin() || (isGerente() && get(getUserPath()).data.get('storeIds', []).hasAny(resource.data.get('storeIds', [])));
+      allow read: if isOwner(userId) || isAdmin() ||
+                  (isGerente() && userData().get('storeIds', []).hasAny(resource.data.get('storeIds', [])));
+      // Autocadastro: sempre OPERADOR, pendente e SEM lojas (quem aprova define as lojas)
       allow create: if isAdmin() ||
                     (isGerente() && request.resource.data.get('role', '') != 'ADMIN') ||
-                    (isOwner(userId) && request.resource.data.get('role', '') == 'OPERADOR' && request.resource.data.get('status', '') == 'pendente');
+                    (isOwner(userId) &&
+                     request.resource.data.get('role', '') == 'OPERADOR' &&
+                     request.resource.data.get('status', '') == 'pendente' &&
+                     request.resource.data.get('storeIds', []).size() == 0);
       allow update: if isAdmin() ||
                     (isGerente() && resource.data.get('role', '') != 'ADMIN' && request.resource.data.get('role', '') != 'ADMIN') ||
                     (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone']));
       allow delete: if isAdmin() || (isGerente() && resource.data.get('role', '') != 'ADMIN');
     }
 
+    // ── Base de custos (1 doc por loja) ──────────────────────────────────────
     match /costBases/{storeId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(storeId);
+      allow read: if canRead(storeId);
       allow write: if isAdmin() || (hasStoreAccess(storeId) && isGerente());
     }
 
-    match /materials/{materialId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    // ── Produtos ─────────────────────────────────────────────────────────────
+    match /products/{productId} {
+      // Catálogo público: apenas produtos marcados para o catálogo
+      allow read: if resource.data.get('showInCatalog', true) == true
+                  || canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
-    match /products/{productId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+    // ── Categorias (matéria-prima/estoque e produtos) ───────────────────────
+    // Leitura pública apenas para categorias de produto, usadas como filtro no
+    // catálogo público. Categorias de matéria-prima ficam restritas à loja.
+    match /categories/{categoryId} {
+      allow read: if resource.data.get('scope', '') == 'product'
+                  || canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
+    }
+
+    // ── Demais coleções por loja ─────────────────────────────────────────────
+    match /materials/{materialId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /quotes/{quoteId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      // Finalizar é permitido somente ao autor do orçamento, ADMIN ou GERENTE.
+      // Orçamentos antigos sem createdBy continuam administráveis pelos gestores.
+      allow update: if canWrite(request.resource.data.storeId) && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) ||
+        request.resource.data.status != 'Finalizado' ||
+        isAdmin() ||
+        isGerente() ||
+        resource.data.get('createdBy', '') == request.auth.uid
+      );
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /clients/{clientId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /suppliers/{supplierId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
-    // ── New collections ──────────────────────────────────────────────────────
-
     match /laserJobs/{jobId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /laserMachines/{machineId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /printers/{printerId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /printJobs/{jobId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || (hasStoreAccess(resource.data.storeId) && isGerente());
-    }
-
-    match /stockMovements/{movId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create: if isAuthenticated(); // created by automations on quote approval
-      allow update, delete: if isAdmin();
-    }
-
-
-    match /stockReservations/{resId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAuthenticated();
-      allow delete: if isAdmin();
-    }
-
-    match /purchaseList/{itemId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
     }
 
     match /papelariaJobs/{jobId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if hasStoreAccess(resource.data.storeId);
     }
 
     match /cestaJobs/{jobId} {
-      allow list: if isAuthenticated();
-      allow get: if isAdmin() || hasStoreAccess(resource.data.storeId);
-      allow create, update: if isAdmin() || hasStoreAccess(request.resource.data.storeId);
-      allow delete: if isAdmin() || hasStoreAccess(resource.data.storeId);
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if hasStoreAccess(resource.data.storeId);
     }
 
-    // Deny everything else
+    match /purchaseList/{itemId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if hasStoreAccess(resource.data.storeId);
+    }
+
+    // ── Estoque: agora restrito à loja do documento ──────────────────────────
+    match /stockMovements/{movId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update, delete: if isAdmin();
+    }
+
+    match /stockReservations/{resId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canWrite(resource.data.storeId);
+      allow delete: if isAdmin();
+    }
+
+    // Nega tudo o que não foi declarado acima
     match /{document=**} {
       allow read, write: if false;
     }

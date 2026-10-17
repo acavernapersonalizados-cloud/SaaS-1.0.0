@@ -14,27 +14,40 @@ export function ProductionPanel() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!activeStore) { setLoading(false); return; }
+    if (!activeStore) {
+      setLoading(false);
+      return;
+    }
 
     const unsubQ = onSnapshot(
       query(collection(db, 'quotes'), where('storeId', '==', activeStore.id), orderBy('date', 'desc')),
-      snap => { setQuotes(snap.docs.map(d => ({ id: d.id, ...d.data() } as Quote))); setLoading(false); },
-      err => { handleFirestoreError(err, OperationType.LIST, 'quotes'); setLoading(false); }
+      snap => {
+        setQuotes(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Quote));
+        setLoading(false);
+      },
+      err => {
+        handleFirestoreError(err, OperationType.LIST, 'quotes');
+        setLoading(false);
+      },
     );
 
     const unsubM = onSnapshot(
       query(collection(db, 'materials'), where('storeId', '==', activeStore.id)),
-      snap => setMaterials(snap.docs.map(d => ({ id: d.id, ...d.data() } as Material))),
-      () => {}
+      snap => setMaterials(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Material)),
+      () => {},
     );
 
     const unsubR = onSnapshot(
       query(collection(db, 'stockReservations'), where('storeId', '==', activeStore.id)),
-      snap => setReservations(snap.docs.map(d => ({ id: d.id, ...d.data() } as StockReservation))),
-      () => {}
+      snap => setReservations(snap.docs.map(d => ({ id: d.id, ...d.data() }) as StockReservation)),
+      () => {},
     );
 
-    return () => { unsubQ(); unsubM(); unsubR(); };
+    return () => {
+      unsubQ();
+      unsubM();
+      unsubR();
+    };
   }, [activeStore]);
 
   const byStatus = (status: string) => quotes.filter(q => q.status === status);
@@ -54,12 +67,16 @@ export function ProductionPanel() {
 
   // Top produtos vendidos
   const productCount: Record<string, number> = {};
-  quotes.filter(q => ['Aprovado','Em produção','Finalizado'].includes(q.status || '')).forEach(q => {
-    (q.items || []).forEach(item => {
-      productCount[item.productName] = (productCount[item.productName] || 0) + (item.quantity || 1);
+  quotes
+    .filter(q => ['Aprovado', 'Em produção', 'Finalizado'].includes(q.status || ''))
+    .forEach(q => {
+      (q.items || []).forEach(item => {
+        productCount[item.productName] = (productCount[item.productName] || 0) + (item.quantity || 1);
+      });
     });
-  });
-  const topProducts = Object.entries(productCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topProducts = Object.entries(productCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
   if (!activeStore) return <div className="p-10 text-center text-neutral-400">Selecione uma loja.</div>;
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
@@ -74,9 +91,19 @@ export function ProductionPanel() {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Aguardando Produção', value: byStatus('Aprovado').length, color: 'text-blue-600', bg: 'bg-blue-50' },
+          {
+            label: 'Aguardando Produção',
+            value: byStatus('Aprovado').length,
+            color: 'text-blue-600',
+            bg: 'bg-blue-50',
+          },
           { label: 'Em Produção', value: byStatus('Em produção').length, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { label: 'Finalizados', value: byStatus('Finalizado').length, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          {
+            label: 'Finalizados',
+            value: byStatus('Finalizado').length,
+            color: 'text-emerald-600',
+            bg: 'bg-emerald-50',
+          },
           { label: 'Cancelados', value: byStatus('Cancelado').length, color: 'text-red-600', bg: 'bg-red-50' },
         ].map(stat => (
           <div key={stat.label} className={`${stat.bg} p-5 rounded-2xl border border-neutral-200`}>
@@ -101,13 +128,20 @@ export function ProductionPanel() {
                 const stock = mat?.stockQuantity || 0;
                 const available = Math.max(0, stock - data.qty);
                 return (
-                  <div key={id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+                  <div
+                    key={id}
+                    className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl border border-neutral-100"
+                  >
                     <div>
                       <p className="font-bold text-sm text-neutral-900">{data.name}</p>
-                      <p className="text-xs text-neutral-400">Estoque: {stock} {data.unit} · Disponível: {available} {data.unit}</p>
+                      <p className="text-xs text-neutral-400">
+                        Estoque: {stock} {data.unit} · Disponível: {available} {data.unit}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-amber-600">{data.qty} {data.unit}</p>
+                      <p className="text-sm font-black text-amber-600">
+                        {data.qty} {data.unit}
+                      </p>
                       <p className="text-[10px] text-neutral-400">reservado</p>
                     </div>
                   </div>
@@ -132,7 +166,10 @@ export function ProductionPanel() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-neutral-900 truncate">{name}</p>
                     <div className="w-full bg-neutral-100 rounded-full h-1.5 mt-1">
-                      <div className="bg-neutral-900 h-1.5 rounded-full" style={{ width: `${(count / (topProducts[0]?.[1] || 1)) * 100}%` }} />
+                      <div
+                        className="bg-neutral-900 h-1.5 rounded-full"
+                        style={{ width: `${(count / (topProducts[0]?.[1] || 1)) * 100}%` }}
+                      />
                     </div>
                   </div>
                   <span className="text-sm font-black text-neutral-700 w-6 text-right">{count}</span>
@@ -152,22 +189,30 @@ export function ProductionPanel() {
           {quotes.filter(q => ['Aprovado', 'Em produção'].includes(q.status || '')).length === 0 ? (
             <p className="text-neutral-400 italic text-sm text-center py-8">Nenhum pedido ativo no momento.</p>
           ) : (
-            quotes.filter(q => ['Aprovado', 'Em produção'].includes(q.status || '')).map(q => (
-              <div key={q.id} className="flex items-center justify-between p-4 rounded-xl border border-neutral-100 hover:bg-neutral-50 transition-colors">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-bold text-neutral-900">{q.clientName}</p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${q.status === 'Em produção' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {q.status}
-                    </span>
+            quotes
+              .filter(q => ['Aprovado', 'Em produção'].includes(q.status || ''))
+              .map(q => (
+                <div
+                  key={q.id}
+                  className="flex items-center justify-between p-4 rounded-xl border border-neutral-100 hover:bg-neutral-50 transition-colors"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-neutral-900">{q.clientName}</p>
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${q.status === 'Em produção' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}
+                      >
+                        {q.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      {(q.items || []).map(i => i.productName).join(', ')} ·{' '}
+                      {new Date(q.date).toLocaleDateString('pt-BR')}
+                    </p>
                   </div>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    {(q.items || []).map(i => i.productName).join(', ')} · {new Date(q.date).toLocaleDateString('pt-BR')}
-                  </p>
+                  <p className="font-black text-neutral-900">{formatCurrency(q.totalAmount)}</p>
                 </div>
-                <p className="font-black text-neutral-900">{formatCurrency(q.totalAmount)}</p>
-              </div>
-            ))
+              ))
           )}
         </div>
       </div>

@@ -6,7 +6,19 @@ import { Store } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, Trash2, Store as StoreIcon, X, MapPin, Phone, Mail, FileText, Upload, Loader2, AlertCircle } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Store as StoreIcon,
+  X,
+  MapPin,
+  Phone,
+  Mail,
+  FileText,
+  Upload,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export function Stores() {
@@ -34,7 +46,7 @@ export function Stores() {
     logo: '',
     primaryColor: '#000000',
     secondaryColor: '#ffffff',
-    observations: ''
+    observations: '',
   });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,30 +77,34 @@ export function Stores() {
       }
       setIsModalOpen(false);
       setEditingStore(null);
-      setFormData({ 
-        name: '', 
-        fantasyName: '', 
-        phone: '', 
-        email: '', 
-        city: '', 
-        state: '', 
+      setFormData({
+        name: '',
+        fantasyName: '',
+        phone: '',
+        email: '',
+        city: '',
+        state: '',
         address: '',
         zipCode: '',
         neighborhood: '',
         logo: '',
         primaryColor: '#000000',
         secondaryColor: '#ffffff',
-        observations: '' 
+        observations: '',
       });
       addToast(editingStore ? 'Loja atualizada com sucesso!' : 'Loja cadastrada com sucesso!', 'success');
     } catch (error) {
-      handleFirestoreError(error, editingStore ? OperationType.UPDATE : OperationType.CREATE, editingStore ? `stores/${editingStore.id}` : 'stores');
+      handleFirestoreError(
+        error,
+        editingStore ? OperationType.UPDATE : OperationType.CREATE,
+        editingStore ? `stores/${editingStore.id}` : 'stores',
+      );
     }
   };
 
   const handleDelete = async () => {
     if (!storeToDelete) return;
-    
+
     setIsDeleting(true);
     try {
       await deleteDoc(doc(db, 'stores', storeToDelete));
@@ -122,20 +138,20 @@ export function Stores() {
           <button
             onClick={() => {
               setEditingStore(null);
-              setFormData({ 
-                name: '', 
-                fantasyName: '', 
-                phone: '', 
-                email: '', 
-                city: '', 
-                state: '', 
+              setFormData({
+                name: '',
+                fantasyName: '',
+                phone: '',
+                email: '',
+                city: '',
+                state: '',
                 address: '',
                 zipCode: '',
                 neighborhood: '',
                 logo: '',
                 primaryColor: '#000000',
                 secondaryColor: '#ffffff',
-                observations: '' 
+                observations: '',
               });
               setIsModalOpen(true);
             }}
@@ -148,18 +164,23 @@ export function Stores() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stores.map((store) => (
-          <div key={store.id} className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+        {stores.map(store => (
+          <div
+            key={store.id}
+            className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative"
+          >
             {store.primaryColor && (
-              <div 
-                className="absolute top-0 left-0 w-full h-1" 
-                style={{ backgroundColor: store.primaryColor }}
-              />
+              <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: store.primaryColor }} />
             )}
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-900 overflow-hidden">
                 {store.logo ? (
-                  <img src={store.logo} alt={store.fantasyName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <img
+                    src={store.logo}
+                    alt={store.fantasyName}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 ) : (
                   <StoreIcon className="w-6 h-6" />
                 )}
@@ -183,7 +204,7 @@ export function Stores() {
                 )}
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="font-bold text-lg text-neutral-900">{store.name}</h3>
@@ -217,10 +238,11 @@ export function Stores() {
         <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-8 space-y-8 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-neutral-900">
-                {editingStore ? 'Editar Loja' : 'Nova Loja'}
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
+              <h2 className="text-2xl font-bold text-neutral-900">{editingStore ? 'Editar Loja' : 'Nova Loja'}</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
                 <X className="w-6 h-6 text-neutral-400" />
               </button>
             </div>
@@ -233,8 +255,13 @@ export function Stores() {
                     <div className="w-20 h-20 bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-2xl flex items-center justify-center overflow-hidden relative group">
                       {formData.logo ? (
                         <>
-                          <img src={formData.logo} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          <button 
+                          <img
+                            src={formData.logo}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                          <button
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, logo: '' }))}
                             className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white"
@@ -268,9 +295,7 @@ export function Stores() {
                         accept="image/*"
                         className="hidden"
                       />
-                      <p className="text-[10px] text-neutral-400">
-                        PNG, JPG ou SVG. Recomendado 512x512px.
-                      </p>
+                      <p className="text-[10px] text-neutral-400">PNG, JPG ou SVG. Recomendado 512x512px.</p>
                     </div>
                   </div>
                 </div>
@@ -279,7 +304,7 @@ export function Stores() {
                   <input
                     type="url"
                     value={formData.logo}
-                    onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                    onChange={e => setFormData({ ...formData, logo: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="https://exemplo.com/logo.png"
                   />
@@ -291,13 +316,13 @@ export function Stores() {
                       <input
                         type="color"
                         value={formData.primaryColor}
-                        onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                        onChange={e => setFormData({ ...formData, primaryColor: e.target.value })}
                         className="w-12 h-12 p-1 bg-neutral-50 border border-neutral-200 rounded-xl cursor-pointer"
                       />
                       <input
                         type="text"
                         value={formData.primaryColor}
-                        onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                        onChange={e => setFormData({ ...formData, primaryColor: e.target.value })}
                         className="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none uppercase"
                       />
                     </div>
@@ -308,13 +333,13 @@ export function Stores() {
                       <input
                         type="color"
                         value={formData.secondaryColor}
-                        onChange={(e) => setFormData({ ...formData, secondaryColor: e.target.value })}
+                        onChange={e => setFormData({ ...formData, secondaryColor: e.target.value })}
                         className="w-12 h-12 p-1 bg-neutral-50 border border-neutral-200 rounded-xl cursor-pointer"
                       />
                       <input
                         type="text"
                         value={formData.secondaryColor}
-                        onChange={(e) => setFormData({ ...formData, secondaryColor: e.target.value })}
+                        onChange={e => setFormData({ ...formData, secondaryColor: e.target.value })}
                         className="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none uppercase"
                       />
                     </div>
@@ -326,7 +351,7 @@ export function Stores() {
                     required
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: A Caverna Personalizados LTDA"
                   />
@@ -337,7 +362,7 @@ export function Stores() {
                     required
                     type="text"
                     value={formData.fantasyName}
-                    onChange={(e) => setFormData({ ...formData, fantasyName: e.target.value })}
+                    onChange={e => setFormData({ ...formData, fantasyName: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: A Caverna"
                   />
@@ -348,7 +373,7 @@ export function Stores() {
                     <input
                       type="text"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                       placeholder="(00) 00000-0000"
                     />
@@ -358,7 +383,7 @@ export function Stores() {
                     <input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                       placeholder="loja@email.com"
                     />
@@ -369,7 +394,7 @@ export function Stores() {
                   <input
                     type="text"
                     value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    onChange={e => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Rua, Número, Complemento"
                   />
@@ -380,7 +405,7 @@ export function Stores() {
                     <input
                       type="text"
                       value={formData.neighborhood}
-                      onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+                      onChange={e => setFormData({ ...formData, neighborhood: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     />
                   </div>
@@ -389,7 +414,7 @@ export function Stores() {
                     <input
                       type="text"
                       value={formData.zipCode}
-                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                      onChange={e => setFormData({ ...formData, zipCode: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                       placeholder="00000-000"
                     />
@@ -401,7 +426,7 @@ export function Stores() {
                     <input
                       type="text"
                       value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      onChange={e => setFormData({ ...formData, city: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     />
                   </div>
@@ -410,7 +435,7 @@ export function Stores() {
                     <input
                       type="text"
                       value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      onChange={e => setFormData({ ...formData, state: e.target.value })}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                       placeholder="UF"
                     />
@@ -420,7 +445,7 @@ export function Stores() {
                   <label className="text-sm font-bold text-neutral-700">Observações</label>
                   <textarea
                     value={formData.observations}
-                    onChange={(e) => setFormData({ ...formData, observations: e.target.value })}
+                    onChange={e => setFormData({ ...formData, observations: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none min-h-[100px]"
                   />
                 </div>
@@ -455,9 +480,10 @@ export function Stores() {
               </div>
               <h3 className="text-xl font-bold">Excluir Loja?</h3>
             </div>
-            
+
             <p className="text-neutral-600 leading-relaxed">
-              Tem certeza que deseja excluir esta loja? Todos os dados vinculados a ela permanecerão no banco, mas não serão acessíveis por esta loja.
+              Tem certeza que deseja excluir esta loja? Todos os dados vinculados a ela permanecerão no banco, mas não
+              serão acessíveis por esta loja.
             </p>
 
             <div className="flex gap-3 pt-2">

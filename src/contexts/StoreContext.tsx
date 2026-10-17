@@ -41,10 +41,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (!isAdmin && user && user.storeIds && user.storeIds.length > 0) {
       // Note: 'in' query on __name__ cannot be combined with orderBy on another field
       // without a composite index. We'll sort client-side instead.
-      q = query(
-        collection(db, 'stores'),
-        where('__name__', 'in', user.storeIds)
-      );
+      q = query(collection(db, 'stores'), where('__name__', 'in', user.storeIds));
     } else if (!isAdmin && user && (!user.storeIds || user.storeIds.length === 0)) {
       // If user has no stores assigned, they shouldn't see any
       setStores([]);
@@ -53,58 +50,62 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      let storesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Store));
-      
-      // Sort client-side if we couldn't do it in the query
-      if (!isAdmin && user && user.storeIds && user.storeIds.length > 0) {
-        storesData.sort((a, b) => a.name.localeCompare(b.name));
-      }
-      
-      setStores(storesData);
+    const unsubscribe = onSnapshot(
+      q,
+      async snapshot => {
+        let storesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Store);
 
-      // If no stores exist and admin, create default ones
-      // Guard with a flag to prevent duplicate creation on rapid re-renders
-      if (storesData.length === 0 && isAdmin && !seedingRef.current) {
-        seedingRef.current = true;
-        const defaultStores = [
-          { name: 'A Caverna Personalizados', fantasyName: 'A Caverna', phone: '', email: '', city: '', state: '' },
-          { name: 'T&N Personalizados', fantasyName: 'T&N', phone: '', email: '', city: '', state: '' }
-        ];
-        
-        for (const store of defaultStores) {
-          try {
-            await addDoc(collection(db, 'stores'), store);
-          } catch (error) {
-            handleFirestoreError(error, OperationType.WRITE, 'stores');
-          }
+        // Sort client-side if we couldn't do it in the query
+        if (!isAdmin && user && user.storeIds && user.storeIds.length > 0) {
+          storesData.sort((a, b) => a.name.localeCompare(b.name));
         }
-        // onSnapshot will fire again with the new stores
-      } else if (storesData.length > 0) {
-        // Set active store from localStorage or default to first one
-        const savedStoreId = localStorage.getItem('activeStoreId');
-        
-        // Check if current activeStore is still valid
-        const isCurrentValid = activeStoreRef.current && storesData.some(s => s.id === activeStoreRef.current?.id);
-        
-        if (!isCurrentValid) {
-          let nextStore = null;
-          if (savedStoreId) {
-            nextStore = storesData.find(s => s.id === savedStoreId) || storesData[0];
-          } else {
-            nextStore = storesData[0];
+
+        setStores(storesData);
+
+        // If no stores exist and admin, create default ones
+        // Guard with a flag to prevent duplicate creation on rapid re-renders
+        if (storesData.length === 0 && isAdmin && !seedingRef.current) {
+          seedingRef.current = true;
+          const defaultStores = [
+            { name: 'A Caverna Personalizados', fantasyName: 'A Caverna', phone: '', email: '', city: '', state: '' },
+            { name: 'T&N Personalizados', fantasyName: 'T&N', phone: '', email: '', city: '', state: '' },
+          ];
+
+          for (const store of defaultStores) {
+            try {
+              await addDoc(collection(db, 'stores'), store);
+            } catch (error) {
+              handleFirestoreError(error, OperationType.WRITE, 'stores');
+            }
           }
-          setActiveStore(nextStore);
+          // onSnapshot will fire again with the new stores
+        } else if (storesData.length > 0) {
+          // Set active store from localStorage or default to first one
+          const savedStoreId = localStorage.getItem('activeStoreId');
+
+          // Check if current activeStore is still valid
+          const isCurrentValid = activeStoreRef.current && storesData.some(s => s.id === activeStoreRef.current?.id);
+
+          if (!isCurrentValid) {
+            let nextStore = null;
+            if (savedStoreId) {
+              nextStore = storesData.find(s => s.id === savedStoreId) || storesData[0];
+            } else {
+              nextStore = storesData[0];
+            }
+            setActiveStore(nextStore);
+          }
+          setLoading(false);
+        } else {
+          setActiveStore(null);
+          setLoading(false);
         }
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'stores');
         setLoading(false);
-      } else {
-        setActiveStore(null);
-        setLoading(false);
-      }
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'stores');
-      setLoading(false);
-    });
+      },
+    );
 
     return () => unsubscribe();
   }, [user, isAdmin]);

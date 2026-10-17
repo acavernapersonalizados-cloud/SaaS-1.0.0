@@ -7,23 +7,23 @@ import { User, UserRole, Store } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { 
-  Users as UsersIcon, 
-  UserPlus, 
-  Shield, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  MoreVertical, 
-  Trash2, 
-  Edit2, 
+import {
+  Users as UsersIcon,
+  UserPlus,
+  Shield,
+  Mail,
+  Phone,
+  Calendar,
+  MoreVertical,
+  Trash2,
+  Edit2,
   X,
   CheckCircle2,
   AlertCircle,
   Loader2,
   Store as StoreIcon,
   Check,
-  Ban
+  Ban,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -62,35 +62,39 @@ export function Users() {
       q = query(
         collection(db, 'users'),
         where('role', 'in', ['GERENTE', 'OPERADOR']),
-        where('storeIds', 'array-contains-any', currentUser.storeIds)
+        where('storeIds', 'array-contains-any', currentUser.storeIds),
       );
     }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let fetchedUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
-      
-      // Additional in-memory filter for Gerente just in case
-      if (isGerente) {
-        fetchedUsers = fetchedUsers.filter(u => u.role !== 'ADMIN');
-      }
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        let fetchedUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as User);
 
-      // Sort in memory: newest first, users without createdAt go to the bottom
-      fetchedUsers.sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA;
-      });
-      setUsers(fetchedUsers);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'users');
-      setError("Erro ao carregar usuários: " + error.message);
-      setLoading(false);
-    });
+        // Additional in-memory filter for Gerente just in case
+        if (isGerente) {
+          fetchedUsers = fetchedUsers.filter(u => u.role !== 'ADMIN');
+        }
+
+        // Sort in memory: newest first, users without createdAt go to the bottom
+        fetchedUsers.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        setUsers(fetchedUsers);
+        setLoading(false);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'users');
+        setError('Erro ao carregar usuários: ' + error.message);
+        setLoading(false);
+      },
+    );
     return () => unsubscribe();
   }, []);
 
-  const sendApprovalNotification = (user: { name: string, email: string, phone?: string }) => {
+  const sendApprovalNotification = (user: { name: string; email: string; phone?: string }) => {
     // Mocking email and WhatsApp notifications
     console.log(`[NOTIFICATION] Sending approval email to ${user.email} for user ${user.name}`);
     if (user.phone) {
@@ -101,7 +105,7 @@ export function Users() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Security check: Gerente cannot create or edit Admin
     if (isGerente && role === 'ADMIN') {
       setError('Ação não permitida: Gerentes não podem criar ou promover usuários para Administrador.');
@@ -121,7 +125,7 @@ export function Users() {
           phone,
           role,
           storeIds: selectedStores,
-          status
+          status,
         });
 
         if (wasPending && isNowAprovado) {
@@ -138,11 +142,11 @@ export function Users() {
         const appName = `SecondaryApp_${Math.random().toString(36).substring(2, 9)}`;
         const secondaryApp = initializeApp(firebaseConfig, appName);
         const secondaryAuth = getAuth(secondaryApp);
-        
+
         try {
           const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
           const newUid = userCredential.user.uid;
-          
+
           // Clean up secondary app
           await deleteApp(secondaryApp);
 
@@ -153,11 +157,11 @@ export function Users() {
             role,
             storeIds: selectedStores,
             status: 'aprovado',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           };
 
           await setDoc(doc(db, 'users', newUid), newUser);
-          
+
           // New users created by admin are automatically approved
           sendApprovalNotification({ name, email, phone });
         } catch (authError: any) {
@@ -179,7 +183,11 @@ export function Users() {
     } catch (err: any) {
       console.error('Error saving user:', err);
       setError(err.message || 'Erro ao salvar usuário.');
-      handleFirestoreError(err, editingUser ? OperationType.UPDATE : OperationType.CREATE, editingUser ? `users/${editingUser.id}` : 'users');
+      handleFirestoreError(
+        err,
+        editingUser ? OperationType.UPDATE : OperationType.CREATE,
+        editingUser ? `users/${editingUser.id}` : 'users',
+      );
     } finally {
       setModalLoading(false);
     }
@@ -289,11 +297,7 @@ export function Users() {
   };
 
   const toggleStore = (storeId: string) => {
-    setSelectedStores(prev => 
-      prev.includes(storeId) 
-        ? prev.filter(id => id !== storeId)
-        : [...prev, storeId]
-    );
+    setSelectedStores(prev => (prev.includes(storeId) ? prev.filter(id => id !== storeId) : [...prev, storeId]));
   };
 
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
@@ -306,7 +310,10 @@ export function Users() {
           <p className="text-neutral-500">Gerencie os acessos e permissões da equipe</p>
         </div>
         <button
-          onClick={() => { resetForm(); setShowModal(true); }}
+          onClick={() => {
+            resetForm();
+            setShowModal(true);
+          }}
           className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all shadow-lg font-bold"
         >
           <UserPlus className="w-5 h-5" />
@@ -322,8 +329,11 @@ export function Users() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((u) => (
-          <div key={u.id} className="bg-white p-6 rounded-[2rem] shadow-sm border border-neutral-100 space-y-4 relative group">
+        {users.map(u => (
+          <div
+            key={u.id}
+            className="bg-white p-6 rounded-[2rem] shadow-sm border border-neutral-100 space-y-4 relative group"
+          >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400">
@@ -332,20 +342,28 @@ export function Users() {
                 <div>
                   <h3 className="font-bold text-neutral-900">{u.name}</h3>
                   <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                      u.role === 'ADMIN' ? "bg-purple-100 text-purple-700" :
-                      u.role === 'GERENTE' ? "bg-blue-100 text-blue-700" :
-                      "bg-neutral-100 text-neutral-700"
-                    )}>
+                    <span
+                      className={cn(
+                        'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider',
+                        u.role === 'ADMIN'
+                          ? 'bg-purple-100 text-purple-700'
+                          : u.role === 'GERENTE'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-neutral-100 text-neutral-700',
+                      )}
+                    >
                       {u.role}
                     </span>
-                    <span className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                      u.status === 'aprovado' ? "bg-green-100 text-green-700" : 
-                      u.status === 'pendente' ? "bg-yellow-100 text-yellow-700" :
-                      "bg-red-100 text-red-700"
-                    )}>
+                    <span
+                      className={cn(
+                        'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider',
+                        u.status === 'aprovado'
+                          ? 'bg-green-100 text-green-700'
+                          : u.status === 'pendente'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700',
+                      )}
+                    >
                       {u.status}
                     </span>
                   </div>
@@ -353,22 +371,38 @@ export function Users() {
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 {u.status === 'pendente' && (!isGerente || u.role !== 'ADMIN') && (
-                  <button onClick={() => handleApprove(u)} title="Aprovar" className="p-2 hover:bg-green-50 rounded-lg text-neutral-400 hover:text-green-600 transition-colors">
+                  <button
+                    onClick={() => handleApprove(u)}
+                    title="Aprovar"
+                    className="p-2 hover:bg-green-50 rounded-lg text-neutral-400 hover:text-green-600 transition-colors"
+                  >
                     <Check className="w-4 h-4" />
                   </button>
                 )}
                 {u.status !== 'bloqueado' && (!isGerente || u.role !== 'ADMIN') && (
-                  <button onClick={() => handleBlock(u.id)} title="Bloquear" className="p-2 hover:bg-orange-50 rounded-lg text-neutral-400 hover:text-orange-500 transition-colors">
+                  <button
+                    onClick={() => handleBlock(u.id)}
+                    title="Bloquear"
+                    className="p-2 hover:bg-orange-50 rounded-lg text-neutral-400 hover:text-orange-500 transition-colors"
+                  >
                     <Ban className="w-4 h-4" />
                   </button>
                 )}
                 {(!isGerente || u.role !== 'ADMIN') && (
-                  <button onClick={() => handleEdit(u)} title="Editar" className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-400 hover:text-neutral-900 transition-colors">
+                  <button
+                    onClick={() => handleEdit(u)}
+                    title="Editar"
+                    className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-400 hover:text-neutral-900 transition-colors"
+                  >
                     <Edit2 className="w-4 h-4" />
                   </button>
                 )}
                 {(!isGerente || u.role !== 'ADMIN') && (
-                  <button onClick={() => handleDelete(u.id)} title="Excluir" className="p-2 hover:bg-red-50 rounded-lg text-neutral-400 hover:text-red-500 transition-colors">
+                  <button
+                    onClick={() => handleDelete(u.id)}
+                    title="Excluir"
+                    className="p-2 hover:bg-red-50 rounded-lg text-neutral-400 hover:text-red-500 transition-colors"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 )}
@@ -396,12 +430,17 @@ export function Users() {
               <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Lojas Permitidas</span>
               <div className="flex flex-wrap gap-1">
                 {u.role === 'ADMIN' ? (
-                  <span className="text-[10px] bg-neutral-900 text-white px-2 py-0.5 rounded-full font-bold">Todas as Lojas</span>
+                  <span className="text-[10px] bg-neutral-900 text-white px-2 py-0.5 rounded-full font-bold">
+                    Todas as Lojas
+                  </span>
                 ) : u.storeIds && u.storeIds.length > 0 ? (
                   u.storeIds.map(sid => {
                     const store = stores.find(s => s.id === sid);
                     return (
-                      <span key={sid} className="text-[10px] bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded-full font-medium">
+                      <span
+                        key={sid}
+                        className="text-[10px] bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded-full font-medium"
+                      >
                         {store?.fantasyName || 'Loja Desconhecida'}
                       </span>
                     );
@@ -431,7 +470,10 @@ export function Users() {
                   <p className="text-sm text-neutral-500">Defina as permissões e acessos</p>
                 </div>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
                 <X className="w-6 h-6 text-neutral-400" />
               </button>
             </div>
@@ -446,23 +488,27 @@ export function Users() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">Nome Completo</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">
+                    Nome Completo
+                  </label>
                   <input
                     type="text"
                     required
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={e => setName(e.target.value)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">Email (Login)</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">
+                    Email (Login)
+                  </label>
                   <input
                     type="email"
                     required
                     disabled={!!editingUser}
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all disabled:opacity-50"
                   />
                 </div>
@@ -471,7 +517,7 @@ export function Users() {
                   <input
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={e => setPhone(e.target.value)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all"
                   />
                 </div>
@@ -482,16 +528,18 @@ export function Users() {
                       type="password"
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={e => setPassword(e.target.value)}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all"
                     />
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">Nível de Acesso</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">
+                    Nível de Acesso
+                  </label>
                   <select
                     value={role}
-                    onChange={(e) => setRole(e.target.value as UserRole)}
+                    onChange={e => setRole(e.target.value as UserRole)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all"
                   >
                     <option value="OPERADOR">Operador</option>
@@ -504,7 +552,7 @@ export function Users() {
                     <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">Status</label>
                     <select
                       value={status}
-                      onChange={(e) => setStatus(e.target.value as 'pendente' | 'aprovado' | 'bloqueado')}
+                      onChange={e => setStatus(e.target.value as 'pendente' | 'aprovado' | 'bloqueado')}
                       className="w-full px-4 py-3 bg-neutral-50 border border-neutral-100 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none transition-all"
                     >
                       <option value="pendente">Pendente</option>
@@ -517,7 +565,9 @@ export function Users() {
 
               {role !== 'ADMIN' && (
                 <div className="space-y-4">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">Lojas Permitidas</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest ml-1">
+                    Lojas Permitidas
+                  </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {stores
                       .filter(store => isAdmin || (currentUser?.storeIds && currentUser.storeIds.includes(store.id)))
@@ -527,22 +577,34 @@ export function Users() {
                           type="button"
                           onClick={() => toggleStore(store.id)}
                           className={cn(
-                            "flex items-center justify-between p-4 rounded-2xl border transition-all text-left",
+                            'flex items-center justify-between p-4 rounded-2xl border transition-all text-left',
                             selectedStores.includes(store.id)
-                              ? "bg-neutral-900 border-neutral-900 text-white shadow-md"
-                              : "bg-white border-neutral-100 text-neutral-600 hover:border-neutral-300"
+                              ? 'bg-neutral-900 border-neutral-900 text-white shadow-md'
+                              : 'bg-white border-neutral-100 text-neutral-600 hover:border-neutral-300',
                           )}
                         >
-                        <div className="flex items-center gap-3">
-                          <StoreIcon className={cn("w-5 h-5", selectedStores.includes(store.id) ? "text-white/60" : "text-neutral-400")} />
-                          <div>
-                            <p className="text-sm font-bold">{store.fantasyName}</p>
-                            <p className={cn("text-[10px]", selectedStores.includes(store.id) ? "text-white/40" : "text-neutral-400")}>{store.city}, {store.state}</p>
+                          <div className="flex items-center gap-3">
+                            <StoreIcon
+                              className={cn(
+                                'w-5 h-5',
+                                selectedStores.includes(store.id) ? 'text-white/60' : 'text-neutral-400',
+                              )}
+                            />
+                            <div>
+                              <p className="text-sm font-bold">{store.fantasyName}</p>
+                              <p
+                                className={cn(
+                                  'text-[10px]',
+                                  selectedStores.includes(store.id) ? 'text-white/40' : 'text-neutral-400',
+                                )}
+                              >
+                                {store.city}, {store.state}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        {selectedStores.includes(store.id) && <CheckCircle2 className="w-5 h-5 text-white" />}
-                      </button>
-                    ))}
+                          {selectedStores.includes(store.id) && <CheckCircle2 className="w-5 h-5 text-white" />}
+                        </button>
+                      ))}
                   </div>
                 </div>
               )}
@@ -578,7 +640,9 @@ export function Users() {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-neutral-900">Excluir Usuário</h2>
-              <p className="text-neutral-500">Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
+              <p className="text-neutral-500">
+                Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -609,7 +673,9 @@ export function Users() {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-neutral-900">Bloquear Usuário</h2>
-              <p className="text-neutral-500">Tem certeza que deseja bloquear este usuário? Ele perderá o acesso ao sistema imediatamente.</p>
+              <p className="text-neutral-500">
+                Tem certeza que deseja bloquear este usuário? Ele perderá o acesso ao sistema imediatamente.
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -640,7 +706,9 @@ export function Users() {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-neutral-900">Aprovar Usuário</h2>
-              <p className="text-neutral-500">Deseja aprovar o usuário {userToApprove.name}? Ele receberá uma notificação por email.</p>
+              <p className="text-neutral-500">
+                Deseja aprovar o usuário {userToApprove.name}? Ele receberá uma notificação por email.
+              </p>
             </div>
             <div className="flex gap-3">
               <button

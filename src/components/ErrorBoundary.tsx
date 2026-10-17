@@ -13,7 +13,7 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -38,9 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-neutral-900">Ops! Algo deu errado.</h2>
-              <p className="text-neutral-500 text-sm">
-                {message}
-              </p>
+              <p className="text-neutral-500 text-sm">{message}</p>
             </div>
             {details && (
               <div className="p-4 bg-neutral-50 rounded-2xl text-left overflow-hidden">

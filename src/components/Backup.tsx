@@ -17,13 +17,13 @@ export function Backup() {
     setMessage({ type: '', text: '' });
     try {
       const backupData: Record<string, any> = {};
-      
+
       for (const colName of collectionsToBackup) {
         try {
           const querySnapshot = await getDocs(collection(db, colName));
           backupData[colName] = querySnapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
           }));
         } catch (err) {
           handleFirestoreError(err, OperationType.LIST, colName);
@@ -31,8 +31,8 @@ export function Backup() {
       }
 
       const dataStr = JSON.stringify(backupData, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
       const exportFileDefaultName = `backup_precifica_ja_${new Date().toISOString().split('T')[0]}.json`;
 
       const linkElement = document.createElement('a');
@@ -42,7 +42,7 @@ export function Backup() {
 
       setMessage({ type: 'success', text: 'Backup exportado com sucesso!' });
     } catch (error: any) {
-      console.error("Export error:", error);
+      console.error('Export error:', error);
       setMessage({ type: 'error', text: 'Erro ao exportar backup: ' + error.message });
     } finally {
       setLoading(false);
@@ -54,7 +54,7 @@ export function Backup() {
     setMessage({ type: '', text: '' });
 
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = async e => {
       try {
         const content = e.target?.result as string;
         const backupData = JSON.parse(content);
@@ -96,7 +96,7 @@ export function Backup() {
 
         setMessage({ type: 'success', text: 'Backup restaurado com sucesso!' });
       } catch (error: any) {
-        console.error("Import error:", error);
+        console.error('Import error:', error);
         setMessage({ type: 'error', text: 'Erro ao restaurar backup: ' + error.message });
       } finally {
         setLoading(false);
@@ -123,9 +123,13 @@ export function Backup() {
       </div>
 
       {message.text && (
-        <div className={`p-4 rounded-2xl flex items-center gap-3 text-sm ${
-          message.type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
-        }`}>
+        <div
+          className={`p-4 rounded-2xl flex items-center gap-3 text-sm ${
+            message.type === 'error'
+              ? 'bg-red-50 text-red-600 border border-red-100'
+              : 'bg-green-50 text-green-600 border border-green-100'
+          }`}
+        >
           {message.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
           {message.text}
         </div>
@@ -190,11 +194,12 @@ export function Backup() {
             <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-orange-600 mx-auto">
               <AlertCircle className="w-10 h-10" />
             </div>
-            
+
             <div className="text-center space-y-2">
               <h3 className="text-2xl font-bold text-neutral-900">Confirmar Restauração?</h3>
               <p className="text-neutral-500 text-sm">
-                ATENÇÃO: A restauração do backup irá sobrescrever os dados existentes com os mesmos IDs. Esta ação não pode ser desfeita.
+                ATENÇÃO: A restauração do backup irá sobrescrever os dados existentes com os mesmos IDs. Esta ação não
+                pode ser desfeita.
               </p>
             </div>
 

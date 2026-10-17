@@ -36,7 +36,7 @@ export async function analyzePriceHealth(
   productName: string,
   totalCost: number,
   unitPrice: number,
-  margin: number
+  margin: number,
 ): Promise<string | null> {
   return generate(
     `Analise a saúde financeira deste produto:
@@ -45,17 +45,14 @@ export async function analyzePriceHealth(
     Preço de Venda Sugerido: R$ ${unitPrice.toFixed(2)}
     Margem de Lucro: ${margin.toFixed(2)}%
     
-    Dê um feedback curto e profissional sobre se o preço é sustentável para um pequeno ateliê.`
+    Dê um feedback curto e profissional sobre se o preço é sustentável para um pequeno ateliê.`,
   );
 }
 
-export async function suggestIdealMargin(
-  category: string,
-  productionTime: number
-): Promise<string | null> {
+export async function suggestIdealMargin(category: string, productionTime: number): Promise<string | null> {
   return generate(
     `Sugira uma margem de lucro ideal para um produto da categoria "${category}" que leva ${productionTime} minutos para ser produzido em um ateliê artesanal.
-    Considere o valor do trabalho manual e o mercado brasileiro. Retorne apenas a porcentagem sugerida e uma breve justificativa.`
+    Considere o valor do trabalho manual e o mercado brasileiro. Retorne apenas a porcentagem sugerida e uma breve justificativa.`,
   );
 }
 
@@ -63,7 +60,7 @@ export async function analyzeManualPrice(
   productName: string,
   calculatedCost: number,
   manualPrice: number,
-  category: string
+  category: string,
 ): Promise<string | null> {
   const profit = manualPrice - calculatedCost;
   const margin = calculatedCost > 0 ? (profit / manualPrice) * 100 : 0;
@@ -86,7 +83,7 @@ Responda em até 3 frases curtas e diretas:
 2. Se a margem é adequada para o mercado de artesanato/personalização brasileiro
 3. Uma sugestão prática (ex: se deve aumentar, manter ou se pode abaixar estrategicamente)
 
-Seja objetivo e use linguagem simples. Se o preço for abaixo do custo, avise com urgência.`
+Seja objetivo e use linguagem simples. Se o preço for abaixo do custo, avise com urgência.`,
   );
 }
 
@@ -95,7 +92,7 @@ export async function analyzeLaserPrice(
   totalCost: number,
   manualPrice: number,
   machine: string,
-  material: string
+  material: string,
 ): Promise<string | null> {
   const profit = manualPrice - totalCost;
   const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
@@ -115,7 +112,7 @@ Analise a precificação deste serviço de corte/gravação a laser:
 Em 3 frases curtas:
 1. Se o preço é viável e sustentável para o negócio
 2. Como está comparado ao mercado de corte a laser no Brasil
-3. Uma dica prática de precificação para este tipo de serviço`
+3. Uma dica prática de precificação para este tipo de serviço`,
   );
 }
 
@@ -126,14 +123,14 @@ export async function rewriteDescription(quoteDetails: {
 }): Promise<string | null> {
   return generate(
     `Reescreva a descrição comercial para um orçamento de ${quoteDetails.quantity} unidades de "${quoteDetails.productName}" para o cliente ${quoteDetails.clientName}.
-    O tom deve ser profissional, elegante e persuasivo, destacando a qualidade artesanal.`
+    O tom deve ser profissional, elegante e persuasivo, destacando a qualidade artesanal.`,
   );
 }
 
 export async function analyzePapelariaPrice(
   jobName: string,
   totalCost: number,
-  manualPrice: number
+  manualPrice: number,
 ): Promise<string | null> {
   const profit = manualPrice - totalCost;
   const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
@@ -151,14 +148,14 @@ Analise a precificação deste trabalho de papelaria (convites, cadernos, agenda
 Em 3 frases curtas:
 1. Se o preço é viável e sustentável para o negócio
 2. Como está comparado ao mercado de papelaria personalizada no Brasil
-3. Uma dica prática de precificação para este tipo de trabalho`
+3. Uma dica prática de precificação para este tipo de trabalho`,
   );
 }
 
 export async function analyzeCestaPrice(
   jobName: string,
   totalCost: number,
-  manualPrice: number
+  manualPrice: number,
 ): Promise<string | null> {
   const profit = manualPrice - totalCost;
   const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
@@ -176,6 +173,6 @@ Analise a precificação desta cesta/kit personalizado:
 Em 3 frases curtas:
 1. Se o preço é viável e sustentável para o negócio
 2. Como está comparado ao mercado de cestas personalizadas no Brasil
-3. Uma dica prática de precificação para este tipo de produto`
+3. Uma dica prática de precificação para este tipo de produto`,
   );
 }

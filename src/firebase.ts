@@ -1,11 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  User,
-} from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -27,19 +21,46 @@ import { getStorage } from 'firebase/storage';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            as string,
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        as string,
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         as string,
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     as string,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string,
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID             as string,
-  measurementId:    (import.meta.env.VITE_FIREBASE_MEASUREMENT_ID     as string) || undefined,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
+  measurementId: (import.meta.env.VITE_FIREBASE_MEASUREMENT_ID as string) || undefined,
 };
+
+// Validação: se faltar configuração, avisa claramente em vez de quebrar o app
+const REQUIRED_KEYS = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'appId'] as const;
+const missingConfigKeys = REQUIRED_KEYS.filter(k => !firebaseConfig[k]);
+
+if (missingConfigKeys.length > 0) {
+  const msg =
+    'Configuração do Firebase incompleta. Faltam as variáveis: ' +
+    missingConfigKeys.map(k => 'VITE_FIREBASE_' + k.replace(/([A-Z])/g, '_$1').toUpperCase()).join(', ') +
+    '. Crie o arquivo .env a partir do .env.example e reinicie o servidor.';
+  console.error('[Firebase] ' + msg);
+  if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('root');
+      if (el && !el.childElementCount) {
+        el.innerHTML =
+          '<div style="font-family:system-ui;padding:32px;max-width:640px;margin:0 auto;color:#171717">' +
+          '<h1 style="font-size:20px;font-weight:700;margin-bottom:8px">Configuração ausente</h1>' +
+          '<p style="color:#525252">' +
+          msg +
+          '</p></div>';
+      }
+    });
+  }
+}
+
+export const isFirebaseConfigured = missingConfigKeys.length === 0;
 
 const app = initializeApp(firebaseConfig);
 
-export const db      = getFirestore(app);
-export const auth    = getAuth(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
@@ -55,9 +76,9 @@ export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
   DELETE = 'delete',
-  LIST   = 'list',
-  GET    = 'get',
-  WRITE  = 'write',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
 }
 
 export interface FirestoreErrorInfo {
@@ -65,48 +86,41 @@ export interface FirestoreErrorInfo {
   operationType: OperationType;
   path: string | null;
   authInfo: {
-    userId:        string | undefined;
-    email:         string | null | undefined;
+    userId: string | undefined;
+    email: string | null | undefined;
     emailVerified: boolean | undefined;
-    isAnonymous:   boolean | undefined;
-    tenantId:      string | null | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
     providerInfo: {
-      providerId:  string;
+      providerId: string;
       displayName: string | null;
-      email:       string | null;
-      photoUrl:    string | null;
+      email: string | null;
+      photoUrl: string | null;
     }[];
   };
 }
 
-export function handleFirestoreError(
-  error: unknown,
-  operationType: OperationType,
-  path: string | null
-) {
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
   const message = error instanceof Error ? error.message : String(error);
-  const isPermissionError =
-    message.includes('permission-denied') ||
-    message.includes('insufficient permissions');
+  const isPermissionError = message.includes('permission-denied') || message.includes('insufficient permissions');
 
-  const userMessage = isPermissionError
-    ? 'Acesso negado. Você não tem permissão para esta ação.'
-    : message;
+  const userMessage = isPermissionError ? 'Acesso negado. Você não tem permissão para esta ação.' : message;
 
   const errInfo: FirestoreErrorInfo = {
     error: userMessage,
     authInfo: {
-      userId:        auth.currentUser?.uid,
-      email:         auth.currentUser?.email,
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
       emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous:   auth.currentUser?.isAnonymous,
-      tenantId:      auth.currentUser?.tenantId,
-      providerInfo:  auth.currentUser?.providerData.map(p => ({
-        providerId:  p.providerId,
-        displayName: p.displayName,
-        email:       p.email,
-        photoUrl:    p.photoURL,
-      })) ?? [],
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo:
+        auth.currentUser?.providerData.map(p => ({
+          providerId: p.providerId,
+          displayName: p.displayName,
+          email: p.email,
+          photoUrl: p.photoURL,
+        })) ?? [],
     },
     operationType,
     path,
@@ -118,7 +132,7 @@ export function handleFirestoreError(
     window.dispatchEvent(
       new CustomEvent('firestore-error', {
         detail: { message: userMessage, type: isPermissionError ? 'error' : 'warning' },
-      })
+      }),
     );
   }
 

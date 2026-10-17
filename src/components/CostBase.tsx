@@ -102,7 +102,7 @@ export function CostBaseSettings() {
               <input
                 type="number"
                 value={costs.fixedCosts !== undefined && costs.fixedCosts !== null ? costs.fixedCosts : ''}
-                onChange={(e) => setCosts({ ...costs, fixedCosts: Number(e.target.value) })}
+                onChange={e => setCosts({ ...costs, fixedCosts: Number(e.target.value) })}
                 className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
                 placeholder="0,00"
                 required
@@ -119,13 +119,17 @@ export function CostBaseSettings() {
             <div className="relative">
               <input
                 type="number"
-                value={costs.productiveHours !== undefined && costs.productiveHours !== null ? costs.productiveHours : ''}
-                onChange={(e) => setCosts({ ...costs, productiveHours: Number(e.target.value) })}
+                value={
+                  costs.productiveHours !== undefined && costs.productiveHours !== null ? costs.productiveHours : ''
+                }
+                onChange={e => setCosts({ ...costs, productiveHours: Number(e.target.value) })}
                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
                 placeholder="Ex: 160"
                 required
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 text-xs font-medium">horas</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 text-xs font-medium">
+                horas
+              </span>
             </div>
             <p className="text-[10px] text-neutral-400">Tempo real dedicado à produção.</p>
           </div>
@@ -139,7 +143,7 @@ export function CostBaseSettings() {
               <input
                 type="number"
                 value={costs.profitGoal !== undefined && costs.profitGoal !== null ? costs.profitGoal : ''}
-                onChange={(e) => setCosts({ ...costs, profitGoal: Number(e.target.value) })}
+                onChange={e => setCosts({ ...costs, profitGoal: Number(e.target.value) })}
                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
                 placeholder="Ex: 30"
                 required
@@ -154,13 +158,15 @@ export function CostBaseSettings() {
               <Calculator className="w-4 h-4" />
               Valor da Hora Trabalhada
             </div>
-            <span className="text-3xl font-bold">{formatCurrency(calculateHourlyRate(costs.fixedCosts, costs.productiveHours))}</span>
+            <span className="text-3xl font-bold">
+              {formatCurrency(calculateHourlyRate(costs.fixedCosts, costs.productiveHours))}
+            </span>
             <p className="text-[10px] text-neutral-500">Calculado automaticamente com base nos custos fixos.</p>
           </div>
         </div>
 
         <div className="pt-6 border-t border-neutral-100">
-          {(!isAdmin && user?.role === 'OPERADOR') ? (
+          {!isAdmin && user?.role === 'OPERADOR' ? (
             <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl text-sm font-medium flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-yellow-600" />
               Você não tem permissão para alterar a base de custos. Apenas visualização.
@@ -185,8 +191,8 @@ export function CostBaseSettings() {
         <div className="space-y-1">
           <h3 className="font-bold text-blue-900 text-sm">Por que isso é importante?</h3>
           <p className="text-blue-700 text-xs leading-relaxed">
-            Saber o valor da sua hora é o primeiro passo para não ter prejuízo. 
-            Muitos artesãos esquecem de incluir o custo do tempo, o que acaba "comendo" o lucro real no final do mês.
+            Saber o valor da sua hora é o primeiro passo para não ter prejuízo. Muitos artesãos esquecem de incluir o
+            custo do tempo, o que acaba "comendo" o lucro real no final do mês.
           </p>
         </div>
       </div>

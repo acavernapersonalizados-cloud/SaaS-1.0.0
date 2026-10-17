@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Package, 
-  Box, 
-  Calculator, 
-  History, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  Settings,
+  Package,
+  Box,
+  Calculator,
+  History,
+  LogOut,
   User as UserIcon,
   Users as UsersIcon,
   Store as StoreIcon,
@@ -23,7 +23,9 @@ import {
   ShoppingCart,
   Factory,
   FileText,
-  Gift
+  Gift,
+  Tags,
+  BookOpen,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
@@ -85,6 +87,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
     { id: 'materials', label: 'Matéria-prima', icon: Package, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'inventory', label: 'Estoque', icon: Box, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'products', label: 'Produtos', icon: Box, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { id: 'categories', label: 'Categorias', icon: Tags, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    { id: 'catalog', label: 'Catálogo', icon: BookOpen, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'pricing', label: 'Precificação', icon: Calculator, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'laser', label: 'Corte a Laser', icon: Zap, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'print3d', label: 'Impressão 3D', icon: Printer, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
@@ -121,7 +125,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
         </div>
         <div className="flex items-center gap-2">
           {stores.length > 0 && (
-            <button 
+            <button
               onClick={() => setShowStoreDropdown(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-50 border border-neutral-200 rounded-full text-[10px] font-bold shadow-sm"
             >
@@ -151,21 +155,27 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
                     setShowStoreDropdown(false);
                   }}
                   className={cn(
-                    "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all",
-                    activeStore?.id === store.id 
-                      ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" 
-                      : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100"
+                    'w-full flex items-center gap-4 p-4 rounded-2xl border transition-all',
+                    activeStore?.id === store.id
+                      ? 'bg-neutral-900 border-neutral-900 text-white shadow-lg'
+                      : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100',
                   )}
                 >
-                  <div className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                    activeStore?.id === store.id ? "bg-white/20" : "bg-white"
-                  )}>
-                    <StoreIcon className={cn("w-5 h-5", activeStore?.id === store.id ? "text-white" : "text-neutral-400")} />
+                  <div
+                    className={cn(
+                      'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
+                      activeStore?.id === store.id ? 'bg-white/20' : 'bg-white',
+                    )}
+                  >
+                    <StoreIcon
+                      className={cn('w-5 h-5', activeStore?.id === store.id ? 'text-white' : 'text-neutral-400')}
+                    />
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="font-bold">{store.name}</span>
-                    <span className={cn("text-[10px]", activeStore?.id === store.id ? "text-white/60" : "text-neutral-400")}>
+                    <span
+                      className={cn('text-[10px]', activeStore?.id === store.id ? 'text-white/60' : 'text-neutral-400')}
+                    >
                       {store.city}, {store.state}
                     </span>
                   </div>
@@ -178,17 +188,19 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
 
       {/* Mobile Sidebar Backdrop */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar / Mobile Menu */}
-      <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-neutral-200 p-6 flex flex-col gap-8 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-64 md:p-4 md:z-40",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-neutral-200 p-6 flex flex-col gap-8 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-64 md:p-4 md:z-40',
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between md:hidden mb-4">
             <div className="flex items-center gap-2">
@@ -197,10 +209,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
               </div>
               <span className="font-bold tracking-tight text-sm">A Caverna</span>
             </div>
-            <button 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 bg-neutral-100 rounded-full"
-            >
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-neutral-100 rounded-full">
               <X className="w-5 h-5 text-neutral-500" />
             </button>
           </div>
@@ -215,7 +224,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
           {/* Store Selector */}
           {stores.length > 0 && (
             <div className="relative px-2 mt-4 md:mt-0">
-              <button 
+              <button
                 onClick={() => setShowStoreDropdown(!showStoreDropdown)}
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold hover:bg-neutral-100 transition-all"
               >
@@ -223,7 +232,9 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
                   <StoreIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                   <span className="truncate">{activeStore?.name || 'Selecionar Loja'}</span>
                 </div>
-                <ChevronDown className={cn("w-3 h-3 text-neutral-400 transition-transform", showStoreDropdown && "rotate-180")} />
+                <ChevronDown
+                  className={cn('w-3 h-3 text-neutral-400 transition-transform', showStoreDropdown && 'rotate-180')}
+                />
               </button>
 
               {showStoreDropdown && (
@@ -236,8 +247,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
                         setShowStoreDropdown(false);
                       }}
                       className={cn(
-                        "w-full px-4 py-2.5 text-left text-xs font-medium hover:bg-neutral-50 transition-colors",
-                        activeStore?.id === store.id ? "bg-neutral-50 text-neutral-900 font-bold" : "text-neutral-500"
+                        'w-full px-4 py-2.5 text-left text-xs font-medium hover:bg-neutral-50 transition-colors',
+                        activeStore?.id === store.id ? 'bg-neutral-50 text-neutral-900 font-bold' : 'text-neutral-500',
                       )}
                     >
                       {store.name}
@@ -250,18 +261,23 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
         </div>
 
         <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
-          {filteredNavItems.map((item) => (
+          {filteredNavItems.map(item => (
             <button
               key={item.id}
               onClick={() => handleTabChange(item.id)}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl text-sm font-medium transition-all group",
-                activeTab === item.id 
-                  ? "bg-neutral-900 text-white shadow-sm" 
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                'flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl text-sm font-medium transition-all group',
+                activeTab === item.id
+                  ? 'bg-neutral-900 text-white shadow-sm'
+                  : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900',
               )}
             >
-              <item.icon className={cn("w-5 h-5", activeTab === item.id ? "text-white" : "text-neutral-400 group-hover:text-neutral-900")} />
+              <item.icon
+                className={cn(
+                  'w-5 h-5',
+                  activeTab === item.id ? 'text-white' : 'text-neutral-400 group-hover:text-neutral-900',
+                )}
+              />
               {item.label}
             </button>
           ))}
@@ -307,26 +323,21 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-neutral-900/50 z-30 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        <div className="fixed inset-0 bg-neutral-900/50 z-30 md:hidden" onClick={() => setIsMobileMenuOpen(false)} />
       )}
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-neutral-200 px-2 py-1 z-40 flex items-center justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-        {filteredNavItems.slice(0, 5).map((item) => (
+        {filteredNavItems.slice(0, 5).map(item => (
           <button
             key={item.id}
             onClick={() => handleTabChange(item.id)}
             className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px]",
-              activeTab === item.id 
-                ? "text-neutral-900" 
-                : "text-neutral-400"
+              'flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px]',
+              activeTab === item.id ? 'text-neutral-900' : 'text-neutral-400',
             )}
           >
-            <item.icon className={cn("w-5 h-5", activeTab === item.id ? "text-neutral-900" : "text-neutral-400")} />
+            <item.icon className={cn('w-5 h-5', activeTab === item.id ? 'text-neutral-900' : 'text-neutral-400')} />
             <span className="text-[10px] font-bold">{item.label}</span>
           </button>
         ))}
@@ -349,8 +360,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
             <div className="max-w-md">
               <h2 className="text-2xl font-bold text-neutral-900">Nenhuma loja vinculada</h2>
               <p className="text-neutral-500 mt-2">
-                Seu usuário ainda não foi vinculado a nenhuma loja. 
-                Entre em contato com o administrador para solicitar o acesso.
+                Seu usuário ainda não foi vinculado a nenhuma loja. Entre em contato com o administrador para solicitar
+                o acesso.
               </p>
             </div>
           </div>

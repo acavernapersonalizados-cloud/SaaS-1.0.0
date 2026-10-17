@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # PrecificaAteliê
 
 Sistema de precificação e gestão profissional para ateliês e artesãos.
@@ -72,6 +71,3 @@ Para publicar o projeto no GitHub Pages:
 
 ---
 Desenvolvido para facilitar a vida do artesão.
-=======
-# SaaS-A-Caverna-1.0.0
->>>>>>> 86f3f7a2707c315eeb102882cca4a51a353cc25b

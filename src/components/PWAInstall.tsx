@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 let deferredPrompt: any;
 
@@ -6,7 +6,7 @@ export default function PWAInstall() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    window.addEventListener("beforeinstallprompt", (e: any) => {
+    window.addEventListener('beforeinstallprompt', (e: any) => {
       e.preventDefault();
       deferredPrompt = e;
       setShow(true);
@@ -19,7 +19,7 @@ export default function PWAInstall() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === "accepted") {
+    if (outcome === 'accepted') {
       setShow(false);
     }
 
@@ -29,17 +29,19 @@ export default function PWAInstall() {
   if (!show) return null;
 
   return (
-    <div style={{
-      position: "fixed",
-      bottom: 20,
-      left: 20,
-      right: 20,
-      background: "#000",
-      color: "#fff",
-      padding: 15,
-      borderRadius: 10,
-      zIndex: 9999
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 20,
+        left: 20,
+        right: 20,
+        background: '#000',
+        color: '#fff',
+        padding: 15,
+        borderRadius: 10,
+        zIndex: 9999,
+      }}
+    >
       <p>Instalar app no seu celular?</p>
       <button onClick={install}>Instalar</button>
     </div>

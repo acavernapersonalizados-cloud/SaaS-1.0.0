@@ -20,10 +20,10 @@ export type ProfitStatus = 'excellent' | 'good' | 'low' | 'risky' | 'loss';
 export interface ProfitStatusInfo {
   status: ProfitStatus;
   label: string;
-  color: string;       // Tailwind text color class
-  bg: string;          // Tailwind bg color class
-  border: string;      // Tailwind border class
-  badge: string;       // badge combined class
+  color: string; // Tailwind text color class
+  bg: string; // Tailwind bg color class
+  border: string; // Tailwind border class
+  badge: string; // badge combined class
   emoji: string;
   description: string;
   recommendation: string;
@@ -37,15 +37,15 @@ export interface ProductCostResult {
 }
 
 export interface ProductPricingResult extends ProductCostResult {
-  suggestedPrice: number;       // using profitGoal margin
-  manualPrice: number | null;   // null if not set
-  effectivePrice: number;       // manualPrice ?? suggestedPrice
-  profitPerUnit: number;        // effectivePrice - totalCost
-  margin: number;               // (profit / effectivePrice) * 100
-  markup: number;               // (profit / totalCost) * 100  — expressed as multiplier (e.g. 2.74)
+  suggestedPrice: number; // using profitGoal margin
+  manualPrice: number | null; // null if not set
+  effectivePrice: number; // manualPrice ?? suggestedPrice
+  profitPerUnit: number; // effectivePrice - totalCost
+  margin: number; // (profit / effectivePrice) * 100
+  markup: number; // (profit / totalCost) * 100  — expressed as multiplier (e.g. 2.74)
   profitStatus: ProfitStatusInfo;
-  minimumPrice: number;         // break-even (totalCost)
-  hasCosts: boolean;            // true if costBase was available
+  minimumPrice: number; // break-even (totalCost)
+  hasCosts: boolean; // true if costBase was available
 }
 
 export interface QuoteItemCalcResult {
@@ -86,51 +86,57 @@ export interface QuoteItemCalcResult {
  * RISKY      margem >= 0%
  * LOSS       margem < 0%
  */
+export const MAX_CHANNEL_FEE_PERCENT = 95;
+
 export function getProfitStatus(margin: number): ProfitStatusInfo {
-  if (margin >= 55) return {
-    status: 'excellent',
-    label: 'Excelente',
-    emoji: '🟢',
-    color: 'text-emerald-700',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    badge: 'bg-emerald-100 text-emerald-700',
-    description: 'Margem saudável e sustentável para o seu negócio.',
-    recommendation: 'Mantenha este preço. Você pode crescer com segurança.',
-  };
-  if (margin >= 35) return {
-    status: 'good',
-    label: 'Bom',
-    emoji: '🟡',
-    color: 'text-blue-700',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    badge: 'bg-blue-100 text-blue-700',
-    description: 'Margem adequada para a maioria dos produtos artesanais.',
-    recommendation: 'Preço equilibrado. Avalie se há espaço para crescer.',
-  };
-  if (margin >= 15) return {
-    status: 'low',
-    label: 'Margem Baixa',
-    emoji: '🟠',
-    color: 'text-amber-700',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    badge: 'bg-amber-100 text-amber-700',
-    description: 'Margem abaixo do ideal para cobrir imprevistos.',
-    recommendation: 'Considere reduzir custos ou aumentar o preço.',
-  };
-  if (margin >= 0) return {
-    status: 'risky',
-    label: 'Arriscado',
-    emoji: '🔴',
-    color: 'text-orange-700',
-    bg: 'bg-orange-50',
-    border: 'border-orange-200',
-    badge: 'bg-orange-100 text-orange-700',
-    description: 'Margem muito baixa. Qualquer imprevisto gera prejuízo.',
-    recommendation: 'Aumente o preço imediatamente ou reduza custos.',
-  };
+  if (margin >= 55)
+    return {
+      status: 'excellent',
+      label: 'Excelente',
+      emoji: '🟢',
+      color: 'text-emerald-700',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-200',
+      badge: 'bg-emerald-100 text-emerald-700',
+      description: 'Margem saudável e sustentável para o seu negócio.',
+      recommendation: 'Mantenha este preço. Você pode crescer com segurança.',
+    };
+  if (margin >= 35)
+    return {
+      status: 'good',
+      label: 'Bom',
+      emoji: '🟡',
+      color: 'text-blue-700',
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      badge: 'bg-blue-100 text-blue-700',
+      description: 'Margem adequada para a maioria dos produtos artesanais.',
+      recommendation: 'Preço equilibrado. Avalie se há espaço para crescer.',
+    };
+  if (margin >= 15)
+    return {
+      status: 'low',
+      label: 'Margem Baixa',
+      emoji: '🟠',
+      color: 'text-amber-700',
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      badge: 'bg-amber-100 text-amber-700',
+      description: 'Margem abaixo do ideal para cobrir imprevistos.',
+      recommendation: 'Considere reduzir custos ou aumentar o preço.',
+    };
+  if (margin >= 0)
+    return {
+      status: 'risky',
+      label: 'Arriscado',
+      emoji: '🔴',
+      color: 'text-orange-700',
+      bg: 'bg-orange-50',
+      border: 'border-orange-200',
+      badge: 'bg-orange-100 text-orange-700',
+      description: 'Margem muito baixa. Qualquer imprevisto gera prejuízo.',
+      recommendation: 'Aumente o preço imediatamente ou reduza custos.',
+    };
   return {
     status: 'loss',
     label: 'Prejuízo',
@@ -149,16 +155,14 @@ export function getProfitStatus(margin: number): ProfitStatusInfo {
 export function calcProductCost(
   product: Partial<Product>,
   materials: Material[],
-  costs: CostBase | null
+  costs: CostBase | null,
 ): ProductCostResult {
   const materialCost = (product.materials || []).reduce((acc, pm) => {
     const mat = materials.find(m => m.id === pm.materialId);
     return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
   }, 0);
 
-  const laborCost = costs
-    ? ((Number(product.productionTime) || 0) / 60) * (Number(costs.hourlyRate) || 0)
-    : 0;
+  const laborCost = costs ? ((Number(product.productionTime) || 0) / 60) * (Number(costs.hourlyRate) || 0) : 0;
 
   const packagingCost = Number(product.packagingCost) || 0;
 
@@ -172,7 +176,7 @@ export function calcProductCost(
 export function calcProductPricing(
   product: Partial<Product>,
   materials: Material[],
-  costs: CostBase | null
+  costs: CostBase | null,
 ): ProductPricingResult {
   const costResult = calcProductCost(product, materials, costs);
   const { totalCost } = costResult;
@@ -181,9 +185,7 @@ export function calcProductPricing(
   const suggestedPrice = totalCost > 0 ? totalCost * (1 + profitGoalPct / 100) : 0;
 
   const manualPrice: number | null =
-    product.manualPrice != null && product.manualPrice > 0
-      ? Number(product.manualPrice)
-      : null;
+    product.manualPrice != null && product.manualPrice > 0 ? Number(product.manualPrice) : null;
 
   const effectivePrice = manualPrice ?? suggestedPrice;
   const profitPerUnit = effectivePrice - totalCost;
@@ -216,12 +218,11 @@ export function calcQuoteItem(
   product: Product,
   materials: Material[],
   costs: CostBase,
-  channelFeePercent: number
+  channelFeePercent: number,
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
 
-  const { materialCost, laborCost, totalCost: totalProductionCost } =
-    calcProductCost(product, materials, costs);
+  const { materialCost, laborCost, totalCost: totalProductionCost } = calcProductCost(product, materials, costs);
 
   // Margin: item custom > default profitGoal
   const margin =
@@ -229,13 +230,13 @@ export function calcQuoteItem(
       ? Number(item.customMargin)
       : Number(costs.profitGoal) || 0;
 
-  const platformFeePercent = channelFeePercent;
+  // Taxa de canal: limitada a 0–95%. Acima disso o preço tenderia ao infinito
+  // e o cálculo antigo ignorava a taxa silenciosamente (prejuízo escondido).
+  const rawFeePercent = Number(channelFeePercent) || 0;
+  const platformFeePercent = Math.min(Math.max(rawFeePercent, 0), MAX_CHANNEL_FEE_PERCENT);
 
   // Base unit price accounting for platform fee
-  const baseUnitPrice =
-    platformFeePercent < 100
-      ? (totalProductionCost * (1 + margin / 100)) / (1 - platformFeePercent / 100)
-      : totalProductionCost * (1 + margin / 100);
+  const baseUnitPrice = (totalProductionCost * (1 + margin / 100)) / (1 - platformFeePercent / 100);
 
   const finishingValue = (product.finishingOptions || [])
     .filter(o => item.selectedFinishingIds?.includes(o.id))
@@ -310,10 +311,7 @@ export interface ReversePricingResult {
   breakEvenPrice: number;
 }
 
-export function calcReversePrice(
-  targetPrice: number,
-  totalCost: number
-): ReversePricingResult {
+export function calcReversePrice(targetPrice: number, totalCost: number): ReversePricingResult {
   const profit = targetPrice - totalCost;
   const margin = targetPrice > 0 ? (profit / targetPrice) * 100 : -999;
   const markup = totalCost > 0 ? targetPrice / totalCost : 0;
@@ -347,16 +345,12 @@ export interface CatalogKPIs {
   productsExcellent: number;
   avgMargin: number;
   avgProfit: number;
-  totalPotentialProfit: number;      // sum of profitPerUnit for all priced products
+  totalPotentialProfit: number; // sum of profitPerUnit for all priced products
   mostProfitable: Array<{ name: string; profit: number; margin: number }>;
   leastProfitable: Array<{ name: string; profit: number; margin: number }>;
 }
 
-export function calcCatalogKPIs(
-  products: Product[],
-  materials: Material[],
-  costs: CostBase | null
-): CatalogKPIs {
+export function calcCatalogKPIs(products: Product[], materials: Material[], costs: CostBase | null): CatalogKPIs {
   const pricings = products.map(p => ({
     name: p.name,
     ...calcProductPricing(p, materials, costs),
@@ -364,13 +358,9 @@ export function calcCatalogKPIs(
 
   const priced = pricings.filter(p => p.effectivePrice > 0 && p.hasCosts);
 
-  const avgMargin = priced.length > 0
-    ? priced.reduce((a, p) => a + p.margin, 0) / priced.length
-    : 0;
+  const avgMargin = priced.length > 0 ? priced.reduce((a, p) => a + p.margin, 0) / priced.length : 0;
 
-  const avgProfit = priced.length > 0
-    ? priced.reduce((a, p) => a + p.profitPerUnit, 0) / priced.length
-    : 0;
+  const avgProfit = priced.length > 0 ? priced.reduce((a, p) => a + p.profitPerUnit, 0) / priced.length : 0;
 
   const sorted = [...priced].sort((a, b) => b.profitPerUnit - a.profitPerUnit);
 
@@ -387,6 +377,9 @@ export function calcCatalogKPIs(
     avgProfit,
     totalPotentialProfit: priced.reduce((a, p) => a + p.profitPerUnit, 0),
     mostProfitable: sorted.slice(0, 5).map(p => ({ name: p.name, profit: p.profitPerUnit, margin: p.margin })),
-    leastProfitable: sorted.slice(-5).reverse().map(p => ({ name: p.name, profit: p.profitPerUnit, margin: p.margin })),
+    leastProfitable: sorted
+      .slice(-5)
+      .reverse()
+      .map(p => ({ name: p.name, profit: p.profitPerUnit, margin: p.margin })),
   };
 }

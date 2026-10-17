@@ -1,12 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  updateDoc,
+  getDocs,
+} from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Plus, Trash2, Package, Search, PlusCircle, X, Truck, Edit2, ArrowUpDown, AlertCircle, Loader2 } from 'lucide-react';
+import { CategoryPicker, CategoryChips, CategoryFilterBar } from './CategoryPicker';
+import { useCategories, categoryNames } from '../hooks/useCategories';
+import {
+  Plus,
+  Trash2,
+  Package,
+  Search,
+  PlusCircle,
+  X,
+  Truck,
+  Edit2,
+  ArrowUpDown,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
 
 type SortField = 'name' | 'purchasePrice' | 'unitCost' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
@@ -15,6 +40,8 @@ export function Materials() {
   const { activeStore } = useStore();
   const { addToast } = useToast();
   const { isAdmin, user } = useAuth();
+  const { categories } = useCategories('material');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,36 +70,36 @@ export function Materials() {
       return;
     }
 
-    const q = query(
-      collection(db, 'materials'), 
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const q = query(collection(db, 'materials'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Material);
+        setMaterials(data);
+        setLoading(false);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'materials');
+        setLoading(false);
+      },
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Material));
-      setMaterials(data);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'materials');
-      setLoading(false);
-    });
     return () => unsubscribe();
   }, [activeStore]);
 
   useEffect(() => {
     if (!activeStore) return;
 
-    const q = query(
-      collection(db, 'suppliers'),
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const q = query(collection(db, 'suppliers'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Supplier);
+        setSuppliers(data);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'suppliers');
+      },
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Supplier));
-      setSuppliers(data);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'suppliers');
-    });
     return () => unsubscribe();
   }, [activeStore]);
 
@@ -85,7 +112,7 @@ export function Materials() {
     if (!isActuallyPackage && !newMaterial.purchaseQuantity) return;
     if (isActuallyPackage && !newMaterial.packageQuantity) return;
 
-    const quantity = isActuallyPackage ? (newMaterial.packageQuantity || 1) : newMaterial.purchaseQuantity!;
+    const quantity = isActuallyPackage ? newMaterial.packageQuantity || 1 : newMaterial.purchaseQuantity!;
     const unitCost = newMaterial.purchasePrice / quantity;
 
     try {
@@ -96,29 +123,46 @@ export function Materials() {
           unitCost,
           purchaseQuantity: quantity,
           supplierId: newMaterial.supplierId || null,
+          categoryIds: newMaterial.categoryIds || [],
           stockQuantity: Number(newMaterial.stockQuantity) || 0,
           minStockQuantity: Number(newMaterial.minStockQuantity) || 0,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
       } else {
-        await addDoc(collection(db, 'materials'), { 
-          ...newMaterial, 
+        await addDoc(collection(db, 'materials'), {
+          ...newMaterial,
           isPackage: isActuallyPackage,
           storeId: activeStore.id,
           unitCost,
           purchaseQuantity: quantity, // Ensure we store the total quantity
           supplierId: newMaterial.supplierId || null,
+          categoryIds: newMaterial.categoryIds || [],
           stockQuantity: Number(newMaterial.stockQuantity) || 0,
           minStockQuantity: Number(newMaterial.minStockQuantity) || 0,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
       }
-      setNewMaterial({ name: '', unit: 'un', purchasePrice: 0, purchaseQuantity: 0, isPackage: false, packageQuantity: 1, supplierId: '', stockQuantity: 0, minStockQuantity: 0 });
+      setNewMaterial({
+        name: '',
+        unit: 'un',
+        purchasePrice: 0,
+        purchaseQuantity: 0,
+        isPackage: false,
+        packageQuantity: 1,
+        supplierId: '',
+        categoryIds: [],
+        stockQuantity: 0,
+        minStockQuantity: 0,
+      });
       setEditingMaterial(null);
       setIsModalOpen(false);
       addToast(editingMaterial ? 'Material atualizado com sucesso!' : 'Material cadastrado com sucesso!', 'success');
     } catch (error) {
-      handleFirestoreError(error, editingMaterial ? OperationType.UPDATE : OperationType.CREATE, editingMaterial ? `materials/${editingMaterial.id}` : 'materials');
+      handleFirestoreError(
+        error,
+        editingMaterial ? OperationType.UPDATE : OperationType.CREATE,
+        editingMaterial ? `materials/${editingMaterial.id}` : 'materials',
+      );
     }
   };
 
@@ -132,6 +176,7 @@ export function Materials() {
       isPackage: material.isPackage,
       packageQuantity: material.packageQuantity || 1,
       supplierId: material.supplierId || '',
+      categoryIds: material.categoryIds || [],
       stockQuantity: material.stockQuantity || 0,
       minStockQuantity: material.minStockQuantity || 0,
     });
@@ -148,10 +193,13 @@ export function Materials() {
   };
 
   const filteredMaterials = materials
-    .filter(m => 
-      (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (suppliers.find(s => s.id === m.supplierId)?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      m =>
+        (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (suppliers.find(s => s.id === m.supplierId)?.name || '').toLowerCase().includes(searchTerm.toLowerCase()),
     )
+    // Categoria: um item aparece se pertencer a QUALQUER categoria selecionada
+    .filter(m => categoryFilter.length === 0 || (m.categoryIds || []).some(id => categoryFilter.includes(id)))
     .sort((a, b) => {
       let comparison = 0;
       if (sortField === 'name') {
@@ -170,10 +218,27 @@ export function Materials() {
     });
 
   const handleDelete = async () => {
-    if (!materialToDelete) return;
-    
+    if (!materialToDelete || !activeStore) return;
+
     setIsDeleting(true);
     try {
+      // Impede referências órfãs: não deixa excluir material usado em produtos
+      const usedSnap = await getDocs(query(collection(db, 'products'), where('storeId', '==', activeStore.id)));
+      const usedBy = usedSnap.docs
+        .filter(d =>
+          ((d.data().materials || []) as Array<{ materialId: string }>).some(m => m.materialId === materialToDelete),
+        )
+        .map(d => d.data().name as string);
+
+      if (usedBy.length > 0) {
+        addToast(
+          `Não é possível excluir: material usado em ${usedBy.length} produto(s) — ${usedBy.slice(0, 3).join(', ')}${usedBy.length > 3 ? '…' : ''}.`,
+          'error',
+        );
+        setMaterialToDelete(null);
+        return;
+      }
+
       await deleteDoc(doc(db, 'materials', materialToDelete));
       addToast('Material excluído com sucesso!', 'success');
       setMaterialToDelete(null);
@@ -222,9 +287,13 @@ export function Materials() {
               type="text"
               placeholder="Buscar material..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
             />
+          </div>
+
+          <div className="w-full md:w-auto">
+            <CategoryFilterBar scope="material" selected={categoryFilter} onChange={setCategoryFilter} />
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
@@ -264,13 +333,17 @@ export function Materials() {
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Unidade</th>
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Preço Compra</th>
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Qtd Compra</th>
-                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Custo Unitário</th>
+                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">
+                  Custo Unitário
+                </th>
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Estoque</th>
-                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right">Ações</th>
+                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
-              {filteredMaterials.map((material) => (
+              {filteredMaterials.map(material => (
                 <tr key={material.id} className="group hover:bg-neutral-50 transition-colors">
                   <td className="py-4">
                     <div className="font-bold text-neutral-900">{material.name}</div>
@@ -304,7 +377,9 @@ export function Materials() {
                   <td className="py-4 text-sm font-bold text-neutral-900">
                     {material.stockQuantity} {material.unit}
                     {material.stockQuantity <= (material.minStockQuantity || 0) && (
-                      <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">BAIXO</span>
+                      <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
+                        BAIXO
+                      </span>
                     )}
                   </td>
                   <td className="py-4 text-right">
@@ -329,7 +404,9 @@ export function Materials() {
               ))}
               {filteredMaterials.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-20 text-center text-neutral-400 italic">Nenhum material cadastrado.</td>
+                  <td colSpan={6} className="py-20 text-center text-neutral-400 italic">
+                    Nenhum material cadastrado.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -345,12 +422,21 @@ export function Materials() {
               <h2 className="text-2xl font-bold text-neutral-900">
                 {editingMaterial ? 'Editar Insumo' : 'Novo Insumo'}
               </h2>
-              <button 
+              <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingMaterial(null);
-                  setNewMaterial({ name: '', unit: 'un', purchasePrice: 0, purchaseQuantity: 0, isPackage: false, packageQuantity: 1, supplierId: '' });
-                }} 
+                  setNewMaterial({
+                    name: '',
+                    unit: 'un',
+                    purchasePrice: 0,
+                    purchaseQuantity: 0,
+                    isPackage: false,
+                    packageQuantity: 1,
+                    supplierId: '',
+                    categoryIds: [],
+                  });
+                }}
                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-neutral-400" />
@@ -365,7 +451,7 @@ export function Materials() {
                     type="text"
                     required
                     value={newMaterial.name}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, name: e.target.value })}
+                    onChange={e => setNewMaterial({ ...newMaterial, name: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: Tecido Algodão"
                   />
@@ -374,14 +460,23 @@ export function Materials() {
                   <label className="text-sm font-bold text-neutral-700">Fornecedor (Opcional)</label>
                   <select
                     value={newMaterial.supplierId || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, supplierId: e.target.value })}
+                    onChange={e => setNewMaterial({ ...newMaterial, supplierId: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   >
                     <option value="">Selecione um fornecedor</option>
                     {suppliers.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
                     ))}
                   </select>
+                </div>
+                <div className="md:col-span-2">
+                  <CategoryPicker
+                    scope="material"
+                    value={newMaterial.categoryIds || []}
+                    onChange={ids => setNewMaterial({ ...newMaterial, categoryIds: ids })}
+                  />
                 </div>
               </div>
 
@@ -390,7 +485,7 @@ export function Materials() {
                   <label className="text-sm font-bold text-neutral-700">Unidade</label>
                   <select
                     value={newMaterial.unit}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, unit: e.target.value })}
+                    onChange={e => setNewMaterial({ ...newMaterial, unit: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   >
                     <option value="un">Unidade (un)</option>
@@ -410,7 +505,7 @@ export function Materials() {
                     step="0.01"
                     required
                     value={newMaterial.purchasePrice || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, purchasePrice: Number(e.target.value) })}
+                    onChange={e => setNewMaterial({ ...newMaterial, purchasePrice: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="0,00"
                   />
@@ -422,7 +517,7 @@ export function Materials() {
                   type="checkbox"
                   id="isPackage"
                   checked={newMaterial.isPackage || newMaterial.unit === 'pct'}
-                  onChange={(e) => setNewMaterial({ ...newMaterial, isPackage: e.target.checked })}
+                  onChange={e => setNewMaterial({ ...newMaterial, isPackage: e.target.checked })}
                   className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
                 />
                 <label htmlFor="isPackage" className="text-sm font-bold text-neutral-700">
@@ -437,7 +532,7 @@ export function Materials() {
                     type="number"
                     required
                     value={newMaterial.packageQuantity || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, packageQuantity: Number(e.target.value) })}
+                    onChange={e => setNewMaterial({ ...newMaterial, packageQuantity: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 10"
                   />
@@ -453,7 +548,7 @@ export function Materials() {
                     step="0.01"
                     required
                     value={newMaterial.purchaseQuantity || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, purchaseQuantity: Number(e.target.value) })}
+                    onChange={e => setNewMaterial({ ...newMaterial, purchaseQuantity: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 10"
                   />
@@ -467,7 +562,7 @@ export function Materials() {
                     type="number"
                     required
                     value={newMaterial.stockQuantity || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, stockQuantity: Number(e.target.value) })}
+                    onChange={e => setNewMaterial({ ...newMaterial, stockQuantity: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 50"
                   />
@@ -478,7 +573,7 @@ export function Materials() {
                     type="number"
                     required
                     value={newMaterial.minStockQuantity || ''}
-                    onChange={(e) => setNewMaterial({ ...newMaterial, minStockQuantity: Number(e.target.value) })}
+                    onChange={e => setNewMaterial({ ...newMaterial, minStockQuantity: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 10"
                   />
@@ -507,7 +602,7 @@ export function Materials() {
               </div>
               <h3 className="text-xl font-bold">Excluir Material?</h3>
             </div>
-            
+
             <p className="text-neutral-600 leading-relaxed">
               Tem certeza que deseja excluir este material? Esta ação não pode ser desfeita.
             </p>

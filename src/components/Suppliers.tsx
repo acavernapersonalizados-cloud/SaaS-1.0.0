@@ -5,7 +5,21 @@ import { Supplier } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { PlusCircle, Search, X, Trash2, Truck, Phone, Mail, Globe, MapPin, FileText, Edit2, Loader2, Building2 } from 'lucide-react';
+import {
+  PlusCircle,
+  Search,
+  X,
+  Trash2,
+  Truck,
+  Phone,
+  Mail,
+  Globe,
+  MapPin,
+  FileText,
+  Edit2,
+  Loader2,
+  Building2,
+} from 'lucide-react';
 
 export function Suppliers() {
   const { activeStore } = useStore();
@@ -39,21 +53,21 @@ export function Suppliers() {
       return;
     }
 
-    const q = query(
-      collection(db, 'suppliers'),
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const q = query(collection(db, 'suppliers'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Supplier);
+        setSuppliers(data);
+        setLoading(false);
+      },
+      error => {
+        console.error('Error fetching suppliers', error);
+        addToast('Erro ao carregar fornecedores.', 'error');
+        handleFirestoreError(error, OperationType.LIST, 'suppliers');
+        setLoading(false);
+      },
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Supplier));
-      setSuppliers(data);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching suppliers', error);
-      addToast('Erro ao carregar fornecedores.', 'error');
-      handleFirestoreError(error, OperationType.LIST, 'suppliers');
-      setLoading(false);
-    });
     return () => unsubscribe();
   }, [activeStore]);
 
@@ -81,25 +95,32 @@ export function Suppliers() {
           createdAt: new Date().toISOString(),
         });
       }
-      setNewSupplier({ 
-        name: '', 
-        contactName: '', 
-        email: '', 
-        phone: '', 
-        website: '', 
-        address: '', 
+      setNewSupplier({
+        name: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        website: '',
+        address: '',
         observations: '',
         paymentMethod: 'pix',
         paymentTerms: 'credito_avista',
-        discount: 0
+        discount: 0,
       });
       setEditingSupplier(null);
       setIsModalOpen(false);
-      addToast(editingSupplier ? 'Fornecedor atualizado com sucesso!' : 'Fornecedor cadastrado com sucesso!', 'success');
+      addToast(
+        editingSupplier ? 'Fornecedor atualizado com sucesso!' : 'Fornecedor cadastrado com sucesso!',
+        'success',
+      );
     } catch (error) {
       console.error('Error adding/updating supplier', error);
       addToast('Erro ao salvar fornecedor. Tente novamente.', 'error');
-      handleFirestoreError(error, editingSupplier ? OperationType.UPDATE : OperationType.CREATE, editingSupplier ? `suppliers/${editingSupplier.id}` : 'suppliers');
+      handleFirestoreError(
+        error,
+        editingSupplier ? OperationType.UPDATE : OperationType.CREATE,
+        editingSupplier ? `suppliers/${editingSupplier.id}` : 'suppliers',
+      );
     } finally {
       setSubmitting(false);
     }
@@ -124,7 +145,7 @@ export function Suppliers() {
 
   const handleDelete = async () => {
     if (!supplierToDelete) return;
-    
+
     setIsDeleting(true);
     try {
       await deleteDoc(doc(db, 'suppliers', supplierToDelete));
@@ -138,10 +159,11 @@ export function Suppliers() {
     }
   };
 
-  const filteredSuppliers = suppliers.filter(s =>
-    (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.contactName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSuppliers = suppliers.filter(
+    s =>
+      (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.contactName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (!activeStore) {
@@ -181,13 +203,13 @@ export function Suppliers() {
             type="text"
             placeholder="Buscar por nome, contato ou email..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSuppliers.map((supplier) => (
+          {filteredSuppliers.map(supplier => (
             <div
               key={supplier.id}
               onClick={() => setSelectedSupplier(supplier)}
@@ -225,7 +247,7 @@ export function Suppliers() {
               {(isAdmin || user?.role === 'GERENTE') && (
                 <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleEdit(supplier);
                     }}
@@ -234,7 +256,7 @@ export function Suppliers() {
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       setSupplierToDelete(supplier.id);
                     }}
@@ -260,23 +282,23 @@ export function Suppliers() {
               <h2 className="text-2xl font-bold text-neutral-900">
                 {editingSupplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}
               </h2>
-              <button 
+              <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingSupplier(null);
-                  setNewSupplier({ 
-                    name: '', 
-                    contactName: '', 
-                    email: '', 
-                    phone: '', 
-                    website: '', 
-                    address: '', 
+                  setNewSupplier({
+                    name: '',
+                    contactName: '',
+                    email: '',
+                    phone: '',
+                    website: '',
+                    address: '',
                     observations: '',
                     paymentMethod: 'pix',
                     paymentTerms: 'credito_avista',
-                    discount: 0
+                    discount: 0,
                   });
-                }} 
+                }}
                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-neutral-400" />
@@ -291,7 +313,7 @@ export function Suppliers() {
                     type="text"
                     required
                     value={newSupplier.name}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, name: e.target.value })}
+                    onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: Fornecedor de Tecidos"
                   />
@@ -301,7 +323,7 @@ export function Suppliers() {
                   <input
                     type="text"
                     value={newSupplier.contactName}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, contactName: e.target.value })}
+                    onChange={e => setNewSupplier({ ...newSupplier, contactName: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: Maria Silva"
                   />
@@ -314,7 +336,7 @@ export function Suppliers() {
                   <input
                     type="email"
                     value={newSupplier.email}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, email: e.target.value })}
+                    onChange={e => setNewSupplier({ ...newSupplier, email: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="contato@fornecedor.com"
                   />
@@ -324,7 +346,7 @@ export function Suppliers() {
                   <input
                     type="text"
                     value={newSupplier.phone}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, phone: e.target.value })}
+                    onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: (11) 99999-9999"
                   />
@@ -336,7 +358,7 @@ export function Suppliers() {
                 <input
                   type="text"
                   value={newSupplier.website}
-                  onChange={(e) => setNewSupplier({ ...newSupplier, website: e.target.value })}
+                  onChange={e => setNewSupplier({ ...newSupplier, website: e.target.value })}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   placeholder="https://www.fornecedor.com"
                 />
@@ -347,7 +369,7 @@ export function Suppliers() {
                 <input
                   type="text"
                   value={newSupplier.address}
-                  onChange={(e) => setNewSupplier({ ...newSupplier, address: e.target.value })}
+                  onChange={e => setNewSupplier({ ...newSupplier, address: e.target.value })}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   placeholder="Rua Exemplo, 123 - Cidade, UF"
                 />
@@ -357,7 +379,7 @@ export function Suppliers() {
                 <label className="text-sm font-bold text-neutral-700">Observações</label>
                 <textarea
                   value={newSupplier.observations}
-                  onChange={(e) => setNewSupplier({ ...newSupplier, observations: e.target.value })}
+                  onChange={e => setNewSupplier({ ...newSupplier, observations: e.target.value })}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none min-h-[100px]"
                 />
               </div>
@@ -367,7 +389,7 @@ export function Suppliers() {
                   <label className="text-sm font-bold text-neutral-700">Forma de Pagamento</label>
                   <select
                     value={newSupplier.paymentMethod}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, paymentMethod: e.target.value as any })}
+                    onChange={e => setNewSupplier({ ...newSupplier, paymentMethod: e.target.value as any })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   >
                     <option value="dinheiro">Dinheiro</option>
@@ -380,7 +402,7 @@ export function Suppliers() {
                   <label className="text-sm font-bold text-neutral-700">Condições de Pagamento</label>
                   <select
                     value={newSupplier.paymentTerms}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, paymentTerms: e.target.value as any })}
+                    onChange={e => setNewSupplier({ ...newSupplier, paymentTerms: e.target.value as any })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   >
                     <option value="credito_avista">Crédito à vista</option>
@@ -397,7 +419,9 @@ export function Suppliers() {
                   <input
                     type="number"
                     value={newSupplier.discount || ''}
-                    onChange={(e) => setNewSupplier({ ...newSupplier, discount: e.target.value ? parseFloat(e.target.value) : 0 })}
+                    onChange={e =>
+                      setNewSupplier({ ...newSupplier, discount: e.target.value ? parseFloat(e.target.value) : 0 })
+                    }
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="0"
                   />
@@ -410,7 +434,7 @@ export function Suppliers() {
                   disabled={submitting}
                   className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Processando...' : (editingSupplier ? 'Salvar Alterações' : 'Cadastrar Fornecedor')}
+                  {submitting ? 'Processando...' : editingSupplier ? 'Salvar Alterações' : 'Cadastrar Fornecedor'}
                 </button>
               </div>
             </form>
@@ -433,24 +457,27 @@ export function Suppliers() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleEdit(selectedSupplier);
+                    setSelectedSupplier(null);
+                  }}
+                  className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
+                >
+                  <Edit2 className="w-5 h-5" />
+                </button>
+                {(isAdmin || user?.role === 'GERENTE') && (
                   <button
-                    onClick={() => {
-                      handleEdit(selectedSupplier);
-                      setSelectedSupplier(null);
-                    }}
-                    className="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
+                    onClick={() => setSupplierToDelete(selectedSupplier.id)}
+                    className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                   >
-                    <Edit2 className="w-5 h-5" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
-                  {(isAdmin || user?.role === 'GERENTE') && (
-                    <button
-                      onClick={() => setSupplierToDelete(selectedSupplier.id)}
-                      className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  )}
-                <button onClick={() => setSelectedSupplier(null)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
+                )}
+                <button
+                  onClick={() => setSelectedSupplier(null)}
+                  className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                >
                   <X className="w-6 h-6 text-neutral-400" />
                 </button>
               </div>
@@ -459,7 +486,9 @@ export function Suppliers() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="bg-neutral-50 p-6 rounded-2xl space-y-4">
-                  <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Informações de Contato</h3>
+                  <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                    Informações de Contato
+                  </h3>
                   <div className="space-y-3">
                     {selectedSupplier.contactName && (
                       <div className="flex items-center gap-3 text-sm">
@@ -482,7 +511,12 @@ export function Suppliers() {
                     {selectedSupplier.website && (
                       <div className="flex items-center gap-3 text-sm">
                         <Globe className="w-4 h-4 text-neutral-400" />
-                        <a href={selectedSupplier.website} target="_blank" rel="noopener noreferrer" className="text-neutral-900 hover:underline truncate">
+                        <a
+                          href={selectedSupplier.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-neutral-900 hover:underline truncate"
+                        >
                           {selectedSupplier.website}
                         </a>
                       </div>
@@ -539,7 +573,7 @@ export function Suppliers() {
               </div>
               <h3 className="text-xl font-bold">Excluir Fornecedor?</h3>
             </div>
-            
+
             <p className="text-neutral-600 leading-relaxed">
               Tem certeza que deseja excluir este fornecedor? Esta ação não pode ser desfeita.
             </p>

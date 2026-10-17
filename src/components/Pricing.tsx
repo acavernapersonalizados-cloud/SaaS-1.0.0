@@ -8,15 +8,15 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
 import { useToast } from '../contexts/ToastContext';
-import { 
-  Calculator, 
-  User, 
-  Building2, 
-  ShoppingCart, 
-  Sparkles, 
-  FileText, 
-  ArrowRight, 
-  CheckCircle2, 
+import {
+  Calculator,
+  User,
+  Building2,
+  ShoppingCart,
+  Sparkles,
+  FileText,
+  ArrowRight,
+  CheckCircle2,
   AlertCircle,
   Loader2,
   X,
@@ -27,7 +27,7 @@ import {
   ChevronRight,
   Package,
   Plus,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
 
@@ -55,29 +55,32 @@ export function Pricing() {
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  
+
   // Modal Item State
   const [selectedProductId, setSelectedProductId] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [selectedFinishes, setSelectedFinishes] = useState<string[]>([]);
   const [selectedAccessories, setSelectedAccessories] = useState<string[]>([]);
-  
+
   const currentItem = {
     productId: selectedProductId,
     quantity,
     selectedFinishingIds: selectedFinishes,
     selectedAccessoryIds: selectedAccessories,
-    customMargin: customMargin !== null ? customMargin : undefined
+    customMargin: customMargin !== null ? customMargin : undefined,
   };
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
 
   // Totals calculation
-  const totals = quoteItems.reduce((acc, item) => ({
-    amount: acc.amount + item.totalPrice,
-    profit: acc.profit + (item.totalPrice * (1 - (CHANNELS[channel] || 0) / 100) - item.basePrice),
-    count: acc.count + 1
-  }), { amount: 0, profit: 0, count: 0 });
+  const totals = quoteItems.reduce(
+    (acc, item) => ({
+      amount: acc.amount + item.totalPrice,
+      profit: acc.profit + (item.totalPrice * (1 - (CHANNELS[channel] || 0) / 100) - item.basePrice),
+      count: acc.count + 1,
+    }),
+    { amount: 0, profit: 0, count: 0 },
+  );
 
   // AI state
   const [aiAnalysis, setAiAnalysis] = useState('');
@@ -97,40 +100,40 @@ export function Pricing() {
       return;
     }
 
-    const qP = query(
-      collection(db, 'products'), 
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const qP = query(collection(db, 'products'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribeP = onSnapshot(
+      qP,
+      snapshot => {
+        setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Product));
+        setLoading(false);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'products');
+        setLoading(false);
+      },
     );
-    const unsubscribeP = onSnapshot(qP, (snapshot) => {
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'products');
-      setLoading(false);
-    });
 
-    const qM = query(
-      collection(db, 'materials'), 
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const qM = query(collection(db, 'materials'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribeM = onSnapshot(
+      qM,
+      snapshot => {
+        setMaterials(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Material));
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'materials');
+      },
     );
-    const unsubscribeM = onSnapshot(qM, (snapshot) => {
-      setMaterials(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Material)));
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'materials');
-    });
 
-    const qC = query(
-      collection(db, 'clients'), 
-      where('storeId', '==', activeStore.id),
-      orderBy('name', 'asc')
+    const qC = query(collection(db, 'clients'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
+    const unsubscribeC = onSnapshot(
+      qC,
+      snapshot => {
+        setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Client));
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'clients');
+      },
     );
-    const unsubscribeC = onSnapshot(qC, (snapshot) => {
-      setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'clients');
-    });
 
     const fetchCosts = async () => {
       try {
@@ -154,7 +157,9 @@ export function Pricing() {
   }, [activeStore]);
 
   // ── Fonte única de verdade: delega ao pricingEngine ──────────────────────
-  const calculateItemCosts = (item: Partial<QuoteItem & { selectedFinishingIds: string[]; selectedAccessoryIds: string[] }>) => {
+  const calculateItemCosts = (
+    item: Partial<QuoteItem & { selectedFinishingIds: string[]; selectedAccessoryIds: string[] }>,
+  ) => {
     const product = products.find(p => p.id === item.productId);
     if (!product || !costs) return null;
     const channelFee = Number(CHANNELS[channel]) || 0;
@@ -171,34 +176,36 @@ export function Pricing() {
 
   const handleAddItem = () => {
     if (!currentItemResults) return;
-    
+
     if (editingItemId) {
       // Update existing item
-      setQuoteItems(quoteItems.map(item => 
-        item.id === editingItemId 
-          ? {
-              ...item,
-              productId: currentItemResults.productId,
-              productName: currentItemResults.productName,
-              quantity: currentItemResults.quantity,
-              unitPrice: currentItemResults.unitPrice,
-              totalPrice: currentItemResults.totalPrice,
-              basePrice: currentItemResults.basePrice,
-              finishingValue: currentItemResults.finishingValue,
-              accessoriesValue: currentItemResults.accessoriesValue,
-              selectedFinishingIds: currentItemResults.selectedFinishingIds,
-              selectedAccessoryIds: currentItemResults.selectedAccessoryIds,
-              finishingNames: currentItemResults.finishingNames,
-              accessoryNames: currentItemResults.accessoryNames,
-              customMargin: customMargin,
-              materialCost: currentItemResults.materialCost,
-              laborCost: currentItemResults.laborCost,
-              productionCost: currentItemResults.productionCost,
-              margin: currentItemResults.margin,
-              platformFee: currentItemResults.platformFee,
-            }
-          : item
-      ));
+      setQuoteItems(
+        quoteItems.map(item =>
+          item.id === editingItemId
+            ? {
+                ...item,
+                productId: currentItemResults.productId,
+                productName: currentItemResults.productName,
+                quantity: currentItemResults.quantity,
+                unitPrice: currentItemResults.unitPrice,
+                totalPrice: currentItemResults.totalPrice,
+                basePrice: currentItemResults.basePrice,
+                finishingValue: currentItemResults.finishingValue,
+                accessoriesValue: currentItemResults.accessoriesValue,
+                selectedFinishingIds: currentItemResults.selectedFinishingIds,
+                selectedAccessoryIds: currentItemResults.selectedAccessoryIds,
+                finishingNames: currentItemResults.finishingNames,
+                accessoryNames: currentItemResults.accessoryNames,
+                customMargin: customMargin,
+                materialCost: currentItemResults.materialCost,
+                laborCost: currentItemResults.laborCost,
+                productionCost: currentItemResults.productionCost,
+                margin: currentItemResults.margin,
+                platformFee: currentItemResults.platformFee,
+              }
+            : item,
+        ),
+      );
     } else {
       // Create a proper QuoteItem with an ID
       const newItem: QuoteItem = {
@@ -225,7 +232,7 @@ export function Pricing() {
 
       setQuoteItems([...quoteItems, newItem]);
     }
-    
+
     // Reset modal states
     setSelectedProductId('');
     setQuantity(1);
@@ -247,21 +254,23 @@ export function Pricing() {
   };
 
   const handleUpdateItemQuantity = (id: string, delta: number) => {
-    setQuoteItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQuantity = Math.max(1, item.quantity + delta);
-        const results = calculateItemCosts({ ...item, quantity: newQuantity });
-        if (results) {
-          return {
-            ...item,
-            quantity: newQuantity,
-            unitPrice: results.unitPrice,
-            totalPrice: results.totalPrice,
-          };
+    setQuoteItems(prev =>
+      prev.map(item => {
+        if (item.id === id) {
+          const newQuantity = Math.max(1, item.quantity + delta);
+          const results = calculateItemCosts({ ...item, quantity: newQuantity });
+          if (results) {
+            return {
+              ...item,
+              quantity: newQuantity,
+              unitPrice: results.unitPrice,
+              totalPrice: results.totalPrice,
+            };
+          }
         }
-      }
-      return item;
-    }));
+        return item;
+      }),
+    );
   };
 
   const handleRemoveItem = (index: number) => {
@@ -272,10 +281,15 @@ export function Pricing() {
     if (!currentItemResults) return;
     const product = products.find(p => p.id === currentItem.productId);
     if (!product) return;
-    
+
     setAiLoading(true);
     try {
-      const analysis = await analyzePriceHealth(product.name, currentItemResults.itemTotalCost, currentItemResults.unitPrice, (currentItemResults.itemProfit / currentItemResults.totalPrice) * 100);
+      const analysis = await analyzePriceHealth(
+        product.name,
+        currentItemResults.itemTotalCost,
+        currentItemResults.unitPrice,
+        (currentItemResults.itemProfit / currentItemResults.totalPrice) * 100,
+      );
       setAiAnalysis(analysis || '');
     } catch (e) {
       setAiAnalysis('Erro ao analisar preço.');
@@ -286,7 +300,7 @@ export function Pricing() {
   const handleSuggestMargin = async () => {
     const product = products.find(p => p.id === currentItem.productId);
     if (!product) return;
-    
+
     setAiLoading(true);
     try {
       const suggestion = await suggestIdealMargin(product.category, product.productionTime);
@@ -308,7 +322,7 @@ export function Pricing() {
 
   const handleGenerateQuote = async () => {
     if (isGenerating) return;
-    
+
     setQuoteError('');
     setQuoteSuccess('');
 
@@ -328,9 +342,8 @@ export function Pricing() {
     }
 
     // Validate all items for NaN
-    const hasInvalidItems = allItemsResults.some(r => 
-      isNaN(r.totalPrice) || !isFinite(r.totalPrice) || 
-      isNaN(r.unitPrice) || !isFinite(r.unitPrice)
+    const hasInvalidItems = allItemsResults.some(
+      r => isNaN(r.totalPrice) || !isFinite(r.totalPrice) || isNaN(r.unitPrice) || !isFinite(r.unitPrice),
     );
 
     if (hasInvalidItems) {
@@ -375,13 +388,13 @@ export function Pricing() {
         status: 'Pendente',
         followUpStatus: 'Pendente',
         createdBy: user?.id || 'unknown',
-        createdByName: user?.name || 'Sistema'
+        createdByName: user?.name || 'Sistema',
       };
 
       if (selectedClientId) {
         quoteData.clientId = selectedClientId;
       }
-      
+
       if (clientType === 'PJ' && cnpj) {
         quoteData.cnpj = cnpj;
       }
@@ -389,7 +402,9 @@ export function Pricing() {
       // Permission check
       const hasPermission = isAdmin || (user?.storeIds && user.storeIds.includes(activeStore.id));
       if (!hasPermission) {
-        throw new Error('Você não tem permissão para gerar orçamentos nesta loja. Verifique seus acessos com o administrador.');
+        throw new Error(
+          'Você não tem permissão para gerar orçamentos nesta loja. Verifique seus acessos com o administrador.',
+        );
       }
 
       const docRef = await addDoc(collection(db, 'quotes'), quoteData);
@@ -400,7 +415,11 @@ export function Pricing() {
       // AI Description (optional, don't block on it)
       try {
         const firstItem = allItemsResults[0];
-        const desc = await rewriteDescription({ productName: firstItem.productName, clientName, quantity: firstItem.quantity });
+        const desc = await rewriteDescription({
+          productName: firstItem.productName,
+          clientName,
+          quantity: firstItem.quantity,
+        });
         setAiDescription(desc || '');
       } catch (e) {
         console.warn('AI Description failed:', e);
@@ -446,13 +465,16 @@ export function Pricing() {
 
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
 
-  if (!costs) return (
-    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-      <AlertCircle className="w-12 h-12 text-neutral-300" />
-      <h2 className="text-xl font-bold text-neutral-900">Configure sua Base de Custos primeiro</h2>
-      <p className="text-neutral-500 max-w-xs">Você precisa definir seus custos fixos e horas produtivas antes de precificar.</p>
-    </div>
-  );
+  if (!costs)
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+        <AlertCircle className="w-12 h-12 text-neutral-300" />
+        <h2 className="text-xl font-bold text-neutral-900">Configure sua Base de Custos primeiro</h2>
+        <p className="text-neutral-500 max-w-xs">
+          Você precisa definir seus custos fixos e horas produtivas antes de precificar.
+        </p>
+      </div>
+    );
 
   return (
     <div className="space-y-10 pb-20">
@@ -464,15 +486,17 @@ export function Pricing() {
           </div>
           <h1 className="text-4xl font-black text-neutral-900 tracking-tight">Novo Orçamento</h1>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <select
             value={channel}
-            onChange={(e) => setChannel(e.target.value as Channel)}
+            onChange={e => setChannel(e.target.value as Channel)}
             className="px-4 py-3 bg-white border-2 border-neutral-100 rounded-2xl text-sm font-bold text-neutral-700 outline-none focus:border-neutral-900 transition-all shadow-sm"
           >
             {Object.keys(CHANNELS).map(c => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
@@ -492,12 +516,14 @@ export function Pricing() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2 relative">
-                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Buscar ou Nome do Cliente</label>
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                  Buscar ou Nome do Cliente
+                </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={clientSearch}
-                    onChange={(e) => {
+                    onChange={e => {
                       setClientSearch(e.target.value);
                       setClientName(e.target.value);
                       setShowClientList(true);
@@ -521,12 +547,15 @@ export function Pricing() {
                         >
                           <div>
                             <p className="font-bold text-neutral-900 group-hover:text-black">{client.name}</p>
-                            <p className="text-xs text-neutral-400">{client.type} • {client.document || 'Sem documento'}</p>
+                            <p className="text-xs text-neutral-400">
+                              {client.type} • {client.document || 'Sem documento'}
+                            </p>
                           </div>
                           <ChevronRight className="w-4 h-4 text-neutral-200 group-hover:text-neutral-400 transition-all" />
                         </button>
                       ))}
-                    {clients.filter(c => (c.name || '').toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
+                    {clients.filter(c => (c.name || '').toLowerCase().includes(clientSearch.toLowerCase())).length ===
+                      0 && (
                       <div className="px-5 py-4 text-sm text-neutral-400 italic">
                         Nenhum cliente encontrado. Continue digitando para cadastrar novo.
                       </div>
@@ -536,13 +565,17 @@ export function Pricing() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Tipo de Cliente</label>
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                  Tipo de Cliente
+                </label>
                 <div className="flex bg-neutral-50 p-1 rounded-2xl border-2 border-transparent focus-within:border-neutral-900 transition-all">
                   <button
                     onClick={() => setClientType('PF')}
                     className={cn(
-                      "flex-1 py-3 rounded-xl text-sm font-bold transition-all",
-                      clientType === 'PF' ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-400 hover:text-neutral-600"
+                      'flex-1 py-3 rounded-xl text-sm font-bold transition-all',
+                      clientType === 'PF'
+                        ? 'bg-white text-neutral-900 shadow-sm'
+                        : 'text-neutral-400 hover:text-neutral-600',
                     )}
                   >
                     Pessoa Física
@@ -550,8 +583,10 @@ export function Pricing() {
                   <button
                     onClick={() => setClientType('PJ')}
                     className={cn(
-                      "flex-1 py-3 rounded-xl text-sm font-bold transition-all",
-                      clientType === 'PJ' ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-400 hover:text-neutral-600"
+                      'flex-1 py-3 rounded-xl text-sm font-bold transition-all',
+                      clientType === 'PJ'
+                        ? 'bg-white text-neutral-900 shadow-sm'
+                        : 'text-neutral-400 hover:text-neutral-600',
                     )}
                   >
                     Pessoa Jurídica
@@ -561,11 +596,13 @@ export function Pricing() {
 
               {clientType === 'PJ' && (
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">CNPJ (Opcional)</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                    CNPJ (Opcional)
+                  </label>
                   <input
                     type="text"
                     value={cnpj}
-                    onChange={(e) => setCnpj(e.target.value)}
+                    onChange={e => setCnpj(e.target.value)}
                     placeholder="00.000.000/0000-00"
                     className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 placeholder-neutral-300 outline-none focus:bg-white focus:border-neutral-900 transition-all"
                   />
@@ -613,10 +650,13 @@ export function Pricing() {
                   {quoteItems.map((item, index) => {
                     const results = calculateItemCosts(item);
                     return (
-                      <div key={item.id} className="group flex items-center justify-between p-5 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-neutral-200 transition-all">
+                      <div
+                        key={item.id}
+                        className="group flex items-center justify-between p-5 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-neutral-200 transition-all"
+                      >
                         <div className="flex items-center gap-4">
                           <div className="flex flex-row sm:flex-col items-center gap-1 bg-white p-1 rounded-xl border border-neutral-100">
-                            <button 
+                            <button
                               onClick={() => handleUpdateItemQuantity(item.id, -1)}
                               className="p-1 hover:bg-neutral-50 rounded transition-colors"
                             >
@@ -625,7 +665,7 @@ export function Pricing() {
                             <div className="w-8 h-8 flex items-center justify-center font-black text-neutral-900 text-sm">
                               {item.quantity}
                             </div>
-                            <button 
+                            <button
                               onClick={() => handleUpdateItemQuantity(item.id, 1)}
                               className="p-1 hover:bg-neutral-50 rounded transition-colors"
                             >
@@ -651,7 +691,9 @@ export function Pricing() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <p className="text-lg font-black text-neutral-900">{formatCurrency(results?.totalPrice || 0)}</p>
+                            <p className="text-lg font-black text-neutral-900">
+                              {formatCurrency(results?.totalPrice || 0)}
+                            </p>
                           </div>
                           <div className="flex items-center gap-1">
                             <button
@@ -733,16 +775,20 @@ export function Pricing() {
                 <div className="p-4 bg-neutral-50 rounded-2xl space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold text-neutral-400 uppercase">Saúde do Preço</span>
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[10px] font-black uppercase",
-                      avgMargin >= 30 ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                    )}>
+                    <span
+                      className={cn(
+                        'px-2 py-0.5 rounded-full text-[10px] font-black uppercase',
+                        avgMargin >= 30 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700',
+                      )}
+                    >
                       {avgMargin >= 30 ? 'Excelente' : 'Atenção'}
                     </span>
                   </div>
                   <p className="text-xs text-neutral-600 leading-relaxed">
-                    Margem média de <span className="font-bold text-neutral-900">{formatPercent(avgMargin)}</span>. 
-                    {avgMargin < 30 ? ' Considere revisar os custos dos acessórios para melhorar a rentabilidade.' : ' Preço competitivo com ótima margem de lucro.'}
+                    Margem média de <span className="font-bold text-neutral-900">{formatPercent(avgMargin)}</span>.
+                    {avgMargin < 30
+                      ? ' Considere revisar os custos dos acessórios para melhorar a rentabilidade.'
+                      : ' Preço competitivo com ótima margem de lucro.'}
                   </p>
                 </div>
               </div>
@@ -758,11 +804,20 @@ export function Pricing() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center">
-                  {editingItemId ? <FileText className="w-5 h-5 text-white" /> : <Plus className="w-5 h-5 text-white" />}
+                  {editingItemId ? (
+                    <FileText className="w-5 h-5 text-white" />
+                  ) : (
+                    <Plus className="w-5 h-5 text-white" />
+                  )}
                 </div>
-                <h2 className="text-xl font-bold text-neutral-900">{editingItemId ? 'Editar Item' : 'Adicionar Item'}</h2>
+                <h2 className="text-xl font-bold text-neutral-900">
+                  {editingItemId ? 'Editar Item' : 'Adicionar Item'}
+                </h2>
               </div>
-              <button onClick={() => setIsAddingItem(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
+              <button
+                onClick={() => setIsAddingItem(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
                 <X className="w-5 h-5 text-neutral-400" />
               </button>
             </div>
@@ -772,12 +827,14 @@ export function Pricing() {
                 <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Produto</label>
                 <select
                   value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
+                  onChange={e => setSelectedProductId(e.target.value)}
                   className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
                 >
                   <option value="">Selecione um produto</option>
                   {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -789,16 +846,18 @@ export function Pricing() {
                     type="number"
                     min="1"
                     value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    onChange={e => setQuantity(Number(e.target.value))}
                     className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Margem Personalizada (%)</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                    Margem Personalizada (%)
+                  </label>
                   <input
                     type="number"
                     value={customMargin !== null ? customMargin : ''}
-                    onChange={(e) => setCustomMargin(e.target.value === '' ? null : Number(e.target.value))}
+                    onChange={e => setCustomMargin(e.target.value === '' ? null : Number(e.target.value))}
                     placeholder="Padrão"
                     className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
                   />
@@ -807,26 +866,33 @@ export function Pricing() {
 
               {selectedProduct && selectedProduct.finishingOptions && selectedProduct.finishingOptions.length > 0 && (
                 <div className="space-y-3">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Acabamentos</label>
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                    Acabamentos
+                  </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedProduct.finishingOptions.map(opt => (
                       <button
                         key={opt.id}
                         onClick={() => {
-                          setSelectedFinishes(prev => 
-                            prev.includes(opt.id) ? prev.filter(id => id !== opt.id) : [...prev, opt.id]
+                          setSelectedFinishes(prev =>
+                            prev.includes(opt.id) ? prev.filter(id => id !== opt.id) : [...prev, opt.id],
                           );
                         }}
                         className={cn(
-                          "p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group",
-                          selectedFinishes.includes(opt.id) 
-                            ? "border-neutral-900 bg-neutral-900 text-white" 
-                            : "border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200"
+                          'p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group',
+                          selectedFinishes.includes(opt.id)
+                            ? 'border-neutral-900 bg-neutral-900 text-white'
+                            : 'border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200',
                         )}
                       >
                         <div className="space-y-1">
                           <p className="text-sm font-bold">{opt.name}</p>
-                          <p className={cn("text-[10px]", selectedFinishes.includes(opt.id) ? "text-neutral-400" : "text-neutral-400")}>
+                          <p
+                            className={cn(
+                              'text-[10px]',
+                              selectedFinishes.includes(opt.id) ? 'text-neutral-400' : 'text-neutral-400',
+                            )}
+                          >
                             +{formatCurrency(opt.additionalValue)}
                           </p>
                         </div>
@@ -845,20 +911,25 @@ export function Pricing() {
                       <button
                         key={acc.id}
                         onClick={() => {
-                          setSelectedAccessories(prev => 
-                            prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id]
+                          setSelectedAccessories(prev =>
+                            prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id],
                           );
                         }}
                         className={cn(
-                          "p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group",
-                          selectedAccessories.includes(acc.id) 
-                            ? "border-neutral-900 bg-neutral-900 text-white" 
-                            : "border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200"
+                          'p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group',
+                          selectedAccessories.includes(acc.id)
+                            ? 'border-neutral-900 bg-neutral-900 text-white'
+                            : 'border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200',
                         )}
                       >
                         <div className="space-y-1">
                           <p className="text-sm font-bold">{acc.name}</p>
-                          <p className={cn("text-[10px]", selectedAccessories.includes(acc.id) ? "text-neutral-400" : "text-neutral-400")}>
+                          <p
+                            className={cn(
+                              'text-[10px]',
+                              selectedAccessories.includes(acc.id) ? 'text-neutral-400' : 'text-neutral-400',
+                            )}
+                          >
                             +{formatCurrency(acc.additionalValue)}
                           </p>
                         </div>
@@ -874,13 +945,15 @@ export function Pricing() {
               <div className="text-left">
                 <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total do Item</p>
                 <p className="text-2xl font-black text-neutral-900">
-                  {formatCurrency(calculateItemCosts({
-                    productId: selectedProductId,
-                    quantity,
-                    selectedFinishingIds: selectedFinishes,
-                    selectedAccessoryIds: selectedAccessories,
-                    customMargin: customMargin !== null ? customMargin : undefined
-                  })?.totalPrice || 0)}
+                  {formatCurrency(
+                    calculateItemCosts({
+                      productId: selectedProductId,
+                      quantity,
+                      selectedFinishingIds: selectedFinishes,
+                      selectedAccessoryIds: selectedAccessories,
+                      customMargin: customMargin !== null ? customMargin : undefined,
+                    })?.totalPrice || 0,
+                  )}
                 </p>
               </div>
               <button
@@ -901,7 +974,9 @@ export function Pricing() {
           <div className="bg-white w-full max-w-4xl rounded-[32px] shadow-2xl p-10 space-y-10 animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-8">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-neutral-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl">Q</div>
+                <div className="w-14 h-14 bg-neutral-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl">
+                  Q
+                </div>
                 <div>
                   <h2 className="text-3xl font-black text-neutral-900">Orçamento Gerado</h2>
                   <p className="text-sm text-neutral-400 font-bold uppercase tracking-widest mt-1">
@@ -909,7 +984,10 @@ export function Pricing() {
                   </p>
                 </div>
               </div>
-              <button onClick={() => setShowQuoteModal(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
+              <button
+                onClick={() => setShowQuoteModal(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
                 <X className="w-6 h-6 text-neutral-400" />
               </button>
             </div>
@@ -923,8 +1001,12 @@ export function Pricing() {
                       <thead className="bg-neutral-50 border-b border-neutral-100">
                         <tr>
                           <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase">Item</th>
-                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-center">Qtd</th>
-                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-right">Total</th>
+                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-center">
+                            Qtd
+                          </th>
+                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-right">
+                            Total
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-100">
@@ -934,8 +1016,12 @@ export function Pricing() {
                               <p className="font-bold text-neutral-900 text-sm">{item.productName}</p>
                               <p className="text-[10px] text-neutral-400">Unitário: {formatCurrency(item.unitPrice)}</p>
                             </td>
-                            <td className="px-5 py-4 text-center font-bold text-neutral-900 text-sm">{item.quantity}</td>
-                            <td className="px-5 py-4 text-right font-black text-neutral-900 text-sm">{formatCurrency(item.totalPrice)}</td>
+                            <td className="px-5 py-4 text-center font-bold text-neutral-900 text-sm">
+                              {item.quantity}
+                            </td>
+                            <td className="px-5 py-4 text-right font-black text-neutral-900 text-sm">
+                              {formatCurrency(item.totalPrice)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -949,14 +1035,19 @@ export function Pricing() {
                     <span className="text-[10px] font-black uppercase tracking-widest">Descrição Inteligente</span>
                   </div>
                   <p className="text-sm text-neutral-600 leading-relaxed italic">
-                    "{generatedQuote.description || 'Este orçamento foi cuidadosamente calculado para oferecer o melhor custo-benefício para o seu projeto.'}"
+                    "
+                    {generatedQuote.description ||
+                      'Este orçamento foi cuidadosamente calculado para oferecer o melhor custo-benefício para o seu projeto.'}
+                    "
                   </p>
                 </div>
               </div>
 
               <div className="space-y-8">
                 <div className="bg-neutral-900 p-8 rounded-[32px] text-white space-y-6">
-                  <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Resumo Financeiro</h3>
+                  <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
+                    Resumo Financeiro
+                  </h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-400">Total Bruto</span>
@@ -969,13 +1060,15 @@ export function Pricing() {
                     <div className="h-px bg-white/10" />
                     <div className="flex justify-between items-end">
                       <span className="text-xs text-neutral-400 mb-1">Total Final</span>
-                      <span className="text-3xl font-black text-white">{formatCurrency(generatedQuote.totalAmount)}</span>
+                      <span className="text-3xl font-black text-white">
+                        {formatCurrency(generatedQuote.totalAmount)}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <button 
+                  <button
                     onClick={async () => {
                       try {
                         generateClientPDF(generatedQuote, activeStore);
@@ -989,7 +1082,7 @@ export function Pricing() {
                     <Download className="w-5 h-5" />
                     Baixar PDF Cliente
                   </button>
-                  <button 
+                  <button
                     onClick={async () => {
                       try {
                         generateInternalPDF(generatedQuote, activeStore);
@@ -1008,7 +1101,7 @@ export function Pricing() {
             </div>
 
             <div className="flex justify-end pt-8 border-t border-neutral-100">
-              <button 
+              <button
                 onClick={() => {
                   setShowQuoteModal(false);
                   setQuoteItems([]);

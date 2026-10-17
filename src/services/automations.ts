@@ -1,7 +1,4 @@
-import {
-  doc, updateDoc, getDoc, writeBatch,
-  collection, addDoc, query, where, getDocs, runTransaction
-} from 'firebase/firestore';
+import { doc, updateDoc, getDoc, collection, addDoc, query, where, getDocs, runTransaction } from 'firebase/firestore';
 import { db } from '../firebase';
 import { QuoteStatus, Quote, StockReservation } from '../types';
 import { sendWhatsAppMessage, generateStatusMessage } from './whatsapp';
@@ -13,20 +10,42 @@ const CONVERT_STATUSES: QuoteStatus[] = ['Finalizado'];
 // Statuses that release a reservation (not in QuoteStatus — handled defensively)
 const RELEASE_STATUSES = ['Cancelado', 'Rejeitado', 'Expirado'];
 
-async function getActiveReservation(quoteId: string): Promise<(StockReservation & { id: string }) | null> {
-  const snap = await getDocs(
-    query(
-      collection(db, 'stockReservations'),
-      where('quoteId', '==', quoteId),
-      where('status', '==', 'active')
-    )
-  );
-  if (snap.empty) return null;
-  return { id: snap.docs[0].id, ...snap.docs[0].data() } as StockReservation & { id: string };
+async function getActiveReservation(
+  quoteId: string,
+  storeId: string,
+): Promise<(StockReservation & { id: string }) | null> {
+  // Current reservations use a deterministic ID, so this lookup is both
+  // cheaper and authorized by the document's own storeId.
+  const deterministicRef = doc(db, 'stockReservations', `res_${quoteId}`);
+  try {
+    const deterministicSnap = await getDoc(deterministicRef);
+    if (deterministicSnap.exists() && deterministicSnap.data()?.status === 'active') {
+      return { id: deterministicSnap.id, ...deterministicSnap.data() } as StockReservation & { id: string };
+    }
+  } catch (error) {
+    // Older budgets may not have a deterministic reservation document. Some
+    // Firestore rule sets report a missing protected document as denied.
+    console.warn('[automations] Deterministic reservation lookup failed:', error);
+  }
+
+  // Backward compatibility for reservations created before deterministic IDs.
+  // Including storeId is required so Firestore can prove this list is limited
+  // to the signed-in user's active store.
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'stockReservations'), where('storeId', '==', storeId), where('quoteId', '==', quoteId)),
+    );
+    const active = snap.docs.find(item => item.data()?.status === 'active');
+    return active ? ({ id: active.id, ...active.data() } as StockReservation & { id: string }) : null;
+  } catch (error) {
+    // A legacy reservation must never prevent a quote status from changing.
+    console.warn('[automations] Legacy reservation lookup failed:', error);
+    return null;
+  }
 }
 
 async function buildReservations(
-  quoteData: Quote
+  quoteData: Quote,
 ): Promise<Array<{ materialId: string; materialName: string; quantity: number }>> {
   const deductions: Record<string, { materialName: string; quantity: number }> = {};
 
@@ -36,7 +55,7 @@ async function buildReservations(
       if (!productSnap.exists()) continue;
       const product = productSnap.data();
 
-      for (const pm of (product.materials || [])) {
+      for (const pm of product.materials || []) {
         const totalQty = (Number(pm.quantity) || 0) * (Number(item.quantity) || 1);
         if (totalQty <= 0) continue;
 
@@ -60,12 +79,7 @@ async function buildReservations(
   }));
 }
 
-export async function updateQuoteStatus(
-  quoteId: string,
-  newStatus: QuoteStatus,
-  phone?: string,
-  productName?: string
-) {
+export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus, phone?: string, productName?: string) {
   const quoteRef = doc(db, 'quotes', quoteId);
   const quoteSnap = await getDoc(quoteRef);
   if (!quoteSnap.exists()) throw new Error(`Quote ${quoteId} not found`);
@@ -80,19 +94,14 @@ export async function updateQuoteStatus(
 
       if (reservations.length > 0) {
         // Use runTransaction to guarantee idempotency — only one reservation per quote
-        await runTransaction(db, async (tx) => {
-          // Re-check inside transaction
-          const existingSnap = await getDocs(
-            query(
-              collection(db, 'stockReservations'),
-              where('quoteId', '==', quoteId),
-              where('status', '==', 'active')
-            )
-          );
-          // getDocs inside transaction is read-only check — if already exists, skip
-          if (!existingSnap.empty) return;
+        // ID determinístico por orçamento: garante no máximo UMA reserva ativa,
+        // mesmo com dois cliques simultâneos (getDocs dentro de transação não
+        // participa do controle de concorrência do Firestore).
+        await runTransaction(db, async tx => {
+          const newResRef = doc(db, 'stockReservations', `res_${quoteId}`);
+          const existing = await tx.get(newResRef);
+          if (existing.exists() && existing.data()?.status === 'active') return;
 
-          const newResRef = doc(collection(db, 'stockReservations'));
           tx.set(newResRef, {
             storeId: quoteData.storeId,
             quoteId,
@@ -121,33 +130,35 @@ export async function updateQuoteStatus(
 
   // ── 2. CONVERT RESERVATION → DEFINITIVE STOCK DEDUCTION ──────────────────
   if (CONVERT_STATUSES.includes(newStatus) && !quoteData.stockProcessed) {
-    const reservation = await getActiveReservation(quoteId);
+    const reservation = await getActiveReservation(quoteId, quoteData.storeId);
 
     if (reservation) {
       try {
-        const batch = writeBatch(db);
+        // Tudo em uma transação: leitura do estoque e baixa acontecem de forma
+        // atômica, evitando baixa duplicada ou perda de atualização.
+        await runTransaction(db, async tx => {
+          const resRef = doc(db, 'stockReservations', reservation.id);
+          const resSnap = await tx.get(resRef);
+          if (!resSnap.exists() || resSnap.data()?.status !== 'active') return;
 
-        for (const res of reservation.reservations) {
-          const matSnap = await getDoc(doc(db, 'materials', res.materialId));
-          if (!matSnap.exists()) continue;
+          const quoteNow = await tx.get(quoteRef);
+          if (quoteNow.data()?.stockProcessed) return;
 
-          const currentStock = Number(matSnap.data().stockQuantity) || 0;
-          // Never go below zero
-          batch.update(doc(db, 'materials', res.materialId), {
-            stockQuantity: Math.max(0, currentStock - res.quantity),
-            updatedAt: new Date().toISOString(),
+          const matRefs = reservation.reservations.map(r => doc(db, 'materials', r.materialId));
+          const matSnaps = await Promise.all(matRefs.map(ref => tx.get(ref)));
+
+          matSnaps.forEach((matSnap, i) => {
+            if (!matSnap.exists()) return;
+            const currentStock = Number(matSnap.data().stockQuantity) || 0;
+            tx.update(matRefs[i], {
+              stockQuantity: Math.max(0, currentStock - reservation.reservations[i].quantity),
+              updatedAt: new Date().toISOString(),
+            });
           });
-        }
 
-        batch.update(doc(db, 'stockReservations', reservation.id), {
-          status: 'converted',
-          convertedAt: new Date().toISOString(),
+          tx.update(resRef, { status: 'converted', convertedAt: new Date().toISOString() });
+          tx.update(quoteRef, { status: newStatus, stockProcessed: true });
         });
-
-        // Mark stockProcessed atomically with status update to prevent double-deduction
-        batch.update(quoteRef, { status: newStatus, stockProcessed: true });
-
-        await batch.commit();
 
         addDoc(collection(db, 'stockMovements'), {
           storeId: quoteData.storeId,
@@ -172,7 +183,7 @@ export async function updateQuoteStatus(
 
   // ── 3. RELEASE RESERVATION on cancellation ────────────────────────────────
   if (RELEASE_STATUSES.includes(newStatus)) {
-    const reservation = await getActiveReservation(quoteId);
+    const reservation = await getActiveReservation(quoteId, quoteData.storeId);
     if (reservation) {
       try {
         await updateDoc(doc(db, 'stockReservations', reservation.id), {

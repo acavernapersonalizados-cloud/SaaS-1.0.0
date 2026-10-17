@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, where, updateDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, doc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
 import { useStore } from '../contexts/StoreContext';
@@ -19,39 +19,49 @@ export function Inventory() {
       return;
     }
 
-    const q = query(
-      collection(db, 'materials'), 
-      where('storeId', '==', activeStore.id)
+    const q = query(collection(db, 'materials'), where('storeId', '==', activeStore.id));
+    const unsubscribe = onSnapshot(
+      q,
+      snapshot => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Material);
+        setMaterials(data);
+        setLoading(false);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'materials');
+        setLoading(false);
+      },
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Material));
-      setMaterials(data);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'materials');
-      setLoading(false);
-    });
     return () => unsubscribe();
   }, [activeStore]);
 
   const updateStock = async (id: string, delta: number) => {
     const material = materials.find(m => m.id === id);
     if (!material) return;
-    
+
     try {
-      await updateDoc(doc(db, 'materials', id), {
-        stockQuantity: (material.stockQuantity || 0) + delta,
-        updatedAt: new Date().toISOString()
+      // Transação: evita perda de atualização quando dois usuários mexem ao
+      // mesmo tempo e impede estoque negativo.
+      await runTransaction(db, async tx => {
+        const ref = doc(db, 'materials', id);
+        const snap = await tx.get(ref);
+        if (!snap.exists()) throw new Error('Material não encontrado');
+        const current = Number(snap.data().stockQuantity) || 0;
+        const next = current + delta;
+        if (next < 0) throw new Error('Estoque não pode ficar negativo');
+        tx.update(ref, { stockQuantity: next, updatedAt: new Date().toISOString() });
       });
       addToast('Estoque atualizado com sucesso!', 'success');
     } catch (error) {
+      if (error instanceof Error && error.message === 'Estoque não pode ficar negativo') {
+        addToast('Estoque não pode ficar negativo.', 'error');
+        return;
+      }
       handleFirestoreError(error, OperationType.UPDATE, `materials/${id}`);
     }
   };
 
-  const filteredMaterials = materials.filter(m => 
-    (m.name || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMaterials = materials.filter(m => (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
   const totalValue = materials.reduce((acc, m) => acc + (m.stockQuantity || 0) * m.unitCost, 0);
   const lowStockItems = materials.filter(m => (m.stockQuantity || 0) <= (m.minStockQuantity || 0));
@@ -99,7 +109,7 @@ export function Inventory() {
             type="text"
             placeholder="Buscar material..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
           />
         </div>
@@ -110,21 +120,29 @@ export function Inventory() {
               <tr className="border-b border-neutral-100">
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Material</th>
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Estoque Atual</th>
-                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Estoque Mínimo</th>
-                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right">Ações</th>
+                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">
+                  Estoque Mínimo
+                </th>
+                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
-              {filteredMaterials.map((material) => (
+              {filteredMaterials.map(material => (
                 <tr key={material.id} className="group hover:bg-neutral-50 transition-colors">
                   <td className="py-4 font-bold text-neutral-900">{material.name}</td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
                     {material.stockQuantity} {material.unit}
                     {(material.stockQuantity || 0) <= (material.minStockQuantity || 0) && (
-                      <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">BAIXO</span>
+                      <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
+                        BAIXO
+                      </span>
                     )}
                   </td>
-                  <td className="py-4 text-sm text-neutral-500">{material.minStockQuantity} {material.unit}</td>
+                  <td className="py-4 text-sm text-neutral-500">
+                    {material.minStockQuantity} {material.unit}
+                  </td>
                   <td className="py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button

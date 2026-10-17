@@ -49,11 +49,7 @@ export function ProductImageUpload({
 
         {imageUrl ? (
           <div className="relative w-full aspect-square max-w-xs rounded-2xl overflow-hidden border border-neutral-200 group">
-            <img
-              src={thumbnailUrl || imageUrl}
-              alt="Imagem do produto"
-              className="w-full h-full object-cover"
-            />
+            <img src={thumbnailUrl || imageUrl} alt="Imagem do produto" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button
                 type="button"
@@ -79,7 +75,10 @@ export function ProductImageUpload({
         ) : (
           <div
             onClick={() => mainInputRef.current?.click()}
-            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragOver={e => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={`w-full max-w-xs aspect-square rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
@@ -94,7 +93,9 @@ export function ProductImageUpload({
               <>
                 <Upload className="w-8 h-8 text-neutral-300" />
                 <p className="text-xs font-bold text-neutral-400 text-center px-4">
-                  Clique ou arraste<br />PNG, JPG, WEBP • max 10MB
+                  Clique ou arraste
+                  <br />
+                  PNG, JPG, WEBP • max 10MB
                 </p>
               </>
             )}
@@ -120,11 +121,7 @@ export function ProductImageUpload({
             <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden border border-neutral-200 group">
               <img src={url} alt={`Galeria ${i + 1}`} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setLightbox(url)}
-                  className="p-1 bg-white/90 rounded-full"
-                >
+                <button type="button" onClick={() => setLightbox(url)} className="p-1 bg-white/90 rounded-full">
                   <ZoomIn className="w-3 h-3 text-neutral-900" />
                 </button>
                 <button

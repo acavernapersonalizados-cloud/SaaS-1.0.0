@@ -30,7 +30,7 @@ async function addStoreHeader(doc: jsPDF, store: Store | null): Promise<number> 
       // Load image via fetch to get base64
       const response = await fetch(store.logo);
       const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve) => {
+      const base64 = await new Promise<string>(resolve => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result as string);
         reader.readAsDataURL(blob);
@@ -92,13 +92,15 @@ export const generateClientPDF = async (quote: Quote, store: Store | null) => {
       body: quote.items.map(item => {
         const details = [
           item.finishingNames?.length ? `Acabamentos: ${item.finishingNames.join(', ')}` : '',
-          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : ''
-        ].filter(Boolean).join('\n');
+          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n');
         return [
           { content: item.productName + (details ? '\n' + details : ''), styles: { fontSize: 9 } },
           item.quantity.toString(),
           formatCurrency(item.unitPrice),
-          formatCurrency(item.totalPrice)
+          formatCurrency(item.totalPrice),
         ];
       }),
       theme: 'striped',
@@ -148,13 +150,15 @@ export const generateInternalPDF = async (quote: Quote, store: Store | null) => 
       body: quote.items.map(item => {
         const details = [
           item.finishingNames?.length ? `Acabamentos: ${item.finishingNames.join(', ')}` : '',
-          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : ''
-        ].filter(Boolean).join('\n');
+          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n');
         return [
           { content: item.productName + (details ? '\n' + details : ''), styles: { fontSize: 9 } },
           item.quantity.toString(),
           formatCurrency(item.unitPrice),
-          formatCurrency(item.totalPrice)
+          formatCurrency(item.totalPrice),
         ];
       }),
       theme: 'striped',
@@ -193,7 +197,13 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 14, startY + 7);
-    doc.text(`Número: ${Math.floor(Math.random() * 10000).toString().padStart(5, '0')}`, 14, startY + 12);
+    doc.text(
+      `Número: ${Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(5, '0')}`,
+      14,
+      startY + 12,
+    );
 
     // Emitente
     doc.setFontSize(12);
@@ -221,13 +231,15 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
       body: quote.items.map(item => {
         const details = [
           item.finishingNames?.length ? `Acabamentos: ${item.finishingNames.join(', ')}` : '',
-          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : ''
-        ].filter(Boolean).join('\n');
+          item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n');
         return [
           { content: item.productName + (details ? '\n' + details : ''), styles: { fontSize: 9 } },
           item.quantity.toString(),
           formatCurrency(item.unitPrice),
-          formatCurrency(item.totalPrice)
+          formatCurrency(item.totalPrice),
         ];
       }),
       theme: 'grid',
