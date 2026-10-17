@@ -1,3 +1,5 @@
+import { priceForMargin } from './pricingEngine';
+
 export interface PrintChannelFees {
   commissionPercent: number;
   paymentPercent: number;
@@ -82,7 +84,10 @@ export function calculatePrintPrice(input: {
     safe(input.extrasCost);
   const feePercent = Math.min(95, safe(input.fees.commissionPercent) + safe(input.fees.paymentPercent));
   const fixedFees = safe(input.fees.fixedFee) + safe(input.fees.logisticsCost);
-  const suggestedUnit = (totalCostUnit * (1 + safe(input.profitMarginPct) / 100) + fixedFees) / (1 - feePercent / 100);
+  // Margem sobre o preço, líquida das taxas do canal (percentuais e fixas).
+  const marginPrice = priceForMargin(totalCostUnit, safe(input.profitMarginPct), feePercent, fixedFees);
+  const invalidMargin = marginPrice === null;
+  const suggestedUnit = marginPrice ?? 0;
   const priceRef = input.manualPrice && input.manualPrice > 0 ? input.manualPrice : suggestedUnit;
   const channelCost = (priceRef * feePercent) / 100 + fixedFees;
   const profit = priceRef - totalCostUnit - channelCost;
@@ -101,6 +106,7 @@ export function calculatePrintPrice(input: {
     totalCostBatch: totalCostUnit * quantity,
     suggestedUnit,
     suggestedBatch: suggestedUnit * quantity,
+    invalidMargin,
     channelCost,
     feePercent,
     profit,

@@ -95,6 +95,9 @@ export const MAX_MARGIN_PLUS_FEES_PERCENT = 95;
 /** Limite dos campos de margem/meta de lucro. */
 export const MAX_MARGIN_PERCENT = 90;
 
+/** Mantém um campo de margem entre 0 e MAX_MARGIN_PERCENT. */
+export const clampMargin = (value: number) => Math.min(MAX_MARGIN_PERCENT, Math.max(0, Number(value) || 0));
+
 /**
  * Preço para que a margem sobre o preço de venda seja `marginPct`, já
  * descontadas as taxas percentuais do canal (`feePct`) e as taxas fixas:

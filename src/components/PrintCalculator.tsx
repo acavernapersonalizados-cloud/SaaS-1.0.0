@@ -14,6 +14,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { clampMargin } from '../lib/pricingEngine';
 import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from '../lib/printPricing';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -646,7 +647,11 @@ export function PrintCalculator() {
                   {[
                     { label: 'Tarifa Energia (R$/kWh)', val: electricityRate, set: setElectricityRate },
                     { label: 'Valor Hora Operador (R$)', val: hourlyRate, set: setHourlyRate },
-                    { label: 'Margem de Lucro (%)', val: profitMarginPct, set: setProfitMarginPct },
+                    {
+                      label: 'Margem de Lucro (% do preço)',
+                      val: profitMarginPct,
+                      set: (v: number) => setProfitMarginPct(clampMargin(v)),
+                    },
                     { label: 'Pós-processamento (h)', val: postProcessHours, set: setPostProcessHours },
                     { label: 'Embalagem (R$)', val: packagingCost, set: setPackagingCost },
                     { label: 'Outros custos (R$)', val: extrasCost, set: setExtrasCost },
@@ -784,7 +789,15 @@ export function PrintCalculator() {
                 </div>
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase">Sugerido ({profitMarginPct}%)</p>
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase">
+                    Sugerido ({profitMarginPct}% do preço)
+                  </p>
+                  {result.invalidMargin && (
+                    <p className="text-[11px] font-bold text-red-600">
+                      Margem + taxas do canal passam de 95%: não existe preço que dê esse lucro. Reduza a margem ou as
+                      taxas.
+                    </p>
+                  )}
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}
                     <span className="text-sm font-medium">/peça</span>

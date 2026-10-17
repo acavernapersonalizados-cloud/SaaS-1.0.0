@@ -4,6 +4,7 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where }
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { clampMargin, MAX_MARGIN_PERCENT, priceForMargin } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -126,7 +127,7 @@ export function PapelariaCalculator() {
     const laborCost = (hourlyRate / 60) * totalTimeMin;
     const totalCostBatch = materialsCost + laminationCost + bindingCost + laborCost;
     const totalCostUnit = totalCostBatch / Math.max(quantity, 1);
-    const suggestedUnit = totalCostUnit * (1 + profitMarginPct / 100);
+    const suggestedUnit = priceForMargin(totalCostUnit, profitMarginPct) ?? 0;
     const suggestedBatch = suggestedUnit * quantity;
     const priceRef = manualPrice ?? suggestedUnit;
     const profit = priceRef - totalCostUnit;
@@ -497,13 +498,13 @@ export function PapelariaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (%)</label>
+                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (% do preço)</label>
                 <input
                   type="number"
                   min="0"
-                  max="500"
+                  max={MAX_MARGIN_PERCENT}
                   value={profitMarginPct}
-                  onChange={e => setProfitMarginPct(Number(e.target.value))}
+                  onChange={e => setProfitMarginPct(clampMargin(Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
@@ -626,7 +627,7 @@ export function PapelariaCalculator() {
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Sugerido ({profitMarginPct}%)
+                    Sugerido ({profitMarginPct}% do preço)
                   </p>
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}

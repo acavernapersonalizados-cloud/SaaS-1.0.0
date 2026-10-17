@@ -3,6 +3,7 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, 
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { clampMargin, priceForMargin } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -152,8 +153,8 @@ export function LaserCalculator() {
     // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
     const totalCostUnit = energyCost + wearCost + laborCost + matPerUnit;
     const totalCostBatch = totalCostUnit * Math.max(quantity, 1);
-    const suggestedUnit = totalCostUnit * (1 + profitMarginPct / 100);
-    const suggestedBatch = totalCostBatch * (1 + profitMarginPct / 100);
+    const suggestedUnit = priceForMargin(totalCostUnit, profitMarginPct) ?? 0;
+    const suggestedBatch = suggestedUnit * Math.max(quantity, 1);
     const priceRef = manualPrice ?? suggestedUnit;
     const profit = priceRef - totalCostUnit;
     const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
@@ -552,7 +553,13 @@ export function LaserCalculator() {
                       min: 0.1,
                     },
                     { label: 'Valor Hora Trabalho (R$)', value: hourlyRate, set: setHourlyRate, step: 0.5, min: 0 },
-                    { label: 'Margem de Lucro (%)', value: profitMarginPct, set: setProfitMarginPct, step: 1, min: 0 },
+                    {
+                      label: 'Margem de Lucro (% do preço)',
+                      value: profitMarginPct,
+                      set: (v: number) => setProfitMarginPct(clampMargin(v)),
+                      step: 1,
+                      min: 0,
+                    },
                   ].map(f => (
                     <div key={f.label} className="space-y-1">
                       <label className="text-xs font-bold text-neutral-600">{f.label}</label>
@@ -675,7 +682,7 @@ export function LaserCalculator() {
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Sugerido ({profitMarginPct}%)
+                    Sugerido ({profitMarginPct}% do preço)
                   </p>
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}
