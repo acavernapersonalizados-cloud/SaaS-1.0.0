@@ -341,10 +341,16 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 - [ ] Botão de WhatsApp abre conversa com o telefone da loja.
 
 **Backup** (só ADMIN):
-- [ ] Exportar → baixa um arquivo JSON.
-- [ ] ❗ O backup inclui só lojas, base de custos, matéria-prima, produtos, orçamentos, clientes e usuários.
-  **Ficam de fora:** fornecedores, categorias, máquinas e trabalhos de laser/3D/papelaria/cestas, lista de compras e reservas.
-- [ ] **Não teste a importação** com o banco real.
+- [ ] Exportar → mensagem "Backup exportado com sucesso: N documentos de N loja(s)." com a contagem de cada coleção, e baixa um arquivo JSON.
+- [ ] As contagens da mensagem batem com as telas (ex.: número de produtos, matérias-primas, clientes e orçamentos de cada loja).
+- [ ] O arquivo tem um bloco `_meta` no início, com data, versão e contagem por coleção.
+- [ ] O arquivo tem todas as coleções: lojas, usuários, base de custos, matéria-prima, produtos, orçamentos, clientes,
+  fornecedores, categorias, máquinas e trabalhos de laser, impressoras e trabalhos 3D, papelaria, cestas, lista de compras,
+  movimentos e reservas de estoque.
+- [ ] Se alguma leitura falhar → mensagem "Backup NÃO foi baixado: … leitura(s) falharam" e um botão
+  "Baixar mesmo assim (marcado como incompleto)". Baixando, o `_meta` lista as coleções que falharam.
+- [ ] **Não teste a importação** com o banco real: ela sobrescreve registros. Se for testar num banco de testes, um arquivo
+  antigo sem `_meta` (como `backup_precifica_ja_2026-10-17.json`) deve gerar o aviso de "backup antigo" antes de gravar.
 
 ## 18. Limpeza no final
 
@@ -366,9 +372,9 @@ Corrigidos na branch `validacao` (confira com os testes indicados):
 6. ✅ **3D:** a baixa de filamento só aceita material em kg ou g e avisa nos outros casos (13).
 7. ✅ **Lista de Compras:** compra de material em pacote é registrada por pacotes e convertida em itens (16.9).
 8. ✅ **Estoque baixo:** a mesma regra em todas as telas (16.5).
+9. ✅ **Backup:** exporta loja por loja, inclui todas as coleções, grava `_meta` e não mostra "sucesso" quando alguma leitura falha (17). Ainda não testado com o Firebase real.
 10. ✅ **Matéria-prima:** valores 0 agora mostram aviso (7).
 
-Ainda abertos:
+Ainda aberto:
 
-9. ❗ **Backup:** não inclui várias coleções e mostra "sucesso" mesmo quando falha (17). Correção em andamento em outra sessão.
 11. ❗ **Base de Custos:** a "Meta de Lucro" é acréscimo sobre o custo, não margem sobre o preço (5). Se a meta for 0, Produtos usa 30% no lugar.
