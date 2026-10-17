@@ -60,7 +60,12 @@ export default defineConfig(({ command, mode }) => {
         output: {
           manualChunks: (id: string) => {
             if (id.includes('node_modules/firebase')) return 'vendor-firebase';
-            if (id.includes('node_modules/recharts') || id.includes('node_modules/d3') || id.includes('node_modules/victory')) return 'vendor-charts';
+            if (
+              id.includes('node_modules/recharts') ||
+              id.includes('node_modules/d3') ||
+              id.includes('node_modules/victory')
+            )
+              return 'vendor-charts';
             if (id.includes('node_modules/jspdf')) return 'vendor-pdf';
           },
         },
