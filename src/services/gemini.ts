@@ -43,7 +43,7 @@ export async function analyzePriceHealth(
     Produto: ${productName}
     Custo Total: R$ ${totalCost.toFixed(2)}
     Preço de Venda Sugerido: R$ ${unitPrice.toFixed(2)}
-    Margem de Lucro: ${margin.toFixed(2)}%
+    Margem de Lucro (sobre o preço de venda): ${margin.toFixed(2)}%
     
     Dê um feedback curto e profissional sobre se o preço é sustentável para um pequeno ateliê.`,
   );
@@ -52,6 +52,7 @@ export async function analyzePriceHealth(
 export async function suggestIdealMargin(category: string, productionTime: number): Promise<string | null> {
   return generate(
     `Sugira uma margem de lucro ideal para um produto da categoria "${category}" que leva ${productionTime} minutos para ser produzido em um ateliê artesanal.
+    A margem é a porcentagem do PREÇO DE VENDA que vira lucro (não um acréscimo sobre o custo), entre 0% e 90%.
     Considere o valor do trabalho manual e o mercado brasileiro. Retorne apenas a porcentagem sugerida e uma breve justificativa.`,
   );
 }
