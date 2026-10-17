@@ -31,6 +31,17 @@ import {
 
 const ELECTRICITY_RATE_DEFAULT = 0.78938; // Enel São Paulo B1: TUSD + TE, sem tributos e bandeira
 
+// Materiais da máquina são digitados separados por vírgula ("MDF 3mm, Acrílico 3mm").
+const parseMaterials = (text: string) =>
+  Array.from(
+    new Set(
+      text
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean),
+    ),
+  );
+
 export function LaserCalculator() {
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
@@ -53,6 +64,7 @@ export function LaserCalculator() {
     moduleReplacementCost: 300,
     materials: [],
   });
+  const [machineMaterialsText, setMachineMaterialsText] = useState('');
   const [savingMachine, setSavingMachine] = useState(false);
 
   // ── Job state ────────────────────────────────────────────────────────────────
@@ -162,7 +174,7 @@ export function LaserCalculator() {
     if (!activeStore || !newMachine.label) return;
     setSavingMachine(true);
     try {
-      const data = { ...newMachine, storeId: activeStore.id };
+      const data = { ...newMachine, materials: parseMaterials(machineMaterialsText), storeId: activeStore.id };
       if (editingMachine) {
         await setDoc(doc(db, 'laserMachines', editingMachine.id), {
           ...data,
@@ -190,6 +202,7 @@ export function LaserCalculator() {
         moduleReplacementCost: 300,
         materials: [],
       });
+      setMachineMaterialsText('');
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, 'laserMachines');
     }
@@ -312,6 +325,7 @@ export function LaserCalculator() {
                 moduleReplacementCost: 300,
                 materials: [],
               });
+              setMachineMaterialsText('');
               setShowMachineForm(true);
             }}
             className="flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-all text-sm font-bold"
@@ -368,6 +382,7 @@ export function LaserCalculator() {
                       onClick={() => {
                         setEditingMachine(m);
                         setNewMachine(m);
+                        setMachineMaterialsText((m.materials || []).join(', '));
                         setShowMachineForm(true);
                       }}
                       className="p-1 hover:bg-neutral-200 rounded-lg transition-all"
@@ -410,18 +425,29 @@ export function LaserCalculator() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Material</label>
-                <select
-                  value={material}
-                  onChange={e => setMaterial(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                >
-                  <option value="">Selecione...</option>
-                  {(selectedMachine?.materials || []).map(m => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+                {(selectedMachine?.materials || []).length > 0 ? (
+                  <select
+                    value={material}
+                    onChange={e => setMaterial(e.target.value)}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                  >
+                    <option value="">Selecione...</option>
+                    {(selectedMachine?.materials || []).map(m => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  // Máquina sem lista de materiais: permite digitar para não travar o salvamento.
+                  <input
+                    type="text"
+                    value={material}
+                    onChange={e => setMaterial(e.target.value)}
+                    placeholder="Ex: MDF 3mm"
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                  />
+                )}
               </div>
 
               <div className="space-y-1">
@@ -826,6 +852,19 @@ export function LaserCalculator() {
                   />
                 </div>
               ))}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-neutral-700">Materiais que a máquina trabalha</label>
+                <input
+                  type="text"
+                  placeholder="Ex: MDF 3mm, Acrílico 3mm, Couro"
+                  value={machineMaterialsText}
+                  onChange={e => setMachineMaterialsText(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                />
+                <p className="text-[10px] text-neutral-400">
+                  Separe por vírgula. Aparecem na lista de materiais do trabalho.
+                </p>
+              </div>
               <button
                 type="submit"
                 disabled={savingMachine}
