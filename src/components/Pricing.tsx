@@ -31,6 +31,9 @@ import {
 } from 'lucide-react';
 import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
 
+// Validade do orçamento: usada na data gravada (e no PDF) e no texto da tela.
+const QUOTE_VALIDITY_DAYS = 5;
+
 export function Pricing() {
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
@@ -357,7 +360,7 @@ export function Pricing() {
       const quoteData: any = {
         storeId: activeStore.id,
         date: new Date().toISOString(),
-        expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        expiryDate: new Date(Date.now() + QUOTE_VALIDITY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
         clientName: clientName.trim(),
         clientType,
         items: allItemsResults.map(r => ({
@@ -761,7 +764,7 @@ export function Pricing() {
                 )}
               </button>
               <p className="text-[10px] text-center text-neutral-400 font-bold uppercase tracking-widest">
-                Válido por 7 dias • {CHANNELS[channel]}% de acréscimo canal
+                Válido por {QUOTE_VALIDITY_DAYS} dias • {CHANNELS[channel]}% de acréscimo canal
               </p>
             </div>
 
