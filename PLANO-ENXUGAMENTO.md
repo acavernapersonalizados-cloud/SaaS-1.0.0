@@ -1,5 +1,29 @@
 # Plano de Enxugamento — PrecificaAteliê
 
+## Regras
+
+1. **Uma etapa por vez.** A próxima só começa quando a anterior estiver feita.
+2. **Cada etapa termina com:** testes + `npm run lint` + `npm run build` + commit + tag `etapa-N-ok`.
+3. **Ideias novas vão para o Estacionamento** (seção 7), não entram na etapa em andamento.
+4. **Enxugar não muda nenhum preço.** Mudanças de preço só na Etapa 7, com comparação antes/depois aprovada.
+
+## Rota
+
+| Etapa | O que é | Status |
+|---|---|---|
+| 0 — Fechar o que está aberto | Juntar todas as branches na `main`, backup novo conferido, item 11 resolvido, tag `antes-de-enxugar`. | ✅ **Feita** (17/10/2026). Nenhuma branch tem commits fora da `main`; backup `backup_precifica_ja_2026-10-17 (4).json` conferido (formato v2, completo, 0 falhas, 2 lojas, 17 coleções, contagens iguais ao `_meta`); item 11 em produção; tag `antes-de-enxugar` em `f5279f0`. |
+| 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), commits `b151c08` e `44dbe4e`. |
+| 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ⏳ Pendente |
+| 3 — Remover lixo | Ver seção 6. | ⏳ Pendente |
+| 4 — Unificar duplicações | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ⏳ Pendente |
+| 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11 e T12). | ⏳ Pendente |
+| 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
+| 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+
+As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
+
+---
+
 **Etapa 1: diagnóstico.** Nenhum arquivo de código foi alterado.
 Base: tag `antes-de-enxugar` (commit `f5279f0`). O código é o mesmo publicado em produção (`fed5c89`).
 Regra deste plano: **nenhuma funcionalidade é perdida**. O que está na seção 5 só muda com aprovação.
@@ -237,9 +261,9 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 
 Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
 
-### Etapa 6 — a definir
+### Etapa 6 — Validação final
 
-Ainda não definida neste documento. A Etapa 7 só começa depois dela.
+Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHECKLIST-TESTES.md`. Depois vêm o code review, o build e a publicação. A Etapa 7 só começa depois dela.
 
 ### Etapa 7 — Unificar parâmetros de preço (T4, T2, T3)
 
