@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency, isLowStock } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import {
@@ -114,8 +114,7 @@ export function PurchaseList() {
   // ── Regra do que precisa ser comprado ─────────────────────────────────────
   // Só entra na lista quem tem estoque mínimo definido (> 0) E estoque atual
   // igual ou abaixo desse mínimo. Itens incluídos manualmente sempre ficam.
-  const needsPurchase = (m: Material) =>
-    (Number(m.minStockQuantity) || 0) > 0 && (Number(m.stockQuantity) || 0) <= (Number(m.minStockQuantity) || 0);
+  const needsPurchase = (m: Material) => isLowStock(m);
 
   const lowStockMaterials = useMemo(() => materials.filter(needsPurchase), [materials]);
 

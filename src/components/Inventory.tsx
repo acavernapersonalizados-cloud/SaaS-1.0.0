@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, doc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
+import { isLowStock } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import { Search, Plus, Minus, AlertCircle, Package } from 'lucide-react';
@@ -64,7 +65,7 @@ export function Inventory() {
   const filteredMaterials = materials.filter(m => (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
   const totalValue = materials.reduce((acc, m) => acc + (m.stockQuantity || 0) * m.unitCost, 0);
-  const lowStockItems = materials.filter(m => (m.stockQuantity || 0) <= (m.minStockQuantity || 0));
+  const lowStockItems = materials.filter(isLowStock);
 
   if (!activeStore) {
     return (
@@ -134,7 +135,7 @@ export function Inventory() {
                   <td className="py-4 font-bold text-neutral-900">{material.name}</td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
                     {material.stockQuantity} {material.unit}
-                    {(material.stockQuantity || 0) <= (material.minStockQuantity || 0) && (
+                    {isLowStock(material) && (
                       <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                         BAIXO
                       </span>

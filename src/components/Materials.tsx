@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency, isLowStock } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -376,7 +376,7 @@ export function Materials() {
                   </td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
                     {material.stockQuantity} {material.unit}
-                    {material.stockQuantity <= (material.minStockQuantity || 0) && (
+                    {isLowStock(material) && (
                       <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                         BAIXO
                       </span>
