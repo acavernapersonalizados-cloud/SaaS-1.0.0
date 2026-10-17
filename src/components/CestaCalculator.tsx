@@ -4,7 +4,8 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where }
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CestaJob, CestaItem, Material } from '../types';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin, MAX_MARGIN_PERCENT, priceForMargin } from '../lib/pricingEngine';
+import { clampMargin, MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
+import { calcCestaJob } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -120,38 +121,19 @@ export function CestaCalculator() {
     setStockSearch('');
   };
 
-  const itemsCost = items.reduce((acc, i) => acc + i.unitCost * i.quantity, 0);
-
-  const calc = () => {
-    if (itemsCost <= 0 && assemblyTimeMin <= 0) return null;
-    const laborCost = (hourlyRate / 60) * assemblyTimeMin;
-    const packagingTotal = packagingCost + ribbonCost + tagCost;
-    const subtotalBatch = itemsCost + packagingTotal + laborCost + deliveryCost;
-    const totalCostUnit = subtotalBatch / Math.max(quantity, 1);
-    // Margem sobre o preço, líquida da comissão: depois da comissão sobra exatamente a margem.
-    const marginPrice = priceForMargin(totalCostUnit, profitMarginPct, commissionPct);
-    const invalidMargin = marginPrice === null;
-    const suggestedUnit = marginPrice ?? 0;
-    const suggestedBatch = suggestedUnit * quantity;
-    const priceRef = manualPrice ?? suggestedUnit;
-    const commissionValue = priceRef * (commissionPct / 100);
-    const profit = priceRef - totalCostUnit - commissionValue;
-    const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
-    return {
-      itemsCost,
-      packagingTotal,
-      laborCost,
-      deliveryCost,
-      totalCostUnit,
-      suggestedUnit,
-      suggestedBatch,
-      profit,
-      margin,
-      invalidMargin,
-      commissionValue,
-    };
-  };
-  const result = calc();
+  const result = calcCestaJob({
+    items,
+    packagingCost,
+    ribbonCost,
+    tagCost,
+    assemblyTimeMin,
+    hourlyRate,
+    deliveryCost,
+    commissionPct,
+    quantity,
+    profitMarginPct,
+    manualPrice,
+  });
 
   const addItem = () => {
     if (!newItemName) return;

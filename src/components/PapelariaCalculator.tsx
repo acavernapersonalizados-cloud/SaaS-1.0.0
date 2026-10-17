@@ -4,7 +4,8 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where }
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin, MAX_MARGIN_PERCENT, priceForMargin } from '../lib/pricingEngine';
+import { clampMargin, MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
+import { calcPapelariaJob, sumItemsCost } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -119,33 +120,21 @@ export function PapelariaCalculator() {
     setStockSearch('');
   };
 
-  const materialsCost = materials.reduce((acc, m) => acc + m.unitCost * m.quantity, 0);
+  const materialsCost = sumItemsCost(materials);
   const totalTimeMin = assemblyTimeMin + finishingTimeMin + packagingTimeMin;
 
-  const calc = () => {
-    if (totalTimeMin <= 0 && materialsCost <= 0) return null;
-    const laborCost = (hourlyRate / 60) * totalTimeMin;
-    const totalCostBatch = materialsCost + laminationCost + bindingCost + laborCost;
-    const totalCostUnit = totalCostBatch / Math.max(quantity, 1);
-    const suggestedUnit = priceForMargin(totalCostUnit, profitMarginPct) ?? 0;
-    const suggestedBatch = suggestedUnit * quantity;
-    const priceRef = manualPrice ?? suggestedUnit;
-    const profit = priceRef - totalCostUnit;
-    const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
-    return {
-      materialsCost,
-      laminationCost,
-      bindingCost,
-      laborCost,
-      totalCostUnit,
-      totalCostBatch,
-      suggestedUnit,
-      suggestedBatch,
-      profit,
-      margin,
-    };
-  };
-  const result = calc();
+  const result = calcPapelariaJob({
+    materials,
+    laminationCost,
+    bindingCost,
+    assemblyTimeMin,
+    finishingTimeMin,
+    packagingTimeMin,
+    hourlyRate,
+    quantity,
+    profitMarginPct,
+    manualPrice,
+  });
 
   const addMaterial = () => {
     if (!newMatName) return;

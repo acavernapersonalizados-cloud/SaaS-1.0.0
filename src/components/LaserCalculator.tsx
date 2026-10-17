@@ -3,7 +3,8 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, 
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin, priceForMargin } from '../lib/pricingEngine';
+import { clampMargin } from '../lib/pricingEngine';
+import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -137,41 +138,25 @@ export function LaserCalculator() {
   }, [activeStore]);
 
   const selectedMachine = machines.find(m => m.id === selectedMachineId) ?? null;
-  const totalTimeMin = (cuttingTimeMin + engravingTimeMin) * passes;
-  const totalTimeH = totalTimeMin / 60;
+  const totalTimeMin = laserTotalTimeMin(cuttingTimeMin, engravingTimeMin, passes);
 
   // ── Calculation ──────────────────────────────────────────────────────────────
-  const calc = () => {
-    if (!selectedMachine || totalTimeMin <= 0) return null;
-    const energyCost = (selectedMachine.powerConsumptionW / 1000) * totalTimeH * electricityRate;
-    const wearCost =
-      selectedMachine.diodeLifeH > 0
-        ? (selectedMachine.moduleReplacementCost / selectedMachine.diodeLifeH) * totalTimeH
-        : 0;
-    const laborCost = (hourlyRate / 60) * totalTimeMin;
-    const matPerUnit = materialCost / Math.max(quantity, 1);
-    // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
-    const totalCostUnit = energyCost + wearCost + laborCost + matPerUnit;
-    const totalCostBatch = totalCostUnit * Math.max(quantity, 1);
-    const suggestedUnit = priceForMargin(totalCostUnit, profitMarginPct) ?? 0;
-    const suggestedBatch = suggestedUnit * Math.max(quantity, 1);
-    const priceRef = manualPrice ?? suggestedUnit;
-    const profit = priceRef - totalCostUnit;
-    const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
-    return {
-      energyCost,
-      wearCost,
-      laborCost,
-      matPerUnit,
-      totalCostUnit,
-      totalCostBatch,
-      suggestedUnit,
-      suggestedBatch,
-      profit,
-      margin,
-    };
-  };
-  const result = calc();
+  const result = selectedMachine
+    ? calcLaserJob({
+        powerConsumptionW: selectedMachine.powerConsumptionW,
+        moduleReplacementCost: selectedMachine.moduleReplacementCost,
+        diodeLifeH: selectedMachine.diodeLifeH,
+        cuttingTimeMin,
+        engravingTimeMin,
+        passes,
+        electricityRate,
+        hourlyRate,
+        materialCost,
+        quantity,
+        profitMarginPct,
+        manualPrice,
+      })
+    : null;
 
   // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleSaveMachine = async (e: React.FormEvent) => {
