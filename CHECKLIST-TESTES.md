@@ -10,13 +10,15 @@ exatamente (diferenças de 1 centavo são arredondamento).
 
 ## ⚠️ Antes de começar (importante)
 
-- **O app usa o banco de dados real.** Rodando no seu computador, ele conecta direto no Firebase
-  do projeto `saas-1-0-0` — não existe um banco separado de testes. Tudo que você cadastrar aqui
-  aparece para os usuários de verdade.
-- **Por isso:** crie uma loja chamada **"Loja Teste"** e faça todos os testes dentro dela. No final,
-  apague os dados de teste e a loja.
-- **Não teste a importação de backup** (seção 17) com dados reais: ela sobrescreve registros.
-- Use nomes começando com **"TESTE"** em tudo que criar, para achar e apagar depois.
+- **Teste no seu computador com `npm run dev`.** Ele usa o **Firebase Emulator** (banco local): nada do
+  que você cadastrar chega ao banco real. Entre com `admin@teste.local` / `Teste@123` (ADMIN); a
+  **"Loja Teste"** e a Base de Custos da tabela abaixo já vêm criadas. Detalhes no `README.md`.
+- Para recomeçar do zero: `npm run dev:limpo`.
+- **Só o site publicado (`saas-1-0-0.web.app`) usa o banco real.** Se testar lá, use a "Loja Teste",
+  nomes começando com **"TESTE"**, apague tudo no final e **não teste a importação de backup**
+  (seção 17), que sobrescreve registros.
+- Os cálculos das seções 8, 10 e 12–15 (e a regra de estoque baixo e de pacote da 16) também são
+  conferidos automaticamente por `npm test`.
 
 ### Dados de referência usados nos testes
 
@@ -32,9 +34,11 @@ exatamente (diferenças de 1 centavo são arredondamento).
 ## 1. Rodar o app
 
 - [ ] No terminal, dentro da pasta do projeto: `npm install` termina sem erro.
-- [ ] O arquivo `.env` existe na pasta (já existe hoje) com as chaves do Firebase preenchidas.
-- [ ] `npm run dev` mostra um endereço como `http://localhost:5173`.
-- [ ] Abrindo esse endereço no navegador aparece a tela de login.
+- [ ] `npm run dev` liga o emulador e mostra `[seed] Emulador pronto` e o endereço `http://localhost:5173`.
+- [ ] Abrindo esse endereço aparece a tela de login; `admin@teste.local` / `Teste@123` entra como ADMIN na "Loja Teste".
+- [ ] O painel do emulador abre em `http://127.0.0.1:4000`.
+- [ ] `npm test` termina com todos os testes passando.
+- [ ] Para o build: o arquivo `.env` existe na pasta com as chaves do Firebase preenchidas.
 - [ ] `npm run lint` termina sem erros (confere os tipos do código).
 - [ ] `npm run build` termina sem erros e cria a pasta `dist`.
 

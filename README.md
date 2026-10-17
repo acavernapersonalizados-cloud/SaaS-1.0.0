@@ -6,22 +6,47 @@ Sistema de precificação e gestão profissional para ateliês e artesãos.
 
 ### Pré-requisitos
 - Node.js 18+
-- Conta no Firebase (para banco de dados e autenticação)
+- Java 21 ou mais novo (o Firebase Emulator exige). No Windows: `winget install Microsoft.OpenJDK.21`
+- Firebase CLI: `npm install -g firebase-tools`
 
-### Instalação
-1. Clone o repositório
-2. Instale as dependências:
+### Rodar no computador (banco local, nunca o real)
+
+1. Instale as dependências:
    ```bash
    npm install
    ```
-3. Configure as variáveis de ambiente no arquivo `.env`:
-   - `GEMINI_API_KEY`: Sua chave da API do Google Gemini
-   - `VITE_FIREBASE_CONFIG`: Configurações do seu projeto Firebase (opcional se usar o arquivo de config)
-
-4. Inicie o servidor de desenvolvimento:
+2. Inicie o app com o Firebase Emulator:
    ```bash
    npm run dev
    ```
+   Na primeira vez ele baixa os arquivos do emulador (alguns minutos). Quando aparecer
+   `[seed] Emulador pronto`, abra **http://localhost:5173**.
+3. Entre com o usuário de teste (só existe no emulador):
+   - **E-mail:** `admin@teste.local`
+   - **Senha:** `Teste@123`
+   - Cargo ADMIN, com a "Loja Teste" e a Base de Custos do `CHECKLIST-TESTES.md` já criadas.
+4. Para parar, aperte **Ctrl+C** no terminal. O banco local fica salvo em `.emulator-data/` e volta na
+   próxima vez. Para começar do zero: `npm run dev:limpo`.
+
+Como funciona: no `npm run dev` o app usa o projeto de demonstração `demo-precificaatelie`, que o
+Firebase não deixa sair do computador. Se o emulador estiver desligado, o app só mostra erro de conexão;
+ele **nunca** grava no banco real. O painel do emulador (ver e apagar dados) fica em
+**http://127.0.0.1:4000**.
+
+### Testes automáticos
+
+```bash
+npm test
+```
+Roda os testes do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`.
+
+### Build de produção (banco real)
+
+O banco real só é usado no build de produção, com as variáveis do arquivo `.env`
+(modelo em `.env.example`). Sem elas o build é cancelado.
+```bash
+npm run build
+```
 
 ## 🧪 Procedimentos de Teste
 

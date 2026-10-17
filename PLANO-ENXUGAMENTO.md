@@ -13,7 +13,7 @@
 |---|---|---|
 | 0 — Fechar o que está aberto | Juntar todas as branches na `main`, backup novo conferido, item 11 resolvido, tag `antes-de-enxugar`. | ✅ **Feita** (17/10/2026). Nenhuma branch tem commits fora da `main`; backup `backup_precifica_ja_2026-10-17 (4).json` conferido (formato v2, completo, 0 falhas, 2 lojas, 17 coleções, contagens iguais ao `_meta`); item 11 em produção; tag `antes-de-enxugar` em `f5279f0`. |
 | 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), commits `b151c08` e `44dbe4e`. |
-| 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ⏳ Pendente |
+| 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`. `npm run dev` usa só o emulador (projeto `demo-precificaatelie`); ADMIN de teste `admin@teste.local`; 49 testes (`npm test`). As contas de Laser, Papelaria e Cestas foram movidas sem mudança para `src/lib/calculators.ts` (aprovado), o que adianta parte de D4–D6 da Etapa 4. Requer Java 21. |
 | 3 — Remover lixo | Ver seção 6. | ⏳ Pendente |
 | 4 — Unificar duplicações | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ⏳ Pendente |
 | 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11 e T12). | ⏳ Pendente |
