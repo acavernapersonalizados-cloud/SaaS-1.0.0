@@ -106,11 +106,24 @@ export function Materials() {
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
     const isActuallyPackage = newMaterial.isPackage || newMaterial.unit === 'pct';
-    if (!activeStore || !newMaterial.name || !newMaterial.purchasePrice) return;
+    if (!activeStore) {
+      addToast('Selecione uma loja antes de cadastrar materiais.', 'error');
+      return;
+    }
+    if (!newMaterial.name || !newMaterial.purchasePrice) {
+      addToast('Preencha o nome e um preço de compra maior que zero.', 'error');
+      return;
+    }
 
     // Validation
-    if (!isActuallyPackage && !newMaterial.purchaseQuantity) return;
-    if (isActuallyPackage && !newMaterial.packageQuantity) return;
+    if (!isActuallyPackage && !newMaterial.purchaseQuantity) {
+      addToast('Informe uma quantidade comprada maior que zero.', 'error');
+      return;
+    }
+    if (isActuallyPackage && !newMaterial.packageQuantity) {
+      addToast('Informe a quantidade de itens no pacote (maior que zero).', 'error');
+      return;
+    }
 
     const quantity = isActuallyPackage ? newMaterial.packageQuantity || 1 : newMaterial.purchaseQuantity!;
     const unitCost = newMaterial.purchasePrice / quantity;
