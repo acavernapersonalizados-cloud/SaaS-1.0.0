@@ -11,6 +11,7 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
+import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { StockMaterialPicker } from './StockMaterialPicker';
 import { analyzePapelariaPrice } from '../services/gemini';
 import {
@@ -21,8 +22,6 @@ import {
   Loader2,
   Clock,
   DollarSign,
-  AlertCircle,
-  CheckCircle2,
   Layers,
   Save,
   Info,
@@ -570,60 +569,18 @@ export function PapelariaCalculator() {
                   </div>
                 </div>
 
-                <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Sugerido ({profitMarginPct}% do preço)
-                  </p>
-                  <p className="text-2xl font-black text-emerald-700">
-                    {formatCurrency(result.suggestedUnit)}
-                    <span className="text-sm font-medium">/un</span>
-                  </p>
-                  {quantity > 1 && (
-                    <p className="text-sm text-emerald-600 font-bold mt-0.5">
-                      {formatCurrency(result.suggestedBatch)} total
-                    </p>
-                  )}
-                </div>
+                <SuggestedPrice
+                  profitMarginPct={profitMarginPct}
+                  suggestedUnit={result.suggestedUnit}
+                  suggestedBatch={result.suggestedBatch}
+                  quantity={quantity}
+                  unit="/un"
+                />
 
-                {manualPrice != null && manualPrice > 0 && (
-                  <div
-                    className={`p-4 rounded-xl border space-y-2 ${result.profit >= 0 ? 'bg-blue-50 border-blue-100' : 'bg-red-50 border-red-100'}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className={`text-2xl font-black ${result.profit >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
-                        {formatCurrency(manualPrice)}
-                      </p>
-                      {result.profit >= 0 ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                      ) : (
-                        <AlertCircle className="w-5 h-5 text-red-500" />
-                      )}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <p className="text-[10px] text-neutral-400 font-bold uppercase">Lucro</p>
-                        <p className={`font-black text-sm ${result.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {formatCurrency(result.profit)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-neutral-400 font-bold uppercase">Margem</p>
-                        <p className={`font-black text-sm ${result.margin >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {result.margin.toFixed(1)}%
-                        </p>
-                      </div>
-                    </div>
-                    {result.profit < 0 && (
-                      <div className="flex items-start gap-2 p-2 bg-red-100 rounded-lg">
-                        <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                        <p className="text-xs text-red-700 font-medium">
-                          Prejuizo de {formatCurrency(Math.abs(result.profit))}/un. Minimo:{' '}
-                          {formatCurrency(result.totalCostUnit)}.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <ManualPriceCheck manualPrice={manualPrice} profit={result.profit} margin={result.margin}>
+                  Prejuizo de {formatCurrency(Math.abs(result.profit))}/un. Minimo:{' '}
+                  {formatCurrency(result.totalCostUnit)}.
+                </ManualPriceCheck>
               </div>
             )}
           </div>

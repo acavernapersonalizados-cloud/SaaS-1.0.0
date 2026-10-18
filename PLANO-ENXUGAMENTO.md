@@ -16,7 +16,7 @@
 | 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`. `npm run dev` usa só o emulador (projeto `demo-precificaatelie`); ADMIN de teste `admin@teste.local`; 49 testes (`npm test`). As contas de Laser, Papelaria e Cestas foram movidas sem mudança para `src/lib/calculators.ts` (aprovado), o que adianta parte de D4–D6 da Etapa 4. Requer Java 21. |
 | 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
 | 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
-| 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ⏳ Pendente |
+| 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11, T12 e T13). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
 | 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
@@ -253,14 +253,20 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 
 Saldo do Grupo A no código do app: +30 linhas (helpers, arquivos novos e comentários); o ganho é cada conta e texto num lugar só e com teste (49 → 76 testes).
 
-**Grupo B — componentes de tela: ⏳ adiado (decisão de 17/10/2026).** Antes de começar, instalar `jsdom` e `@testing-library/react` só para testes e gravar o HTML de cada tela.
+**Grupo B — componentes de tela: ✅ feito (18/10/2026), tag `etapa-4b-ok`.**
 
-| Item | Risco |
-|---|---|
-| B1 (D9): `SearchBar` e `ConfirmDeleteModal` nas telas de cadastro | médio |
-| B2 (D2): histórico de trabalhos (`useStoreJobs` + `JobHistoryList`) | médio |
-| B3 (D1): `MaterialPicker` em Papelaria e Cestas | médio |
-| B4 (D3): `PriceResultCard` nas 4 calculadoras | médio-alto |
+Rede de segurança: `jsdom` e `@testing-library/react` (só para testes) e `src/components/screens.test.tsx`, que
+grava o HTML de 15 telas em 39 estados (lista, busca, janela de exclusão, escolha de material, resultado, preço
+manual e prejuízo), com Firebase, login e loja simulados (`src/test/`). Cada item foi conferido duas vezes: pelos
+snapshots e comparando o HTML final (`DUMP_HTML`) antigo × novo caractere a caractere. Todos deram 0 diferenças.
+
+| Item | Resultado | Ficou de fora (e por quê) |
+|---|---|---|
+| B1a (D9): `ConfirmDeleteModal` em Clientes, Histórico, Matéria-prima, Lojas e Fornecedores | HTML igual | Usuários: a janela de exclusão tem outro desenho |
+| B1b (D9): `SearchBar` em Matéria-prima, Clientes, Fornecedores, Histórico e Estoque | HTML igual | Catálogo, Produtos, Catálogo público e Lista de Compras: classes próprias (mudaria o visual) |
+| B2 (D2): `JobHistoryList` em Papelaria, Cestas e Laser | HTML igual | Impressão 3D: tabela diferente. `useStoreJobs` **não feito**: cada tela junta outras leituras no mesmo efeito, o ganho seria ~15 linhas e a exclusão não tem teste |
+| B3 (D1): `StockMaterialPicker` em Papelaria e Cestas | HTML igual (o Prettier mudou só a divisão interna do texto do React; o HTML final é o mesmo) | As abas e o item avulso ficaram em cada tela |
+| B4 (D3): `SuggestedPrice` e `ManualPriceCheck` (`PriceResultCard.tsx`) em Laser, Papelaria e Cestas | HTML igual, inclusive o aviso de prejuízo das 3 telas | Impressão 3D: as mesmas classes estão em outra ordem (mudaria o HTML). A "Composição" de cada tela tem linhas próprias e ficou em cada tela |
 
 ### Etapa 5 — Peso e telas aprovadas
 
@@ -326,4 +332,6 @@ Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do mome
 - **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor.
 - **`npm audit`:** a instalação limpa no GitHub mostrou 17 vulnerabilidades em dependências (4 moderadas, 13 altas) na versão antiga; rever na versão atual.
 - **Lista de Compras:** o registro de compra atualiza o estoque sem transação (`PurchaseList.tsx`), diferente do resto do app.
+- **Janela de exclusão de Clientes com largura `max-md`** (`Clients.tsx`): provável erro de digitação de `max-w-md`. Mantido igual na Etapa 4B, porque corrigir muda o visual.
+- **Unificações de tela que ficaram de fora na Etapa 4B:** janela de exclusão de Usuários; buscas de Catálogo, Produtos, Catálogo público e Lista de Compras; histórico e cartão de resultado da Impressão 3D; `useStoreJobs`. Todas exigem aceitar uma pequena mudança visual ou ter teste da exclusão primeiro.
 - **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.
