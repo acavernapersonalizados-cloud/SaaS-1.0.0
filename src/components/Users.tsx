@@ -609,7 +609,7 @@ export function Users() {
                 </div>
               )}
 
-              <div className="flex justify-end gap-4 pt-6 border-t border-neutral-100">
+              <div className="flex justify-end gap-4 pt-6 border-t border-neutral-100 sticky -bottom-10 -mx-10 -mb-10 px-10 pb-10 bg-white">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

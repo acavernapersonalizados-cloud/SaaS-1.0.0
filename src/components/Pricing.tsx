@@ -1119,7 +1119,7 @@ export function Pricing() {
               </div>
             </div>
 
-            <div className="flex justify-end pt-8 border-t border-neutral-100">
+            <div className="flex justify-end pt-8 border-t border-neutral-100 sticky -bottom-10 -mx-10 -mb-10 px-10 pb-10 bg-white">
               <button
                 onClick={() => {
                   setShowQuoteModal(false);

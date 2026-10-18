@@ -144,6 +144,107 @@ await createIfMissing(`laserMachines/${LASER_ID}`, {
   createdAt: now,
 });
 
+// Cliente, fornecedor e orçamentos de teste: abrem as janelas de detalhes (Clientes,
+// Fornecedores e Histórico) e alimentam os números do cliente (T1).
+await createIfMissing('clients/cliente-teste', {
+  storeId: STORE_ID,
+  name: 'TESTE Cliente',
+  type: 'PJ',
+  document: '12.345.678/0001-90',
+  phone: '5511999999999',
+  email: 'cliente@teste.local',
+  city: 'São Paulo',
+  state: 'SP',
+  address: 'Rua Cliente, 100',
+  observations: 'Cliente de teste do emulador',
+  totalSpent: 0,
+  quoteCount: 0,
+  lastPurchase: null,
+  createdAt: now,
+});
+
+await createIfMissing('suppliers/fornecedor-teste', {
+  storeId: STORE_ID,
+  name: 'TESTE Fornecedor',
+  contactName: 'Maria Teste',
+  email: 'fornecedor@teste.local',
+  phone: '(11) 97777-6666',
+  website: 'https://fornecedor.teste',
+  address: 'Rua Fornecedor, 1',
+  observations: 'Entrega em 3 dias',
+  paymentMethod: 'pix',
+  paymentTerms: 'boleto_30',
+  createdAt: now,
+});
+
+// Produto de teste: permite montar um orçamento em Precificação (janela do orçamento gerado).
+await createIfMissing('products/produto-teste', {
+  storeId: STORE_ID,
+  name: 'TESTE Chaveiro',
+  category: 'Presentes',
+  categoryIds: [],
+  materials: [],
+  productionTime: 15,
+  packagingCost: 0.75,
+  finishingOptions: [{ id: 'verniz', name: 'Verniz', additionalValue: 2 }],
+  accessories: [{ id: 'caixinha', name: 'Caixinha', additionalValue: 3 }],
+  manualPrice: null,
+  catalogPrice: 15,
+  showInCatalog: true,
+  showPrice: true,
+  description: 'Chaveiro de MDF personalizado',
+  leadTimeDays: 7,
+  createdAt: now,
+});
+
+const quoteItem = (id, name, quantity, unitPrice) => ({
+  id,
+  productId: '',
+  productName: name,
+  quantity,
+  unitPrice,
+  totalPrice: quantity * unitPrice,
+  basePrice: unitPrice,
+  finishingValue: 0,
+  accessoriesValue: 0,
+  selectedFinishingIds: [],
+  selectedAccessoryIds: [],
+  finishingNames: [],
+  accessoryNames: [],
+  margin: 50,
+  platformFee: 0,
+});
+const quoteBase = {
+  storeId: STORE_ID,
+  createdBy: uid,
+  createdByName: TEST_ADMIN.name,
+  clientId: 'cliente-teste',
+  clientName: 'TESTE Cliente',
+  clientType: 'PJ',
+  cnpj: '12.345.678/0001-90',
+  channel: 'Instagram',
+  platformFee: 0,
+  avgMargin: 50,
+};
+await createIfMissing('quotes/orcamento-teste-1', {
+  ...quoteBase,
+  date: '2026-10-10T12:00:00.000Z',
+  expiryDate: '2026-10-17T12:00:00.000Z',
+  items: [quoteItem('i1', 'TESTE Chaveiro', 10, 15), quoteItem('i2', 'TESTE Caneca', 2, 40)],
+  totalAmount: 230,
+  totalProfit: 115,
+  status: 'Aprovado',
+});
+await createIfMissing('quotes/orcamento-teste-2', {
+  ...quoteBase,
+  date: '2026-10-15T12:00:00.000Z',
+  expiryDate: '2026-10-22T12:00:00.000Z',
+  items: [quoteItem('i1', 'TESTE Chaveiro', 4, 15)],
+  totalAmount: 60,
+  totalProfit: 30,
+  status: 'Pendente',
+});
+
 console.log(
   `[seed] Emulador pronto. Entre com ${TEST_ADMIN.email} / ${TEST_ADMIN.password} (ADMIN, "Loja Teste", com a impressora "TESTE 3D" e o laser "TESTE Laser").`,
 );

@@ -406,7 +406,7 @@ export function Clients() {
                 />
               </div>
 
-              <div className="pt-4">
+              <div className="sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 bg-white pt-4 border-t border-neutral-100">
                 <button
                   type="submit"
                   disabled={isSaving}

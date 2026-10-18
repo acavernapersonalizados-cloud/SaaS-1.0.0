@@ -417,7 +417,7 @@ export function Materials() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-8 space-y-8 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-8 space-y-8 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-neutral-900">
                 {editingMaterial ? 'Editar Insumo' : 'Novo Insumo'}
@@ -580,7 +580,7 @@ export function Materials() {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 pt-4 bg-white border-t border-neutral-100">
                 <button
                   type="submit"
                   className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg"

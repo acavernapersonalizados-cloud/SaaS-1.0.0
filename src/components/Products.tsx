@@ -1285,12 +1285,14 @@ export function Products() {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg"
-                >
-                  {editingProduct ? 'Atualizar Produto' : 'Cadastrar Produto'}
-                </button>
+                <div className="sticky -bottom-6 -mx-8 -mb-6 px-8 pb-6 pt-4 bg-white border-t border-neutral-100">
+                  <button
+                    type="submit"
+                    className="w-full py-4 bg-neutral-900 text-white rounded-2xl font-bold hover:bg-neutral-800 transition-all shadow-lg"
+                  >
+                    {editingProduct ? 'Atualizar Produto' : 'Cadastrar Produto'}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

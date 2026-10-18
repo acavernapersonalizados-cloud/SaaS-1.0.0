@@ -783,23 +783,25 @@ export function LaserCalculator() {
                   Separe por vírgula. Aparecem na lista de materiais do trabalho.
                 </p>
               </div>
-              <button
-                type="submit"
-                disabled={savingMachine}
-                className="w-full py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {savingMachine ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    {editingMachine ? 'Atualizar' : 'Cadastrar'}
-                  </>
-                )}
-              </button>
+              <div className="sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 bg-white pt-4 border-t border-neutral-100">
+                <button
+                  type="submit"
+                  disabled={savingMachine}
+                  className="w-full py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {savingMachine ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      {editingMachine ? 'Atualizar' : 'Cadastrar'}
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>

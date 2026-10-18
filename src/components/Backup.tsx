@@ -486,7 +486,7 @@ export function Backup() {
               </div>
             )}
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 sticky -bottom-10 -mx-10 -mb-10 px-10 pb-10 bg-white pt-4 border-t border-neutral-100">
               <button
                 onClick={() => processImport(importPreview)}
                 disabled={loading}
