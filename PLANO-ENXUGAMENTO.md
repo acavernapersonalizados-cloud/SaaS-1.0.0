@@ -19,8 +19,9 @@
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
-| 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+| 7 — Unificar parâmetros de preço | T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
 | 8 — Central de Calculadoras | As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -202,7 +203,7 @@ Os 10 somam 8.678 linhas (52% de `src/`).
 | T1 | Clientes | Os cartões "Total gasto", "Orçamentos" e "Última compra" sempre mostram **R$ 0,00 / 0 / —**: são gravados zerados (`Clients.tsx:144-146`) e nada os atualiza. | ✅ **Aprovado:** mostrar os valores reais, calculados a partir dos orçamentos do cliente. | Etapa 5 |
 | T2 | Calculadoras | "Valor Hora Trabalho" (25 ou 12) e "Margem de Lucro" (60%) não dependem da **Base de Custos** (R$ 20/h e Meta de Lucro da loja). São duas fontes para o mesmo número. | ➡️ Usar a Base de Custos como valor inicial, mantendo o campo editável. | Etapa 7 |
 | T3 | Calculadoras | Tarifa de energia padrão diferente: 0,78938 (Laser) e 0,85 (3D). | ➡️ Um valor só, guardado na Base de Custos. | Etapa 7 |
-| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | ➡️ Uma tabela só de canais, com taxa percentual e fixa. **Primeiro item da Etapa 7.** | Etapa 7 |
+| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | ➡️ Uma tabela só de canais, **editável e por loja** (comissão %, taxa fixa R$, taxa de pagamento %, observação e data da última conferência), usada pelos Orçamentos e por todas as calculadoras; com Keeta, iFood e 99Food (18/10/2026). **Primeiro item da Etapa 7.** | Etapa 7 |
 | T5 | Corte a Laser | Largura e altura da peça são gravadas, mas não aparecem na tela (sempre 100 × 100 mm). | ✅ **Aprovado:** deixar de gravar (trabalhos antigos mantêm o valor no banco). | Etapa 5 |
 | T6 | Papelaria | "Quantidade de folhas/peças impressas" não muda o cálculo, e o campo `printedAreaCm2` do tipo nunca é usado. | ✅ **Aprovado:** tirar o campo da tela (e o `printedAreaCm2` do tipo). | Etapa 5 |
 | T7 | Produtos | "Categoria principal (opcional)", em texto livre, convive com as **categorias** múltiplas da tela Categorias. | 🅿️ Estacionamento. | Seção 7 |
@@ -307,6 +308,8 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 
 ### Etapa 7 — Unificar parâmetros de preço (T4, T2, T3)
 
+**Ampliado em 18/10/2026:** o T4 passa a ser uma **tabela única e editável de canais de venda por loja** (detalhes abaixo da tabela).
+
 **Só começa depois da Etapa 6.** Estes itens **mudam preços**, então:
 
 1. **Antes de qualquer mudança no código**, gerar uma comparação de preço **antes/depois com produtos e trabalhos reais** das lojas (leitura do banco, sem gravar), mostrando para cada um: preço hoje, preço novo e diferença em R$ e %.
@@ -315,11 +318,25 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 
 | Ordem | Item | O que muda | Risco |
 |---|---|---|---|
-| 1 | **T4** — uma tabela só de canais de venda (taxa % + taxa fixa), usada por Precificação e Impressão 3D | O preço de orçamentos ou de trabalhos 3D em canais como Shopee e Mercado Livre | alto |
+| 1 | **T4** — tabela única e editável de canais de venda por loja, usada pelos Orçamentos e por todas as calculadoras | O preço de orçamentos e de trabalhos das calculadoras em canais como Shopee e Mercado Livre | alto |
 | 2 | T2 — calculadoras abrem com o valor da hora e a Meta de Lucro da Base de Custos (campos continuam editáveis) | O preço sugerido de quem não alterar os campos | alto |
 | 3 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
 
 Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
+
+#### T4 — Tabela de canais de venda (ampliado em 18/10/2026)
+
+- **Uma tabela só, por loja, editável na tela.** Cada canal tem:
+  - comissão (%);
+  - taxa fixa (R$);
+  - taxa de pagamento (%);
+  - observação;
+  - data da última conferência.
+- **Quem usa:** os Orçamentos (Precificação) e **todas as calculadoras** (Corte a Laser, Impressão 3D, Papelaria e
+  Cestas). Hoje há duas tabelas fixas no código, com valores diferentes (orçamento: Shopee 20%; 3D: Shopee 14% + R$ 4).
+- **Canais novos:** **Keeta**, **iFood** e **99Food**. **Os valores serão preenchidos por você, conforme o seu
+  contrato**: o app não inventa taxas para eles.
+- A comparação de preço antes/depois (passos 1 a 3 acima) vale também para esta tabela.
 
 ### Etapa 8 — Central de Calculadoras
 
@@ -327,6 +344,17 @@ Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do mome
 
 - As 4 calculadoras (Corte a Laser, Impressão 3D, Papelaria e Cestas) **continuam independentes**, mas ficam numa **única guia do menu**.
 - Um **trabalho salvo** pode ser transformado em **Produto** e publicado no **Catálogo**, na hora ou depois.
+
+### Etapa 9 — Monitor de taxas
+
+**Só começa depois da Etapa 8. Por enquanto é só planejamento:** o detalhamento será feito quando a etapa começar.
+Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última conferência.
+
+- **Aviso no app** quando um canal estiver há **mais de 60 dias sem conferência**.
+- **Comissão do Mercado Livre pela API oficial**, se for viável.
+- **Verificação mensal assistida por IA:** pesquisa as páginas oficiais dos canais e **envia para você as mudanças
+  encontradas, com as fontes**.
+- **Nada é alterado no app sem a sua aprovação.**
 
 ---
 
