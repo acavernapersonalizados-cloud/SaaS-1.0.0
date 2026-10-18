@@ -20,7 +20,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { CategoryPicker, CategoryChips, CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
-import { Plus, Trash2, Package, Search, PlusCircle, X, Truck, Edit2, ArrowUpDown, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Package, PlusCircle, X, Truck, Edit2, ArrowUpDown, AlertCircle } from 'lucide-react';
+import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 type SortField = 'name' | 'purchasePrice' | 'unitCost' | 'createdAt';
@@ -284,16 +285,12 @@ export function Materials() {
 
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Buscar material..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
-            />
-          </div>
+          <SearchBar
+            placeholder="Buscar material..."
+            value={searchTerm}
+            onChange={setSearchTerm}
+            className="relative max-w-md w-full"
+          />
 
           <div className="w-full md:w-auto">
             <CategoryFilterBar scope="material" selected={categoryFilter} onChange={setCategoryFilter} />

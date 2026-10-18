@@ -5,20 +5,8 @@ import { Supplier } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import {
-  PlusCircle,
-  Search,
-  X,
-  Trash2,
-  Truck,
-  Phone,
-  Mail,
-  Globe,
-  MapPin,
-  FileText,
-  Edit2,
-  Building2,
-} from 'lucide-react';
+import { PlusCircle, X, Trash2, Truck, Phone, Mail, Globe, MapPin, FileText, Edit2, Building2 } from 'lucide-react';
+import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 export function Suppliers() {
@@ -193,16 +181,7 @@ export function Suppliers() {
       </header>
 
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar por nome, contato ou email..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
-          />
-        </div>
+        <SearchBar placeholder="Buscar por nome, contato ou email..." value={searchTerm} onChange={setSearchTerm} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSuppliers.map(supplier => (

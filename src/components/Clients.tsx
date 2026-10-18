@@ -21,7 +21,6 @@ import {
   Plus,
   Trash2,
   User,
-  Search,
   PlusCircle,
   X,
   Phone,
@@ -32,6 +31,7 @@ import {
   Loader2,
   Edit2,
 } from 'lucide-react';
+import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 export function Clients() {
@@ -234,16 +234,11 @@ export function Clients() {
       </header>
 
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar por nome, telefone ou documento..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
-          />
-        </div>
+        <SearchBar
+          placeholder="Buscar por nome, telefone ou documento..."
+          value={searchTerm}
+          onChange={setSearchTerm}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredClients.map(client => (

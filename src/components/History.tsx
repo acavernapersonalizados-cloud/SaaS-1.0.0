@@ -10,7 +10,6 @@ import { updateQuoteStatus } from '../services/automations';
 import { generateQuoteMessage } from '../services/whatsapp';
 import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
 import {
-  Search,
   Trash2,
   FileText,
   Calendar,
@@ -26,6 +25,7 @@ import {
   CheckCircle,
   Receipt,
 } from 'lucide-react';
+import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 export function History() {
@@ -150,16 +150,7 @@ export function History() {
       </header>
 
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar por cliente ou produto..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none"
-          />
-        </div>
+        <SearchBar placeholder="Buscar por cliente ou produto..." value={searchTerm} onChange={setSearchTerm} />
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
