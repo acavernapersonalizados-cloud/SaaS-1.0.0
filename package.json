@@ -33,6 +33,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
+    "firebase-tools": "15.34.0",
     "postcss": "^8.4.49",
     "prettier": "3.9.10",
     "tailwindcss": "^3.4.17",

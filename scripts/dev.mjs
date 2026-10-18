@@ -7,12 +7,25 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
 const PROJECT_ID = 'demo-precificaatelie';
 const DATA_DIR = '.emulator-data';
 const clean = process.argv.includes('--limpo');
 
+// Firebase CLI do próprio projeto (devDependency firebase-tools), executado
+// direto pelo Node: não depende da instalação global nem do PATH.
+const require = createRequire(import.meta.url);
+const firebaseCli = path.join(
+  path.dirname(require.resolve('firebase-tools/package.json')),
+  'lib',
+  'bin',
+  'firebase.js',
+);
+const viteCli = path.join(path.dirname(require.resolve('vite/package.json')), 'bin', 'vite.js');
+
 const args = [
+  firebaseCli,
   'emulators:exec',
   '--project',
   PROJECT_ID,
@@ -25,7 +38,8 @@ const args = [
 if (!clean && existsSync(path.join(DATA_DIR, 'firebase-export-metadata.json'))) {
   args.push('--import', DATA_DIR);
 }
-args.push('"node scripts/seed-emulator.mjs && vite"');
+// Comando que o emulador roda depois de ligar: cria o ADMIN de teste e abre o Vite.
+args.push(`node scripts/seed-emulator.mjs && node "${viteCli}"`);
 
 // O emulador exige Java 21+. Terminais abertos antes da instalação do JDK não
 // têm o JAVA_HOME novo, então procura também nas pastas padrão do Windows.
@@ -42,15 +56,25 @@ function findJdkHome() {
   return process.env.JAVA_HOME;
 }
 
+// No Windows a variável se chama "Path" (no Linux/macOS, "PATH"). Usa a chave
+// que já existe, para não criar uma segunda variável que esconda a original.
 const env = { ...process.env };
+const pathKey = Object.keys(env).find(key => key.toUpperCase() === 'PATH') ?? 'PATH';
 const jdkHome = findJdkHome();
 if (jdkHome) {
   env.JAVA_HOME = jdkHome;
-  env.PATH = `${path.join(jdkHome, 'bin')}${path.delimiter}${env.PATH}`;
+  env[pathKey] = [path.join(jdkHome, 'bin'), env[pathKey]].filter(Boolean).join(path.delimiter);
 }
 
 console.log(`[dev] Firebase Emulator (${clean ? 'banco vazio' : 'banco salvo em ' + DATA_DIR}) + Vite`);
 console.log('[dev] Painel do emulador: http://127.0.0.1:4000  |  App: http://localhost:5173');
 
-const child = spawn(['firebase', ...args].join(' '), { stdio: 'inherit', shell: true, env });
+const child = spawn(process.execPath, args, { stdio: 'inherit', env });
+
+// O Ctrl+C do terminal chega também ao Firebase, que desliga o emulador e salva
+// o banco em .emulator-data/. Este script ignora o sinal e só sai quando o
+// Firebase terminar; senão o terminal voltaria antes e o emulador ficaria órfão.
+const waitForFirebase = () => console.log('[dev] Desligando o emulador e salvando o banco local...');
+process.on('SIGINT', waitForFirebase);
+process.on('SIGTERM', waitForFirebase);
 child.on('exit', code => process.exit(code ?? 0));

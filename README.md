@@ -7,7 +7,7 @@ Sistema de precificação e gestão profissional para ateliês e artesãos.
 ### Pré-requisitos
 - Node.js 18+
 - Java 21 ou mais novo (o Firebase Emulator exige). No Windows: `winget install Microsoft.OpenJDK.21`
-- Firebase CLI: `npm install -g firebase-tools`
+- A Firebase CLI vem com o projeto (`firebase-tools` no `npm install`); não precisa instalar global.
 
 ### Rodar no computador (banco local, nunca o real)
 
@@ -25,7 +25,8 @@ Sistema de precificação e gestão profissional para ateliês e artesãos.
    - **E-mail:** `admin@teste.local`
    - **Senha:** `Teste@123`
    - Cargo ADMIN, com a "Loja Teste" e a Base de Custos do `CHECKLIST-TESTES.md` já criadas.
-4. Para parar, aperte **Ctrl+C** no terminal. O banco local fica salvo em `.emulator-data/` e volta na
+4. Para parar, aperte **Ctrl+C** uma vez e espere aparecer `Export complete` (alguns segundos; no
+   PowerShell o prompt pode voltar antes dessas mensagens). O banco local fica salvo em `.emulator-data/` e volta na
    próxima vez. Para começar do zero: `npm run dev:limpo`.
 
 Como funciona: no `npm run dev` o app usa o projeto de demonstração `demo-precificaatelie`, que o
