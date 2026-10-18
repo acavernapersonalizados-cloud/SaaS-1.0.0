@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
+import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
 import { clampMargin } from '../lib/pricingEngine';
 import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from '../lib/printPricing';
@@ -39,8 +40,6 @@ import {
   Clock,
   Upload,
 } from 'lucide-react';
-
-const ELECTRICITY_RATE_DEFAULT = 0.85;
 
 const FILAMENTS = [
   'PLA',
@@ -95,9 +94,9 @@ export function PrintCalculator() {
   const [printTimeH, setPrintTimeH] = useState(2);
   const [failureRatePct, setFailureRatePct] = useState(5);
   const [quantity, setQuantity] = useState(1);
-  const [hourlyRate, setHourlyRate] = useState(12);
-  const [profitMarginPct, setProfitMarginPct] = useState(60);
-  const [electricityRate, setElectricityRate] = useState(ELECTRICITY_RATE_DEFAULT);
+  const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.print3d.hourlyRate);
+  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.print3d.profitMarginPct);
+  const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.print3d.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [postProcessHours, setPostProcessHours] = useState(0);
   const [packagingCost, setPackagingCost] = useState(0);

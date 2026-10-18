@@ -3,6 +3,7 @@ import { Plus as Plus2 } from 'lucide-react';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
+import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
 import { clampMargin, MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
 import { calcPapelariaJob, sumItemsCost } from '../lib/calculators';
@@ -44,8 +45,8 @@ export function PapelariaCalculator() {
   const [assemblyTimeMin, setAssemblyTimeMin] = useState(0);
   const [finishingTimeMin, setFinishingTimeMin] = useState(0);
   const [packagingTimeMin, setPackagingTimeMin] = useState(0);
-  const [hourlyRate, setHourlyRate] = useState(25);
-  const [profitMarginPct, setProfitMarginPct] = useState(60);
+  const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.papelaria.hourlyRate);
+  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.papelaria.profitMarginPct);
   const [quantity, setQuantity] = useState(1);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');

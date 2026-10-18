@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
+import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
 import { clampMargin } from '../lib/pricingEngine';
 import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
@@ -30,8 +31,6 @@ import {
   Edit2,
   Save,
 } from 'lucide-react';
-
-const ELECTRICITY_RATE_DEFAULT = 0.78938; // Enel São Paulo B1: TUSD + TE, sem tributos e bandeira
 
 // Materiais da máquina são digitados separados por vírgula ("MDF 3mm, Acrílico 3mm").
 const parseMaterials = (text: string) =>
@@ -80,9 +79,9 @@ export function LaserCalculator() {
   const [passes, setPasses] = useState(1);
   const [materialCost, setMaterialCost] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [hourlyRate, setHourlyRate] = useState(25);
-  const [profitMarginPct, setProfitMarginPct] = useState(60);
-  const [electricityRate, setElectricityRate] = useState(ELECTRICITY_RATE_DEFAULT);
+  const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.laser.hourlyRate);
+  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.laser.profitMarginPct);
+  const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.laser.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
