@@ -15,7 +15,7 @@
 | 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), commits `b151c08` e `44dbe4e`. |
 | 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`. `npm run dev` usa só o emulador (projeto `demo-precificaatelie`); ADMIN de teste `admin@teste.local`; 49 testes (`npm test`). As contas de Laser, Papelaria e Cestas foram movidas sem mudança para `src/lib/calculators.ts` (aprovado), o que adianta parte de D4–D6 da Etapa 4. Requer Java 21. |
 | 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
-| 4 — Unificar duplicações | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ⏳ Pendente |
+| 4 — Unificar duplicações | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Grupo A feito** (17/10/2026), tag `etapa-4-ok`: contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. ⏳ **Grupo B (telas) adiado.** |
 | 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11 e T12). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
 | 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
@@ -240,16 +240,26 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 
 ### Etapa 4 — Unificar duplicação (mesmo comportamento, menos código)
 
+**Grupo A — contas e textos: ✅ feito (17/10/2026), tag `etapa-4-ok`.**
+
+| Item | Resultado | Risco |
+|---|---|---|
+| A1–A3 (D4–D6): `energyCost`, `wearCost`, `laborCostFromMinutes` e `laborCostFromHours` no `pricingEngine.ts`, usadas por Laser, Papelaria, Cestas e 3D | 80.000 comparações antigo × novo, 0 diferenças (bit a bit) | baixo |
+| A4 (novo): custo unitário de compra em `lib/materials.ts`, usado em Matéria-prima e Lista de Compras | teste criado antes (seções 7 e 16) | baixo |
+| A5 (D10): valores padrão em `lib/defaults.ts`, com os mesmos números | teste criado antes | baixo |
+| A6 (D8): `analyzeJobPrice` para Laser, Papelaria e Cestas; `analyzeManualPrice` ficou como estava (formato diferente) | 9 snapshots do texto exato enviado à IA, iguais | baixo |
+| A7 (D11): `primaryColorOf`, `itemRows`, `sectionTitle` e `savePdf` nos 3 PDFs (o cabeçalho já era comum) | 6 snapshots de todos os comandos de desenho, iguais; −27 linhas | médio |
+
+Saldo do Grupo A no código do app: +30 linhas (helpers, arquivos novos e comentários); o ganho é cada conta e texto num lugar só e com teste (49 → 76 testes).
+
+**Grupo B — componentes de tela: ⏳ adiado (decisão de 17/10/2026).** Antes de começar, instalar `jsdom` e `@testing-library/react` só para testes e gravar o HTML de cada tela.
+
 | Item | Risco |
 |---|---|
-| D4–D6: funções `laborCost`, `energyCost` e `wearCost` no motor, conferidas com os números do checklist (seções 12–15) | baixo |
-| D10: padrões num arquivo só, com os mesmos valores de hoje | baixo |
-| D11: cabeçalho e rodapé dos PDFs | baixo |
-| D8: uma função só de análise por IA | baixo |
-| D9: `SearchBar` e `ConfirmDeleteModal` nas telas de cadastro | médio |
-| D2: histórico de trabalhos (`useStoreJobs` + `JobHistoryList`) | médio |
-| D1: `MaterialPicker` em Papelaria e Cestas | médio |
-| D3: `PriceResultCard` nas 4 calculadoras | médio |
+| B1 (D9): `SearchBar` e `ConfirmDeleteModal` nas telas de cadastro | médio |
+| B2 (D2): histórico de trabalhos (`useStoreJobs` + `JobHistoryList`) | médio |
+| B3 (D1): `MaterialPicker` em Papelaria e Cestas | médio |
+| B4 (D3): `PriceResultCard` nas 4 calculadoras | médio-alto |
 
 ### Etapa 5 — Peso e telas aprovadas
 
