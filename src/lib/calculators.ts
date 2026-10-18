@@ -9,7 +9,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import { priceForMargin } from './pricingEngine';
+import { energyCost, laborCostFromMinutes, priceForMargin, wearCost } from './pricingEngine';
 
 /** Soma de custo unitário × quantidade de uma lista de itens (materiais, produtos da cesta). */
 export const sumItemsCost = (items: Array<{ unitCost: number; quantity: number }>) =>
@@ -41,12 +41,12 @@ export function calcLaserJob(input: LaserJobInput) {
   const totalTimeMin = laserTotalTimeMin(input.cuttingTimeMin, input.engravingTimeMin, input.passes);
   if (totalTimeMin <= 0) return null;
   const totalTimeH = totalTimeMin / 60;
-  const energyCost = (input.powerConsumptionW / 1000) * totalTimeH * input.electricityRate;
-  const wearCost = input.diodeLifeH > 0 ? (input.moduleReplacementCost / input.diodeLifeH) * totalTimeH : 0;
-  const laborCost = (input.hourlyRate / 60) * totalTimeMin;
+  const energy = energyCost(input.powerConsumptionW, totalTimeH, input.electricityRate);
+  const wear = wearCost(input.moduleReplacementCost, input.diodeLifeH, totalTimeH);
+  const laborCost = laborCostFromMinutes(input.hourlyRate, totalTimeMin);
   const matPerUnit = input.materialCost / Math.max(input.quantity, 1);
   // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
-  const totalCostUnit = energyCost + wearCost + laborCost + matPerUnit;
+  const totalCostUnit = energy + wear + laborCost + matPerUnit;
   const totalCostBatch = totalCostUnit * Math.max(input.quantity, 1);
   const suggestedUnit = priceForMargin(totalCostUnit, input.profitMarginPct) ?? 0;
   const suggestedBatch = suggestedUnit * Math.max(input.quantity, 1);
@@ -54,8 +54,8 @@ export function calcLaserJob(input: LaserJobInput) {
   const profit = priceRef - totalCostUnit;
   const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
   return {
-    energyCost,
-    wearCost,
+    energyCost: energy,
+    wearCost: wear,
     laborCost,
     matPerUnit,
     totalCostUnit,
@@ -88,7 +88,7 @@ export function calcPapelariaJob(input: PapelariaJobInput) {
   const materialsCost = sumItemsCost(input.materials);
   const totalTimeMin = input.assemblyTimeMin + input.finishingTimeMin + input.packagingTimeMin;
   if (totalTimeMin <= 0 && materialsCost <= 0) return null;
-  const laborCost = (input.hourlyRate / 60) * totalTimeMin;
+  const laborCost = laborCostFromMinutes(input.hourlyRate, totalTimeMin);
   const totalCostBatch = materialsCost + input.laminationCost + input.bindingCost + laborCost;
   const totalCostUnit = totalCostBatch / Math.max(input.quantity, 1);
   const suggestedUnit = priceForMargin(totalCostUnit, input.profitMarginPct) ?? 0;
@@ -131,7 +131,7 @@ export interface CestaJobInput {
 export function calcCestaJob(input: CestaJobInput) {
   const itemsCost = sumItemsCost(input.items);
   if (itemsCost <= 0 && input.assemblyTimeMin <= 0) return null;
-  const laborCost = (input.hourlyRate / 60) * input.assemblyTimeMin;
+  const laborCost = laborCostFromMinutes(input.hourlyRate, input.assemblyTimeMin);
   const packagingTotal = input.packagingCost + input.ribbonCost + input.tagCost;
   const subtotalBatch = itemsCost + packagingTotal + laborCost + input.deliveryCost;
   const totalCostUnit = subtotalBatch / Math.max(input.quantity, 1);

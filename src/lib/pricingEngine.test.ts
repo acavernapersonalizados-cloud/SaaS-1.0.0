@@ -7,8 +7,12 @@ import {
   calcQuoteItem,
   calcReversePrice,
   clampMargin,
+  energyCost,
   getProfitStatus,
+  laborCostFromHours,
+  laborCostFromMinutes,
   priceForMargin,
+  wearCost,
 } from './pricingEngine';
 import { isLowStock, packageSize } from './utils';
 
@@ -53,6 +57,22 @@ describe('priceForMargin (margem sobre o preço)', () => {
     expect(clampMargin(150)).toBe(90);
     expect(clampMargin(-5)).toBe(0);
     expect(clampMargin(42)).toBe(42);
+  });
+});
+
+describe('Custos de produção (energia, desgaste, mão de obra)', () => {
+  it('energia: (W ÷ 1000) × horas × tarifa — laser 60 W por 0,5 h (12.2) e 3D 200 W por 2 h (13.1)', () => {
+    expect(energyCost(60, 0.5, 0.78938)).toBeCloseTo(0.0236814, 7);
+    expect(energyCost(200, 2, 0.85)).toBeCloseTo(0.34, 10);
+  });
+  it('desgaste: (reposição ÷ vida útil) × horas; vida útil 0 → 0', () => {
+    expect(wearCost(400, 10000, 0.5)).toBeCloseTo(0.02, 10);
+    expect(wearCost(80, 500, 2)).toBeCloseTo(0.32, 10);
+    expect(wearCost(80, 0, 2)).toBe(0);
+  });
+  it('mão de obra: por minutos (R$ 25/h × 30 min) e por horas (R$ 12/h × 0,5 h)', () => {
+    expect(laborCostFromMinutes(25, 30)).toBeCloseTo(12.5, 10);
+    expect(laborCostFromHours(12, 0.5)).toBe(6);
   });
 });
 

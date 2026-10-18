@@ -98,6 +98,21 @@ export const MAX_MARGIN_PERCENT = 90;
 /** Mantém um campo de margem entre 0 e MAX_MARGIN_PERCENT. */
 export const clampMargin = (value: number) => Math.min(MAX_MARGIN_PERCENT, Math.max(0, Number(value) || 0));
 
+// ─── Custos de produção (usados pelas calculadoras e pela Impressão 3D) ───────
+
+/** Energia: (W ÷ 1000) × horas × tarifa (R$/kWh). */
+export const energyCost = (watts: number, hours: number, tariffPerKwh: number) => (watts / 1000) * hours * tariffPerKwh;
+
+/** Desgaste: (custo de reposição ÷ vida útil em horas) × horas de uso; 0 se não há vida útil. */
+export const wearCost = (replacementCost: number, lifeHours: number, hours: number) =>
+  lifeHours > 0 ? (replacementCost / lifeHours) * hours : 0;
+
+/** Mão de obra em minutos: (valor da hora ÷ 60) × minutos. */
+export const laborCostFromMinutes = (hourlyRate: number, minutes: number) => (hourlyRate / 60) * minutes;
+
+/** Mão de obra em horas: valor da hora × horas. */
+export const laborCostFromHours = (hourlyRate: number, hours: number) => hourlyRate * hours;
+
 /**
  * Preço para que a margem sobre o preço de venda seja `marginPct`, já
  * descontadas as taxas percentuais do canal (`feePct`) e as taxas fixas:

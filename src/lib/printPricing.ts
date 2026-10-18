@@ -1,4 +1,4 @@
-import { priceForMargin } from './pricingEngine';
+import { energyCost as energyFor, laborCostFromHours, priceForMargin, wearCost } from './pricingEngine';
 
 export interface PrintChannelFees {
   commissionPercent: number;
@@ -58,20 +58,13 @@ export function calculatePrintPrice(input: {
 }) {
   const hours = safe(input.printTimeH);
   const failFactor = 1 + safe(input.failureRatePct) / 100;
-  const energyCost = (safe(input.powerConsumptionW) / 1000) * hours * safe(input.electricityRate) * failFactor;
-  const hotendWear =
-    safe(input.hotendLifeH) > 0
-      ? (safe(input.hotendReplacementCost) / safe(input.hotendLifeH)) * hours * failFactor
-      : 0;
-  const bedWear =
-    safe(input.bedLifeH) > 0 ? (safe(input.bedReplacementCost) / safe(input.bedLifeH)) * hours * failFactor : 0;
-  const machineWear =
-    safe(input.lifetimeHours ?? 0) > 0
-      ? (safe(input.acquisitionCost ?? 0) / safe(input.lifetimeHours ?? 0)) * hours * failFactor
-      : 0;
+  const energyCost = energyFor(safe(input.powerConsumptionW), hours, safe(input.electricityRate)) * failFactor;
+  const hotendWear = wearCost(safe(input.hotendReplacementCost), safe(input.hotendLifeH), hours) * failFactor;
+  const bedWear = wearCost(safe(input.bedReplacementCost), safe(input.bedLifeH), hours) * failFactor;
+  const machineWear = wearCost(safe(input.acquisitionCost ?? 0), safe(input.lifetimeHours ?? 0), hours) * failFactor;
   const maintenance = safe(input.maintenanceCostPerH) * hours * failFactor;
   const filamentCost = (safe(input.filamentUsedG) / 1000) * safe(input.filamentCostPerKg) * failFactor;
-  const laborCost = safe(input.hourlyRate) * safe(input.postProcessHours) * failFactor;
+  const laborCost = laborCostFromHours(safe(input.hourlyRate), safe(input.postProcessHours)) * failFactor;
   const totalCostUnit =
     energyCost +
     hotendWear +
