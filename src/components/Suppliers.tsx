@@ -73,22 +73,18 @@ export function Suppliers() {
 
   const handleAddSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleAddSupplier called', { activeStore, newSupplier });
     if (!activeStore || !newSupplier.name) {
-      console.log('Validation failed', { activeStore, newSupplier });
       return;
     }
 
     setSubmitting(true);
     try {
       if (editingSupplier) {
-        console.log('Updating supplier', editingSupplier.id);
         await updateDoc(doc(db, 'suppliers', editingSupplier.id), {
           ...newSupplier,
           updatedAt: new Date().toISOString(),
         });
       } else {
-        console.log('Adding supplier');
         await addDoc(collection(db, 'suppliers'), {
           ...newSupplier,
           storeId: activeStore.id,

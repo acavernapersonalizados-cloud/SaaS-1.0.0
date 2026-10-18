@@ -1,12 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  connectAuthEmulator,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  User,
-} from 'firebase/auth';
+import { getAuth, connectAuthEmulator, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
@@ -83,8 +76,6 @@ if (missingConfigKeys.length > 0) {
   }
 }
 
-export const isFirebaseConfigured = missingConfigKeys.length === 0;
-
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
@@ -97,10 +88,8 @@ if (USE_EMULATOR) {
   connectStorageEmulator(storage, EMULATOR_HOST, 9199);
   console.info(`[Firebase] Modo desenvolvimento: usando o EMULADOR local (projeto ${EMULATOR_PROJECT_ID}).`);
 }
-export const googleProvider = new GoogleAuthProvider();
 
 export { firebaseConfig };
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
 export { onAuthStateChanged };
 export type { User };

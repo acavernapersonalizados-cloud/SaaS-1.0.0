@@ -237,7 +237,3 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
     if (msg) sendWhatsAppMessage(phone, msg);
   }
 }
-
-export async function checkFollowUps() {
-  // Placeholder — implement in Cloud Functions for production use
-}

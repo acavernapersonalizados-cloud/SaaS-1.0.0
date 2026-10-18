@@ -37,3 +37,6 @@ npm-debug.log*
 
 # Firebase Emulator (banco local do npm run dev)
 .emulator-data/
+
+# Cache da Firebase CLI (muda a cada deploy)
+.firebase/

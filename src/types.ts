@@ -103,10 +103,6 @@ export interface Product {
   showPrice?: boolean;
 }
 
-// LaserMachine: 'two_trees_ts2' | 'creality_hi_combo' são os padrões.
-// Ao cadastrar novas máquinas, o id é livre (string).
-export type LaserMachineId = string;
-
 export interface LaserMachineProfile {
   id: string;
   storeId: string;
@@ -257,7 +253,8 @@ export interface Quote {
   channel: string;
   platformFee: number;
   status: QuoteStatus;
-  followUpStatus: FollowUpStatus;
+  /** Legado: não é mais gravado nem lido; orçamentos antigos podem ter o valor. */
+  followUpStatus?: FollowUpStatus;
   description?: string;
 }
 

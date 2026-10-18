@@ -14,7 +14,7 @@
 | 0 — Fechar o que está aberto | Juntar todas as branches na `main`, backup novo conferido, item 11 resolvido, tag `antes-de-enxugar`. | ✅ **Feita** (17/10/2026). Nenhuma branch tem commits fora da `main`; backup `backup_precifica_ja_2026-10-17 (4).json` conferido (formato v2, completo, 0 falhas, 2 lojas, 17 coleções, contagens iguais ao `_meta`); item 11 em produção; tag `antes-de-enxugar` em `f5279f0`. |
 | 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), commits `b151c08` e `44dbe4e`. |
 | 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`. `npm run dev` usa só o emulador (projeto `demo-precificaatelie`); ADMIN de teste `admin@teste.local`; 49 testes (`npm test`). As contas de Laser, Papelaria e Cestas foram movidas sem mudança para `src/lib/calculators.ts` (aprovado), o que adianta parte de D4–D6 da Etapa 4. Requer Java 21. |
-| 3 — Remover lixo | Ver seção 6. | ⏳ Pendente |
+| 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
 | 4 — Unificar duplicações | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ⏳ Pendente |
 | 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11 e T12). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
@@ -126,7 +126,7 @@ As outras 10 dependências e as 11 devDependencies estão em uso. Exemplos: `fir
 | `bun.lock` | 184 KB | Lockfile do Bun, que duplica o `package-lock.json` (373 KB). O deploy usa `npm ci` (`.github/workflows/*.yml`), e dois lockfiles podem divergir. |
 | `public/manifest.webmanifest` | 1 KB | O `vite-plugin-pwa` gera o manifesto a partir do `vite.config.ts` e **sobrescreve** este: o `dist/manifest.webmanifest` publicado tem os ícones do config, não os deste arquivo. |
 | `.firebase/hosting.ZGlzdA.cache` | <1 KB | Cache da Firebase CLI, que muda a cada deploy. Deveria estar no `.gitignore` (hoje não está). |
-| `ATUALIZACAO-MAQUINAS.md` | 2 KB | Notas de uma versão antiga ("Extraia este ZIP…"). Não é lixo de código; decidir se fica. |
+| `ATUALIZACAO-MAQUINAS.md` | 2 KB | Notas de uma versão antiga ("Extraia este ZIP…"). Não é lixo de código. **Decisão: fica.** |
 | `.agents/` (84 arquivos) e `skills-lock.json` | 614 KB | Instruções de agentes de IA para Firebase, que não fazem parte do app. **Decisão: ficam.** |
 
 ---
@@ -236,7 +236,7 @@ Em cada etapa: um commit por item, `npm run lint`, `npx prettier --check src` e 
 | Apagar `public/manifest.webmanifest` (o real é gerado pelo `vite.config.ts`) | baixo |
 | Pôr `.firebase/` no `.gitignore` e tirar o cache do git | baixo |
 | `.agents/` e `skills-lock.json` | — **ficam** (decisão de 17/10/2026) |
-| `ATUALIZACAO-MAQUINAS.md` | **só com sua confirmação** (ainda não decidido) |
+| `ATUALIZACAO-MAQUINAS.md` | — **fica** (decisão de 17/10/2026) |
 
 ### Etapa 4 — Unificar duplicação (mesmo comportamento, menos código)
 
@@ -294,7 +294,7 @@ Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do mome
 - **Ícone do app instalado quebrado:** o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
 - **Deploy automático:** cadastrar os secrets `VITE_FIREBASE_*` no GitHub para o merge na `main` voltar a publicar.
 - **Testes automáticos** dos cálculos (motor de preços, 3D, G-code), que hoje são feitos com scripts avulsos.
-- **Follow-up de orçamentos** (era o `checkFollowUps`): lembrete automático via Cloud Functions.
+- **Follow-up de orçamentos por WhatsApp:** lembrar o cliente de um orçamento pendente ("Seu orçamento ainda está disponível…"). O código antigo era só um esboço sem uso — `checkFollowUps()` vazio em `automations.ts` e `generateFollowUpMessage()` em `whatsapp.ts` — e foi **removido na Etapa 3** (itens 2 e 3). Para fazer de verdade: rotina no servidor (Cloud Functions) que acha orçamentos pendentes há X dias e envia a mensagem, e uma tela para ligar/desligar. O campo `followUpStatus` dos orçamentos antigos ficou no banco e no tipo (opcional).
 - **T7 — Categoria principal em Produtos:** ficar só com as categorias múltiplas (exige reclassificar produtos que só têm a categoria em texto).
 - **T9 — Estoque × Matéria-prima:** levar o ajuste rápido +1/−1 para Matéria-prima ou manter Estoque como atalho.
 - **Notificação real ao aprovar usuário** (e-mail ou WhatsApp). O T11 só remove a notificação falsa.

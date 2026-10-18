@@ -396,7 +396,6 @@ export function Pricing() {
         avgMargin: isFinite(avgMargin) ? avgMargin : 0,
         channel,
         status: 'Pendente',
-        followUpStatus: 'Pendente',
         createdBy: user?.id || 'unknown',
         createdByName: user?.name || 'Sistema',
       };

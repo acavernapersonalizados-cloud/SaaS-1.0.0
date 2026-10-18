@@ -53,7 +53,6 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
 
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
-      console.log('App instalado com sucesso');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);

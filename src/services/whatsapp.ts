@@ -30,7 +30,3 @@ export function generateStatusMessage(status: string, productName: string) {
       return '';
   }
 }
-
-export function generateFollowUpMessage(clientName: string) {
-  return `Olá ${clientName}! Seu orçamento ainda está disponível 😊. Gostaria de tirar alguma dúvida ou confirmar o pedido?`;
-}
