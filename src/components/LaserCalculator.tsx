@@ -9,6 +9,7 @@ import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { JobHistoryList } from './JobHistoryList';
 import { analyzeLaserPrice } from '../services/gemini';
 import {
   Zap,
@@ -731,59 +732,23 @@ export function LaserCalculator() {
       </div>
 
       {/* History table */}
-      <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-neutral-900">Trabalhos Salvos</h2>
-        {loadingJobs ? (
-          <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
-        ) : jobs.length === 0 ? (
-          <p className="py-10 text-center text-neutral-400 italic text-sm">Nenhum trabalho salvo.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-100">
-                  {['Trabalho', 'Máquina', 'Material', 'Qtd', 'Preço', ''].map(h => (
-                    <th
-                      key={h}
-                      className="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map(job => (
-                  <tr key={job.id} className="border-b border-neutral-50 hover:bg-neutral-50 transition-colors">
-                    <td className="py-3 pr-4 font-bold text-neutral-900">{job.name}</td>
-                    <td className="py-3 pr-4 text-neutral-500 text-xs">{job.machineName || job.machineId}</td>
-                    <td className="py-3 pr-4 text-neutral-500">{job.material}</td>
-                    <td className="py-3 pr-4 text-right text-neutral-600">{job.quantity}</td>
-                    <td className="py-3 pr-4 font-bold text-neutral-900 text-right">
-                      {job.manualPrice ? formatCurrency(job.manualPrice) : '—'}
-                    </td>
-                    <td className="py-3 text-right">
-                      {(isAdmin || user?.role === 'GERENTE') && (
-                        <button
-                          onClick={() => handleDeleteJob(job.id)}
-                          disabled={deletingId === job.id}
-                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        >
-                          {deletingId === job.id ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <JobHistoryList
+        title="Trabalhos Salvos"
+        emptyText="Nenhum trabalho salvo."
+        headers={['Trabalho', 'Máquina', 'Material', 'Qtd', 'Preço', '']}
+        extraCells={job => (
+          <>
+            <td className="py-3 pr-4 text-neutral-500 text-xs">{job.machineName || job.machineId}</td>
+            <td className="py-3 pr-4 text-neutral-500">{job.material}</td>
+          </>
         )}
-      </div>
+        noPrice="—"
+        jobs={jobs}
+        loading={loadingJobs}
+        canDelete={isAdmin || user?.role === 'GERENTE'}
+        deletingId={deletingId}
+        onDelete={handleDeleteJob}
+      />
 
       {/* Info banner */}
       <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4">

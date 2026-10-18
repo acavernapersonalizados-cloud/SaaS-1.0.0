@@ -10,13 +10,13 @@ import { calcCestaJob } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { JobHistoryList } from './JobHistoryList';
 import { StockMaterialPicker } from './StockMaterialPicker';
 import { analyzeCestaPrice } from '../services/gemini';
 import {
   Gift,
   Calculator,
   Sparkles,
-  Trash2,
   X,
   Loader2,
   Clock,
@@ -652,57 +652,17 @@ export function CestaCalculator() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-neutral-900">Cestas Salvas</h2>
-        {loadingJobs ? (
-          <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
-        ) : jobs.length === 0 ? (
-          <p className="py-10 text-center text-neutral-400 italic text-sm">Nenhuma cesta salva.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-100">
-                  {['Cesta', 'Qtd', 'Preco', ''].map(h => (
-                    <th
-                      key={h}
-                      className="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map(job => (
-                  <tr key={job.id} className="border-b border-neutral-50 hover:bg-neutral-50 transition-colors">
-                    <td className="py-3 pr-4 font-bold text-neutral-900">{job.name}</td>
-                    <td className="py-3 pr-4 text-right text-neutral-600">{job.quantity}</td>
-                    <td className="py-3 pr-4 font-bold text-neutral-900 text-right">
-                      {job.manualPrice ? formatCurrency(job.manualPrice) : '-'}
-                    </td>
-                    <td className="py-3 text-right">
-                      {(isAdmin || user?.role === 'GERENTE') && (
-                        <button
-                          onClick={() => handleDeleteJob(job.id)}
-                          disabled={deletingId === job.id}
-                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        >
-                          {deletingId === job.id ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
-                          )}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      <JobHistoryList
+        title="Cestas Salvas"
+        emptyText="Nenhuma cesta salva."
+        headers={['Cesta', 'Qtd', 'Preco', '']}
+        noPrice="-"
+        jobs={jobs}
+        loading={loadingJobs}
+        canDelete={isAdmin || user?.role === 'GERENTE'}
+        deletingId={deletingId}
+        onDelete={handleDeleteJob}
+      />
 
       <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4">
         <div className="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
