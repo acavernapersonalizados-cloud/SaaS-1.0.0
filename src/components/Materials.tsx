@@ -14,6 +14,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency, isLowStock } from '../lib/utils';
+import { isPackageMaterial, materialPurchaseQuantity, unitCostFromPurchase } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -105,7 +106,7 @@ export function Materials() {
 
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isActuallyPackage = newMaterial.isPackage || newMaterial.unit === 'pct';
+    const isActuallyPackage = isPackageMaterial(newMaterial);
     if (!activeStore) {
       addToast('Selecione uma loja antes de cadastrar materiais.', 'error');
       return;
@@ -125,8 +126,8 @@ export function Materials() {
       return;
     }
 
-    const quantity = isActuallyPackage ? newMaterial.packageQuantity || 1 : newMaterial.purchaseQuantity!;
-    const unitCost = newMaterial.purchasePrice / quantity;
+    const quantity = materialPurchaseQuantity(newMaterial);
+    const unitCost = unitCostFromPurchase(newMaterial.purchasePrice, quantity);
 
     try {
       if (editingMaterial) {

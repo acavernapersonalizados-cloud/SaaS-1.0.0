@@ -3,6 +3,7 @@ import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
 import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
+import { unitCostFromPurchase } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import {
@@ -277,7 +278,7 @@ export function PurchaseList() {
             updatedAt: new Date().toISOString(),
           };
           if (purchaseForm.price > 0) {
-            updateData.unitCost = purchaseForm.price / purchasedUnits;
+            updateData.unitCost = unitCostFromPurchase(purchaseForm.price, purchasedUnits);
           }
           await updateDoc(doc(db, 'materials', purchasingItem.materialId), updateData);
         }
