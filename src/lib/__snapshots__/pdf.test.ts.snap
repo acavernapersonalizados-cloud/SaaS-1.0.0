@@ -1,0 +1,1217 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > "Nota fiscal" — com loja 1`] = `
+[
+  [
+    "setFillColor",
+    51,
+    102,
+    204,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Loja Teste",
+    14,
+    14,
+  ],
+  [
+    "setFontSize",
+    8,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "(11) 99999-9999 · loja@teste.local",
+    14,
+    21,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "NOTA FISCAL DE SERVIÇO / PRODUTO",
+    14,
+    38,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Emissão: 17/10/2026",
+    14,
+    45,
+  ],
+  [
+    "text",
+    "Número: 01234",
+    14,
+    50,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Emitente",
+    14,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Razão Social: Loja Teste LTDA",
+    14,
+    69,
+  ],
+  [
+    "text",
+    "Nome Fantasia: Loja Teste",
+    14,
+    74,
+  ],
+  [
+    "text",
+    "Email: loja@teste.local",
+    14,
+    79,
+  ],
+  [
+    "text",
+    "Telefone: (11) 99999-9999",
+    14,
+    84,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Destinatário",
+    105,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    105,
+    69,
+  ],
+  [
+    "text",
+    "Documento: 12.345.678/0001-90",
+    105,
+    74,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Descrição",
+          "Quantidade",
+          "Valor Unitário",
+          "Valor Total",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          240,
+          240,
+          240,
+        ],
+        "textColor": [
+          0,
+          0,
+          0,
+        ],
+      },
+      "startY": 94,
+      "theme": "grid",
+    },
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "VALOR TOTAL DA NOTA: R$ 270,00",
+    14,
+    165,
+  ],
+  [
+    "setFontSize",
+    8,
+  ],
+  [
+    "setTextColor",
+    150,
+  ],
+  [
+    "text",
+    "Este documento é uma representação de nota fiscal gerada pelo sistema.",
+    14,
+    280,
+  ],
+  [
+    "save",
+    "NF_teste_cliente_a__o.pdf",
+  ],
+]
+`;
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > "Nota fiscal" — sem loja e sem CNPJ 1`] = `
+[
+  [
+    "setFillColor",
+    20,
+    20,
+    20,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Ateliê",
+    14,
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "NOTA FISCAL DE SERVIÇO / PRODUTO",
+    14,
+    38,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Emissão: 17/10/2026",
+    14,
+    45,
+  ],
+  [
+    "text",
+    "Número: 01234",
+    14,
+    50,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Emitente",
+    14,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Razão Social: Empresa Emissora",
+    14,
+    69,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Destinatário",
+    105,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    105,
+    69,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Descrição",
+          "Quantidade",
+          "Valor Unitário",
+          "Valor Total",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          240,
+          240,
+          240,
+        ],
+        "textColor": [
+          0,
+          0,
+          0,
+        ],
+      },
+      "startY": 94,
+      "theme": "grid",
+    },
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "VALOR TOTAL DA NOTA: R$ 270,00",
+    14,
+    165,
+  ],
+  [
+    "setFontSize",
+    8,
+  ],
+  [
+    "setTextColor",
+    150,
+  ],
+  [
+    "text",
+    "Este documento é uma representação de nota fiscal gerada pelo sistema.",
+    14,
+    280,
+  ],
+  [
+    "save",
+    "NF_teste_cliente_a__o.pdf",
+  ],
+]
+`;
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > PDF do cliente — com loja 1`] = `
+[
+  [
+    "setFillColor",
+    51,
+    102,
+    204,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Loja Teste",
+    14,
+    14,
+  ],
+  [
+    "setFontSize",
+    8,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "(11) 99999-9999 · loja@teste.local",
+    14,
+    21,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Data: 17/10/2026",
+    14,
+    38,
+  ],
+  [
+    "text",
+    "Validade: 22/10/2026",
+    14,
+    43,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Dados do Cliente",
+    14,
+    55,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    14,
+    62,
+  ],
+  [
+    "text",
+    "Documento: 12.345.678/0001-90",
+    14,
+    67,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Produto",
+          "Quantidade",
+          "Valor Unitário",
+          "Total",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          51,
+          102,
+          204,
+        ],
+      },
+      "startY": 78,
+      "theme": "striped",
+    },
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Total do Orçamento: R$ 270,00",
+    14,
+    165,
+  ],
+  [
+    "save",
+    "Orcamento_teste_cliente_a__o.pdf",
+  ],
+]
+`;
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > PDF do cliente — sem loja e sem CNPJ 1`] = `
+[
+  [
+    "setFillColor",
+    20,
+    20,
+    20,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Ateliê",
+    14,
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Data: 17/10/2026",
+    14,
+    38,
+  ],
+  [
+    "text",
+    "Validade: 22/10/2026",
+    14,
+    43,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Dados do Cliente",
+    14,
+    55,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    14,
+    62,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Produto",
+          "Quantidade",
+          "Valor Unitário",
+          "Total",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          20,
+          20,
+          20,
+        ],
+      },
+      "startY": 78,
+      "theme": "striped",
+    },
+  ],
+  [
+    "setFontSize",
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Total do Orçamento: R$ 270,00",
+    14,
+    165,
+  ],
+  [
+    "save",
+    "Orcamento_teste_cliente_a__o.pdf",
+  ],
+]
+`;
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > PDF interno — com loja 1`] = `
+[
+  [
+    "setFillColor",
+    51,
+    102,
+    204,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Loja Teste",
+    14,
+    14,
+  ],
+  [
+    "setFontSize",
+    8,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "(11) 99999-9999 · loja@teste.local",
+    14,
+    21,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Orçamento Interno",
+    14,
+    38,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Data: 17/10/2026",
+    14,
+    45,
+  ],
+  [
+    "text",
+    "Canal: Shopee",
+    14,
+    50,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Dados do Cliente",
+    14,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    14,
+    69,
+  ],
+  [
+    "text",
+    "Documento: 12.345.678/0001-90",
+    14,
+    74,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Produto",
+          "Qtd",
+          "Preço Unit.",
+          "Total Venda",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          51,
+          102,
+          204,
+        ],
+      },
+      "startY": 84,
+      "theme": "striped",
+    },
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Resumo Financeiro",
+    14,
+    165,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Total Geral: R$ 270,00",
+    14,
+    172,
+  ],
+  [
+    "text",
+    "Lucro Líquido Total: R$ 141,00",
+    14,
+    177,
+  ],
+  [
+    "text",
+    "Margem Média: 52,2%",
+    14,
+    182,
+  ],
+  [
+    "save",
+    "Interno_teste_cliente_a__o.pdf",
+  ],
+]
+`;
+
+exports[`Comandos de desenho dos PDFs (não podem mudar) > PDF interno — sem loja e sem CNPJ 1`] = `
+[
+  [
+    "setFillColor",
+    20,
+    20,
+    20,
+  ],
+  [
+    "rect",
+    0,
+    0,
+    210,
+    30,
+    "F",
+  ],
+  [
+    "setFontSize",
+    16,
+  ],
+  [
+    "setTextColor",
+    255,
+    255,
+    255,
+  ],
+  [
+    "text",
+    "Ateliê",
+    14,
+    14,
+  ],
+  [
+    "setTextColor",
+    0,
+    0,
+    0,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Orçamento Interno",
+    14,
+    38,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Data: 17/10/2026",
+    14,
+    45,
+  ],
+  [
+    "text",
+    "Canal: Shopee",
+    14,
+    50,
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Dados do Cliente",
+    14,
+    62,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Nome: TESTE Cliente Ação",
+    14,
+    69,
+  ],
+  [
+    "autoTable",
+    {
+      "body": [
+        [
+          {
+            "content": "TESTE Chaveiro
+Acabamentos: Verniz",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "10",
+          "R$ 27,00",
+          "R$ 270,00",
+        ],
+        [
+          {
+            "content": "TESTE Caneca
+Acessórios: Caixinha",
+            "styles": {
+              "fontSize": 9,
+            },
+          },
+          "1",
+          "R$ 0,00",
+          "R$ 0,00",
+        ],
+      ],
+      "head": [
+        [
+          "Produto",
+          "Qtd",
+          "Preço Unit.",
+          "Total Venda",
+        ],
+      ],
+      "headStyles": {
+        "fillColor": [
+          20,
+          20,
+          20,
+        ],
+      },
+      "startY": 84,
+      "theme": "striped",
+    },
+  ],
+  [
+    "setFontSize",
+    12,
+  ],
+  [
+    "setTextColor",
+    0,
+  ],
+  [
+    "text",
+    "Resumo Financeiro",
+    14,
+    165,
+  ],
+  [
+    "setFontSize",
+    10,
+  ],
+  [
+    "setTextColor",
+    100,
+  ],
+  [
+    "text",
+    "Total Geral: R$ 270,00",
+    14,
+    172,
+  ],
+  [
+    "text",
+    "Lucro Líquido Total: R$ 141,00",
+    14,
+    177,
+  ],
+  [
+    "text",
+    "Margem Média: 52,2%",
+    14,
+    182,
+  ],
+  [
+    "save",
+    "Interno_teste_cliente_a__o.pdf",
+  ],
+]
+`;
