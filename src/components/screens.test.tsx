@@ -69,7 +69,15 @@ function searchBox() {
   return input;
 }
 
-const html = () => document.body;
+/**
+ * DOM atual para o snapshot. Com DUMP_HTML=<arquivo>, grava também o HTML final (innerHTML)
+ * de cada estado, para comparar código antigo × novo caractere a caractere.
+ */
+const html = () => {
+  const out = process.env.DUMP_HTML;
+  if (out) require('fs').appendFileSync(out, `${expect.getState().currentTestName}\n${document.body.innerHTML}\n@@@\n`);
+  return document.body;
+};
 
 /** Campo (input/select) que fica junto do rótulo com o texto indicado. */
 function field(labelText: string) {
