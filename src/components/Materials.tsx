@@ -20,19 +20,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { CategoryPicker, CategoryChips, CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
-import {
-  Plus,
-  Trash2,
-  Package,
-  Search,
-  PlusCircle,
-  X,
-  Truck,
-  Edit2,
-  ArrowUpDown,
-  AlertCircle,
-  Loader2,
-} from 'lucide-react';
+import { Plus, Trash2, Package, Search, PlusCircle, X, Truck, Edit2, ArrowUpDown, AlertCircle } from 'lucide-react';
+import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 
 type SortField = 'name' | 'purchasePrice' | 'unitCost' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
@@ -608,44 +597,14 @@ export function Materials() {
       )}
       {/* Delete Confirmation Modal */}
       {materialToDelete && (
-        <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center gap-4 text-red-600">
-              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
-                <AlertCircle className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold">Excluir Material?</h3>
-            </div>
-
-            <p className="text-neutral-600 leading-relaxed">
-              Tem certeza que deseja excluir este material? Esta ação não pode ser desfeita.
-            </p>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => setMaterialToDelete(null)}
-                disabled={isDeleting}
-                className="flex-1 px-6 py-3 bg-neutral-100 text-neutral-900 rounded-xl font-bold hover:bg-neutral-200 transition-all disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-100 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Excluindo...
-                  </>
-                ) : (
-                  'Confirmar Exclusão'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDeleteModal
+          title="Excluir Material?"
+          message="Tem certeza que deseja excluir este material? Esta ação não pode ser desfeita."
+          icon={<AlertCircle className="w-6 h-6" />}
+          isDeleting={isDeleting}
+          onCancel={() => setMaterialToDelete(null)}
+          onConfirm={handleDelete}
+        />
       )}
     </div>
   );
