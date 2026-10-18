@@ -17,7 +17,7 @@
 | 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
 | 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ⏳ Pendente |
-| 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11 e T12). | ⏳ Pendente |
+| 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11, T12 e T13). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
 | 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
 
@@ -274,9 +274,21 @@ Saldo do Grupo A no código do app: +30 linhas (helpers, arquivos novos e coment
 | T10: "Gerar Nota Fiscal" vira "Recibo" | baixo |
 | T11: remover a notificação falsa ao aprovar usuário | baixo |
 | T12: remover o desconto de fornecedor | baixo |
+| T13: botões sempre visíveis — Salvar/Cancelar em rodapé fixo nas janelas de cadastro/edição e ações das tabelas sem rolagem lateral nem passar o mouse (detalhes abaixo) | médio |
 | Quebrar `Products.tsx` e `Pricing.tsx` em partes menores, depois das etapas acima | médio |
 
 Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
+
+#### T13 — Botões ocultos (aprovado em 17/10/2026)
+
+- **Janelas de cadastro/edição (modais):** os botões **Salvar** e **Cancelar** ficam num **rodapé fixo**, sempre
+  visíveis, sem precisar rolar a janela. Exemplo: cadastro de **Matéria-prima**.
+- **Tabelas:** os botões de ação (editar, excluir etc.) ficam **visíveis sem rolagem lateral** e **sem depender de
+  passar o mouse**. Exemplo: coluna **"Ações"** da Matéria-prima, que hoje fica cortada.
+- **Primeiro passo quando a Etapa 5 começar:** levantar **todas as telas** com esse problema (modais com botões
+  fora da área visível e tabelas com ações cortadas ou que só aparecem ao passar o mouse), em tela de computador e
+  de celular, e só então corrigir.
+- Não muda preço, cálculo nem campo: só a posição e a visibilidade dos botões.
 
 ### Etapa 6 — Validação final
 
