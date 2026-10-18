@@ -314,3 +314,4 @@ Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do mome
 - **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor.
 - **`npm audit`:** a instalação limpa no GitHub mostrou 17 vulnerabilidades em dependências (4 moderadas, 13 altas) na versão antiga; rever na versão atual.
 - **Lista de Compras:** o registro de compra atualiza o estoque sem transação (`PurchaseList.tsx`), diferente do resto do app.
+- **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.

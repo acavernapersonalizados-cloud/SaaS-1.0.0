@@ -25,6 +25,8 @@ Sistema de precificação e gestão profissional para ateliês e artesãos.
    - **E-mail:** `admin@teste.local`
    - **Senha:** `Teste@123`
    - Cargo ADMIN, com a "Loja Teste" e a Base de Custos do `CHECKLIST-TESTES.md` já criadas.
+   - A Impressão 3D já tem a impressora "TESTE 3D" e o Corte a Laser a máquina "TESTE Laser" (valores das
+     seções 12 e 13 do checklist). Elas só são criadas se não existirem, então suas edições ficam.
 4. Para parar, aperte **Ctrl+C** uma vez e espere aparecer `Export complete` (alguns segundos; no
    PowerShell o prompt pode voltar antes dessas mensagens). O banco local fica salvo em `.emulator-data/` e volta na
    próxima vez. Para começar do zero: `npm run dev:limpo`.

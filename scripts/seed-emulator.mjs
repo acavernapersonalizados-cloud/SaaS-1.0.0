@@ -62,6 +62,16 @@ async function setDoc(path, data) {
   if (!res.ok) throw new Error(`Falha ao gravar ${path}: ` + JSON.stringify(res.body));
 }
 
+// Cria só se ainda não existir: mantém o que foi editado na tela entre um npm run dev e outro.
+async function createIfMissing(path, data) {
+  const url = `http://${FIRESTORE}/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`;
+  const res = await fetch(url, { headers: { Authorization: 'Bearer owner' } });
+  if (res.ok) return false;
+  if (res.status !== 404) throw new Error(`Falha ao consultar ${path}: HTTP ${res.status}`);
+  await setDoc(path, data);
+  return true;
+}
+
 const now = new Date().toISOString();
 const uid = await ensureAuthUser();
 
@@ -93,4 +103,47 @@ await setDoc(`costBases/${STORE_ID}`, {
   hourlyRate: 20,
 });
 
-console.log(`[seed] Emulador pronto. Entre com ${TEST_ADMIN.email} / ${TEST_ADMIN.password} (ADMIN, "Loja Teste").`);
+// Impressora 3D de teste: valores do CHECKLIST-TESTES.md (seção 13).
+const PRINTER_ID = 'impressora-teste';
+await createIfMissing(`printers/${PRINTER_ID}`, {
+  id: PRINTER_ID,
+  storeId: STORE_ID,
+  label: 'TESTE 3D',
+  brand: 'Teste',
+  model: 'Emulador',
+  powerConsumptionW: 200,
+  buildVolumeX: 220,
+  buildVolumeY: 220,
+  buildVolumeZ: 250,
+  maxSpeedMmS: 100,
+  hotendReplacementCost: 80,
+  hotendLifeH: 500,
+  bedReplacementCost: 60,
+  bedLifeH: 2000,
+  maintenanceCostPerH: 0.1,
+  acquisitionCost: 2000,
+  lifetimeHours: 5000,
+  createdAt: now,
+});
+
+// Máquina de laser de teste: valores do CHECKLIST-TESTES.md (seção 12).
+const LASER_ID = 'laser-teste';
+await createIfMissing(`laserMachines/${LASER_ID}`, {
+  id: LASER_ID,
+  storeId: STORE_ID,
+  label: 'TESTE Laser',
+  laserType: 'Diodo',
+  powerW: 10,
+  powerConsumptionW: 60,
+  workAreaW: 400,
+  workAreaH: 400,
+  maxSpeedMmMin: 10000,
+  diodeLifeH: 10000,
+  moduleReplacementCost: 400,
+  materials: ['MDF 3mm', 'Acrílico 3mm'],
+  createdAt: now,
+});
+
+console.log(
+  `[seed] Emulador pronto. Entre com ${TEST_ADMIN.email} / ${TEST_ADMIN.password} (ADMIN, "Loja Teste", com a impressora "TESTE 3D" e o laser "TESTE Laser").`,
+);
