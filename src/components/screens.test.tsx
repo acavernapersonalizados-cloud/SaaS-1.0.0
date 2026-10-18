@@ -208,6 +208,8 @@ for (const [name, file, component] of [
       if (!qty) throw new Error('quantidade do estoque não encontrada');
       await type(qty, '50');
       expect(html()).toMatchSnapshot();
+      // HTML final (string): igual mesmo que o React divida o texto em pedaços diferentes.
+      expect(document.body.innerHTML).toMatchSnapshot();
     });
     it('resultado e preço manual', async () => {
       await show(await load());

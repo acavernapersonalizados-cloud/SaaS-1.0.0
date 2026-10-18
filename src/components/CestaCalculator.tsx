@@ -10,6 +10,7 @@ import { calcCestaJob } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { StockMaterialPicker } from './StockMaterialPicker';
 import { analyzeCestaPrice } from '../services/gemini';
 import {
   Gift,
@@ -301,66 +302,20 @@ export function CestaCalculator() {
               </div>
 
               {addMode === 'stock' ? (
-                materials.length === 0 ? (
-                  <p className="text-xs text-neutral-400 italic py-2">
-                    Nenhuma matéria-prima cadastrada nesta loja. Cadastre em "Matéria-prima" para puxar os itens aqui.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                      <input
-                        type="text"
-                        placeholder="Buscar no estoque..."
-                        value={stockSearch}
-                        onChange={e => setStockSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-neutral-900"
-                      />
-                    </div>
-                    <div className="grid grid-cols-5 gap-2">
-                      <select
-                        value={stockMaterialId}
-                        onChange={e => setStockMaterialId(e.target.value)}
-                        className="col-span-3 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"
-                      >
-                        <option value="">Selecione o item do estoque...</option>
-                        {filteredMaterials.map(m => (
-                          <option key={m.id} value={m.id}>
-                            {m.name} — {formatCurrency(Number(m.unitCost) || 0)}/{m.unit} (estoque:{' '}
-                            {m.stockQuantity ?? 0})
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        placeholder="Qtd"
-                        value={stockQty || ''}
-                        onChange={e => setStockQty(Number(e.target.value))}
-                        className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={addFromStock}
-                        disabled={!stockMaterialId}
-                        className="px-2 py-2 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 text-xs font-bold disabled:opacity-40"
-                      >
-                        Adicionar
-                      </button>
-                    </div>
-                    {selectedMaterial && (
-                      <p
-                        className={`text-[11px] font-bold ${(selectedMaterial.stockQuantity || 0) < stockQty ? 'text-amber-600' : 'text-neutral-500'}`}
-                      >
-                        {selectedMaterial.name}: {formatCurrency(Number(selectedMaterial.unitCost) || 0)}/
-                        {selectedMaterial.unit} · estoque disponível {selectedMaterial.stockQuantity ?? 0}{' '}
-                        {selectedMaterial.unit}
-                        {(selectedMaterial.stockQuantity || 0) < stockQty ? ' — quantidade acima do estoque atual' : ''}
-                      </p>
-                    )}
-                  </div>
-                )
+                <StockMaterialPicker
+                  materials={materials}
+                  filtered={filteredMaterials}
+                  selected={selectedMaterial}
+                  search={stockSearch}
+                  onSearch={setStockSearch}
+                  selectedId={stockMaterialId}
+                  onSelect={setStockMaterialId}
+                  quantity={stockQty}
+                  onQuantity={setStockQty}
+                  onAdd={addFromStock}
+                  noun="item"
+                  nounPlural="itens"
+                />
               ) : (
                 <div className="grid grid-cols-5 gap-2">
                   <input
