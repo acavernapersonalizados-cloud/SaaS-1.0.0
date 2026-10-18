@@ -88,6 +88,46 @@ Seja objetivo e use linguagem simples. Se o preço for abaixo do custo, avise co
   );
 }
 
+// Análise de preço de um trabalho (Laser, Papelaria, Cestas): mesmo texto-base,
+// mudando só a especialidade, os campos e o tipo de mercado.
+interface JobPriceAnalysis {
+  specialty: string;
+  intro: string;
+  subjectLabel: string;
+  jobName: string;
+  extraLines?: string[];
+  costParts: string;
+  totalCost: number;
+  manualPrice: number;
+  market: string;
+  tipKind: string;
+}
+
+function analyzeJobPrice(job: JobPriceAnalysis): Promise<string | null> {
+  const profit = job.manualPrice - job.totalCost;
+  const margin = job.manualPrice > 0 ? (profit / job.manualPrice) * 100 : 0;
+  const lines = [
+    `- ${job.subjectLabel}: ${job.jobName}`,
+    ...(job.extraLines ?? []),
+    `- Custo total calculado (${job.costParts}): R$ ${job.totalCost.toFixed(2)}`,
+    `- Preço cobrado: R$ ${job.manualPrice.toFixed(2)}`,
+    `- Lucro: R$ ${profit.toFixed(2)}`,
+    `- Margem: ${margin.toFixed(1)}%`,
+  ];
+
+  return generate(
+    `Você é um consultor especializado em ${job.specialty} para pequenos negócios brasileiros.
+
+${job.intro}
+${lines.join('\n')}
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de ${job.market} no Brasil
+3. Uma dica prática de precificação para este tipo de ${job.tipKind}`,
+  );
+}
+
 export async function analyzeLaserPrice(
   jobName: string,
   totalCost: number,
@@ -95,26 +135,18 @@ export async function analyzeLaserPrice(
   machine: string,
   material: string,
 ): Promise<string | null> {
-  const profit = manualPrice - totalCost;
-  const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
-
-  return generate(
-    `Você é um consultor especializado em corte a laser para pequenos negócios brasileiros.
-
-Analise a precificação deste serviço de corte/gravação a laser:
-- Serviço: ${jobName}
-- Máquina: ${machine}
-- Material: ${material}
-- Custo total calculado (energia + desgaste + mão de obra): R$ ${totalCost.toFixed(2)}
-- Preço cobrado: R$ ${manualPrice.toFixed(2)}
-- Lucro: R$ ${profit.toFixed(2)}
-- Margem: ${margin.toFixed(1)}%
-
-Em 3 frases curtas:
-1. Se o preço é viável e sustentável para o negócio
-2. Como está comparado ao mercado de corte a laser no Brasil
-3. Uma dica prática de precificação para este tipo de serviço`,
-  );
+  return analyzeJobPrice({
+    specialty: 'corte a laser',
+    intro: 'Analise a precificação deste serviço de corte/gravação a laser:',
+    subjectLabel: 'Serviço',
+    jobName,
+    extraLines: [`- Máquina: ${machine}`, `- Material: ${material}`],
+    costParts: 'energia + desgaste + mão de obra',
+    totalCost,
+    manualPrice,
+    market: 'corte a laser',
+    tipKind: 'serviço',
+  });
 }
 
 export async function rewriteDescription(quoteDetails: {
@@ -133,24 +165,17 @@ export async function analyzePapelariaPrice(
   totalCost: number,
   manualPrice: number,
 ): Promise<string | null> {
-  const profit = manualPrice - totalCost;
-  const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
-
-  return generate(
-    `Você é um consultor especializado em papelaria personalizada para pequenos negócios brasileiros.
-
-Analise a precificação deste trabalho de papelaria (convites, cadernos, agendas, kits personalizados):
-- Trabalho: ${jobName}
-- Custo total calculado (material + impressão + acabamento + montagem): R$ ${totalCost.toFixed(2)}
-- Preço cobrado: R$ ${manualPrice.toFixed(2)}
-- Lucro: R$ ${profit.toFixed(2)}
-- Margem: ${margin.toFixed(1)}%
-
-Em 3 frases curtas:
-1. Se o preço é viável e sustentável para o negócio
-2. Como está comparado ao mercado de papelaria personalizada no Brasil
-3. Uma dica prática de precificação para este tipo de trabalho`,
-  );
+  return analyzeJobPrice({
+    specialty: 'papelaria personalizada',
+    intro: 'Analise a precificação deste trabalho de papelaria (convites, cadernos, agendas, kits personalizados):',
+    subjectLabel: 'Trabalho',
+    jobName,
+    costParts: 'material + impressão + acabamento + montagem',
+    totalCost,
+    manualPrice,
+    market: 'papelaria personalizada',
+    tipKind: 'trabalho',
+  });
 }
 
 export async function analyzeCestaPrice(
@@ -158,22 +183,15 @@ export async function analyzeCestaPrice(
   totalCost: number,
   manualPrice: number,
 ): Promise<string | null> {
-  const profit = manualPrice - totalCost;
-  const margin = manualPrice > 0 ? (profit / manualPrice) * 100 : 0;
-
-  return generate(
-    `Você é um consultor especializado em cestas e kits personalizados para pequenos negócios brasileiros.
-
-Analise a precificação desta cesta/kit personalizado:
-- Cesta: ${jobName}
-- Custo total calculado (produtos internos + embalagem + montagem): R$ ${totalCost.toFixed(2)}
-- Preço cobrado: R$ ${manualPrice.toFixed(2)}
-- Lucro: R$ ${profit.toFixed(2)}
-- Margem: ${margin.toFixed(1)}%
-
-Em 3 frases curtas:
-1. Se o preço é viável e sustentável para o negócio
-2. Como está comparado ao mercado de cestas personalizadas no Brasil
-3. Uma dica prática de precificação para este tipo de produto`,
-  );
+  return analyzeJobPrice({
+    specialty: 'cestas e kits personalizados',
+    intro: 'Analise a precificação desta cesta/kit personalizado:',
+    subjectLabel: 'Cesta',
+    jobName,
+    costParts: 'produtos internos + embalagem + montagem',
+    totalCost,
+    manualPrice,
+    market: 'cestas personalizadas',
+    tipKind: 'produto',
+  });
 }
