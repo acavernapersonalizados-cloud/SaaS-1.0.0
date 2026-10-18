@@ -59,6 +59,12 @@ export default defineConfig(({ command, mode }) => {
       rollupOptions: {
         output: {
           manualChunks: (id: string) => {
+            // Ajudante do Vite que carrega as telas sob demanda. Sem isto ele ia parar dentro do
+            // vendor-pdf (o jsPDF também carrega partes sob demanda), e o PDF inteiro baixava na abertura.
+            if (id.includes('vite/preload-helper')) return 'preload-helper';
+            // React com pacote próprio: senão ia junto com os gráficos (que dependem dele) e os
+            // gráficos baixavam na abertura.
+            if (/node_modules\/(react|react-dom|scheduler|clsx)\//.test(id)) return 'vendor-react';
             if (id.includes('node_modules/firebase')) return 'vendor-firebase';
             if (
               id.includes('node_modules/recharts') ||

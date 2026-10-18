@@ -29,7 +29,9 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
-import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
+
+/** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
+const loadPdf = () => import('../lib/pdf');
 
 // Validade do orçamento: usada na data gravada (e no PDF) e no texto da tela.
 const QUOTE_VALIDITY_DAYS = 5;
@@ -1090,7 +1092,7 @@ export function Pricing() {
                   <button
                     onClick={async () => {
                       try {
-                        generateClientPDF(generatedQuote, activeStore);
+                        (await loadPdf()).generateClientPDF(generatedQuote, activeStore);
                         addToast('PDF do Cliente gerado com sucesso!', 'success');
                       } catch (error) {
                         addToast('Erro ao gerar PDF do Cliente', 'error');
@@ -1104,7 +1106,7 @@ export function Pricing() {
                   <button
                     onClick={async () => {
                       try {
-                        generateInternalPDF(generatedQuote, activeStore);
+                        (await loadPdf()).generateInternalPDF(generatedQuote, activeStore);
                         addToast('PDF Interno gerado com sucesso!', 'success');
                       } catch (error) {
                         addToast('Erro ao gerar PDF Interno', 'error');

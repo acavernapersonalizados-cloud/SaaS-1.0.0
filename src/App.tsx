@@ -3,12 +3,13 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { StoreProvider, useStore } from './contexts/StoreContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { Layout } from './components/Layout';
-import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 // ── Carregamento sob demanda: cada tela vira um chunk separado ──────────────
+// O Dashboard também: assim a tela de login não baixa os gráficos.
+const Dashboard = lazy(() => import('./components/Dashboard').then(m => ({ default: m.Dashboard })));
 const CostBaseSettings = lazy(() => import('./components/CostBase').then(m => ({ default: m.CostBaseSettings })));
 const Materials = lazy(() => import('./components/Materials').then(m => ({ default: m.Materials })));
 const Inventory = lazy(() => import('./components/Inventory').then(m => ({ default: m.Inventory })));

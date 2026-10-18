@@ -8,7 +8,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { updateQuoteStatus } from '../services/automations';
 import { generateQuoteMessage } from '../services/whatsapp';
-import { generateClientPDF, generateInternalPDF, generateInvoicePDF } from '../lib/pdf';
 import {
   Trash2,
   FileText,
@@ -27,6 +26,9 @@ import {
 } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
+
+/** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
+const loadPdf = () => import('../lib/pdf');
 
 export function History() {
   const { activeStore } = useStore();
@@ -384,7 +386,7 @@ export function History() {
               <button
                 onClick={async () => {
                   try {
-                    await generateInvoicePDF(selectedQuote, activeStore);
+                    await (await loadPdf()).generateInvoicePDF(selectedQuote, activeStore);
                     addToast('Nota Fiscal gerada com sucesso!', 'success');
                   } catch (error) {
                     addToast('Erro ao gerar Nota Fiscal', 'error');
@@ -398,7 +400,7 @@ export function History() {
               <button
                 onClick={async () => {
                   try {
-                    await generateClientPDF(selectedQuote, activeStore);
+                    await (await loadPdf()).generateClientPDF(selectedQuote, activeStore);
                     addToast('PDF do Cliente gerado com sucesso!', 'success');
                   } catch (error) {
                     addToast('Erro ao gerar PDF do Cliente', 'error');
@@ -412,7 +414,7 @@ export function History() {
               <button
                 onClick={async () => {
                   try {
-                    await generateInternalPDF(selectedQuote, activeStore);
+                    await (await loadPdf()).generateInternalPDF(selectedQuote, activeStore);
                     addToast('PDF Interno gerado com sucesso!', 'success');
                   } catch (error) {
                     addToast('Erro ao gerar PDF Interno', 'error');
