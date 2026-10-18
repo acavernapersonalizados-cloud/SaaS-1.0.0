@@ -17,9 +17,10 @@
 | 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
 | 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
-| 5 — Peso e telas aprovadas | Ver seção 6 (inclui T1, T5, T6, T8, T10, T11, T12 e T13). | ⏳ Pendente |
+| 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ⏳ Pendente |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
 | 7 — Unificar parâmetros de preço | T4, T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+| 8 — Central de Calculadoras | As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -210,6 +211,7 @@ Os 10 somam 8.678 linhas (52% de `src/`).
 | T10 | Histórico | O botão "Gerar Nota Fiscal" gera um PDF que **não é nota fiscal** (`pdf.ts:256` diz "representação"). Pode confundir o cliente. | ✅ **Aprovado:** renomear para **"Recibo"** (botão, mensagens e título do PDF). | Etapa 5 |
 | T11 | Usuários | Ao aprovar, a função diz notificar por e-mail e WhatsApp, mas só escreve no console (`Users.tsx:97-104`). | ✅ **Aprovado:** remover a função que finge notificar. A notificação real fica no estacionamento. | Etapa 5 |
 | T12 | Fornecedores | O campo "desconto" existe no registro, mas não há onde digitar (sempre 0). | ✅ **Aprovado:** remover (registros antigos mantêm o valor no banco). | Etapa 5 |
+| T14 | Matéria-prima | O campo de estoque mínimo não diz que é opcional; vazio, é gravado como 0. O código já trata 0 como "sem mínimo" (`isLowStock` em `lib/utils.ts`, usada também pela Lista de Compras). Ao começar, conferir todas as telas que mostram alerta de estoque e deixar o campo claramente opcional. | ✅ **Aprovado (18/10/2026):** estoque mínimo opcional. Itens sem mínimo não geram alerta de estoque baixo nem entram na lista de compras por falta de mínimo. Não muda preço. | Etapa 5 |
 
 ---
 
@@ -272,6 +274,7 @@ snapshots e comparando o HTML final (`DUMP_HTML`) antigo × novo caractere a car
 
 | Item | Risco |
 |---|---|
+| **T13 (primeiro item):** botões sempre visíveis — Salvar/Cancelar em rodapé fixo nas janelas de cadastro/edição e ações das tabelas sem rolagem lateral nem passar o mouse (detalhes abaixo) | médio |
 | Carregar gráficos e PDF só quando usados (Dashboard sob demanda e ajuste do `manualChunks`): carga inicial −45% | médio |
 | T1: Clientes mostram total gasto, nº de orçamentos e última compra reais | baixo |
 | T5: Laser deixa de gravar largura e altura | baixo |
@@ -280,12 +283,12 @@ snapshots e comparando o HTML final (`DUMP_HTML`) antigo × novo caractere a car
 | T10: "Gerar Nota Fiscal" vira "Recibo" | baixo |
 | T11: remover a notificação falsa ao aprovar usuário | baixo |
 | T12: remover o desconto de fornecedor | baixo |
-| T13: botões sempre visíveis — Salvar/Cancelar em rodapé fixo nas janelas de cadastro/edição e ações das tabelas sem rolagem lateral nem passar o mouse (detalhes abaixo) | médio |
+| T14: estoque mínimo opcional na Matéria-prima — itens sem mínimo não geram alerta de estoque baixo nem entram na lista de compras por falta de mínimo | baixo |
 | Quebrar `Products.tsx` e `Pricing.tsx` em partes menores, depois das etapas acima | médio |
 
 Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
 
-#### T13 — Botões ocultos (aprovado em 17/10/2026)
+#### T13 — Botões ocultos (aprovado em 17/10/2026; primeiro item da Etapa 5)
 
 - **Janelas de cadastro/edição (modais):** os botões **Salvar** e **Cancelar** ficam num **rodapé fixo**, sempre
   visíveis, sem precisar rolar a janela. Exemplo: cadastro de **Matéria-prima**.
@@ -294,6 +297,8 @@ Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
 - **Primeiro passo quando a Etapa 5 começar:** levantar **todas as telas** com esse problema (modais com botões
   fora da área visível e tabelas com ações cortadas ou que só aparecem ao passar o mouse), em tela de computador e
   de celular, e só então corrigir.
+- **Caso já encontrado (18/10/2026):** com zoom de 100%, o botão **Cadastrar Material** do modal **Novo Insumo**
+  fica inacessível — a janela passa da altura da tela e não rola. Só aparece com zoom de 80%.
 - Não muda preço, cálculo nem campo: só a posição e a visibilidade dos botões.
 
 ### Etapa 6 — Validação final
@@ -315,6 +320,13 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 | 3 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
 
 Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
+
+### Etapa 8 — Central de Calculadoras
+
+**Só começa depois da Etapa 7. Por enquanto é só planejamento:** o detalhamento (telas, campos, riscos e testes) será feito quando a etapa começar.
+
+- As 4 calculadoras (Corte a Laser, Impressão 3D, Papelaria e Cestas) **continuam independentes**, mas ficam numa **única guia do menu**.
+- Um **trabalho salvo** pode ser transformado em **Produto** e publicado no **Catálogo**, na hora ou depois.
 
 ---
 
