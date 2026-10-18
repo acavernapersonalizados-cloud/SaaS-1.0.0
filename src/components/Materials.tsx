@@ -337,7 +337,7 @@ export function Materials() {
                   Custo Unitário
                 </th>
                 <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400">Estoque</th>
-                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right">
+                <th className="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2">
                   Ações
                 </th>
               </tr>
@@ -382,7 +382,7 @@ export function Materials() {
                       </span>
                     )}
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEdit(material)}

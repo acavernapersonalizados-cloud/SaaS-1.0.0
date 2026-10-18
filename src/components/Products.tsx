@@ -599,7 +599,7 @@ export function Products() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleEdit(p)}
                           className="p-1.5 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -643,7 +643,7 @@ export function Products() {
               {(isAdmin || user?.role === 'GERENTE') && (
                 <button
                   onClick={() => setProductToDelete(p.id)}
-                  className="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

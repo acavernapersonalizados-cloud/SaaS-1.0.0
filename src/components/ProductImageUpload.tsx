@@ -50,7 +50,7 @@ export function ProductImageUpload({
         {imageUrl ? (
           <div className="relative w-full aspect-square max-w-xs rounded-2xl overflow-hidden border border-neutral-200 group">
             <img src={thumbnailUrl || imageUrl} alt="Imagem do produto" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => setLightbox(imageUrl)}
@@ -120,7 +120,7 @@ export function ProductImageUpload({
           {galleryImages.map((url, i) => (
             <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden border border-neutral-200 group">
               <img src={url} alt={`Galeria ${i + 1}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity flex items-center justify-center gap-1">
                 <button type="button" onClick={() => setLightbox(url)} className="p-1 bg-white/90 rounded-full">
                   <ZoomIn className="w-3 h-3 text-neutral-900" />
                 </button>

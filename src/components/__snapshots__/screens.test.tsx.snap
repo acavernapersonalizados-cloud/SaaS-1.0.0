@@ -6345,7 +6345,7 @@ exports[`Corte a Laser > inicial, com máquina e histórico 1`] = `
               </span>
             </div>
             <div
-              class="absolute top-2 right-2 flex gap-1 opacity-0 hover:opacity-100 transition-opacity"
+              class="absolute top-2 right-2 flex gap-1"
             >
               <button
                 class="p-1 hover:bg-neutral-200 rounded-lg transition-all"
@@ -7014,7 +7014,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
               </span>
             </div>
             <div
-              class="absolute top-2 right-2 flex gap-1 opacity-0 hover:opacity-100 transition-opacity"
+              class="absolute top-2 right-2 flex gap-1"
             >
               <button
                 class="p-1 hover:bg-neutral-200 rounded-lg transition-all"
@@ -7915,7 +7915,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
               </span>
             </div>
             <div
-              class="absolute top-2 right-2 flex gap-1 opacity-0 hover:opacity-100 transition-opacity"
+              class="absolute top-2 right-2 flex gap-1"
             >
               <button
                 class="p-1 hover:bg-neutral-200 rounded-lg transition-all"
@@ -9586,7 +9586,7 @@ exports[`Fornecedores > busca 1`] = `
               </div>
             </div>
             <div
-              class="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="absolute top-4 right-4 flex items-center gap-1"
             >
               <button
                 class="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -9865,7 +9865,7 @@ exports[`Fornecedores > confirmar exclusão 1`] = `
               </div>
             </div>
             <div
-              class="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="absolute top-4 right-4 flex items-center gap-1"
             >
               <button
                 class="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -10213,7 +10213,7 @@ exports[`Fornecedores > lista 1`] = `
               </div>
             </div>
             <div
-              class="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="absolute top-4 right-4 flex items-center gap-1"
             >
               <button
                 class="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -10367,7 +10367,7 @@ exports[`Histórico > busca 1`] = `
                   Status
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -10480,7 +10480,7 @@ exports[`Histórico > busca 1`] = `
                   </span>
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -10670,7 +10670,7 @@ exports[`Histórico > confirmar exclusão 1`] = `
                   Status
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -10783,7 +10783,7 @@ exports[`Histórico > confirmar exclusão 1`] = `
                   </span>
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -11042,7 +11042,7 @@ exports[`Histórico > lista 1`] = `
                   Status
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -11155,7 +11155,7 @@ exports[`Histórico > lista 1`] = `
                   </span>
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -15450,7 +15450,7 @@ exports[`Lojas > confirmar exclusão 1`] = `
               </svg>
             </div>
             <div
-              class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex gap-2"
             >
               <button
                 class="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -15786,7 +15786,7 @@ exports[`Lojas > lista 1`] = `
               </svg>
             </div>
             <div
-              class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex gap-2"
             >
               <button
                 class="p-2 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all"
@@ -16170,7 +16170,7 @@ exports[`Matéria-prima > busca 1`] = `
                   Estoque
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -16269,7 +16269,7 @@ exports[`Matéria-prima > busca 1`] = `
                   un
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -16547,7 +16547,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                   Estoque
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -16613,7 +16613,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                   pct
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -16729,7 +16729,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                   </span>
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -16881,7 +16881,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                   un
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -17230,7 +17230,7 @@ exports[`Matéria-prima > lista 1`] = `
                   Estoque
                 </th>
                 <th
-                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right"
+                  class="pb-4 pt-2 font-bold text-xs uppercase tracking-wider text-neutral-400 text-right sticky right-0 bg-white pl-2"
                 >
                   Ações
                 </th>
@@ -17296,7 +17296,7 @@ exports[`Matéria-prima > lista 1`] = `
                   pct
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -17412,7 +17412,7 @@ exports[`Matéria-prima > lista 1`] = `
                   </span>
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -17564,7 +17564,7 @@ exports[`Matéria-prima > lista 1`] = `
                   un
                 </td>
                 <td
-                  class="py-4 text-right"
+                  class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
                 >
                   <div
                     class="flex items-center justify-end gap-2"
@@ -21156,7 +21156,7 @@ exports[`Produtos > busca 1`] = `
           class="bg-white p-6 rounded-2xl border border-neutral-200 hover:border-neutral-400 transition-all group relative flex flex-col"
         >
           <button
-            class="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+            class="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
           >
             <svg
               aria-hidden="true"
@@ -21714,7 +21714,7 @@ exports[`Produtos > lista 1`] = `
           class="bg-white p-6 rounded-2xl border border-neutral-200 hover:border-neutral-400 transition-all group relative flex flex-col"
         >
           <button
-            class="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+            class="absolute top-4 right-4 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
           >
             <svg
               aria-hidden="true"
@@ -22089,7 +22089,7 @@ exports[`Usuários > confirmar exclusão 1`] = `
               </div>
             </div>
             <div
-              class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex items-center gap-1"
             >
               <button
                 class="p-2 hover:bg-green-50 rounded-lg text-neutral-400 hover:text-green-600 transition-colors"
@@ -22372,7 +22372,7 @@ exports[`Usuários > confirmar exclusão 1`] = `
               </div>
             </div>
             <div
-              class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex items-center gap-1"
             >
               <button
                 class="p-2 hover:bg-orange-50 rounded-lg text-neutral-400 hover:text-orange-500 transition-colors"
@@ -22779,7 +22779,7 @@ exports[`Usuários > lista 1`] = `
               </div>
             </div>
             <div
-              class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex items-center gap-1"
             >
               <button
                 class="p-2 hover:bg-green-50 rounded-lg text-neutral-400 hover:text-green-600 transition-colors"
@@ -23062,7 +23062,7 @@ exports[`Usuários > lista 1`] = `
               </div>
             </div>
             <div
-              class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="flex items-center gap-1"
             >
               <button
                 class="p-2 hover:bg-orange-50 rounded-lg text-neutral-400 hover:text-orange-500 transition-colors"
