@@ -127,8 +127,9 @@ export interface LaserJob {
   machineId: string; // references LaserMachineProfile.id (or legacy LaserMachine string)
   machineName?: string; // snapshot
   material: string;
-  widthMm: number;
-  heightMm: number;
+  /** Legado (T5): não é mais gravado; trabalhos antigos podem ter. */
+  widthMm?: number;
+  heightMm?: number;
   cuttingTimeMin: number;
   engravingTimeMin: number;
   passes: number;
@@ -365,8 +366,8 @@ export interface PapelariaJob {
   id: string;
   storeId: string;
   name: string;
-  printQuantity: number; // quantidade de folhas/peças impressas
-  printedAreaCm2?: number; // área impressa, se relevante para custo de tinta
+  /** Legado (T6): o campo saiu da tela; trabalhos antigos podem ter. */
+  printQuantity?: number;
   materials: PapelariaMaterialItem[];
   laminationCost?: number; // BOPP, hot stamping, etc.
   bindingCost?: number; // wire-o, espiral, elástico, cola

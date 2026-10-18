@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   collection,
   addDoc,
@@ -14,6 +14,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Client, Quote } from '../types';
 import { formatCurrency, cn } from '../lib/utils';
+import { clientStats, ClientStats } from '../lib/clientStats';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -44,6 +45,7 @@ export function Clients() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientQuotes, setClientQuotes] = useState<Quote[]>([]);
+  const [storeQuotes, setStoreQuotes] = useState<Quote[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -78,8 +80,21 @@ export function Clients() {
         setLoading(false);
       },
     );
-    return () => unsubscribe();
+    // Orçamentos da loja: base do total gasto, nº de orçamentos e última compra de cada cliente.
+    const unsubscribeQuotes = onSnapshot(
+      query(collection(db, 'quotes'), where('storeId', '==', activeStore.id)),
+      snapshot => setStoreQuotes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Quote)),
+      error => handleFirestoreError(error, OperationType.LIST, 'quotes'),
+    );
+    return () => {
+      unsubscribe();
+      unsubscribeQuotes();
+    };
   }, [activeStore]);
+
+  const stats = useMemo(() => clientStats(storeQuotes), [storeQuotes]);
+  const NO_STATS: ClientStats = { totalSpent: 0, quoteCount: 0, lastPurchase: null };
+  const statsOf = (client: Client) => stats.get(client.id) ?? NO_STATS;
 
   const emptyClient: Partial<Client> = {
     name: '',
@@ -284,11 +299,13 @@ export function Clients() {
                 <div className="pt-4 border-t border-neutral-100 flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="text-[10px] text-neutral-400 font-bold uppercase">Total Gasto</span>
-                    <span className="text-sm font-bold text-neutral-900">{formatCurrency(client.totalSpent || 0)}</span>
+                    <span className="text-sm font-bold text-neutral-900">
+                      {formatCurrency(statsOf(client).totalSpent)}
+                    </span>
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] text-neutral-400 font-bold uppercase">Orçamentos</span>
-                    <span className="text-sm font-bold text-neutral-900 block">{client.quoteCount || 0}</span>
+                    <span className="text-sm font-bold text-neutral-900 block">{statsOf(client).quoteCount}</span>
                   </div>
                 </div>
               </div>
@@ -498,13 +515,13 @@ export function Clients() {
                   <div className="space-y-4">
                     <div>
                       <span className="text-[10px] text-neutral-400 block">TOTAL GASTO</span>
-                      <span className="text-xl font-bold">{formatCurrency(selectedClient.totalSpent || 0)}</span>
+                      <span className="text-xl font-bold">{formatCurrency(statsOf(selectedClient).totalSpent)}</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-neutral-400 block">ÚLTIMA COMPRA</span>
                       <span className="text-sm font-medium">
-                        {selectedClient.lastPurchase
-                          ? new Date(selectedClient.lastPurchase).toLocaleDateString()
+                        {statsOf(selectedClient).lastPurchase
+                          ? new Date(statsOf(selectedClient).lastPurchase!).toLocaleDateString()
                           : 'Nenhuma'}
                       </span>
                     </div>

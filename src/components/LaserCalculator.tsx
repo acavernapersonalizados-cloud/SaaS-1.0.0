@@ -73,8 +73,6 @@ export function LaserCalculator() {
   const [selectedMachineId, setSelectedMachineId] = useState('');
   const [jobName, setJobName] = useState('');
   const [material, setMaterial] = useState('');
-  const [widthMm, setWidthMm] = useState(100);
-  const [heightMm, setHeightMm] = useState(100);
   const [cuttingTimeMin, setCuttingTimeMin] = useState(0);
   const [engravingTimeMin, setEngravingTimeMin] = useState(0);
   const [passes, setPasses] = useState(1);
@@ -246,8 +244,6 @@ export function LaserCalculator() {
         machineId: selectedMachine.id,
         machineName: selectedMachine.label,
         material,
-        widthMm,
-        heightMm,
         cuttingTimeMin,
         engravingTimeMin,
         passes,

@@ -35,7 +35,6 @@ export function PapelariaCalculator() {
   const { addToast } = useToast();
 
   const [jobName, setJobName] = useState('');
-  const [printQuantity, setPrintQuantity] = useState(1);
   const [materials, setMaterials] = useState<PapelariaMaterialItem[]>([]);
   const [newMatName, setNewMatName] = useState('');
   const [newMatCost, setNewMatCost] = useState(0);
@@ -172,7 +171,6 @@ export function PapelariaCalculator() {
       await addDoc(collection(db, 'papelariaJobs'), {
         storeId: activeStore.id,
         name: jobName,
-        printQuantity,
         materials,
         laminationCost,
         bindingCost,
@@ -249,16 +247,6 @@ export function PapelariaCalculator() {
                   value={jobName}
                   onChange={e => setJobName(e.target.value)}
                   placeholder="Ex: Convite casamento 15x21cm"
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Quantidade de folhas/pecas impressas</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={printQuantity}
-                  onChange={e => setPrintQuantity(Math.max(1, Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
