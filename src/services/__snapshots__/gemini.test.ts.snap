@@ -1,0 +1,128 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Textos enviados à IA (não podem mudar) > analyzeCestaPrice 1`] = `
+"Você é um consultor especializado em cestas e kits personalizados para pequenos negócios brasileiros.
+
+Analise a precificação desta cesta/kit personalizado:
+- Cesta: TESTE Café da manhã
+- Custo total calculado (produtos internos + embalagem + montagem): R$ 71.50
+- Preço cobrado: R$ 127.11
+- Lucro: R$ 55.61
+- Margem: 43.7%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de cestas personalizadas no Brasil
+3. Uma dica prática de precificação para este tipo de produto"
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzeLaserPrice 1`] = `
+"Você é um consultor especializado em corte a laser para pequenos negócios brasileiros.
+
+Analise a precificação deste serviço de corte/gravação a laser:
+- Serviço: Porta-chaves MDF
+- Máquina: TESTE Laser
+- Material: MDF 3mm
+- Custo total calculado (energia + desgaste + mão de obra): R$ 17.54
+- Preço cobrado: R$ 15.00
+- Lucro: R$ -2.54
+- Margem: -17.0%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de corte a laser no Brasil
+3. Uma dica prática de precificação para este tipo de serviço"
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzeManualPrice (lucro e prejuízo) 1`] = `
+"Você é um consultor financeiro especializado em pequenos ateliês e makers brasileiros.
+  
+Analise a viabilidade do preço manual definido para este produto:
+- Produto: TESTE Chaveiro
+- Categoria: Presentes
+- Custo de produção calculado: R$ 7.50
+- Preço manual definido: R$ 12.00
+- Lucro bruto: R$ 4.50
+- Margem sobre venda: 37.5%
+- Markup sobre custo: 60.0%
+
+Responda em até 3 frases curtas e diretas:
+1. Se o preço cobre os custos e é sustentável
+2. Se a margem é adequada para o mercado de artesanato/personalização brasileiro
+3. Uma sugestão prática (ex: se deve aumentar, manter ou se pode abaixar estrategicamente)
+
+Seja objetivo e use linguagem simples. Se o preço for abaixo do custo, avise com urgência."
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzeManualPrice (lucro e prejuízo) 2`] = `
+"Você é um consultor financeiro especializado em pequenos ateliês e makers brasileiros.
+  
+Analise a viabilidade do preço manual definido para este produto:
+- Produto: TESTE Chaveiro
+- Categoria: Presentes
+- Custo de produção calculado: R$ 7.50
+- Preço manual definido: R$ 7.00
+- Lucro bruto: R$ -0.50
+- Margem sobre venda: -7.1%
+- Markup sobre custo: -6.7%
+
+Responda em até 3 frases curtas e diretas:
+1. Se o preço cobre os custos e é sustentável
+2. Se a margem é adequada para o mercado de artesanato/personalização brasileiro
+3. Uma sugestão prática (ex: se deve aumentar, manter ou se pode abaixar estrategicamente)
+
+Seja objetivo e use linguagem simples. Se o preço for abaixo do custo, avise com urgência."
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzePapelariaPrice (com e sem preço) 1`] = `
+"Você é um consultor especializado em papelaria personalizada para pequenos negócios brasileiros.
+
+Analise a precificação deste trabalho de papelaria (convites, cadernos, agendas, kits personalizados):
+- Trabalho: TESTE Convite
+- Custo total calculado (material + impressão + acabamento + montagem): R$ 11.00
+- Preço cobrado: R$ 15.00
+- Lucro: R$ 4.00
+- Margem: 26.7%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de papelaria personalizada no Brasil
+3. Uma dica prática de precificação para este tipo de trabalho"
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzePapelariaPrice (com e sem preço) 2`] = `
+"Você é um consultor especializado em papelaria personalizada para pequenos negócios brasileiros.
+
+Analise a precificação deste trabalho de papelaria (convites, cadernos, agendas, kits personalizados):
+- Trabalho: TESTE Convite
+- Custo total calculado (material + impressão + acabamento + montagem): R$ 11.00
+- Preço cobrado: R$ 0.00
+- Lucro: R$ -11.00
+- Margem: 0.0%
+
+Em 3 frases curtas:
+1. Se o preço é viável e sustentável para o negócio
+2. Como está comparado ao mercado de papelaria personalizada no Brasil
+3. Uma dica prática de precificação para este tipo de trabalho"
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > analyzePriceHealth 1`] = `
+"Analise a saúde financeira deste produto:
+    Produto: TESTE Chaveiro
+    Custo Total: R$ 7.50
+    Preço de Venda Sugerido: R$ 15.00
+    Margem de Lucro (sobre o preço de venda): 50.00%
+    
+    Dê um feedback curto e profissional sobre se o preço é sustentável para um pequeno ateliê."
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > rewriteDescription 1`] = `
+"Reescreva a descrição comercial para um orçamento de 10 unidades de "TESTE Chaveiro" para o cliente TESTE Cliente.
+    O tom deve ser profissional, elegante e persuasivo, destacando a qualidade artesanal."
+`;
+
+exports[`Textos enviados à IA (não podem mudar) > suggestIdealMargin 1`] = `
+"Sugira uma margem de lucro ideal para um produto da categoria "Presentes" que leva 15 minutos para ser produzido em um ateliê artesanal.
+    A margem é a porcentagem do PREÇO DE VENDA que vira lucro (não um acréscimo sobre o custo), entre 0% e 90%.
+    Considere o valor do trabalho manual e o mercado brasileiro. Retorne apenas a porcentagem sugerida e uma breve justificativa."
+`;
