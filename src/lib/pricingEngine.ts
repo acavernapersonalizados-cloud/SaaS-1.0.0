@@ -95,13 +95,8 @@ export interface QuoteItemCalcResult {
  */
 export const MAX_CHANNEL_FEE_PERCENT = 95;
 
-/** Margem + taxas acima disso levariam o preço ao infinito. */
+/** Margem a partir da qual a meta antiga (margem sobre o preço) não tinha preço possível. */
 export const MAX_MARGIN_PLUS_FEES_PERCENT = 95;
-/** Limite dos campos de margem/meta de lucro. */
-export const MAX_MARGIN_PERCENT = 90;
-
-/** Mantém um campo de margem entre 0 e MAX_MARGIN_PERCENT. */
-export const clampMargin = (value: number) => Math.min(MAX_MARGIN_PERCENT, Math.max(0, Number(value) || 0));
 
 // ─── Markup sobre o custo (Etapa 7) ───────────────────────────────────────────
 
@@ -161,18 +156,6 @@ export const laborCostFromMinutes = (hourlyRate: number, minutes: number) => (ho
 
 /** Mão de obra em horas: valor da hora × horas. */
 export const laborCostFromHours = (hourlyRate: number, hours: number) => hourlyRate * hours;
-
-/**
- * Preço para que a margem sobre o preço de venda seja `marginPct`, já
- * descontadas as taxas percentuais do canal (`feePct`) e as taxas fixas:
- *   preço = (custo + fixas) / (1 − margem − taxa)
- * Retorna null quando margem + taxa ≥ MAX_MARGIN_PLUS_FEES_PERCENT.
- */
-export function priceForMargin(cost: number, marginPct: number, feePct = 0, fixedFees = 0): number | null {
-  const share = (Number(marginPct) || 0) + (Number(feePct) || 0);
-  if (share >= MAX_MARGIN_PLUS_FEES_PERCENT) return null;
-  return ((Number(cost) || 0) + (Number(fixedFees) || 0)) / (1 - share / 100);
-}
 
 export function getProfitStatus(margin: number): ProfitStatusInfo {
   if (margin >= 55)

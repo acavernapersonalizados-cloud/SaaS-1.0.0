@@ -6,7 +6,6 @@ import {
   calcProductPricing,
   calcQuoteItem,
   calcReversePrice,
-  clampMargin,
   clampMarkup,
   energyCost,
   getProfitStatus,
@@ -14,7 +13,6 @@ import {
   laborCostFromMinutes,
   marginToMarkup,
   markupOf,
-  priceForMargin,
   priceForMarkup,
   realMargin,
   wearCost,
@@ -88,27 +86,6 @@ describe('Markup sobre o custo (Etapa 7)', () => {
     expect(clampMarkup(600)).toBe(500);
     expect(clampMarkup(-5)).toBe(0);
     expect(clampMarkup(150)).toBe(150);
-  });
-});
-
-describe('priceForMargin (margem sobre o preço)', () => {
-  it('preço = custo ÷ (1 − margem − taxa)', () => {
-    expect(priceForMargin(7.5, 50)).toBeCloseTo(15, 10);
-    expect(priceForMargin(7.5, 50, 20)).toBeCloseTo(25, 10);
-    expect(priceForMargin(14.306, 60, 14, 4)).toBeCloseTo(70.4077, 4);
-  });
-  it('meta 0 → preço = custo', () => {
-    expect(priceForMargin(10, 0)).toBe(10);
-  });
-  it('margem + taxa ≥ 95% não tem preço possível', () => {
-    expect(priceForMargin(10, 80, 20)).toBeNull();
-    expect(priceForMargin(10, 95)).toBeNull();
-    expect(priceForMargin(10, 94)).not.toBeNull();
-  });
-  it('clampMargin limita os campos entre 0 e 90', () => {
-    expect(clampMargin(150)).toBe(90);
-    expect(clampMargin(-5)).toBe(0);
-    expect(clampMargin(42)).toBe(42);
   });
 });
 
