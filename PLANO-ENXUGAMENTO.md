@@ -19,7 +19,7 @@
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
-| 7 — Unificar parâmetros de preço | T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
@@ -336,11 +336,25 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 
 | Ordem | Item | O que muda | Risco |
 |---|---|---|---|
-| 1 | **T4** — tabela única e editável de canais de venda por loja, usada pelos Orçamentos e por todas as calculadoras | O preço de orçamentos e de trabalhos das calculadoras em canais como Shopee e Mercado Livre | alto |
-| 2 | T2 — calculadoras abrem com o valor da hora e a Meta de Lucro da Base de Custos (campos continuam editáveis) | O preço sugerido de quem não alterar os campos | alto |
-| 3 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
+| 1 | **Remover o Elo7** (plataforma encerrada pela Enjoei) — sai da lista de canais para novos orçamentos e das calculadoras; o histórico continua como está (detalhes abaixo) | Nenhum preço já gravado. Só deixa de existir a opção Elo7 para trabalhos novos | baixo |
+| 2 | **T4** — tabela única e editável de canais de venda por loja, usada pelos Orçamentos e por todas as calculadoras | O preço de orçamentos e de trabalhos das calculadoras em canais como Shopee e Mercado Livre | alto |
+| 3 | T2 — calculadoras abrem com o valor da hora e a Meta de Lucro da Base de Custos (campos continuam editáveis) | O preço sugerido de quem não alterar os campos | alto |
+| 4 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
 
 Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
+
+#### Remover o Elo7 (primeiro item da Etapa 7, decidido em 19/10/2026)
+
+O Elo7 foi encerrado pela Enjoei.
+
+- **Sai da lista de canais** para novos orçamentos e das calculadoras.
+- **Nada do histórico é apagado nem recalculado:** orçamentos, trabalhos e produtos antigos que usam Elo7 continuam
+  aparecendo com o nome e os valores originais.
+- **Antes de mexer no código, levantar (só lendo o banco real) quantos registros usam Elo7**, por coleção, e mostrar
+  o resultado para você.
+- Onde está hoje (19/10/2026): só na tabela de canais da **Impressão 3D** (`src/lib/printPricing.ts`, comissão de
+  12%). A Precificação e as outras calculadoras não têm Elo7. Os trabalhos 3D guardam o canal escolhido; a tela
+  precisa continuar mostrando "Elo7" nos trabalhos antigos mesmo depois de ele sair da lista.
 
 #### T4 — Tabela de canais de venda (ampliado em 18/10/2026)
 
