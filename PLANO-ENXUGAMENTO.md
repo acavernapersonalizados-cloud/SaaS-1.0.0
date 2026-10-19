@@ -20,10 +20,11 @@
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
+| 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **ainda não publicada** (publicar hosting + regras do banco quando você pedir). |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):** Etapa 7 concluída e **publicada** (só hosting, regras do banco intactas). Catálogo da T&N **recuperado** (backup das 17:50: 59 de 59 preços iguais aos das 11:55; produto novo R$ 46,55). Pendências: atualizar o `CHECKLIST-TESTES.md` com os valores de markup e da tabela de canais; T3 (tarifa de energia única) adiado. **Próximo passo: Etapa 8 — Central de Calculadoras, ainda não começada.** Nada ficou pela metade.
+**Onde paramos (19/10/2026):** Etapa 7.1 (segurança) concluída no código, tag `etapa-7.1-ok`, **ainda não publicada**: a publicação será **hosting + regras do banco** (`firebase deploy --only hosting,firestore:rules`), só quando você pedir, depois do backup conferido. A Etapa 7 está publicada e o catálogo da T&N foi recuperado. T3 (tarifa de energia única) continua adiado. **Próximo passo: publicar a 7.1 quando você pedir; depois, Etapa 8 — Central de Calculadoras.** Nada ficou pela metade.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -392,6 +393,23 @@ O Elo7 foi encerrado pela Enjoei.
   preço por unidade de orçamentos novos.
 - A comparação de preço antes/depois (passos 1 a 3 acima) vale também para esta tabela.
 
+### Etapa 7.1 — Segurança
+
+**✅ Feita (19/10/2026), tag `etapa-7.1-ok` (não publicada).** Puxada do Estacionamento depois da publicação da
+Etapa 7, quando uma aba com a versão antiga regravou R$ 0 no catálogo da T&N.
+
+| Item | Resultado |
+|---|---|
+| 1a. Aviso de nova versão | O app procura versão nova a cada 5 minutos e ao voltar para a aba; quando acha, mostra "Nova versão disponível". O PWA passou de `autoUpdate` (recarregava sozinho, sem aviso) para `prompt` |
+| 1b. Versão antiga não grava | A janela de aviso cobre a tela (nada pode ser salvo) até "Atualizar agora"; a sincronização do catálogo para. Conferido com dois builds seguidos ligados ao emulador |
+| 1c. Regra do banco | `products`: update recusa trocar `catalogPrice` > 0 por 0, de qualquer versão. Criar sem preço, mudar o preço e ocultar do catálogo continuam livres (testado no emulador: zerar = 403, o resto = 200). **Exceção rara:** restaurar um backup com preço 0 por cima de um produto com preço é recusado |
+| 1d. Versão visível | "versão dd/mm hh:mm" no menu lateral |
+| 2. Catálogo sem silêncio | Falhas da sincronização viram um aviso só, com a quantidade e o motivo |
+| 2b. Estoque sem silêncio | Registros de movimento e falhas de reserva, baixa e liberação mostram aviso; a baixa que falha avisa que o estoque NÃO foi baixado |
+| 3. Checklist | Markup, tabela de canais (margem real por canal), orçamento nos 7 canais, calculadoras, aviso de versão |
+
+Testes: 149 → 155.
+
 ### Etapa 8 — Central de Calculadoras
 
 **Só começa depois da Etapa 7. Por enquanto é só planejamento:** o detalhamento (telas, campos, riscos e testes) será feito quando a etapa começar.
@@ -443,6 +461,5 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 - **Estoque Atual não aceita 0 no cadastro de Matéria-prima** (`Materials.tsx`): o campo é obrigatório e mostra 0 como vazio, então não dá para cadastrar um insumo com estoque zero. Mesmo problema que o T14 resolveu no estoque mínimo (encontrado em 18/10/2026).
 - **Precificação: mensagem de PDF gerado antes de o PDF ficar pronto** (`Pricing.tsx`, botões do Orçamento Gerado): falta `await` na geração, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
 - **Desconto de fornecedor aplicado de verdade no custo da matéria-prima** (campo que reduz o custo unitário). O campo antigo, que não entrava em conta nenhuma, foi removido no T12 (Etapa 5); fornecedores antigos ainda guardam o valor `discount` no banco. **Muda preço:** entra com comparação antes/depois, como na Etapa 7.
-- **Versão antiga aberta em outro aparelho desfaz gravações:** na publicação da Etapa 7, uma aba/aparelho com a versão anterior em cache (PWA) regravou R$ 0 no catálogo da T&N até ser fechada. Depois de publicar, fechar o app em todos os aparelhos; avaliar avisar na tela quando houver versão nova e mostrar erro quando a sincronização do catálogo falhar (hoje o erro é escondido).
 - **Keeta como canal de venda:** retirado da Etapa 7 em 19/10/2026, a seu pedido. Volta para a tabela de canais quando você tiver a taxa do contrato.
 - **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.
