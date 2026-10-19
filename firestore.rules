@@ -90,7 +90,12 @@ service cloud.firestore {
       // Catálogo público: apenas produtos marcados para o catálogo
       allow read: if resource.data.get('showInCatalog', true) == true
                   || canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      // Etapa 7.1: nenhuma versão do app (nem uma antiga ainda aberta) pode trocar um preço de
+      // catálogo maior que zero por R$ 0. Ocultar do catálogo (showInCatalog/showPrice) continua livre.
+      allow update: if canWrite(request.resource.data.storeId)
+                    && !(resource.data.get('catalogPrice', 0) > 0
+                         && request.resource.data.get('catalogPrice', 0) <= 0);
       allow delete: if canDelete(resource.data.storeId);
     }
 
