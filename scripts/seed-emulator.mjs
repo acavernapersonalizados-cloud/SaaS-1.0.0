@@ -244,6 +244,18 @@ await createIfMissing('quotes/orcamento-teste-2', {
   totalProfit: 30,
   status: 'Pendente',
 });
+// Finalizado SEM clientId (nome digitado na Precificação sem escolher da lista): liga pelo nome.
+const { clientId: _semClientId, ...quoteSemCliente } = quoteBase;
+await createIfMissing('quotes/orcamento-teste-3', {
+  ...quoteSemCliente,
+  clientName: 'teste cliente',
+  date: '2026-10-05T12:00:00.000Z',
+  expiryDate: '2026-10-12T12:00:00.000Z',
+  items: [quoteItem('i1', 'TESTE Chaveiro', 6, 15)],
+  totalAmount: 90,
+  totalProfit: 45,
+  status: 'Finalizado',
+});
 
 console.log(
   `[seed] Emulador pronto. Entre com ${TEST_ADMIN.email} / ${TEST_ADMIN.password} (ADMIN, "Loja Teste", com a impressora "TESTE 3D" e o laser "TESTE Laser").`,

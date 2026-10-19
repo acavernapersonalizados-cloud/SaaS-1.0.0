@@ -5206,7 +5206,7 @@ exports[`Clientes > busca 1`] = `
                   <span
                     class="text-sm font-bold text-neutral-900 block"
                   >
-                    1
+                    0
                   </span>
                 </div>
               </div>
@@ -5472,7 +5472,7 @@ exports[`Clientes > confirmar exclusão 1`] = `
                   <span
                     class="text-sm font-bold text-neutral-900 block"
                   >
-                    1
+                    0
                   </span>
                 </div>
               </div>
@@ -6168,7 +6168,7 @@ exports[`Clientes > lista 1`] = `
                   <span
                     class="text-sm font-bold text-neutral-900 block"
                   >
-                    1
+                    0
                   </span>
                 </div>
               </div>

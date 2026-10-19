@@ -1,20 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  updateDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  where,
-  getDocs,
-} from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Client, Quote } from '../types';
 import { formatCurrency, cn } from '../lib/utils';
-import { clientStats, ClientStats } from '../lib/clientStats';
+import { clientStats, ClientStats, quotesByClient } from '../lib/clientStats';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -44,7 +33,6 @@ export function Clients() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [clientQuotes, setClientQuotes] = useState<Quote[]>([]);
   const [storeQuotes, setStoreQuotes] = useState<Quote[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -92,9 +80,12 @@ export function Clients() {
     };
   }, [activeStore]);
 
-  const stats = useMemo(() => clientStats(storeQuotes), [storeQuotes]);
+  const quotesOf = useMemo(() => quotesByClient(storeQuotes, clients), [storeQuotes, clients]);
+  const stats = useMemo(() => clientStats(storeQuotes, clients), [storeQuotes, clients]);
   const NO_STATS: ClientStats = { totalSpent: 0, quoteCount: 0, lastPurchase: null };
   const statsOf = (client: Client) => stats.get(client.id) ?? NO_STATS;
+  // Lista da janela de detalhes: os mesmos orçamentos que formam os números do cartão.
+  const clientQuotes = selectedClient ? (quotesOf.get(selectedClient.id) ?? []) : [];
 
   const emptyClient: Partial<Client> = {
     name: '',
@@ -193,23 +184,7 @@ export function Clients() {
     }
   };
 
-  const viewClientDetails = async (client: Client) => {
-    setSelectedClient(client);
-    if (!activeStore) return;
-    const q = query(
-      collection(db, 'quotes'),
-      where('storeId', '==', activeStore.id),
-      where('clientId', '==', client.id),
-      orderBy('date', 'desc'),
-    );
-    try {
-      const snapshot = await getDocs(q);
-      const quotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Quote);
-      setClientQuotes(quotes);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.LIST, 'quotes');
-    }
-  };
+  const viewClientDetails = (client: Client) => setSelectedClient(client);
 
   const filteredClients = clients.filter(
     c =>

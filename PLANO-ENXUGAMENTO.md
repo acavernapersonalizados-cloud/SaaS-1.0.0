@@ -282,7 +282,7 @@ orçamentos.
 | **T13a:** rodapé fixo nas janelas | Salvar/Cadastrar sempre visível (rodapé `sticky`, janela até 90% da tela) em Novo Insumo (que não rolava), Cliente, Fornecedor, Produto, Máquina (Laser), Impressora (3D), Usuário, Orçamento Gerado, prévia do Backup e Detalhes do Orçamento | médio |
 | **T13b:** ações sem esconder | Botões de ação sempre visíveis em Laser, Lojas, Usuários, Produtos e Fornecedores; sobre imagens (foto do produto, logo), sempre visíveis em telas sem mouse; coluna "Ações" presa à direita em Matéria-prima e Histórico | médio |
 | Carga inicial menor | O ajudante do Vite e o React tinham ido parar nos pacotes de PDF e de gráficos; agora têm pacote próprio, o Dashboard carrega sob demanda e o PDF só baixa quando é pedido. Abertura: **1.778 → 989 KB (−44%)** | médio |
-| T1 | Total gasto (aprovados, em produção e finalizados), nº de orçamentos e última compra calculados dos orçamentos (`lib/clientStats.ts`, 6 testes) | baixo |
+| T1 | Total gasto, nº de orçamentos e última compra contam **só orçamentos Aprovados, Em produção e Finalizados** (regra de 18/10/2026; pendentes não contam). Orçamento sem `clientId` (nome digitado na Precificação sem escolher da lista) é ligado pelo nome, quando um único cliente tem esse nome. A janela de detalhes usa a mesma ligação (`lib/clientStats.ts`, 10 testes) | baixo |
 | T5 | Laser deixa de gravar largura e altura | baixo |
 | T6 | Papelaria sem "folhas/peças impressas" e sem `printedAreaCm2` | baixo |
 | T8 | Lojas sem "Logo (URL)"; logos antigas continuam aparecendo | baixo |
