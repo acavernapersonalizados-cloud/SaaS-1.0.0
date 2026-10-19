@@ -3,7 +3,7 @@ import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } fr
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, CostBase, Channel, CHANNELS, Quote, Client, QuoteItem } from '../types';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
-import { calcQuoteItem, MAX_MARGIN_PERCENT, MAX_MARGIN_PLUS_FEES_PERCENT } from '../lib/pricingEngine';
+import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
@@ -52,7 +52,7 @@ export function Pricing() {
   const [clientType, setClientType] = useState<'PF' | 'PJ'>('PF');
   const [cnpj, setCnpj] = useState('');
   const [channel, setChannel] = useState<Channel>('Venda Direta');
-  const [customMargin, setCustomMargin] = useState<number | null>(null);
+  const [customMarkup, setCustomMarkup] = useState<number | null>(null);
   const [clientSearch, setClientSearch] = useState('');
   const [showClientList, setShowClientList] = useState(false);
 
@@ -72,7 +72,7 @@ export function Pricing() {
     quantity,
     selectedFinishingIds: selectedFinishes,
     selectedAccessoryIds: selectedAccessories,
-    customMargin: customMargin !== null ? customMargin : undefined,
+    customMarkup: customMarkup !== null ? customMarkup : undefined,
   };
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
@@ -201,7 +201,8 @@ export function Pricing() {
                 selectedAccessoryIds: currentItemResults.selectedAccessoryIds,
                 finishingNames: currentItemResults.finishingNames,
                 accessoryNames: currentItemResults.accessoryNames,
-                customMargin: customMargin,
+                customMarkup: customMarkup,
+                markup: currentItemResults.markup,
                 materialCost: currentItemResults.materialCost,
                 laborCost: currentItemResults.laborCost,
                 productionCost: currentItemResults.productionCost,
@@ -227,7 +228,8 @@ export function Pricing() {
         selectedAccessoryIds: currentItemResults.selectedAccessoryIds,
         finishingNames: currentItemResults.finishingNames,
         accessoryNames: currentItemResults.accessoryNames,
-        customMargin: customMargin,
+        customMarkup: customMarkup,
+        markup: currentItemResults.markup,
         materialCost: currentItemResults.materialCost,
         laborCost: currentItemResults.laborCost,
         productionCost: currentItemResults.productionCost,
@@ -243,7 +245,7 @@ export function Pricing() {
     setQuantity(1);
     setSelectedFinishes([]);
     setSelectedAccessories([]);
-    setCustomMargin(null);
+    setCustomMarkup(null);
     setEditingItemId(null);
     setIsAddingItem(false);
   };
@@ -253,7 +255,7 @@ export function Pricing() {
     setQuantity(item.quantity);
     setSelectedFinishes(item.selectedFinishingIds);
     setSelectedAccessories(item.selectedAccessoryIds);
-    setCustomMargin(item.customMargin ?? null);
+    setCustomMarkup(item.customMarkup ?? null);
     setEditingItemId(item.id);
     setIsAddingItem(true);
   };
@@ -358,7 +360,7 @@ export function Pricing() {
 
     if (allItemsResults.some(r => r.invalidMargin)) {
       setQuoteError(
-        `Margem + taxa do canal passam de ${MAX_MARGIN_PLUS_FEES_PERCENT}% em um ou mais itens. Reduza a margem ou troque o canal.`,
+        `A taxa do canal chega a ${MAX_CHANNEL_FEE_PERCENT}% em um ou mais itens: não existe preço possível. Troque o canal.`,
       );
       return;
     }
@@ -386,7 +388,8 @@ export function Pricing() {
           selectedAccessoryIds: r.selectedAccessoryIds,
           finishingNames: r.finishingNames,
           accessoryNames: r.accessoryNames,
-          customMargin: r.customMargin,
+          customMarkup: r.customMarkup,
+          markup: r.markup,
           materialCost: r.materialCost,
           laborCost: r.laborCost,
           productionCost: r.productionCost,
@@ -638,7 +641,7 @@ export function Pricing() {
                   setQuantity(1);
                   setSelectedFinishes([]);
                   setSelectedAccessories([]);
-                  setCustomMargin(null);
+                  setCustomMarkup(null);
                   setIsAddingItem(true);
                 }}
                 className="px-4 py-2 bg-neutral-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all flex items-center gap-2"
@@ -863,14 +866,14 @@ export function Pricing() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                    Margem Personalizada (% do preço)
+                    Markup personalizado (% sobre o custo)
                   </label>
                   <input
                     type="number"
                     min={0}
-                    max={MAX_MARGIN_PERCENT}
-                    value={customMargin !== null ? customMargin : ''}
-                    onChange={e => setCustomMargin(e.target.value === '' ? null : Number(e.target.value))}
+                    max={MAX_MARKUP_PERCENT}
+                    value={customMarkup !== null ? customMarkup : ''}
+                    onChange={e => setCustomMarkup(e.target.value === '' ? null : Number(e.target.value))}
                     placeholder="Padrão"
                     className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
                   />
@@ -956,9 +959,8 @@ export function Pricing() {
 
             {currentItemResults?.invalidMargin && (
               <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                Margem ({currentItemResults.margin}%) + taxa do canal ({currentItemResults.platformFee}%) passam de{' '}
-                {MAX_MARGIN_PLUS_FEES_PERCENT}%: não existe preço que dê esse lucro. Reduza a margem ou troque o canal.
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />A taxa do canal ({currentItemResults.platformFee}%)
+                chega a {MAX_CHANNEL_FEE_PERCENT}%: não existe preço possível. Troque o canal.
               </div>
             )}
 
@@ -972,10 +974,16 @@ export function Pricing() {
                       quantity,
                       selectedFinishingIds: selectedFinishes,
                       selectedAccessoryIds: selectedAccessories,
-                      customMargin: customMargin !== null ? customMargin : undefined,
+                      customMarkup: customMarkup !== null ? customMarkup : undefined,
                     })?.totalPrice || 0,
                   )}
                 </p>
+                {currentItemResults && !currentItemResults.invalidMargin && currentItemResults.totalPrice > 0 && (
+                  <p className="text-xs font-bold text-emerald-700">
+                    Markup {formatPercent(currentItemResults.markup)} · margem real{' '}
+                    {formatPercent(currentItemResults.margin)} · lucro {formatCurrency(currentItemResults.itemProfit)}
+                  </p>
+                )}
               </div>
               <button
                 onClick={handleAddItem}

@@ -202,51 +202,56 @@ describe('Produto (seção 8)', () => {
   });
 });
 
-describe('Orçamento (seção 10) — 10 chaveiros', () => {
+describe('Orçamento (seção 10) — 10 chaveiros, markup 100% (meta 50% convertida)', () => {
   const item = (fee: number, extra: Record<string, unknown> = {}) =>
     calcQuoteItem({ quantity: 10, ...extra }, chaveiro, materials, costs, fee)!;
 
-  it('10.1 Instagram (0%): R$ 15,00 / R$ 150,00 / lucro R$ 75,00 / 50%', () => {
+  it('10.1 Instagram/Venda Direta (0%): R$ 15,00 / R$ 150,00 / lucro R$ 75,00 / margem real 50%', () => {
     const r = item(0);
     expect(r.unitPrice).toBeCloseTo(15, 10);
     expect(r.totalPrice).toBeCloseTo(150, 10);
     expect(r.itemProfit).toBeCloseTo(75, 10);
-    expect((r.itemProfit / r.totalPrice) * 100).toBeCloseTo(50, 10);
+    expect(r.markup).toBeCloseTo(100, 10);
+    expect(r.margin).toBeCloseTo(50, 10);
   });
-  it('10.2 Shopee (20%): R$ 25,00 / R$ 250,00 / lucro R$ 125,00 / 50%', () => {
+  it('10.2 Shopee (20%): R$ 18,75 / R$ 187,50 / mesmo lucro R$ 75,00 / margem real 40%', () => {
     const r = item(20);
-    expect(r.unitPrice).toBeCloseTo(25, 10);
-    expect(r.totalPrice).toBeCloseTo(250, 10);
-    expect(r.itemProfit).toBeCloseTo(125, 10);
-    expect((r.itemProfit / r.totalPrice) * 100).toBeCloseTo(50, 10);
+    expect(r.unitPrice).toBeCloseTo(18.75, 10);
+    expect(r.totalPrice).toBeCloseTo(187.5, 10);
+    expect(r.itemProfit).toBeCloseTo(75, 10);
+    expect(r.margin).toBeCloseTo(40, 10);
   });
-  it('10.3 Mercado Livre (18%): R$ 23,44 / R$ 234,38 / lucro R$ 117,19 / 50%', () => {
+  it('10.3 Mercado Livre (18%): R$ 18,29 / R$ 182,93 / mesmo lucro R$ 75,00 / margem real 41%', () => {
     const r = item(18);
-    expect(r.unitPrice).toBeCloseTo(23.44, 2);
-    expect(r.totalPrice).toBeCloseTo(234.38, 2);
-    expect(r.itemProfit).toBeCloseTo(117.19, 2);
-    expect((r.itemProfit / r.totalPrice) * 100).toBeCloseTo(50, 10);
+    expect(r.unitPrice).toBeCloseTo(18.29, 2);
+    expect(r.totalPrice).toBeCloseTo(182.93, 2);
+    expect(r.itemProfit).toBeCloseTo(75, 10);
+    expect(r.margin).toBeCloseTo(41, 10);
   });
-  it('Atacado (5%): R$ 16,67', () => {
-    expect(item(5).unitPrice).toBeCloseTo(16.67, 2);
+  it('Atacado (5%): R$ 15,79', () => {
+    expect(item(5).unitPrice).toBeCloseTo(15.79, 2);
   });
-  it('10.4 Venda Direta + margem personalizada 40%: R$ 12,50 / R$ 125,00 / lucro R$ 50,00', () => {
-    const r = item(0, { customMargin: 40 });
-    expect(r.unitPrice).toBeCloseTo(12.5, 10);
-    expect(r.totalPrice).toBeCloseTo(125, 10);
-    expect(r.itemProfit).toBeCloseTo(50, 10);
+  it('10.4 Venda Direta + markup personalizado 40%: R$ 10,50 / R$ 105,00 / lucro R$ 30,00', () => {
+    const r = item(0, { customMarkup: 40 });
+    expect(r.unitPrice).toBeCloseTo(10.5, 10);
+    expect(r.totalPrice).toBeCloseTo(105, 10);
+    expect(r.itemProfit).toBeCloseTo(30, 10);
+    expect(r.markup).toBe(40);
   });
-  it('10.5 Shopee + Verniz (+R$ 2): R$ 27,00 / R$ 270,00 / lucro R$ 141,00', () => {
+  it('10.5 Shopee + Verniz (+R$ 2): R$ 20,75 / R$ 207,50 / lucro R$ 91,00', () => {
     const r = item(20, { selectedFinishingIds: ['verniz'] });
-    expect(r.unitPrice).toBeCloseTo(27, 10);
-    expect(r.totalPrice).toBeCloseTo(270, 10);
-    expect(r.itemProfit).toBeCloseTo(141, 10);
+    expect(r.unitPrice).toBeCloseTo(20.75, 10);
+    expect(r.totalPrice).toBeCloseTo(207.5, 10);
+    expect(r.itemProfit).toBeCloseTo(91, 10);
     expect(r.finishingNames).toEqual(['Verniz']);
   });
-  it('10.6 Shopee + margem personalizada 80%: item inválido, preço 0', () => {
-    const r = item(20, { customMargin: 80 });
+  it('10.6 taxas do canal ≥ 95%: item inválido, preço 0', () => {
+    const r = item(95);
     expect(r.invalidMargin).toBe(true);
     expect(r.unitPrice).toBe(0);
+  });
+  it('markup alto (500%) com taxa continua válido', () => {
+    expect(item(20, { customMarkup: 500 }).invalidMargin).toBe(false);
   });
   it('8.5 produto em pacote de 10: preço por item = preço do pacote ÷ 10', () => {
     const r = calcQuoteItem(

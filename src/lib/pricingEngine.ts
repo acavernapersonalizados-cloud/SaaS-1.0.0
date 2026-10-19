@@ -69,13 +69,16 @@ export interface QuoteItemCalcResult {
   isPackage: boolean;
   packageQuantity: number;
   pricePerItem: number;
-  customMargin: number | null;
-  /** true quando margem + taxa do canal ≥ 95%: não há preço possível. */
+  customMarkup: number | null;
+  /** true quando a taxa do canal ≥ 95% (ou o markup é negativo): não há preço possível. */
   invalidMargin: boolean;
   // Snapshots (persist in Firestore for history)
   materialCost: number;
   laborCost: number;
   productionCost: number;
+  /** Markup sobre o custo usado no preço. */
+  markup: number;
+  /** Margem real (%) depois do custo e da taxa do canal. */
   margin: number;
   platformFee: number;
 }
@@ -310,22 +313,20 @@ export function calcQuoteItem(
 
   const { materialCost, laborCost, totalCost: totalProductionCost } = calcProductCost(product, materials, costs);
 
-  // Margin: item custom > default profitGoal
-  const margin =
-    item.customMargin !== undefined && item.customMargin !== null
-      ? Number(item.customMargin)
-      : Number(costs.profitGoal) || 0;
+  // Markup: o personalizado do item ou o da Base de Custos (Etapa 7).
+  const markup =
+    item.customMarkup !== undefined && item.customMarkup !== null ? Number(item.customMarkup) : markupOf(costs);
 
   // Taxa de canal: limitada a 0–95%. Acima disso o preço tenderia ao infinito
   // e o cálculo antigo ignorava a taxa silenciosamente (prejuízo escondido).
   const rawFeePercent = Number(channelFeePercent) || 0;
   const platformFeePercent = Math.min(Math.max(rawFeePercent, 0), MAX_CHANNEL_FEE_PERCENT);
 
-  // Margem sobre o preço, líquida da taxa do canal: depois de pagar a taxa,
-  // sobra exatamente `margin`% do preço como lucro.
-  const marginPrice = priceForMargin(totalProductionCost, margin, platformFeePercent);
-  const invalidMargin = marginPrice === null;
-  const baseUnitPrice = marginPrice ?? 0;
+  // Markup sobre o custo, com a taxa do canal somada por cima: depois de pagar a taxa,
+  // o lucro em R$ é o mesmo da venda direta (custo × markup).
+  const markupPrice = priceForMarkup(totalProductionCost, markup, platformFeePercent);
+  const invalidMargin = markupPrice === null;
+  const baseUnitPrice = markupPrice ?? 0;
 
   const finishingValue = (product.finishingOptions || [])
     .filter(o => item.selectedFinishingIds?.includes(o.id))
@@ -378,12 +379,14 @@ export function calcQuoteItem(
     isPackage,
     packageQuantity,
     pricePerItem: isFinite(pricePerItem) ? pricePerItem : 0,
-    customMargin: item.customMargin ?? null,
+    customMarkup: item.customMarkup ?? null,
     invalidMargin,
     materialCost,
     laborCost,
     productionCost: totalProductionCost,
-    margin,
+    markup,
+    // Margem real: o que sobra do preço depois do custo e da taxa do canal.
+    margin: totalPrice > 0 && isFinite(itemProfit) ? (itemProfit / totalPrice) * 100 : 0,
     platformFee: platformFeePercent,
   };
 }

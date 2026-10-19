@@ -230,11 +230,17 @@ export interface QuoteItem {
   selectedAccessoryIds: string[];
   finishingNames?: string[];
   accessoryNames?: string[];
+  /** Legado: margem personalizada (% do preço) de orçamentos anteriores à Etapa 7. */
   customMargin?: number | null;
+  /** Markup personalizado (% sobre o custo) do item. */
+  customMarkup?: number | null;
   // Snapshots for historical accuracy
   materialCost?: number;
   laborCost?: number;
   productionCost?: number;
+  /** Markup sobre o custo usado no preço (Etapa 7 em diante). */
+  markup?: number;
+  /** Margem (%): até a Etapa 7, a margem pedida; depois, a margem real após a taxa do canal. */
   margin?: number;
   platformFee?: number;
 }
