@@ -279,6 +279,7 @@ export interface Supplier {
     | 'boleto_90'
     | 'boleto_30_60'
     | 'boleto_30_60_90';
+  /** Legado (T12): saiu da tela; fornecedores antigos podem ter. */
   discount?: number;
 }
 

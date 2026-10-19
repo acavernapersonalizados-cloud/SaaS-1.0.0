@@ -32,7 +32,6 @@ export function Suppliers() {
     observations: '',
     paymentMethod: 'pix',
     paymentTerms: 'credito_avista',
-    discount: 0,
   });
 
   useEffect(() => {
@@ -89,7 +88,6 @@ export function Suppliers() {
         observations: '',
         paymentMethod: 'pix',
         paymentTerms: 'credito_avista',
-        discount: 0,
       });
       setEditingSupplier(null);
       setIsModalOpen(false);
@@ -122,7 +120,6 @@ export function Suppliers() {
       observations: supplier.observations || '',
       paymentMethod: supplier.paymentMethod || 'pix',
       paymentTerms: supplier.paymentTerms || 'credito_avista',
-      discount: supplier.discount || 0,
     });
     setIsModalOpen(true);
   };
@@ -271,7 +268,6 @@ export function Suppliers() {
                     observations: '',
                     paymentMethod: 'pix',
                     paymentTerms: 'credito_avista',
-                    discount: 0,
                   });
                 }}
                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
@@ -359,7 +355,7 @@ export function Suppliers() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Forma de Pagamento</label>
                   <select
@@ -388,18 +384,6 @@ export function Suppliers() {
                     <option value="boleto_30_60">Boleto 30/60</option>
                     <option value="boleto_30_60_90">Boleto 30/60/90</option>
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Desconto (%)</label>
-                  <input
-                    type="number"
-                    value={newSupplier.discount || ''}
-                    onChange={e =>
-                      setNewSupplier({ ...newSupplier, discount: e.target.value ? parseFloat(e.target.value) : 0 })
-                    }
-                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="0"
-                  />
                 </div>
               </div>
 
@@ -519,7 +503,7 @@ export function Suppliers() {
             )}
             <div className="bg-neutral-50 p-6 rounded-2xl space-y-4">
               <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Informações de Pagamento</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="block text-neutral-400 font-bold">Forma</span>
                   <span className="capitalize">{selectedSupplier.paymentMethod}</span>
@@ -527,10 +511,6 @@ export function Suppliers() {
                 <div>
                   <span className="block text-neutral-400 font-bold">Condições</span>
                   <span className="capitalize">{selectedSupplier.paymentTerms?.replace(/_/g, ' ')}</span>
-                </div>
-                <div>
-                  <span className="block text-neutral-400 font-bold">Desconto</span>
-                  <span>{selectedSupplier.discount || 0}%</span>
                 </div>
               </div>
             </div>
