@@ -383,6 +383,14 @@ O Elo7 foi encerrado pela Enjoei.
 - **Primeiro item (vindo da Etapa 5):** dividir `Products.tsx` (1.342 linhas) e `Pricing.tsx` (1.142) em partes menores, sem mudar nada na tela, com os testes de HTML da Etapa 4B como rede de segurança.
 - As 4 calculadoras (Corte a Laser, Impressão 3D, Papelaria e Cestas) **continuam independentes**, mas ficam numa **única guia do menu**.
 - Um **trabalho salvo** pode ser transformado em **Produto** e publicado no **Catálogo**, na hora ou depois.
+- **Acrescentado em 19/10/2026 (não implementar antes da Etapa 8):**
+  - **Preço manual com respaldo:** ao digitar um preço manual, mostrar o **lucro real em cada canal** (depois das
+    taxas) e se ele fica **acima ou abaixo da meta**. A análise de mercado por IA continua existindo, mas só como
+    opinião.
+  - **Preço sugerido por canal de venda, numa tabela:** para cada produto, o preço sugerido em cada canal da tabela
+    de canais (T4), lado a lado.
+  - **Catálogo com preço no Pix e preço no crédito** (com a taxa do cartão embutida no preço do crédito), com
+    opção de escolher o que aparece no catálogo.
 
 ### Etapa 9 — Monitor de taxas
 
