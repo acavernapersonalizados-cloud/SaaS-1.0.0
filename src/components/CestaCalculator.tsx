@@ -5,9 +5,9 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CestaJob, CestaItem, Material } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
-import { useCostBase } from '../hooks/useCostBase';
+import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
-import { clampMarkup, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
+import { clampMarkup, MAX_MARKUP_PERCENT, realMargin, markupOf } from '../lib/pricingEngine';
 import { calcCestaJob } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -52,6 +52,11 @@ export function CestaCalculator() {
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.cesta.markupPct);
   // Canal de venda (tabela da Base de Custos); começa em Venda Direta, sem taxa.
   const { costs } = useCostBase();
+  // T2: abre com o valor da hora e o markup da Base de Custos da loja (campos continuam editáveis).
+  useCostBaseDefaults(costs, c => {
+    if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
+    setMarkupPct(Math.round(markupOf(c) * 100) / 100);
+  });
   const channels = channelsOf(costs);
   const [channelId, setChannelId] = useState('venda-direta');
   const selectedChannel = findChannel(channels, channelId);

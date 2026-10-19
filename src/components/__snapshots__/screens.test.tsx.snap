@@ -2104,7 +2104,7 @@ exports[`Cestas > inicial com histórico 1`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
             </div>
@@ -2158,7 +2158,7 @@ exports[`Cestas > inicial com histórico 1`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -2812,7 +2812,7 @@ exports[`Cestas > material do estoque: busca, escolha e aviso de saldo 1`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
             </div>
@@ -2866,7 +2866,7 @@ exports[`Cestas > material do estoque: busca, escolha e aviso de saldo 1`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -3162,7 +3162,7 @@ exports[`Cestas > material do estoque: busca, escolha e aviso de saldo 1`] = `
 </body>
 `;
 
-exports[`Cestas > material do estoque: busca, escolha e aviso de saldo 2`] = `"<div><div class="space-y-8 pb-20"><header><div class="flex items-center gap-2 text-neutral-400 mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift w-4 h-4" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg><span class="text-xs font-bold uppercase tracking-widest">Calculadora</span></div><h1 class="text-3xl font-black text-neutral-900">Cestas Personalizadas</h1><p class="text-neutral-500 mt-1">Cestas de café da manha, kits presente e montagens personalizadas.</p></header><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 space-y-5"><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg> Detalhes da Cesta</h2><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Nome da Cesta</label><input placeholder="Ex: Cesta Cafe da Manha Premium" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="text" value=""></div><div class="space-y-2 border-t border-neutral-100 pt-4"><p class="text-xs font-bold text-neutral-700 uppercase tracking-wider">Produtos Internos</p><div class="flex gap-2 bg-neutral-100 p-1 rounded-xl w-fit"><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-neutral-900 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package w-3.5 h-3.5" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg> Do estoque</button><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-neutral-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-3.5 h-3.5" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Item avulso</button></div><div class="space-y-2"><div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input placeholder="Buscar no estoque..." class="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-neutral-900" type="text" value="Fita"></div><div class="grid grid-cols-5 gap-2"><select class="col-span-3 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"><option value="">Selecione o item do estoque...</option><option value="fita">TESTE Fita cetim — R$&nbsp;1,20/m (estoque: 2)</option></select><input min="0.01" step="0.01" placeholder="Qtd" class="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none" type="number" value="50"><button type="button" class="px-2 py-2 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 text-xs font-bold disabled:opacity-40">Adicionar</button></div><p class="text-[11px] font-bold text-amber-600">TESTE Fita cetim: R$&nbsp;1,20/m · estoque disponível 2 m — quantidade acima do estoque atual</p></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-neutral-100 pt-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Embalagem (celofane, caixa, palha) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Fitas e Lacos - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Etiqueta/Tag - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Montagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Valor Hora Trabalho (R$)</label><input min="0" step="0.5" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="25"></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Frete/Entrega (R$)</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Comissao Vendedor (%)</label><input min="0" max="99" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label><input min="0" max="500" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="150"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Canal de venda</label><select class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"><option value="venda-direta">Venda Direta</option><option value="instagram">Instagram</option><option value="atacado">Atacado</option><option value="shopee">Shopee</option><option value="mercado-livre">Mercado Livre</option><option value="ifood">iFood</option><option value="99food">99Food</option></select></div></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Quantidade de Cestas</label><input min="1" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="1"></div><textarea rows="2" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none" placeholder="Observacoes (opcional)"></textarea></div></div><div class="space-y-4"><div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4 sticky top-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator w-3.5 h-3.5" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg> Resultado</h2><div class="py-12 text-center text-neutral-400 text-sm italic">Adicione produtos ou tempo de montagem para calcular.</div></div></div></div><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-base font-bold text-neutral-900">Cestas Salvas</h2><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-neutral-100"><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Cesta</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Qtd</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Preco</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"></th></tr></thead><tbody><tr class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"><td class="py-3 pr-4 font-bold text-neutral-900">TESTE Café da manhã</td><td class="py-3 pr-4 text-right text-neutral-600">1</td><td class="py-3 pr-4 font-bold text-neutral-900 text-right">R$&nbsp;240,00</td><td class="py-3 text-right"><button class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></td></tr></tbody></table></div></div><div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4"><div class="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info w-4 h-4 text-amber-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div><div><p class="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p><p class="text-amber-700 text-xs leading-relaxed">O custo total soma produtos internos, embalagem (celofane, fitas, tags), mao de obra de montagem e frete. Se houver comissao de vendedor, o preco sugerido e ajustado para que a comissao nao reduza sua margem-alvo, seguindo a mesma logica de taxa de canal usada no restante do sistema.</p></div></div></div></div>"`;
+exports[`Cestas > material do estoque: busca, escolha e aviso de saldo 2`] = `"<div><div class="space-y-8 pb-20"><header><div class="flex items-center gap-2 text-neutral-400 mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift w-4 h-4" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg><span class="text-xs font-bold uppercase tracking-widest">Calculadora</span></div><h1 class="text-3xl font-black text-neutral-900">Cestas Personalizadas</h1><p class="text-neutral-500 mt-1">Cestas de café da manha, kits presente e montagens personalizadas.</p></header><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 space-y-5"><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg> Detalhes da Cesta</h2><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Nome da Cesta</label><input placeholder="Ex: Cesta Cafe da Manha Premium" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="text" value=""></div><div class="space-y-2 border-t border-neutral-100 pt-4"><p class="text-xs font-bold text-neutral-700 uppercase tracking-wider">Produtos Internos</p><div class="flex gap-2 bg-neutral-100 p-1 rounded-xl w-fit"><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-neutral-900 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package w-3.5 h-3.5" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg> Do estoque</button><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-neutral-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-3.5 h-3.5" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Item avulso</button></div><div class="space-y-2"><div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input placeholder="Buscar no estoque..." class="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-neutral-900" type="text" value="Fita"></div><div class="grid grid-cols-5 gap-2"><select class="col-span-3 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"><option value="">Selecione o item do estoque...</option><option value="fita">TESTE Fita cetim — R$&nbsp;1,20/m (estoque: 2)</option></select><input min="0.01" step="0.01" placeholder="Qtd" class="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none" type="number" value="50"><button type="button" class="px-2 py-2 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 text-xs font-bold disabled:opacity-40">Adicionar</button></div><p class="text-[11px] font-bold text-amber-600">TESTE Fita cetim: R$&nbsp;1,20/m · estoque disponível 2 m — quantidade acima do estoque atual</p></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-neutral-100 pt-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Embalagem (celofane, caixa, palha) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Fitas e Lacos - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Etiqueta/Tag - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Montagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Valor Hora Trabalho (R$)</label><input min="0" step="0.5" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="20"></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Frete/Entrega (R$)</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Comissao Vendedor (%)</label><input min="0" max="99" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label><input min="0" max="500" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="100"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Canal de venda</label><select class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"><option value="venda-direta">Venda Direta</option><option value="instagram">Instagram</option><option value="atacado">Atacado</option><option value="shopee">Shopee</option><option value="mercado-livre">Mercado Livre</option><option value="ifood">iFood</option><option value="99food">99Food</option></select></div></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Quantidade de Cestas</label><input min="1" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="1"></div><textarea rows="2" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none" placeholder="Observacoes (opcional)"></textarea></div></div><div class="space-y-4"><div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4 sticky top-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator w-3.5 h-3.5" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg> Resultado</h2><div class="py-12 text-center text-neutral-400 text-sm italic">Adicione produtos ou tempo de montagem para calcular.</div></div></div></div><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-base font-bold text-neutral-900">Cestas Salvas</h2><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-neutral-100"><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Cesta</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Qtd</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Preco</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"></th></tr></thead><tbody><tr class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"><td class="py-3 pr-4 font-bold text-neutral-900">TESTE Café da manhã</td><td class="py-3 pr-4 text-right text-neutral-600">1</td><td class="py-3 pr-4 font-bold text-neutral-900 text-right">R$&nbsp;240,00</td><td class="py-3 text-right"><button class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></td></tr></tbody></table></div></div><div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4"><div class="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info w-4 h-4 text-amber-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div><div><p class="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p><p class="text-amber-700 text-xs leading-relaxed">O custo total soma produtos internos, embalagem (celofane, fitas, tags), mao de obra de montagem e frete. Se houver comissao de vendedor, o preco sugerido e ajustado para que a comissao nao reduza sua margem-alvo, seguindo a mesma logica de taxa de canal usada no restante do sistema.</p></div></div></div></div>"`;
 
 exports[`Cestas > resultado e preço manual 1`] = `
 <body>
@@ -3532,7 +3532,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
             </div>
@@ -3586,7 +3586,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -3741,7 +3741,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 62,50"
+                  placeholder="R$ 40,00"
                   step="0.01"
                   type="number"
                   value=""
@@ -3895,7 +3895,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
                 <div
@@ -3919,7 +3919,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                     Custo / cesta
                   </span>
                   <span>
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
               </div>
@@ -3930,13 +3930,13 @@ exports[`Cestas > resultado e preço manual 1`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 62,50
+                  R$ 40,00
                   <span
                     class="text-sm font-medium"
                   >
@@ -3947,7 +3947,7 @@ exports[`Cestas > resultado e preço manual 1`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
               </div>
             </div>
@@ -4471,7 +4471,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
             </div>
@@ -4525,7 +4525,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -4680,7 +4680,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 62,50"
+                  placeholder="R$ 40,00"
                   step="0.01"
                   type="number"
                   value="15"
@@ -4834,7 +4834,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
                 <div
@@ -4858,7 +4858,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                     Custo / cesta
                   </span>
                   <span>
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
               </div>
@@ -4869,13 +4869,13 @@ exports[`Cestas > resultado e preço manual 2`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 62,50
+                  R$ 40,00
                   <span
                     class="text-sm font-medium"
                   >
@@ -4886,7 +4886,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
               </div>
               <div
@@ -4944,7 +4944,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -R$ 10,00
+                      -R$ 5,00
                     </p>
                   </div>
                   <div>
@@ -4956,7 +4956,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -66.7
+                      -33.3
                       %
                     </p>
                   </div>
@@ -4999,7 +4999,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                     class="text-xs text-red-700 font-medium"
                   >
                     Prejuizo de 
-                    R$ 10,00
+                    R$ 5,00
                     /cesta.
                   </p>
                 </div>
@@ -7659,7 +7659,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 43,86"
+                  placeholder="R$ 30,09"
                   step="0.01"
                   type="number"
                   value=""
@@ -7813,7 +7813,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 12,50
+                    R$ 10,00
                   </span>
                 </div>
                 <div
@@ -7837,7 +7837,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                     Custo / peça
                   </span>
                   <span>
-                    R$ 17,54
+                    R$ 15,04
                   </span>
                 </div>
               </div>
@@ -7848,13 +7848,13 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 43,86
+                  R$ 30,09
                   <span
                     class="text-sm font-medium"
                   >
@@ -7865,12 +7865,12 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
                 <p
                   class="text-sm text-emerald-600 font-bold mt-0.5"
                 >
-                  R$ 175,44
+                  R$ 120,35
                    total
                 </p>
               </div>
@@ -8614,7 +8614,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 43,86"
+                  placeholder="R$ 30,09"
                   step="0.01"
                   type="number"
                   value="15"
@@ -8768,7 +8768,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 12,50
+                    R$ 10,00
                   </span>
                 </div>
                 <div
@@ -8792,7 +8792,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                     Custo / peça
                   </span>
                   <span>
-                    R$ 17,54
+                    R$ 15,04
                   </span>
                 </div>
               </div>
@@ -8803,13 +8803,13 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 43,86
+                  R$ 30,09
                   <span
                     class="text-sm font-medium"
                   >
@@ -8820,12 +8820,12 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
                 <p
                   class="text-sm text-emerald-600 font-bold mt-0.5"
                 >
-                  R$ 175,44
+                  R$ 120,35
                    total
                 </p>
               </div>
@@ -8884,7 +8884,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -R$ 2,54
+                      -R$ 0,04
                     </p>
                   </div>
                   <div>
@@ -8896,7 +8896,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -17.0
+                      -0.3
                       %
                     </p>
                   </div>
@@ -8939,10 +8939,10 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                     class="text-xs text-red-700 font-medium"
                   >
                     Prejuízo de 
-                    R$ 2,54
+                    R$ 0,04
                     /peça. Mínimo:
                      
-                    R$ 17,54
+                    R$ 15,04
                     .
                   </p>
                 </div>
@@ -12334,7 +12334,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
               <input
                 class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                 min="0"
-                placeholder="R$ 31,27"
+                placeholder="R$ 25,02"
                 step="0.01"
                 type="number"
                 value=""
@@ -12583,7 +12583,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 10,25
+                    R$ 9,00
                   </span>
                 </div>
                 <div
@@ -12604,13 +12604,13 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 31,27
+                  R$ 25,02
                   <span
                     class="text-sm font-medium"
                   >
@@ -12622,7 +12622,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                 >
                   Margem real:
                    
-                  48,0%
+                  40,0%
                 </p>
               </div>
               <div
@@ -13532,7 +13532,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
               <input
                 class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                 min="0"
-                placeholder="R$ 31,27"
+                placeholder="R$ 25,02"
                 step="0.01"
                 type="number"
                 value="20"
@@ -13802,13 +13802,13 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 31,27
+                  R$ 25,02
                   <span
                     class="text-sm font-medium"
                   >
@@ -13820,7 +13820,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                 >
                   Margem real:
                    
-                  48,0%
+                  40,0%
                 </p>
               </div>
               <div
@@ -14794,7 +14794,7 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
               <input
                 class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                 min="0"
-                placeholder="R$ 15,02"
+                placeholder="R$ 12,01"
                 step="0.01"
                 type="number"
                 value=""
@@ -15064,13 +15064,13 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                   class="text-[10px] font-bold text-emerald-600 uppercase"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 15,02
+                  R$ 12,01
                   <span
                     class="text-sm font-medium"
                   >
@@ -15082,7 +15082,7 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                 >
                   Margem real:
                    
-                  60,0%
+                  50,0%
                 </p>
               </div>
               <div
@@ -18441,7 +18441,7 @@ exports[`Papelaria > inicial com histórico 1`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
               <div
@@ -18457,7 +18457,7 @@ exports[`Papelaria > inicial com histórico 1`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -19131,7 +19131,7 @@ exports[`Papelaria > material do estoque: busca, escolha e aviso de saldo 1`] = 
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
               <div
@@ -19147,7 +19147,7 @@ exports[`Papelaria > material do estoque: busca, escolha e aviso de saldo 1`] = 
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -19428,7 +19428,7 @@ exports[`Papelaria > material do estoque: busca, escolha e aviso de saldo 1`] = 
 </body>
 `;
 
-exports[`Papelaria > material do estoque: busca, escolha e aviso de saldo 2`] = `"<div><div class="space-y-8 pb-20"><header><div class="flex items-center gap-2 text-neutral-400 mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text w-4 h-4" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span class="text-xs font-bold uppercase tracking-widest">Calculadora</span></div><h1 class="text-3xl font-black text-neutral-900">Papelaria Personalizada</h1><p class="text-neutral-500 mt-1">Convites, cadernos, agendas, kits e trabalhos graficos.</p></header><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 space-y-5"><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg> Detalhes do Trabalho</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="md:col-span-2 space-y-1"><label class="text-xs font-bold text-neutral-600">Nome do Trabalho</label><input placeholder="Ex: Convite casamento 15x21cm" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="text" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Quantidade final (kits/conjuntos)</label><input min="1" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="1"></div></div><div class="space-y-2 border-t border-neutral-100 pt-4"><p class="text-xs font-bold text-neutral-700 uppercase tracking-wider">Materiais (papel, adesivo, cartao, acetato, wire-o)</p><div class="flex gap-2 bg-neutral-100 p-1 rounded-xl w-fit"><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-neutral-900 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package w-3.5 h-3.5" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg> Do estoque</button><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-neutral-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-3.5 h-3.5" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Material avulso</button></div><div class="space-y-2"><div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input placeholder="Buscar no estoque..." class="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-neutral-900" type="text" value="Fita"></div><div class="grid grid-cols-5 gap-2"><select class="col-span-3 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"><option value="">Selecione o material do estoque...</option><option value="fita">TESTE Fita cetim — R$&nbsp;1,20/m (estoque: 2)</option></select><input min="0.01" step="0.01" placeholder="Qtd" class="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none" type="number" value="50"><button type="button" class="px-2 py-2 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 text-xs font-bold disabled:opacity-40">Adicionar</button></div><p class="text-[11px] font-bold text-amber-600">TESTE Fita cetim: R$&nbsp;1,20/m · estoque disponível 2 m — quantidade acima do estoque atual</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-neutral-100 pt-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Laminacao (BOPP, Hot Stamping) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Encadernacao (Wire-o, Espiral, Elastico) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Montagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Acabamento (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Embalagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div></div><div class="grid grid-cols-2 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Valor Hora Trabalho (R$)</label><input min="0" step="0.5" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="25"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label><input min="0" max="500" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="150"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Canal de venda</label><select class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"><option value="venda-direta">Venda Direta</option><option value="instagram">Instagram</option><option value="atacado">Atacado</option><option value="shopee">Shopee</option><option value="mercado-livre">Mercado Livre</option><option value="ifood">iFood</option><option value="99food">99Food</option></select></div></div><textarea rows="2" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none" placeholder="Observacoes (opcional)"></textarea></div></div><div class="space-y-4"><div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4 sticky top-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator w-3.5 h-3.5" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg> Resultado</h2><div class="py-12 text-center text-neutral-400 text-sm italic">Adicione materiais ou tempos para calcular.</div></div></div></div><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-base font-bold text-neutral-900">Trabalhos Salvos</h2><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-neutral-100"><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Trabalho</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Qtd</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Preco</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"></th></tr></thead><tbody><tr class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"><td class="py-3 pr-4 font-bold text-neutral-900">TESTE Convite</td><td class="py-3 pr-4 text-right text-neutral-600">5</td><td class="py-3 pr-4 font-bold text-neutral-900 text-right">R$&nbsp;30,00</td><td class="py-3 text-right"><button class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></td></tr></tbody></table></div></div><div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4"><div class="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info w-4 h-4 text-amber-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div><div><p class="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p><p class="text-amber-700 text-xs leading-relaxed">O custo total soma materiais (papel, adesivo, cartao etc.), acabamentos (laminacao, encadernacao) e mao de obra (montagem + acabamento + embalagem). O custo e dividido pela quantidade final de kits/conjuntos para chegar ao valor unitario.</p></div></div></div></div>"`;
+exports[`Papelaria > material do estoque: busca, escolha e aviso de saldo 2`] = `"<div><div class="space-y-8 pb-20"><header><div class="flex items-center gap-2 text-neutral-400 mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text w-4 h-4" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span class="text-xs font-bold uppercase tracking-widest">Calculadora</span></div><h1 class="text-3xl font-black text-neutral-900">Papelaria Personalizada</h1><p class="text-neutral-500 mt-1">Convites, cadernos, agendas, kits e trabalhos graficos.</p></header><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 space-y-5"><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-3.5 h-3.5" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg> Detalhes do Trabalho</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="md:col-span-2 space-y-1"><label class="text-xs font-bold text-neutral-600">Nome do Trabalho</label><input placeholder="Ex: Convite casamento 15x21cm" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="text" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Quantidade final (kits/conjuntos)</label><input min="1" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="1"></div></div><div class="space-y-2 border-t border-neutral-100 pt-4"><p class="text-xs font-bold text-neutral-700 uppercase tracking-wider">Materiais (papel, adesivo, cartao, acetato, wire-o)</p><div class="flex gap-2 bg-neutral-100 p-1 rounded-xl w-fit"><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-neutral-900 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package w-3.5 h-3.5" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg> Do estoque</button><button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-neutral-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-3.5 h-3.5" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Material avulso</button></div><div class="space-y-2"><div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input placeholder="Buscar no estoque..." class="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-neutral-900" type="text" value="Fita"></div><div class="grid grid-cols-5 gap-2"><select class="col-span-3 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"><option value="">Selecione o material do estoque...</option><option value="fita">TESTE Fita cetim — R$&nbsp;1,20/m (estoque: 2)</option></select><input min="0.01" step="0.01" placeholder="Qtd" class="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none" type="number" value="50"><button type="button" class="px-2 py-2 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 text-xs font-bold disabled:opacity-40">Adicionar</button></div><p class="text-[11px] font-bold text-amber-600">TESTE Fita cetim: R$&nbsp;1,20/m · estoque disponível 2 m — quantidade acima do estoque atual</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-neutral-100 pt-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Laminacao (BOPP, Hot Stamping) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Encadernacao (Wire-o, Espiral, Elastico) - R$</label><input min="0" step="0.01" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" placeholder="0,00" type="number" value=""></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Montagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Acabamento (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Tempo de Embalagem (min)</label><input min="0" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value=""></div></div><div class="grid grid-cols-2 gap-4"><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Valor Hora Trabalho (R$)</label><input min="0" step="0.5" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="20"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label><input min="0" max="500" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm" type="number" value="100"></div><div class="space-y-1"><label class="text-xs font-bold text-neutral-600">Canal de venda</label><select class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"><option value="venda-direta">Venda Direta</option><option value="instagram">Instagram</option><option value="atacado">Atacado</option><option value="shopee">Shopee</option><option value="mercado-livre">Mercado Livre</option><option value="ifood">iFood</option><option value="99food">99Food</option></select></div></div><textarea rows="2" class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none" placeholder="Observacoes (opcional)"></textarea></div></div><div class="space-y-4"><div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4 sticky top-4"><h2 class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator w-3.5 h-3.5" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg> Resultado</h2><div class="py-12 text-center text-neutral-400 text-sm italic">Adicione materiais ou tempos para calcular.</div></div></div></div><div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"><h2 class="text-base font-bold text-neutral-900">Trabalhos Salvos</h2><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-neutral-100"><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Trabalho</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Qtd</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider">Preco</th><th class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"></th></tr></thead><tbody><tr class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"><td class="py-3 pr-4 font-bold text-neutral-900">TESTE Convite</td><td class="py-3 pr-4 text-right text-neutral-600">5</td><td class="py-3 pr-4 font-bold text-neutral-900 text-right">R$&nbsp;30,00</td><td class="py-3 text-right"><button class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></td></tr></tbody></table></div></div><div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4"><div class="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info w-4 h-4 text-amber-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div><div><p class="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p><p class="text-amber-700 text-xs leading-relaxed">O custo total soma materiais (papel, adesivo, cartao etc.), acabamentos (laminacao, encadernacao) e mao de obra (montagem + acabamento + embalagem). O custo e dividido pela quantidade final de kits/conjuntos para chegar ao valor unitario.</p></div></div></div></div>"`;
 
 exports[`Papelaria > resultado e preço manual 1`] = `
 <body>
@@ -19833,7 +19833,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
               <div
@@ -19849,7 +19849,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -19990,7 +19990,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 62,50"
+                  placeholder="R$ 40,00"
                   step="0.01"
                   type="number"
                   value=""
@@ -20158,7 +20158,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
                 <div
@@ -20168,7 +20168,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                     Custo / unidade
                   </span>
                   <span>
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
               </div>
@@ -20179,13 +20179,13 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 62,50
+                  R$ 40,00
                   <span
                     class="text-sm font-medium"
                   >
@@ -20196,7 +20196,7 @@ exports[`Papelaria > resultado e preço manual 1`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
               </div>
             </div>
@@ -20755,7 +20755,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                   min="0"
                   step="0.5"
                   type="number"
-                  value="25"
+                  value="20"
                 />
               </div>
               <div
@@ -20771,7 +20771,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                   max="500"
                   min="0"
                   type="number"
-                  value="150"
+                  value="100"
                 />
               </div>
               <div
@@ -20912,7 +20912,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                   min="0"
-                  placeholder="R$ 62,50"
+                  placeholder="R$ 40,00"
                   step="0.01"
                   type="number"
                   value="15"
@@ -21080,7 +21080,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
                 <div
@@ -21090,7 +21090,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                     Custo / unidade
                   </span>
                   <span>
-                    R$ 25,00
+                    R$ 20,00
                   </span>
                 </div>
               </div>
@@ -21101,13 +21101,13 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                   class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
                 >
                   Sugerido (markup 
-                  150
+                  100
                   %)
                 </p>
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 62,50
+                  R$ 40,00
                   <span
                     class="text-sm font-medium"
                   >
@@ -21118,7 +21118,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                   class="text-xs text-emerald-700 font-bold"
                 >
                   Margem real: 
-                  60,0%
+                  50,0%
                 </p>
               </div>
               <div
@@ -21176,7 +21176,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -R$ 10,00
+                      -R$ 5,00
                     </p>
                   </div>
                   <div>
@@ -21188,7 +21188,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-red-600"
                     >
-                      -66.7
+                      -33.3
                       %
                     </p>
                   </div>
@@ -21231,10 +21231,10 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                     class="text-xs text-red-700 font-medium"
                   >
                     Prejuizo de 
-                    R$ 10,00
+                    R$ 5,00
                     /un. Minimo:
                      
-                    R$ 25,00
+                    R$ 20,00
                     .
                   </p>
                 </div>

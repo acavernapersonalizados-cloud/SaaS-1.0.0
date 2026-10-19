@@ -15,7 +15,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
-import { clampMarkup, realMargin } from '../lib/pricingEngine';
+import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
   CUSTOM_PRINT_CHANNEL,
@@ -24,7 +24,7 @@ import {
   printFeesFromChannel,
 } from '../lib/printPricing';
 import { channelsOf, findChannel } from '../lib/channels';
-import { useCostBase } from '../hooks/useCostBase';
+import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -111,6 +111,11 @@ export function PrintCalculator() {
   const [extrasCost, setExtrasCost] = useState(0);
   // Canais da tabela da loja (Base de Custos) + "Personalizado".
   const { costs } = useCostBase();
+  // T2: abre com o valor da hora e o markup da Base de Custos da loja (campos continuam editáveis).
+  useCostBaseDefaults(costs, c => {
+    if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
+    setMarkupPct(Math.round(markupOf(c) * 100) / 100);
+  });
   const channels = channelsOf(costs);
   const [channelId, setChannelId] = useState('venda-direta');
   const [fees, setFees] = useState(NO_PRINT_FEES);

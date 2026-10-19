@@ -4,9 +4,9 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
-import { useCostBase } from '../hooks/useCostBase';
+import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
-import { clampMarkup, realMargin } from '../lib/pricingEngine';
+import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -84,6 +84,11 @@ export function LaserCalculator() {
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.laser.markupPct);
   // Canal de venda (tabela da Base de Custos); começa em Venda Direta, sem taxa.
   const { costs } = useCostBase();
+  // T2: abre com o valor da hora e o markup da Base de Custos da loja (campos continuam editáveis).
+  useCostBaseDefaults(costs, c => {
+    if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
+    setMarkupPct(Math.round(markupOf(c) * 100) / 100);
+  });
   const channels = channelsOf(costs);
   const [channelId, setChannelId] = useState('venda-direta');
   const selectedChannel = findChannel(channels, channelId);
