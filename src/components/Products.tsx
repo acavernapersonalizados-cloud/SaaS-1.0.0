@@ -706,9 +706,15 @@ export function Products() {
                       <span className="text-[10px] text-neutral-400 font-bold uppercase">
                         Sugerido ({costs?.profitGoal ?? '?'}%)
                       </span>
-                      <span className="text-xs font-bold text-emerald-600">
-                        {formatCurrency(pricing.suggestedPrice)}
-                      </span>
+                      {pricing.invalidProfitGoal ? (
+                        <span className="text-[10px] font-bold text-red-600 text-right">
+                          Meta inválida — ajuste na Base de Custos
+                        </span>
+                      ) : (
+                        <span className="text-xs font-bold text-emerald-600">
+                          {formatCurrency(pricing.suggestedPrice)}
+                        </span>
+                      )}
                     </div>
                     {pricing.manualPrice != null && pricing.manualPrice > 0 && (
                       <div
@@ -1099,9 +1105,15 @@ export function Products() {
                         <span className="text-xs text-emerald-600 font-bold">
                           Sugerido ({costs.profitGoal}% margem)
                         </span>
-                        <span className="text-base font-black text-emerald-700">
-                          {formatCurrency(modalPricing.suggestedPrice)}
-                        </span>
+                        {modalPricing.invalidProfitGoal ? (
+                          <span className="text-xs font-bold text-red-600 text-right">
+                            Meta de Lucro inválida ({costs.profitGoal}%) — ajuste na Base de Custos
+                          </span>
+                        ) : (
+                          <span className="text-base font-black text-emerald-700">
+                            {formatCurrency(modalPricing.suggestedPrice)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   )}

@@ -111,6 +111,18 @@ describe('Produto (seção 8)', () => {
     const p = calcProductPricing(chaveiro, materials, { ...costs, profitGoal: 0 });
     expect(p.suggestedPrice).toBeCloseTo(7.5, 10);
   });
+  it('meta válida: invalidProfitGoal = false', () => {
+    expect(calcProductPricing(chaveiro, materials, costs).invalidProfitGoal).toBe(false);
+  });
+  it('meta impossível (100%, como a T&N): sugerido 0 e invalidProfitGoal = true', () => {
+    const p = calcProductPricing(chaveiro, materials, { ...costs, profitGoal: 100 });
+    expect(p.suggestedPrice).toBe(0);
+    expect(p.invalidProfitGoal).toBe(true);
+  });
+  it('produto sem custo não é "meta inválida"', () => {
+    const semCusto = { ...chaveiro, materials: [], productionTime: 0, packagingCost: 0 };
+    expect(calcProductPricing(semCusto, materials, { ...costs, profitGoal: 100 }).invalidProfitGoal).toBe(false);
+  });
   it('faixas de status: 55 Excelente, 35 Bom, 15 Margem Baixa, 0 Arriscado, <0 Prejuízo', () => {
     expect(getProfitStatus(55).label).toBe('Excelente');
     expect(getProfitStatus(54.9).label).toBe('Bom');

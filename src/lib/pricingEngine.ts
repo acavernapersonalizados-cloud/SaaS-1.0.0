@@ -46,6 +46,8 @@ export interface ProductPricingResult extends ProductCostResult {
   profitStatus: ProfitStatusInfo;
   minimumPrice: number; // break-even (totalCost)
   hasCosts: boolean; // true if costBase was available
+  /** A meta de lucro da Base de Custos não permite preço (ex.: 100% de margem). */
+  invalidProfitGoal: boolean;
 }
 
 export interface QuoteItemCalcResult {
@@ -220,7 +222,9 @@ export function calcProductPricing(
 
   // Meta de lucro = margem sobre o preço de venda (não acréscimo sobre o custo).
   const profitGoalPct = Number(costs?.profitGoal) || 0;
-  const suggestedPrice = totalCost > 0 ? (priceForMargin(totalCost, profitGoalPct) ?? 0) : 0;
+  const goalPrice = totalCost > 0 ? priceForMargin(totalCost, profitGoalPct) : 0;
+  const invalidProfitGoal = goalPrice === null;
+  const suggestedPrice = goalPrice ?? 0;
 
   const manualPrice: number | null =
     product.manualPrice != null && product.manualPrice > 0 ? Number(product.manualPrice) : null;
@@ -246,6 +250,7 @@ export function calcProductPricing(
     },
     minimumPrice: totalCost,
     hasCosts: !!costs,
+    invalidProfitGoal,
   };
 }
 

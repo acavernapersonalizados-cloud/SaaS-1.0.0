@@ -87,7 +87,9 @@ export function CostBaseSettings() {
   return (
     <div className="max-w-3xl mx-auto space-y-10">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Base de Custos</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
+          Base de Custos — {activeStore.fantasyName || activeStore.name}
+        </h1>
         <p className="text-neutral-500 mt-1">Configure os parâmetros fundamentais para sua precificação.</p>
       </header>
 
@@ -157,6 +159,12 @@ export function CostBaseSettings() {
               Quanto do preço de venda vira lucro, já descontadas as taxas do canal (0 a {MAX_MARGIN_PERCENT}%). Ex.:
               50% com custo de R$ 10 dá preço de R$ 20.
             </p>
+            {Number(costs.profitGoal) > MAX_MARGIN_PERCENT && (
+              <p className="text-xs font-bold text-red-600">
+                A meta gravada ({costs.profitGoal}%) está acima do limite e deixa os produtos sem preço sugerido.
+                Escolha um valor de 0 a {MAX_MARGIN_PERCENT}% e salve.
+              </p>
+            )}
           </div>
 
           <div className="bg-neutral-900 p-6 rounded-2xl flex flex-col justify-center gap-2 text-white shadow-lg">
