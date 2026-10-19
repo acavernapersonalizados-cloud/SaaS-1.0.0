@@ -25,6 +25,8 @@ export interface CostBase {
   /** Meta de lucro como markup sobre o custo (0 a 500%). Gravado ao salvar a Base de Custos. */
   markupPct?: number;
   hourlyRate: number;
+  /** Tarifa de energia (R$/kWh) para Laser e 3D (Etapa 7.2). Sem ela, vale a padrão (0,79). */
+  electricityRate?: number;
   /** Tabela de canais de venda da loja (Etapa 7). Sem ela, vale a padrão de lib/channels.ts. */
   salesChannels?: SalesChannel[];
 }

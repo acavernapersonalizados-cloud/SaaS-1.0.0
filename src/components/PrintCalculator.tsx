@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
-import { CALCULATOR_DEFAULTS } from '../lib/defaults';
+import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
@@ -115,6 +115,8 @@ export function PrintCalculator() {
   useCostBaseDefaults(costs, c => {
     if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
     setMarkupPct(Math.round(markupOf(c) * 100) / 100);
+    // Etapa 7.2: tarifa de energia da loja.
+    setElectricityRate(electricityRateOf(c));
   });
   const channels = channelsOf(costs);
   const [channelId, setChannelId] = useState('venda-direta');

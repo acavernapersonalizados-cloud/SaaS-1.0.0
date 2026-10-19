@@ -5,6 +5,7 @@ import { CostBase, SalesChannel } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, priceForMarkup, realMargin } from '../lib/pricingEngine';
 import { channelFees, channelsOf } from '../lib/channels';
+import { electricityRateOf } from '../lib/defaults';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -25,6 +26,8 @@ export function CostBaseSettings() {
   const [saving, setSaving] = useState(false);
   // Meta de lucro como markup sobre o custo; enquanto não é salvo, vem da conversão da meta antiga.
   const [markup, setMarkup] = useState(0);
+  // Tarifa de energia da loja (Etapa 7.2); enquanto não é salva, mostra a padrão (0,79).
+  const [electricityRate, setElectricityRate] = useState(electricityRateOf(null));
   const round2 = (v: number) => Math.round(v * 100) / 100;
   // Tabela de canais da loja; enquanto não é salva, mostra a padrão.
   const [channels, setChannels] = useState<SalesChannel[]>(channelsOf(null));
@@ -44,9 +47,11 @@ export function CostBaseSettings() {
         const data = docSnap.data() as CostBase;
         setCosts(data);
         setMarkup(round2(markupOf(data)));
+        setElectricityRate(electricityRateOf(data));
         setChannels(channelsOf(data));
       } else {
         setMarkup(0);
+        setElectricityRate(electricityRateOf(null));
         setChannels(channelsOf(null));
         setCosts({
           fixedCosts: 0,
@@ -78,7 +83,15 @@ export function CostBaseSettings() {
       const salesChannels = channels
         .filter(c => c.name.trim())
         .map(c => ({ ...c, name: c.name.trim(), note: c.note?.trim() || '', checkedAt: c.checkedAt || '' }));
-      const updatedCosts = { ...costs, hourlyRate, markupPct, profitGoal, salesChannels, storeId: activeStore.id };
+      const updatedCosts = {
+        ...costs,
+        hourlyRate,
+        markupPct,
+        profitGoal,
+        electricityRate: electricityRateOf({ electricityRate }),
+        salesChannels,
+        storeId: activeStore.id,
+      };
       await setDoc(doc(db, 'costBases', activeStore.id), updatedCosts);
       setCosts(updatedCosts);
       addToast('Base de custos salva com sucesso!', 'success');
@@ -187,6 +200,35 @@ export function CostBaseSettings() {
               <p className="text-xs font-bold text-amber-700">
                 Convertido da meta antiga ({formatPercent(costs.profitGoal)}{' '}
                 {costs.profitGoal >= 95 ? 'sobre o custo' : 'sobre o preço'}) sem mudar nenhum preço. Salve para gravar.
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-neutral-700 flex items-center gap-2">
+              Tarifa de energia (R$/kWh)
+              <Info className="w-4 h-4 text-neutral-400" />
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">R$</span>
+              <input
+                type="number"
+                min={0}
+                step="0.00001"
+                value={electricityRate}
+                onChange={e => setElectricityRate(Number(e.target.value))}
+                className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
+                placeholder="0,79"
+                required
+              />
+            </div>
+            <p className="text-[10px] text-neutral-400">
+              Da conta de luz: TU + TE com tributos (ex.: 0,39492 + 0,39401 = 0,79). Usada pelo Corte a Laser e pela
+              Impressão 3D.
+            </p>
+            {costs.electricityRate == null && (
+              <p className="text-xs font-bold text-amber-700">
+                Valor padrão: confira e salve para gravar a tarifa desta loja.
               </p>
             )}
           </div>
