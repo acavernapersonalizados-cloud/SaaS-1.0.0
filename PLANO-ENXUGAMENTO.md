@@ -19,11 +19,11 @@
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
-| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **ainda não publicada**: proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):** Etapa 6 concluída e **site publicado** com tudo das Etapas 3 a 5 (tag `etapa-6-ok`). **Próximo passo: Etapa 7 — Unificar parâmetros de preço, ainda não começada.** Ela muda preços: antes de qualquer código, a comparação antes/depois com dados reais (só leitura) para você aprovar. Nada ficou pela metade.
+**Onde paramos (19/10/2026):** Etapa 7 concluída no código (tag `etapa-7-ok`), **ainda não publicada**: a publicação espera o seu pedido, depois dos seus testes no emulador. Antes de testar, o `CHECKLIST-TESTES.md` precisa ser atualizado com os valores de markup e da tabela de canais (seções 5, 8, 10 e 12–15). T3 (tarifa de energia única) ficou adiado. **Próximo passo: o que você decidir** (atualizar o checklist e testar a Etapa 7, ou seguir para a Etapa 8). Nada ficou pela metade.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -342,6 +342,22 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 | 4 | T3 — uma tarifa de energia só, na Base de Custos, para Laser e 3D | O custo de energia (hoje 0,78938 no Laser e 0,85 na 3D) | médio |
 
 Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
+
+**✅ Feita (19/10/2026), tag `etapa-7-ok` (não publicada).** Comparação antes/depois aprovada com o backup do banco
+real de 19/10 (só leitura); refeita no fim com o código final: **65 de 65 produtos com preço igual ao do catálogo
+gravado** (T&N volta a ter preço; A Caverna não muda), nenhum sem preço.
+
+| Item | Resultado |
+|---|---|
+| 1. Proteção do catálogo | A tela Produtos nunca grava R$ 0 por cima de um preço existente (`lib/catalog.ts`) |
+| 2. Avisos | "Base de Custos — <loja>" no título; "Meta de Lucro inválida — ajuste na Base de Custos" em vez de R$ 0,00 |
+| 3. Elo7 | Removido (nenhum registro real usava) |
+| 4. Markup sobre o custo (0–500%) | Base de Custos, Produtos, orçamento e calculadoras. Conversão na leitura: margem ÷ (1 − margem); 95% ou mais já era markup (T&N 100% → 100%; A Caverna 60% → 150%). Ao salvar, grava `markupPct` (e a margem equivalente em `profitGoal`). A margem real depois das taxas aparece ao lado. Nos canais com taxa, o preço cai ~30% em relação à regra de margem (mesmo lucro em R$ da venda direta) |
+| 5. Tabela única de canais por loja | Em `costBases/{loja}.salesChannels`, editável na Base de Custos (comissão, taxa fixa, pagamento, observação, conferido em). Valores: Venda Direta 0%, Instagram 3,5%, Atacado 5%, Shopee 20% + R$ 4 (opção A: markup também sobre a taxa fixa), Mercado Livre 18%, iFood 26,5%, 99Food 13%. Usada pelo orçamento, pela 3D e (campo novo) por Laser, Papelaria e Cestas |
+| 6. T2 | As calculadoras abrem com o valor da hora e o markup da Base de Custos (editáveis) |
+| T3 | **Adiado** (sem a tarifa de energia real) |
+
+Testes: 121 → 149. Regras do banco não mudaram.
 
 #### Remover o Elo7 (primeiro item da Etapa 7, decidido em 19/10/2026)
 
