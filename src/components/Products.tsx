@@ -13,8 +13,8 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
-import { formatCurrency } from '../lib/utils';
-import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs } from '../lib/pricingEngine';
+import { formatCurrency, formatPercent } from '../lib/utils';
+import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs, markupOf } from '../lib/pricingEngine';
 import { nextCatalogPrice } from '../lib/catalog';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -704,7 +704,7 @@ export function Products() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-neutral-400 font-bold uppercase">
-                        Sugerido ({costs?.profitGoal ?? '?'}%)
+                        Sugerido (markup {costs ? formatPercent(markupOf(costs)) : '?'})
                       </span>
                       {pricing.invalidProfitGoal ? (
                         <span className="text-[10px] font-bold text-red-600 text-right">
@@ -1103,11 +1103,12 @@ export function Products() {
                       </div>
                       <div className="col-span-3 flex items-center justify-between">
                         <span className="text-xs text-emerald-600 font-bold">
-                          Sugerido ({costs.profitGoal}% margem)
+                          Sugerido (markup {formatPercent(markupOf(costs))} · margem{' '}
+                          {formatPercent(modalPricing.margin)})
                         </span>
                         {modalPricing.invalidProfitGoal ? (
                           <span className="text-xs font-bold text-red-600 text-right">
-                            Meta de Lucro inválida ({costs.profitGoal}%) — ajuste na Base de Custos
+                            Meta de Lucro inválida ({formatPercent(markupOf(costs))}) — ajuste na Base de Custos
                           </span>
                         ) : (
                           <span className="text-base font-black text-emerald-700">

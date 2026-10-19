@@ -20,7 +20,10 @@ export interface CostBase {
   storeId: string;
   fixedCosts: number;
   productiveHours: number;
+  /** Legado: meta como margem sobre o preço (17/10 a Etapa 7). Lida só quando não há markupPct. */
   profitGoal: number;
+  /** Meta de lucro como markup sobre o custo (0 a 500%). Gravado ao salvar a Base de Custos. */
+  markupPct?: number;
   hourlyRate: number;
 }
 

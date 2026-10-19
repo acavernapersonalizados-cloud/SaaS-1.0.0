@@ -7,11 +7,16 @@ import {
   calcQuoteItem,
   calcReversePrice,
   clampMargin,
+  clampMarkup,
   energyCost,
   getProfitStatus,
   laborCostFromHours,
   laborCostFromMinutes,
+  marginToMarkup,
+  markupOf,
   priceForMargin,
+  priceForMarkup,
+  realMargin,
   wearCost,
 } from './pricingEngine';
 import { isLowStock, packageSize } from './utils';
@@ -38,6 +43,53 @@ const chaveiro = {
   finishingOptions: [{ id: 'verniz', name: 'Verniz', additionalValue: 2 }],
   accessories: [{ id: 'caixinha', name: 'Caixinha', additionalValue: 3 }],
 } as unknown as Product;
+
+describe('Markup sobre o custo (Etapa 7)', () => {
+  it('preço = (custo + taxas fixas) × (1 + markup) ÷ (1 − taxas %)', () => {
+    expect(priceForMarkup(10, 150)).toBeCloseTo(25, 10);
+    expect(priceForMarkup(21.39, 150, 18)).toBeCloseTo(65.2134, 4); // Caderno A5, Mercado Livre
+    expect(priceForMarkup(21.39, 150, 20, 4)).toBeCloseTo(79.34375, 6); // Caderno A5, Shopee (opção A)
+  });
+  it('markup 0 → preço = custo; taxas ≥ 95% não têm preço possível', () => {
+    expect(priceForMarkup(10, 0)).toBe(10);
+    expect(priceForMarkup(10, 100, 95)).toBeNull();
+    expect(priceForMarkup(10, -1)).toBeNull();
+  });
+  it('lucro em R$ = (custo + taxa fixa) × markup: igual em todo canal sem taxa fixa', () => {
+    for (const [fee, fixed] of [
+      [0, 0],
+      [18, 0],
+      [26.5, 0],
+      [20, 4],
+    ] as const) {
+      const price = priceForMarkup(21.39, 150, fee, fixed)!;
+      const lucro = price * (1 - fee / 100) - fixed - 21.39;
+      expect(lucro).toBeCloseTo((21.39 + fixed) * 1.5, 6);
+    }
+  });
+  it('margem real depois das taxas', () => {
+    expect(realMargin(25, 10)).toBeCloseTo(60, 10);
+    expect(realMargin(priceForMarkup(21.39, 150, 18)!, 21.39, 18)).toBeCloseTo(49.2, 1);
+    expect(realMargin(0, 10)).toBe(0);
+  });
+  it('conversão da meta gravada: margem ÷ (1 − margem); a partir de 95% já era markup', () => {
+    expect(marginToMarkup(60)).toBeCloseTo(150, 10);
+    expect(marginToMarkup(50)).toBeCloseTo(100, 10);
+    expect(marginToMarkup(0)).toBe(0);
+    expect(marginToMarkup(100)).toBe(100); // T&N: 100% gravado antes de 17/10 = dobrar o custo
+  });
+  it('markupOf: usa o markup gravado; sem ele, converte a meta antiga', () => {
+    expect(markupOf({ ...costs, markupPct: 80 })).toBe(80);
+    expect(markupOf({ ...costs, profitGoal: 60 })).toBeCloseTo(150, 10);
+    expect(markupOf({ ...costs, profitGoal: 100 })).toBe(100);
+    expect(markupOf(null)).toBe(0);
+  });
+  it('clampMarkup limita os campos entre 0 e 500', () => {
+    expect(clampMarkup(600)).toBe(500);
+    expect(clampMarkup(-5)).toBe(0);
+    expect(clampMarkup(150)).toBe(150);
+  });
+});
 
 describe('priceForMargin (margem sobre o preço)', () => {
   it('preço = custo ÷ (1 − margem − taxa)', () => {
@@ -114,14 +166,25 @@ describe('Produto (seção 8)', () => {
   it('meta válida: invalidProfitGoal = false', () => {
     expect(calcProductPricing(chaveiro, materials, costs).invalidProfitGoal).toBe(false);
   });
-  it('meta impossível (100%, como a T&N): sugerido 0 e invalidProfitGoal = true', () => {
+  it('T&N: meta 100% gravada antes de 17/10 vira markup 100% → preço = 2 × custo', () => {
     const p = calcProductPricing(chaveiro, materials, { ...costs, profitGoal: 100 });
+    expect(p.suggestedPrice).toBeCloseTo(15, 10);
+    expect(p.invalidProfitGoal).toBe(false);
+  });
+  it('A Caverna: meta 60% vira markup 150% → mesmo preço de hoje (custo ÷ 0,4)', () => {
+    expect(calcProductPricing(chaveiro, materials, { ...costs, profitGoal: 60 }).suggestedPrice).toBeCloseTo(18.75, 10);
+  });
+  it('markup gravado tem prioridade sobre a meta antiga', () => {
+    expect(calcProductPricing(chaveiro, materials, { ...costs, markupPct: 200 }).suggestedPrice).toBeCloseTo(22.5, 10);
+  });
+  it('markup inválido (negativo): sugerido 0 e invalidProfitGoal = true', () => {
+    const p = calcProductPricing(chaveiro, materials, { ...costs, markupPct: -10 });
     expect(p.suggestedPrice).toBe(0);
     expect(p.invalidProfitGoal).toBe(true);
   });
   it('produto sem custo não é "meta inválida"', () => {
     const semCusto = { ...chaveiro, materials: [], productionTime: 0, packagingCost: 0 };
-    expect(calcProductPricing(semCusto, materials, { ...costs, profitGoal: 100 }).invalidProfitGoal).toBe(false);
+    expect(calcProductPricing(semCusto, materials, { ...costs, markupPct: -10 }).invalidProfitGoal).toBe(false);
   });
   it('faixas de status: 55 Excelente, 35 Bom, 15 Margem Baixa, 0 Arriscado, <0 Prejuízo', () => {
     expect(getProfitStatus(55).label).toBe('Excelente');

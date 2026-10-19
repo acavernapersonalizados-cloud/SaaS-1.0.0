@@ -37,7 +37,7 @@ export interface ProductCostResult {
 }
 
 export interface ProductPricingResult extends ProductCostResult {
-  suggestedPrice: number; // cost / (1 − profitGoal): profitGoal is the margin on the selling price
+  suggestedPrice: number; // custo × (1 + markup da Base de Custos)
   manualPrice: number | null; // null if not set
   effectivePrice: number; // manualPrice ?? suggestedPrice
   profitPerUnit: number; // effectivePrice - totalCost
@@ -99,6 +99,50 @@ export const MAX_MARGIN_PERCENT = 90;
 
 /** Mantém um campo de margem entre 0 e MAX_MARGIN_PERCENT. */
 export const clampMargin = (value: number) => Math.min(MAX_MARGIN_PERCENT, Math.max(0, Number(value) || 0));
+
+// ─── Markup sobre o custo (Etapa 7) ───────────────────────────────────────────
+
+/** Limite dos campos de markup. */
+export const MAX_MARKUP_PERCENT = 500;
+
+/** Mantém um campo de markup entre 0 e MAX_MARKUP_PERCENT. */
+export const clampMarkup = (value: number) => Math.min(MAX_MARKUP_PERCENT, Math.max(0, Number(value) || 0));
+
+/**
+ * Converte a meta antiga (margem sobre o preço) no markup que dá o mesmo preço: m ÷ (1 − m).
+ * Metas de 95% ou mais não eram possíveis como margem: foram gravadas antes de 17/10, quando a
+ * meta já era markup (ex.: 100% da T&N = dobrar o custo), e continuam valendo como markup.
+ */
+export function marginToMarkup(marginPct: number): number {
+  const m = Number(marginPct) || 0;
+  return m >= MAX_MARGIN_PLUS_FEES_PERCENT ? m : (m / (100 - m)) * 100;
+}
+
+/** Markup da loja: o gravado (markupPct) ou, sem ele, a conversão da meta antiga. */
+export function markupOf(costs: Pick<CostBase, 'profitGoal' | 'markupPct'> | null | undefined): number {
+  if (!costs) return 0;
+  if (costs.markupPct != null && Number.isFinite(Number(costs.markupPct))) return Number(costs.markupPct);
+  return marginToMarkup(costs.profitGoal);
+}
+
+/**
+ * Preço com markup sobre o custo, já cobrindo as taxas do canal:
+ *   preço = (custo + taxas fixas) × (1 + markup) ÷ (1 − taxas %)
+ * O lucro em R$ fica (custo + taxas fixas) × markup em qualquer canal.
+ * Retorna null para markup negativo ou taxas % ≥ MAX_CHANNEL_FEE_PERCENT.
+ */
+export function priceForMarkup(cost: number, markupPct: number, feePct = 0, fixedFees = 0): number | null {
+  const k = Number(markupPct);
+  const fee = Number(feePct) || 0;
+  if (!Number.isFinite(k) || k < 0 || fee >= MAX_CHANNEL_FEE_PERCENT) return null;
+  return (((Number(cost) || 0) + (Number(fixedFees) || 0)) * (1 + k / 100)) / (1 - fee / 100);
+}
+
+/** Margem real (%) que sobra do preço depois do custo e das taxas do canal. */
+export function realMargin(price: number, cost: number, feePct = 0, fixedFees = 0): number {
+  if (!(price > 0)) return 0;
+  return ((price * (1 - (Number(feePct) || 0) / 100) - (Number(fixedFees) || 0) - cost) / price) * 100;
+}
 
 // ─── Custos de produção (usados pelas calculadoras e pela Impressão 3D) ───────
 
@@ -220,9 +264,8 @@ export function calcProductPricing(
   const costResult = calcProductCost(product, materials, costs);
   const { totalCost } = costResult;
 
-  // Meta de lucro = margem sobre o preço de venda (não acréscimo sobre o custo).
-  const profitGoalPct = Number(costs?.profitGoal) || 0;
-  const goalPrice = totalCost > 0 ? priceForMargin(totalCost, profitGoalPct) : 0;
+  // Meta de lucro = markup sobre o custo (Etapa 7). Sem markup gravado, converte a meta antiga.
+  const goalPrice = totalCost > 0 ? priceForMarkup(totalCost, markupOf(costs)) : 0;
   const invalidProfitGoal = goalPrice === null;
   const suggestedPrice = goalPrice ?? 0;
 

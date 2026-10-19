@@ -21253,9 +21253,9 @@ exports[`Produtos > busca 1`] = `
               <span
                 class="text-[10px] text-neutral-400 font-bold uppercase"
               >
-                Sugerido (
-                50
-                %)
+                Sugerido (markup 
+                100,0%
+                )
               </span>
               <span
                 class="text-xs font-bold text-emerald-600"
@@ -21811,9 +21811,9 @@ exports[`Produtos > lista 1`] = `
               <span
                 class="text-[10px] text-neutral-400 font-bold uppercase"
               >
-                Sugerido (
-                50
-                %)
+                Sugerido (markup 
+                100,0%
+                )
               </span>
               <span
                 class="text-xs font-bold text-emerald-600"

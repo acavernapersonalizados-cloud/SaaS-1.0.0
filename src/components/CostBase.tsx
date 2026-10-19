@@ -3,7 +3,7 @@ import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CostBase } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
-import { MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
+import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, realMargin } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -22,6 +22,9 @@ export function CostBaseSettings() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // Meta de lucro como markup sobre o custo; enquanto não é salvo, vem da conversão da meta antiga.
+  const [markup, setMarkup] = useState(0);
+  const round2 = (v: number) => Math.round(v * 100) / 100;
 
   useEffect(() => {
     if (!activeStore) {
@@ -33,8 +36,11 @@ export function CostBaseSettings() {
       const docRef = doc(db, 'costBases', activeStore.id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setCosts(docSnap.data() as CostBase);
+        const data = docSnap.data() as CostBase;
+        setCosts(data);
+        setMarkup(round2(markupOf(data)));
       } else {
+        setMarkup(0);
         setCosts({
           fixedCosts: 0,
           productiveHours: 0,
@@ -59,7 +65,10 @@ export function CostBaseSettings() {
     setSaving(true);
     try {
       const hourlyRate = calculateHourlyRate(costs.fixedCosts, costs.productiveHours);
-      const updatedCosts = { ...costs, hourlyRate, storeId: activeStore.id };
+      const markupPct = clampMarkup(markup);
+      // profitGoal (legado) fica com a margem equivalente, para o dado antigo não contradizer o novo.
+      const profitGoal = (markupPct / (100 + markupPct)) * 100;
+      const updatedCosts = { ...costs, hourlyRate, markupPct, profitGoal, storeId: activeStore.id };
       await setDoc(doc(db, 'costBases', activeStore.id), updatedCosts);
       setCosts(updatedCosts);
       addToast('Base de custos salva com sucesso!', 'success');
@@ -139,30 +148,35 @@ export function CostBaseSettings() {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-neutral-700 flex items-center gap-2">
-              Meta de Lucro (% do preço)
+              Meta de Lucro — markup sobre o custo (%)
               <Info className="w-4 h-4 text-neutral-400" />
             </label>
             <div className="relative">
               <input
                 type="number"
                 min={0}
-                max={MAX_MARGIN_PERCENT}
-                value={costs.profitGoal !== undefined && costs.profitGoal !== null ? costs.profitGoal : ''}
-                onChange={e => setCosts({ ...costs, profitGoal: Number(e.target.value) })}
+                max={MAX_MARKUP_PERCENT}
+                step="0.01"
+                value={markup}
+                onChange={e => setMarkup(Number(e.target.value))}
                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
-                placeholder="Ex: 30"
+                placeholder="Ex: 100"
                 required
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">%</span>
             </div>
             <p className="text-[10px] text-neutral-400">
-              Quanto do preço de venda vira lucro, já descontadas as taxas do canal (0 a {MAX_MARGIN_PERCENT}%). Ex.:
-              50% com custo de R$ 10 dá preço de R$ 20.
+              Quanto você acrescenta sobre o custo (0 a {MAX_MARKUP_PERCENT}%). Ex.: 100% com custo de R$ 10 dá preço de
+              R$ 20 na venda direta. Nos canais com taxa, as taxas são somadas por cima e o lucro em R$ continua o
+              mesmo.
             </p>
-            {Number(costs.profitGoal) > MAX_MARGIN_PERCENT && (
-              <p className="text-xs font-bold text-red-600">
-                A meta gravada ({costs.profitGoal}%) está acima do limite e deixa os produtos sem preço sugerido.
-                Escolha um valor de 0 a {MAX_MARGIN_PERCENT}% e salve.
+            <p className="text-xs font-bold text-emerald-700">
+              Margem real na venda direta: {formatPercent(realMargin(10 * (1 + clampMarkup(markup) / 100), 10))}
+            </p>
+            {costs.markupPct == null && (costs.profitGoal ?? 0) > 0 && (
+              <p className="text-xs font-bold text-amber-700">
+                Convertido da meta antiga ({formatPercent(costs.profitGoal)}{' '}
+                {costs.profitGoal >= 95 ? 'sobre o custo' : 'sobre o preço'}) sem mudar nenhum preço. Salve para gravar.
               </p>
             )}
           </div>
