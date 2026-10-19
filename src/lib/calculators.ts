@@ -9,7 +9,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import { energyCost, laborCostFromMinutes, priceForMargin, wearCost } from './pricingEngine';
+import { energyCost, laborCostFromMinutes, priceForMarkup, wearCost } from './pricingEngine';
 
 /** Soma de custo unitário × quantidade de uma lista de itens (materiais, produtos da cesta). */
 export const sumItemsCost = (items: Array<{ unitCost: number; quantity: number }>) =>
@@ -33,7 +33,8 @@ export interface LaserJobInput {
   /** Custo do material do lote inteiro. */
   materialCost: number;
   quantity: number;
-  profitMarginPct: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
   manualPrice: number | null;
 }
 
@@ -48,7 +49,7 @@ export function calcLaserJob(input: LaserJobInput) {
   // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
   const totalCostUnit = energy + wear + laborCost + matPerUnit;
   const totalCostBatch = totalCostUnit * Math.max(input.quantity, 1);
-  const suggestedUnit = priceForMargin(totalCostUnit, input.profitMarginPct) ?? 0;
+  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct) ?? 0;
   const suggestedBatch = suggestedUnit * Math.max(input.quantity, 1);
   const priceRef = input.manualPrice ?? suggestedUnit;
   const profit = priceRef - totalCostUnit;
@@ -80,7 +81,8 @@ export interface PapelariaJobInput {
   hourlyRate: number;
   /** Quantidade final de kits/conjuntos. */
   quantity: number;
-  profitMarginPct: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
   manualPrice: number | null;
 }
 
@@ -91,7 +93,7 @@ export function calcPapelariaJob(input: PapelariaJobInput) {
   const laborCost = laborCostFromMinutes(input.hourlyRate, totalTimeMin);
   const totalCostBatch = materialsCost + input.laminationCost + input.bindingCost + laborCost;
   const totalCostUnit = totalCostBatch / Math.max(input.quantity, 1);
-  const suggestedUnit = priceForMargin(totalCostUnit, input.profitMarginPct) ?? 0;
+  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct) ?? 0;
   const suggestedBatch = suggestedUnit * input.quantity;
   const priceRef = input.manualPrice ?? suggestedUnit;
   const profit = priceRef - totalCostUnit;
@@ -124,7 +126,8 @@ export interface CestaJobInput {
   commissionPct: number;
   /** Quantidade de cestas. */
   quantity: number;
-  profitMarginPct: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
   manualPrice: number | null;
 }
 
@@ -135,8 +138,8 @@ export function calcCestaJob(input: CestaJobInput) {
   const packagingTotal = input.packagingCost + input.ribbonCost + input.tagCost;
   const subtotalBatch = itemsCost + packagingTotal + laborCost + input.deliveryCost;
   const totalCostUnit = subtotalBatch / Math.max(input.quantity, 1);
-  // Margem sobre o preço, líquida da comissão: depois da comissão sobra exatamente a margem.
-  const marginPrice = priceForMargin(totalCostUnit, input.profitMarginPct, input.commissionPct);
+  // Markup sobre o custo, com a comissão somada por cima: depois da comissão sobra custo × markup.
+  const marginPrice = priceForMarkup(totalCostUnit, input.markupPct, input.commissionPct);
   const invalidMargin = marginPrice === null;
   const suggestedUnit = marginPrice ?? 0;
   const suggestedBatch = suggestedUnit * input.quantity;

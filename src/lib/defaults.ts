@@ -5,8 +5,8 @@
  */
 export const CALCULATOR_DEFAULTS = {
   // Tarifa: Enel São Paulo B1 (TUSD + TE), sem tributos e bandeira.
-  laser: { hourlyRate: 25, profitMarginPct: 60, electricityRate: 0.78938 },
-  print3d: { hourlyRate: 12, profitMarginPct: 60, electricityRate: 0.85 },
-  papelaria: { hourlyRate: 25, profitMarginPct: 60 },
-  cesta: { hourlyRate: 25, profitMarginPct: 60 },
+  laser: { hourlyRate: 25, markupPct: 150, electricityRate: 0.78938 },
+  print3d: { hourlyRate: 12, markupPct: 150, electricityRate: 0.85 },
+  papelaria: { hourlyRate: 25, markupPct: 150 },
+  cesta: { hourlyRate: 25, markupPct: 150 },
 };

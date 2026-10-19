@@ -16,7 +16,7 @@ describe('Corte a Laser (seção 12)', () => {
     hourlyRate: 25,
     materialCost: 20,
     quantity: 4,
-    profitMarginPct: 60,
+    markupPct: 150,
     manualPrice: null as number | null,
   };
 
@@ -67,7 +67,7 @@ describe('Papelaria (seção 14)', () => {
     packagingTimeMin: 15,
     hourlyRate: 25,
     quantity: 5,
-    profitMarginPct: 60,
+    markupPct: 150,
     manualPrice: null as number | null,
   };
 
@@ -116,7 +116,7 @@ describe('Cestas (seção 15)', () => {
     deliveryCost: 10,
     commissionPct: 10,
     quantity: 1,
-    profitMarginPct: 60,
+    markupPct: 150,
     manualPrice: null as number | null,
   };
 
@@ -128,12 +128,12 @@ describe('Cestas (seção 15)', () => {
     expect(r.deliveryCost).toBe(10);
     expect(r.totalCostUnit).toBeCloseTo(71.5, 10);
   });
-  it('15.2 sugerido R$ 238,33, comissão R$ 23,83, lucro R$ 143,00, margem 60%', () => {
+  it('15.2 markup 150% + comissão 10%: sugerido R$ 198,61, comissão R$ 19,86, lucro R$ 107,25 (custo × 1,5), margem real 54%', () => {
     const r = calcCestaJob(input)!;
-    expect(r.suggestedUnit).toBeCloseTo(238.33, 2);
-    expect(r.commissionValue).toBeCloseTo(23.83, 2);
-    expect(r.profit).toBeCloseTo(143, 10);
-    expect(r.margin).toBeCloseTo(60, 10);
+    expect(r.suggestedUnit).toBeCloseTo(198.61, 2);
+    expect(r.commissionValue).toBeCloseTo(19.86, 2);
+    expect(r.profit).toBeCloseTo(107.25, 10);
+    expect(r.margin).toBeCloseTo(54, 10);
   });
   it('15.3 comissão 0%: sugerido R$ 178,75', () => {
     expect(calcCestaJob({ ...input, commissionPct: 0 })!.suggestedUnit).toBeCloseTo(178.75, 10);
@@ -141,8 +141,8 @@ describe('Cestas (seção 15)', () => {
   it('15.4 mesmos dados com 2 cestas: custo por cesta R$ 35,75 (itens são do lote inteiro)', () => {
     expect(calcCestaJob({ ...input, quantity: 2 })!.totalCostUnit).toBeCloseTo(35.75, 10);
   });
-  it('15.6 margem 90 + comissão 10%: sem preço possível, sugerido R$ 0,00', () => {
-    const r = calcCestaJob({ ...input, profitMarginPct: 90 })!;
+  it('15.6 comissão de 95%: sem preço possível, sugerido R$ 0,00', () => {
+    const r = calcCestaJob({ ...input, commissionPct: 95 })!;
     expect(r.invalidMargin).toBe(true);
     expect(r.suggestedUnit).toBe(0);
   });

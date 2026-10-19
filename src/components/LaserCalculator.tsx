@@ -4,7 +4,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin } from '../lib/pricingEngine';
+import { clampMarkup, realMargin } from '../lib/pricingEngine';
 import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -79,7 +79,7 @@ export function LaserCalculator() {
   const [materialCost, setMaterialCost] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.laser.hourlyRate);
-  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.laser.profitMarginPct);
+  const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.laser.markupPct);
   const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.laser.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
@@ -151,7 +151,7 @@ export function LaserCalculator() {
         hourlyRate,
         materialCost,
         quantity,
-        profitMarginPct,
+        markupPct,
         manualPrice,
       })
     : null;
@@ -532,9 +532,9 @@ export function LaserCalculator() {
                     },
                     { label: 'Valor Hora Trabalho (R$)', value: hourlyRate, set: setHourlyRate, step: 0.5, min: 0 },
                     {
-                      label: 'Margem de Lucro (% do preço)',
-                      value: profitMarginPct,
-                      set: (v: number) => setProfitMarginPct(clampMargin(v)),
+                      label: 'Markup (% sobre o custo)',
+                      value: markupPct,
+                      set: (v: number) => setMarkupPct(clampMarkup(v)),
                       step: 1,
                       min: 0,
                     },
@@ -659,7 +659,8 @@ export function LaserCalculator() {
                 </div>
 
                 <SuggestedPrice
-                  profitMarginPct={profitMarginPct}
+                  markupPct={markupPct}
+                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit)}
                   suggestedUnit={result.suggestedUnit}
                   suggestedBatch={result.suggestedBatch}
                   quantity={quantity}

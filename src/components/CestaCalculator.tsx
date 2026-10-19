@@ -5,7 +5,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CestaJob, CestaItem, Material } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin, MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
+import { clampMarkup, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
 import { calcCestaJob } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -47,7 +47,7 @@ export function CestaCalculator() {
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.cesta.hourlyRate);
   const [deliveryCost, setDeliveryCost] = useState(0);
   const [commissionPct, setCommissionPct] = useState(0);
-  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.cesta.profitMarginPct);
+  const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.cesta.markupPct);
   const [quantity, setQuantity] = useState(1);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
@@ -132,7 +132,7 @@ export function CestaCalculator() {
     deliveryCost,
     commissionPct,
     quantity,
-    profitMarginPct,
+    markupPct,
     manualPrice,
   });
 
@@ -447,13 +447,13 @@ export function CestaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (% do preço)</label>
+                <label className="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label>
                 <input
                   type="number"
                   min="0"
-                  max={MAX_MARGIN_PERCENT}
-                  value={profitMarginPct}
-                  onChange={e => setProfitMarginPct(clampMargin(Number(e.target.value)))}
+                  max={MAX_MARKUP_PERCENT}
+                  value={markupPct}
+                  onChange={e => setMarkupPct(clampMarkup(Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
@@ -587,7 +587,8 @@ export function CestaCalculator() {
                 </div>
 
                 <SuggestedPrice
-                  profitMarginPct={profitMarginPct}
+                  markupPct={markupPct}
+                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit, commissionPct)}
                   suggestedUnit={result.suggestedUnit}
                   suggestedBatch={result.suggestedBatch}
                   quantity={quantity}
@@ -595,8 +596,7 @@ export function CestaCalculator() {
                   warning={
                     result.invalidMargin && (
                       <p className="text-[11px] font-bold text-red-600">
-                        Margem + comissão passam de 95%: não existe preço que dê esse lucro. Reduza a margem ou a
-                        comissão.
+                        A comissão chega a 95%: não existe preço possível. Reduza a comissão.
                       </p>
                     )
                   }

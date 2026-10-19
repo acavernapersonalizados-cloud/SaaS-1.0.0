@@ -5,7 +5,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency } from '../lib/utils';
-import { clampMargin, MAX_MARGIN_PERCENT } from '../lib/pricingEngine';
+import { clampMarkup, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
 import { calcPapelariaJob, sumItemsCost } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,7 +45,7 @@ export function PapelariaCalculator() {
   const [finishingTimeMin, setFinishingTimeMin] = useState(0);
   const [packagingTimeMin, setPackagingTimeMin] = useState(0);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.papelaria.hourlyRate);
-  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.papelaria.profitMarginPct);
+  const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.papelaria.markupPct);
   const [quantity, setQuantity] = useState(1);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
@@ -132,7 +132,7 @@ export function PapelariaCalculator() {
     packagingTimeMin,
     hourlyRate,
     quantity,
-    profitMarginPct,
+    markupPct,
     manualPrice,
   });
 
@@ -430,13 +430,13 @@ export function PapelariaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Margem de Lucro (% do preço)</label>
+                <label className="text-xs font-bold text-neutral-600">Markup (% sobre o custo)</label>
                 <input
                   type="number"
                   min="0"
-                  max={MAX_MARGIN_PERCENT}
-                  value={profitMarginPct}
-                  onChange={e => setProfitMarginPct(clampMargin(Number(e.target.value)))}
+                  max={MAX_MARKUP_PERCENT}
+                  value={markupPct}
+                  onChange={e => setMarkupPct(clampMarkup(Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
@@ -558,7 +558,8 @@ export function PapelariaCalculator() {
                 </div>
 
                 <SuggestedPrice
-                  profitMarginPct={profitMarginPct}
+                  markupPct={markupPct}
+                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit)}
                   suggestedUnit={result.suggestedUnit}
                   suggestedBatch={result.suggestedBatch}
                   quantity={quantity}

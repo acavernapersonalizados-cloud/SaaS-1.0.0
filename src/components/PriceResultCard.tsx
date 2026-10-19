@@ -1,9 +1,12 @@
 import React from 'react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency, formatPercent } from '../lib/utils';
 
 interface SuggestedPriceProps {
-  profitMarginPct: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
+  /** Margem real (%) do preço sugerido, depois das taxas/comissão. */
+  realMarginPct?: number;
   suggestedUnit: number;
   suggestedBatch: number;
   quantity: number;
@@ -15,7 +18,8 @@ interface SuggestedPriceProps {
 
 /** Quadro verde do preço sugerido das calculadoras. */
 export function SuggestedPrice({
-  profitMarginPct,
+  markupPct,
+  realMarginPct,
   suggestedUnit,
   suggestedBatch,
   quantity,
@@ -24,14 +28,15 @@ export function SuggestedPrice({
 }: SuggestedPriceProps) {
   return (
     <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-        Sugerido ({profitMarginPct}% do preço)
-      </p>
+      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Sugerido (markup {markupPct}%)</p>
       {warning}
       <p className="text-2xl font-black text-emerald-700">
         {formatCurrency(suggestedUnit)}
         <span className="text-sm font-medium">{unit}</span>
       </p>
+      {realMarginPct !== undefined && suggestedUnit > 0 && (
+        <p className="text-xs text-emerald-700 font-bold">Margem real: {formatPercent(realMarginPct)}</p>
+      )}
       {quantity > 1 && (
         <p className="text-sm text-emerald-600 font-bold mt-0.5">{formatCurrency(suggestedBatch)} total</p>
       )}

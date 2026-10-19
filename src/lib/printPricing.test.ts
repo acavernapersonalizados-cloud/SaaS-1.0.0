@@ -28,7 +28,7 @@ const base = {
   failureRatePct: 5,
   packagingCost: 2,
   extrasCost: 0,
-  profitMarginPct: 60,
+  markupPct: 150,
   quantity: 1,
   manualPrice: null as number | null,
 };
@@ -57,12 +57,11 @@ describe('Impressão 3D — custo (13.1)', () => {
 });
 
 describe('Impressão 3D — canais, lote e preço manual', () => {
-  it('13.3 Shopee (14% + R$ 4): sugerido R$ 70,41, taxas R$ 13,86, lucro R$ 42,24, margem 60%', () => {
+  it('13.3 Shopee (14% + R$ 4), markup 150%: sugerido R$ 53,22, lucro (custo + R$ 4) × 1,5 = R$ 27,46', () => {
     const r = calculatePrintPrice({ ...base, fees: getPrintChannel('shopee').fees });
-    expect(r.suggestedUnit).toBeCloseTo(70.41, 2);
-    expect(r.channelCost).toBeCloseTo(13.86, 2);
-    expect(r.profit).toBeCloseTo(42.24, 2);
-    expect(r.margin).toBeCloseTo(60, 10);
+    expect(r.suggestedUnit).toBeCloseTo(((14.306 + 4) * 2.5) / 0.86, 3);
+    expect(r.profit).toBeCloseTo((14.306 + 4) * 1.5, 3);
+    expect(r.margin).toBeCloseTo((r.profit / r.suggestedUnit) * 100, 10);
   });
   it('13.4 quantidade 3: custo do lote R$ 42,92, sugerido do lote R$ 107,30', () => {
     const r = calculatePrintPrice({ ...base, quantity: 3, fees: direct });
@@ -77,13 +76,16 @@ describe('Impressão 3D — canais, lote e preço manual', () => {
   it('taxa percentual do canal limitada a 95%', () => {
     const r = calculatePrintPrice({
       ...base,
-      profitMarginPct: 0,
+      markupPct: 0,
       fees: { commissionPercent: 120, paymentPercent: 0, fixedFee: 0, logisticsCost: 0 },
     });
     expect(r.feePercent).toBe(95);
   });
-  it('13.8 margem 90 + Shopee: sem preço possível, sugerido R$ 0,00', () => {
-    const r = calculatePrintPrice({ ...base, profitMarginPct: 90, fees: getPrintChannel('shopee').fees });
+  it('13.8 taxas do canal de 95%: sem preço possível, sugerido R$ 0,00', () => {
+    const r = calculatePrintPrice({
+      ...base,
+      fees: { commissionPercent: 95, paymentPercent: 0, fixedFee: 0, logisticsCost: 0 },
+    });
     expect(r.invalidMargin).toBe(true);
     expect(r.suggestedUnit).toBe(0);
   });

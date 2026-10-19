@@ -14,8 +14,8 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
-import { formatCurrency } from '../lib/utils';
-import { clampMargin } from '../lib/pricingEngine';
+import { formatCurrency, formatPercent } from '../lib/utils';
+import { clampMarkup, realMargin } from '../lib/pricingEngine';
 import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from '../lib/printPricing';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -95,7 +95,7 @@ export function PrintCalculator() {
   const [failureRatePct, setFailureRatePct] = useState(5);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.print3d.hourlyRate);
-  const [profitMarginPct, setProfitMarginPct] = useState(CALCULATOR_DEFAULTS.print3d.profitMarginPct);
+  const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.print3d.markupPct);
   const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.print3d.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [postProcessHours, setPostProcessHours] = useState(0);
@@ -188,7 +188,7 @@ export function PrintCalculator() {
       failureRatePct,
       packagingCost,
       extrasCost,
-      profitMarginPct,
+      markupPct,
       quantity,
       manualPrice,
       fees,
@@ -647,9 +647,9 @@ export function PrintCalculator() {
                     { label: 'Tarifa Energia (R$/kWh)', val: electricityRate, set: setElectricityRate },
                     { label: 'Valor Hora Operador (R$)', val: hourlyRate, set: setHourlyRate },
                     {
-                      label: 'Margem de Lucro (% do preço)',
-                      val: profitMarginPct,
-                      set: (v: number) => setProfitMarginPct(clampMargin(v)),
+                      label: 'Markup (% sobre o custo)',
+                      val: markupPct,
+                      set: (v: number) => setMarkupPct(clampMarkup(v)),
                     },
                     { label: 'Pós-processamento (h)', val: postProcessHours, set: setPostProcessHours },
                     { label: 'Embalagem (R$)', val: packagingCost, set: setPackagingCost },
@@ -788,19 +788,29 @@ export function PrintCalculator() {
                 </div>
 
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase">
-                    Sugerido ({profitMarginPct}% do preço)
-                  </p>
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase">Sugerido (markup {markupPct}%)</p>
                   {result.invalidMargin && (
                     <p className="text-[11px] font-bold text-red-600">
-                      Margem + taxas do canal passam de 95%: não existe preço que dê esse lucro. Reduza a margem ou as
-                      taxas.
+                      As taxas do canal chegam a 95%: não existe preço possível. Reduza as taxas.
                     </p>
                   )}
                   <p className="text-2xl font-black text-emerald-700">
                     {formatCurrency(result.suggestedUnit)}
                     <span className="text-sm font-medium">/peça</span>
                   </p>
+                  {result.suggestedUnit > 0 && (
+                    <p className="text-xs text-emerald-700 font-bold">
+                      Margem real:{' '}
+                      {formatPercent(
+                        realMargin(
+                          result.suggestedUnit,
+                          result.totalCostUnit,
+                          result.feePercent,
+                          fees.fixedFee + fees.logisticsCost,
+                        ),
+                      )}
+                    </p>
+                  )}
                   {quantity > 1 && (
                     <p className="text-sm text-emerald-600 font-bold mt-0.5">
                       {formatCurrency(result.suggestedBatch)} total ({quantity} peças)

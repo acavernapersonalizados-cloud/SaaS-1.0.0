@@ -1,4 +1,4 @@
-import { energyCost as energyFor, laborCostFromHours, priceForMargin, wearCost } from './pricingEngine';
+import { energyCost as energyFor, laborCostFromHours, priceForMarkup, wearCost } from './pricingEngine';
 
 export interface PrintChannelFees {
   commissionPercent: number;
@@ -50,7 +50,8 @@ export function calculatePrintPrice(input: {
   failureRatePct: number;
   packagingCost: number;
   extrasCost: number;
-  profitMarginPct: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
   quantity: number;
   manualPrice: number | null;
   fees: PrintChannelFees;
@@ -77,7 +78,7 @@ export function calculatePrintPrice(input: {
   const feePercent = Math.min(95, safe(input.fees.commissionPercent) + safe(input.fees.paymentPercent));
   const fixedFees = safe(input.fees.fixedFee) + safe(input.fees.logisticsCost);
   // Margem sobre o preço, líquida das taxas do canal (percentuais e fixas).
-  const marginPrice = priceForMargin(totalCostUnit, safe(input.profitMarginPct), feePercent, fixedFees);
+  const marginPrice = priceForMarkup(totalCostUnit, safe(input.markupPct), feePercent, fixedFees);
   const invalidMargin = marginPrice === null;
   const suggestedUnit = marginPrice ?? 0;
   const priceRef = input.manualPrice && input.manualPrice > 0 ? input.manualPrice : suggestedUnit;
