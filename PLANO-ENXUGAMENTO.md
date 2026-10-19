@@ -18,12 +18,12 @@
 | 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
-| 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
+| 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
 | 7 — Unificar parâmetros de preço | T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (18/10/2026):** Etapa 5 concluída (tag `etapa-5-ok` em `3b7c347`; depois dela, o ajuste do T1 em `726dffe` e o item do desconto de fornecedor no Estacionamento). **Próximo passo: Etapa 6 — Validação final, ainda não começada.** Nada ficou pela metade. O site publicado continua na versão de antes da Etapa 5; a publicação faz parte da Etapa 6. Para testar: `npm run dev` (emulador), com o login de teste do `scripts/seed-emulator.mjs`.
+**Onde paramos (19/10/2026):** Etapa 6 concluída e **site publicado** com tudo das Etapas 3 a 5 (tag `etapa-6-ok`). **Próximo passo: Etapa 7 — Unificar parâmetros de preço, ainda não começada.** Ela muda preços: antes de qualquer código, a comparação antes/depois com dados reais (só leitura) para você aprovar. Nada ficou pela metade.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -312,6 +312,17 @@ Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
 ### Etapa 6 — Validação final
 
 Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHECKLIST-TESTES.md`. Depois vêm o code review, o build e a publicação. A Etapa 7 só começa depois dela.
+
+**✅ Feita (19/10/2026), tag `etapa-6-ok`.**
+
+| Item | Resultado |
+|---|---|
+| Checklist | Atualizado para as Etapas 3 a 5 (`80f64b5`): dados do seed, Ctrl+C para o emulador exportar, campos removidos, mínimo opcional, Recibo, números do cliente e nova seção 18 (botões no computador e no celular) |
+| Code review | Nada a corrigir. Conferido no emulador, com as regras atuais: GERENTE e OPERADOR aprovados leem os orçamentos da loja (tela de Clientes); operador de outra loja e usuário pendente são negados. Build de produção aponta só para `saas-1-0-0` |
+| Testes, lint e build | 121 testes, lint, Prettier e build passando |
+| Seus testes no emulador | Checklist completo, sem erros |
+| Backup do banco real | Feito por você pela tela de Backup (só exportar): `backup_precifica_ja_2026-10-19.json`, versão 2, completo, 0 falhas, 2 lojas, 18 coleções, 882 documentos; conteúdo idêntico ao backup de 17/10 (fora a data) |
+| Publicação | Só o site (`firebase deploy --only hosting`), regras do banco intactas. O site entrega o mesmo build local (abertura de 989 KB), login sem erros no console, e você conferiu o app publicado |
 
 ### Etapa 7 — Unificar parâmetros de preço (T4, T2, T3)
 
