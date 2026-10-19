@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { CostBase } from '../types';
+import { CostBase, SalesChannel } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
-import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, realMargin } from '../lib/pricingEngine';
+import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, priceForMarkup, realMargin } from '../lib/pricingEngine';
+import { channelFees, channelsOf } from '../lib/channels';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Save, Info, Calculator, Loader2, AlertCircle } from 'lucide-react';
+import { Save, Info, Calculator, Loader2, AlertCircle, Plus, Trash2 } from 'lucide-react';
 
 export function CostBaseSettings() {
   const { activeStore } = useStore();
@@ -25,6 +26,10 @@ export function CostBaseSettings() {
   // Meta de lucro como markup sobre o custo; enquanto não é salvo, vem da conversão da meta antiga.
   const [markup, setMarkup] = useState(0);
   const round2 = (v: number) => Math.round(v * 100) / 100;
+  // Tabela de canais da loja; enquanto não é salva, mostra a padrão.
+  const [channels, setChannels] = useState<SalesChannel[]>(channelsOf(null));
+  const setChannel = (i: number, patch: Partial<SalesChannel>) =>
+    setChannels(prev => prev.map((c, j) => (j === i ? { ...c, ...patch } : c)));
 
   useEffect(() => {
     if (!activeStore) {
@@ -39,8 +44,10 @@ export function CostBaseSettings() {
         const data = docSnap.data() as CostBase;
         setCosts(data);
         setMarkup(round2(markupOf(data)));
+        setChannels(channelsOf(data));
       } else {
         setMarkup(0);
+        setChannels(channelsOf(null));
         setCosts({
           fixedCosts: 0,
           productiveHours: 0,
@@ -68,7 +75,10 @@ export function CostBaseSettings() {
       const markupPct = clampMarkup(markup);
       // profitGoal (legado) fica com a margem equivalente, para o dado antigo não contradizer o novo.
       const profitGoal = (markupPct / (100 + markupPct)) * 100;
-      const updatedCosts = { ...costs, hourlyRate, markupPct, profitGoal, storeId: activeStore.id };
+      const salesChannels = channels
+        .filter(c => c.name.trim())
+        .map(c => ({ ...c, name: c.name.trim(), note: c.note?.trim() || '', checkedAt: c.checkedAt || '' }));
+      const updatedCosts = { ...costs, hourlyRate, markupPct, profitGoal, salesChannels, storeId: activeStore.id };
       await setDoc(doc(db, 'costBases', activeStore.id), updatedCosts);
       setCosts(updatedCosts);
       addToast('Base de custos salva com sucesso!', 'success');
@@ -191,6 +201,122 @@ export function CostBaseSettings() {
             </span>
             <p className="text-[10px] text-neutral-500">Calculado automaticamente com base nos custos fixos.</p>
           </div>
+        </div>
+
+        <div className="space-y-3 pt-6 border-t border-neutral-100">
+          <div>
+            <h2 className="text-sm font-bold text-neutral-700">Canais de venda</h2>
+            <p className="text-[10px] text-neutral-400">
+              Taxas de cada canal, usadas nos orçamentos e nas calculadoras. A margem real mostra o que sobra do preço
+              com o markup acima, depois das taxas.
+              {!costs.salesChannels?.length && ' Valores padrão: confira e salve para gravar a tabela desta loja.'}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[10px] font-bold uppercase text-neutral-400">
+                  <th className="py-2 pr-2">Canal</th>
+                  <th className="py-2 pr-2">Comissão %</th>
+                  <th className="py-2 pr-2">Taxa fixa R$</th>
+                  <th className="py-2 pr-2">Pagamento %</th>
+                  <th className="py-2 pr-2">Observação</th>
+                  <th className="py-2 pr-2">Conferido em</th>
+                  <th className="py-2 pr-2">Margem real</th>
+                  <th className="py-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {channels.map((c, i) => {
+                  const { feePct, fixedFee } = channelFees(c);
+                  const price = priceForMarkup(10, clampMarkup(markup), feePct, fixedFee);
+                  return (
+                    <tr key={c.id} className="border-t border-neutral-100">
+                      <td className="py-1 pr-2 min-w-[8rem]">
+                        <input
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.name}
+                          onChange={e => setChannel(i, { name: e.target.value })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 w-24">
+                        <input
+                          type="number"
+                          min={0}
+                          max={95}
+                          step="0.01"
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.commissionPct}
+                          onChange={e => setChannel(i, { commissionPct: Number(e.target.value) })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 w-24">
+                        <input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.fixedFee}
+                          onChange={e => setChannel(i, { fixedFee: Number(e.target.value) })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 w-24">
+                        <input
+                          type="number"
+                          min={0}
+                          max={95}
+                          step="0.01"
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.paymentPct}
+                          onChange={e => setChannel(i, { paymentPct: Number(e.target.value) })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 min-w-[8rem]">
+                        <input
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.note ?? ''}
+                          onChange={e => setChannel(i, { note: e.target.value })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 w-36">
+                        <input
+                          type="date"
+                          className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                          value={c.checkedAt ?? ''}
+                          onChange={e => setChannel(i, { checkedAt: e.target.value })}
+                        />
+                      </td>
+                      <td className="py-1 pr-2 whitespace-nowrap text-xs font-bold text-emerald-700">
+                        {price ? formatPercent(realMargin(price, 10, feePct, fixedFee)) : '—'}
+                      </td>
+                      <td className="py-1 text-right">
+                        <button
+                          type="button"
+                          title="Excluir canal"
+                          onClick={() => setChannels(prev => prev.filter((_, j) => j !== i))}
+                          className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              setChannels(prev => [
+                ...prev,
+                { id: `canal-${Date.now()}`, name: '', commissionPct: 0, fixedFee: 0, paymentPct: 0 },
+              ])
+            }
+            className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200"
+          >
+            <Plus className="w-4 h-4" /> Incluir canal
+          </button>
         </div>
 
         <div className="pt-6 border-t border-neutral-100">

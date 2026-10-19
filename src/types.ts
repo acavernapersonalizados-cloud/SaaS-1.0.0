@@ -25,6 +25,23 @@ export interface CostBase {
   /** Meta de lucro como markup sobre o custo (0 a 500%). Gravado ao salvar a Base de Custos. */
   markupPct?: number;
   hourlyRate: number;
+  /** Tabela de canais de venda da loja (Etapa 7). Sem ela, vale a padrão de lib/channels.ts. */
+  salesChannels?: SalesChannel[];
+}
+
+/** Canal de venda da tabela única da loja. */
+export interface SalesChannel {
+  id: string;
+  name: string;
+  /** Comissão do canal (% do preço). */
+  commissionPct: number;
+  /** Taxa fixa por unidade vendida (R$). */
+  fixedFee: number;
+  /** Taxa de pagamento (% do preço). */
+  paymentPct: number;
+  note?: string;
+  /** Data da última conferência das taxas (AAAA-MM-DD). */
+  checkedAt?: string;
 }
 
 // ── Categorias (matéria-prima/estoque e produtos) ───────────────────────────
