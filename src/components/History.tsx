@@ -387,15 +387,15 @@ export function History() {
                 onClick={async () => {
                   try {
                     await (await loadPdf()).generateInvoicePDF(selectedQuote, activeStore);
-                    addToast('Nota Fiscal gerada com sucesso!', 'success');
+                    addToast('Recibo gerado com sucesso!', 'success');
                   } catch (error) {
-                    addToast('Erro ao gerar Nota Fiscal', 'error');
+                    addToast('Erro ao gerar Recibo', 'error');
                   }
                 }}
                 className="flex items-center gap-2 px-6 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition-all"
               >
                 <Receipt className="w-4 h-4" />
-                Gerar Nota Fiscal
+                Gerar Recibo
               </button>
               <button
                 onClick={async () => {

@@ -8928,9 +8928,7 @@ exports[`Estoque > busca 1`] = `
                 <td
                   class="py-4 text-sm text-neutral-500"
                 >
-                  5
-                   
-                  m
+                  5 m
                 </td>
                 <td
                   class="py-4 text-right"
@@ -9148,9 +9146,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm text-neutral-500"
                 >
-                  2
-                   
-                  un
+                  2 un
                 </td>
                 <td
                   class="py-4 text-right"
@@ -9224,9 +9220,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm text-neutral-500"
                 >
-                  20
-                   
-                  pct
+                  20 pct
                 </td>
                 <td
                   class="py-4 text-right"
@@ -9305,9 +9299,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm text-neutral-500"
                 >
-                  5
-                   
-                  m
+                  5 m
                 </td>
                 <td
                   class="py-4 text-right"

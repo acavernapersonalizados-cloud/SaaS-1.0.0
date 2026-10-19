@@ -179,7 +179,7 @@ export const generateInternalPDF = async (quote: Quote, store: Store | null) => 
   }
 };
 
-// ─── Invoice PDF ──────────────────────────────────────────────────────────────
+// ─── Recibo (não é nota fiscal) ──────────────────────────────────────────────────────────────
 export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
   try {
     const doc = new jsPDF();
@@ -187,7 +187,7 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
 
     doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text('NOTA FISCAL DE SERVIÇO / PRODUTO', 14, startY);
+    doc.text('RECIBO', 14, startY);
 
     doc.setFontSize(10);
     doc.setTextColor(100);
@@ -223,13 +223,13 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
     const finalY = (doc as any).lastAutoTable?.finalY || 120;
     doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text(`VALOR TOTAL DA NOTA: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 15);
+    doc.text(`VALOR TOTAL: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 15);
 
     doc.setFontSize(8);
     doc.setTextColor(150);
-    doc.text('Este documento é uma representação de nota fiscal gerada pelo sistema.', 14, 280);
+    doc.text('Este recibo não é nota fiscal e não tem valor fiscal.', 14, 280);
 
-    savePdf(doc, 'NF', quote.clientName);
+    savePdf(doc, 'Recibo', quote.clientName);
   } catch (error) {
     console.error('Error generating Invoice PDF:', error);
     throw error;

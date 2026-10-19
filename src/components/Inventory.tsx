@@ -134,7 +134,7 @@ export function Inventory() {
                     )}
                   </td>
                   <td className="py-4 text-sm text-neutral-500">
-                    {material.minStockQuantity} {material.unit}
+                    {Number(material.minStockQuantity) > 0 ? `${material.minStockQuantity} ${material.unit}` : '—'}
                   </td>
                   <td className="py-4 text-right">
                     <div className="flex items-center justify-end gap-2">

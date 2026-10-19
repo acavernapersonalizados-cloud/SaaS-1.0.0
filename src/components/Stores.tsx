@@ -300,16 +300,6 @@ export function Stores() {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Logo (URL opcional)</label>
-                  <input
-                    type="url"
-                    value={formData.logo}
-                    onChange={e => setFormData({ ...formData, logo: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="https://exemplo.com/logo.png"
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-neutral-700">Cor Primária</label>

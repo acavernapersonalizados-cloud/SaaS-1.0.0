@@ -64,7 +64,7 @@ exports[`Comandos de desenho dos PDFs (não podem mudar) > "Nota fiscal" — com
   ],
   [
     "text",
-    "NOTA FISCAL DE SERVIÇO / PRODUTO",
+    "RECIBO",
     14,
     38,
   ],
@@ -231,7 +231,7 @@ Acessórios: Caixinha",
   ],
   [
     "text",
-    "VALOR TOTAL DA NOTA: R$ 270,00",
+    "VALOR TOTAL: R$ 270,00",
     14,
     165,
   ],
@@ -245,13 +245,13 @@ Acessórios: Caixinha",
   ],
   [
     "text",
-    "Este documento é uma representação de nota fiscal gerada pelo sistema.",
+    "Este recibo não é nota fiscal e não tem valor fiscal.",
     14,
     280,
   ],
   [
     "save",
-    "NF_teste_cliente_a__o.pdf",
+    "Recibo_teste_cliente_a__o.pdf",
   ],
 ]
 `;
@@ -304,7 +304,7 @@ exports[`Comandos de desenho dos PDFs (não podem mudar) > "Nota fiscal" — sem
   ],
   [
     "text",
-    "NOTA FISCAL DE SERVIÇO / PRODUTO",
+    "RECIBO",
     14,
     38,
   ],
@@ -447,7 +447,7 @@ Acessórios: Caixinha",
   ],
   [
     "text",
-    "VALOR TOTAL DA NOTA: R$ 270,00",
+    "VALOR TOTAL: R$ 270,00",
     14,
     165,
   ],
@@ -461,13 +461,13 @@ Acessórios: Caixinha",
   ],
   [
     "text",
-    "Este documento é uma representação de nota fiscal gerada pelo sistema.",
+    "Este recibo não é nota fiscal e não tem valor fiscal.",
     14,
     280,
   ],
   [
     "save",
-    "NF_teste_cliente_a__o.pdf",
+    "Recibo_teste_cliente_a__o.pdf",
   ],
 ]
 `;

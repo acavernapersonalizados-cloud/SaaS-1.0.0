@@ -94,15 +94,6 @@ export function Users() {
     return () => unsubscribe();
   }, []);
 
-  const sendApprovalNotification = (user: { name: string; email: string; phone?: string }) => {
-    // Mocking email and WhatsApp notifications
-    console.log(`[NOTIFICATION] Sending approval email to ${user.email} for user ${user.name}`);
-    if (user.phone) {
-      console.log(`[NOTIFICATION] Sending approval WhatsApp to ${user.phone} for user ${user.name}`);
-    }
-    // In a real app, you would call an API here (e.g., SendGrid, Twilio, etc.)
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -117,9 +108,6 @@ export function Users() {
 
     try {
       if (editingUser) {
-        const wasPending = editingUser.status === 'pendente';
-        const isNowAprovado = status === 'aprovado';
-
         await updateDoc(doc(db, 'users', editingUser.id), {
           name,
           phone,
@@ -127,10 +115,6 @@ export function Users() {
           storeIds: selectedStores,
           status,
         });
-
-        if (wasPending && isNowAprovado) {
-          sendApprovalNotification({ name, email: editingUser.email, phone });
-        }
       } else {
         if (!password) {
           setError('A senha é obrigatória para novos usuários.');
@@ -161,9 +145,6 @@ export function Users() {
           };
 
           await setDoc(doc(db, 'users', newUid), newUser);
-
-          // New users created by admin are automatically approved
-          sendApprovalNotification({ name, email, phone });
         } catch (authError: any) {
           await deleteApp(secondaryApp);
           if (authError.code === 'auth/email-already-in-use') {
@@ -259,7 +240,6 @@ export function Users() {
     setIsProcessing(true);
     try {
       await updateDoc(doc(db, 'users', userToApprove.id), { status: 'aprovado' });
-      sendApprovalNotification({ name: userToApprove.name, email: userToApprove.email, phone: userToApprove.phone });
       addToast('Usuário aprovado com sucesso!', 'success');
       setUserToApprove(null);
     } catch (error) {
@@ -706,9 +686,7 @@ export function Users() {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-neutral-900">Aprovar Usuário</h2>
-              <p className="text-neutral-500">
-                Deseja aprovar o usuário {userToApprove.name}? Ele receberá uma notificação por email.
-              </p>
+              <p className="text-neutral-500">Deseja aprovar o usuário {userToApprove.name}?</p>
             </div>
             <div className="flex gap-3">
               <button

@@ -568,10 +568,10 @@ export function Materials() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Estoque Mínimo</label>
+                  <label className="text-sm font-bold text-neutral-700">Estoque Mínimo (opcional)</label>
                   <input
                     type="number"
-                    required
+                    min="0"
                     value={newMaterial.minStockQuantity || ''}
                     onChange={e => setNewMaterial({ ...newMaterial, minStockQuantity: Number(e.target.value) })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
