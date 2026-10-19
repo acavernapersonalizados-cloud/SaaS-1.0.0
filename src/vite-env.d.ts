@@ -1,6 +1,9 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-pwa/client" />
 
+/** Data e hora do build (vite.config.ts), mostrada no menu. */
+declare const __APP_VERSION__: string;
+
 interface ImportMetaEnv {
   // Firebase
   readonly VITE_FIREBASE_API_KEY: string;

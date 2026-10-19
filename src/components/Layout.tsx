@@ -310,6 +310,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
               </div>
             </div>
           </div>
+          <p className="px-3 text-[10px] text-neutral-400">versão {__APP_VERSION__}</p>
           <button
             onClick={logout}
             className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition-colors"

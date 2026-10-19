@@ -16,6 +16,7 @@ import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessor
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs, markupOf } from '../lib/pricingEngine';
 import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
+import { isAppOutdated } from '../lib/appUpdate';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -153,6 +154,8 @@ export function Products() {
   useEffect(() => {
     if (!activeStore || !costs || products.length === 0) return;
     const timer = setTimeout(async () => {
+      // Aba com versão antiga (já existe uma publicada): não grava nada até atualizar.
+      if (isAppOutdated()) return;
       const writes = products.flatMap(p => {
         // Nunca troca um preço gravado por R$ 0 (ex.: meta de lucro inválida).
         const price = nextCatalogPrice(p.catalogPrice, Number(calcProductPricing(p, materials, costs).effectivePrice));

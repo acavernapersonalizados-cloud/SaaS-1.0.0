@@ -6,6 +6,7 @@ import { Layout } from './components/Layout';
 import { Login } from './components/Login';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { UpdateGate } from './components/UpdateGate';
 
 // ── Carregamento sob demanda: cada tela vira um chunk separado ──────────────
 // O Dashboard também: assim a tela de login não baixa os gráficos.
@@ -145,6 +146,7 @@ export default function App() {
             <PublicCatalog storeId={catalogStoreId} />
           </Suspense>
         </ErrorBoundary>
+        <UpdateGate />
       </ToastProvider>
     );
   }
@@ -158,6 +160,7 @@ export default function App() {
           </StoreProvider>
         </AuthProvider>
       </ErrorBoundary>
+      <UpdateGate />
     </ToastProvider>
   );
 }

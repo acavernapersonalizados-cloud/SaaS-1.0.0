@@ -29,10 +29,26 @@ export default defineConfig(({ command, mode }) => {
   return {
     base: '/',
 
+    // Versão visível no app (data e hora do build), para conferir depois de publicar.
+    define: {
+      __APP_VERSION__: JSON.stringify(
+        new Date()
+          .toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+          .replace(',', ''),
+      ),
+    },
+
     plugins: [
       react(),
       VitePWA({
-        registerType: 'autoUpdate',
+        // Etapa 7.1: a versão nova espera a pessoa clicar em "Atualizar agora" (UpdateGate).
+        registerType: 'prompt',
         includeAssets: ['favicon.ico'],
         manifest: {
           name: 'PrecificaAteliê',
