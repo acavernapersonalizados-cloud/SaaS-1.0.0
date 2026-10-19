@@ -23,6 +23,8 @@
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
+**Onde paramos (18/10/2026):** Etapa 5 concluída (tag `etapa-5-ok` em `3b7c347`; depois dela, o ajuste do T1 em `726dffe` e o item do desconto de fornecedor no Estacionamento). **Próximo passo: Etapa 6 — Validação final, ainda não começada.** Nada ficou pela metade. O site publicado continua na versão de antes da Etapa 5; a publicação faz parte da Etapa 6. Para testar: `npm run dev` (emulador), com o login de teste do `scripts/seed-emulator.mjs`.
+
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
 ---
