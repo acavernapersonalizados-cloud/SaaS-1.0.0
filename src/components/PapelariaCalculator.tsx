@@ -4,6 +4,8 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where }
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
+import { channelFees, channelsOf, findChannel } from '../lib/channels';
+import { useCostBase } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
 import { clampMarkup, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
 import { calcPapelariaJob, sumItemsCost } from '../lib/calculators';
@@ -46,6 +48,12 @@ export function PapelariaCalculator() {
   const [packagingTimeMin, setPackagingTimeMin] = useState(0);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.papelaria.hourlyRate);
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.papelaria.markupPct);
+  // Canal de venda (tabela da Base de Custos); começa em Venda Direta, sem taxa.
+  const { costs } = useCostBase();
+  const channels = channelsOf(costs);
+  const [channelId, setChannelId] = useState('venda-direta');
+  const selectedChannel = findChannel(channels, channelId);
+  const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(selectedChannel);
   const [quantity, setQuantity] = useState(1);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
@@ -133,6 +141,8 @@ export function PapelariaCalculator() {
     hourlyRate,
     quantity,
     markupPct,
+    channelFeePct,
+    channelFixedFee,
     manualPrice,
   });
 
@@ -170,6 +180,7 @@ export function PapelariaCalculator() {
     try {
       await addDoc(collection(db, 'papelariaJobs'), {
         storeId: activeStore.id,
+        channel: selectedChannel?.name ?? 'Venda Direta',
         name: jobName,
         materials,
         laminationCost,
@@ -440,6 +451,20 @@ export function PapelariaCalculator() {
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
               </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-neutral-600">Canal de venda</label>
+                <select
+                  value={channelId}
+                  onChange={e => setChannelId(e.target.value)}
+                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                >
+                  {channels.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {totalTimeMin > 0 && (
@@ -559,7 +584,7 @@ export function PapelariaCalculator() {
 
                 <SuggestedPrice
                   markupPct={markupPct}
-                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit)}
+                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit, channelFeePct, channelFixedFee)}
                   suggestedUnit={result.suggestedUnit}
                   suggestedBatch={result.suggestedBatch}
                   quantity={quantity}

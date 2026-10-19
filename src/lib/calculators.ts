@@ -11,6 +11,10 @@
 
 import { energyCost, laborCostFromMinutes, priceForMarkup, wearCost } from './pricingEngine';
 
+/** Quanto o canal de venda cobra de uma venda: taxa % do preço + taxa fixa. */
+const channelCostOf = (price: number, feePct: number, fixedFee: number) =>
+  price > 0 ? price * (feePct / 100) + fixedFee : 0;
+
 /** Soma de custo unitário × quantidade de uma lista de itens (materiais, produtos da cesta). */
 export const sumItemsCost = (items: Array<{ unitCost: number; quantity: number }>) =>
   items.reduce((acc, i) => acc + i.unitCost * i.quantity, 0);
@@ -35,6 +39,9 @@ export interface LaserJobInput {
   quantity: number;
   /** Markup sobre o custo (%). */
   markupPct: number;
+  /** Taxa do canal de venda (% do preço) e taxa fixa por unidade (R$); sem canal = 0. */
+  channelFeePct?: number;
+  channelFixedFee?: number;
   manualPrice: number | null;
 }
 
@@ -49,10 +56,12 @@ export function calcLaserJob(input: LaserJobInput) {
   // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
   const totalCostUnit = energy + wear + laborCost + matPerUnit;
   const totalCostBatch = totalCostUnit * Math.max(input.quantity, 1);
-  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct) ?? 0;
+  const fee = input.channelFeePct ?? 0;
+  const fixed = input.channelFixedFee ?? 0;
+  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct, fee, fixed) ?? 0;
   const suggestedBatch = suggestedUnit * Math.max(input.quantity, 1);
   const priceRef = input.manualPrice ?? suggestedUnit;
-  const profit = priceRef - totalCostUnit;
+  const profit = priceRef - totalCostUnit - channelCostOf(priceRef, fee, fixed);
   const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
   return {
     energyCost: energy,
@@ -83,6 +92,9 @@ export interface PapelariaJobInput {
   quantity: number;
   /** Markup sobre o custo (%). */
   markupPct: number;
+  /** Taxa do canal de venda (% do preço) e taxa fixa por unidade (R$); sem canal = 0. */
+  channelFeePct?: number;
+  channelFixedFee?: number;
   manualPrice: number | null;
 }
 
@@ -93,10 +105,12 @@ export function calcPapelariaJob(input: PapelariaJobInput) {
   const laborCost = laborCostFromMinutes(input.hourlyRate, totalTimeMin);
   const totalCostBatch = materialsCost + input.laminationCost + input.bindingCost + laborCost;
   const totalCostUnit = totalCostBatch / Math.max(input.quantity, 1);
-  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct) ?? 0;
+  const fee = input.channelFeePct ?? 0;
+  const fixed = input.channelFixedFee ?? 0;
+  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct, fee, fixed) ?? 0;
   const suggestedBatch = suggestedUnit * input.quantity;
   const priceRef = input.manualPrice ?? suggestedUnit;
-  const profit = priceRef - totalCostUnit;
+  const profit = priceRef - totalCostUnit - channelCostOf(priceRef, fee, fixed);
   const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
   return {
     materialsCost,
@@ -128,6 +142,9 @@ export interface CestaJobInput {
   quantity: number;
   /** Markup sobre o custo (%). */
   markupPct: number;
+  /** Taxa do canal de venda (% do preço) e taxa fixa por unidade (R$); sem canal = 0. */
+  channelFeePct?: number;
+  channelFixedFee?: number;
   manualPrice: number | null;
 }
 
@@ -138,14 +155,17 @@ export function calcCestaJob(input: CestaJobInput) {
   const packagingTotal = input.packagingCost + input.ribbonCost + input.tagCost;
   const subtotalBatch = itemsCost + packagingTotal + laborCost + input.deliveryCost;
   const totalCostUnit = subtotalBatch / Math.max(input.quantity, 1);
-  // Markup sobre o custo, com a comissão somada por cima: depois da comissão sobra custo × markup.
-  const marginPrice = priceForMarkup(totalCostUnit, input.markupPct, input.commissionPct);
+  // Markup sobre o custo, com comissão e taxa do canal somadas por cima: depois delas sobra custo × markup.
+  const fee = input.channelFeePct ?? 0;
+  const fixed = input.channelFixedFee ?? 0;
+  const marginPrice = priceForMarkup(totalCostUnit, input.markupPct, input.commissionPct + fee, fixed);
   const invalidMargin = marginPrice === null;
   const suggestedUnit = marginPrice ?? 0;
   const suggestedBatch = suggestedUnit * input.quantity;
   const priceRef = input.manualPrice ?? suggestedUnit;
   const commissionValue = priceRef * (input.commissionPct / 100);
-  const profit = priceRef - totalCostUnit - commissionValue;
+  const channelCost = channelCostOf(priceRef, fee, fixed);
+  const profit = priceRef - totalCostUnit - commissionValue - channelCost;
   const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
   return {
     itemsCost,
@@ -159,5 +179,6 @@ export function calcCestaJob(input: CestaJobInput) {
     margin,
     invalidMargin,
     commissionValue,
+    channelCost,
   };
 }

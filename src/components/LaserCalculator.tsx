@@ -3,6 +3,8 @@ import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, 
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
+import { channelFees, channelsOf, findChannel } from '../lib/channels';
+import { useCostBase } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
 import { clampMarkup, realMargin } from '../lib/pricingEngine';
 import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
@@ -80,6 +82,12 @@ export function LaserCalculator() {
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.laser.hourlyRate);
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.laser.markupPct);
+  // Canal de venda (tabela da Base de Custos); começa em Venda Direta, sem taxa.
+  const { costs } = useCostBase();
+  const channels = channelsOf(costs);
+  const [channelId, setChannelId] = useState('venda-direta');
+  const selectedChannel = findChannel(channels, channelId);
+  const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(selectedChannel);
   const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.laser.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
@@ -152,6 +160,8 @@ export function LaserCalculator() {
         materialCost,
         quantity,
         markupPct,
+        channelFeePct,
+        channelFixedFee,
         manualPrice,
       })
     : null;
@@ -240,6 +250,7 @@ export function LaserCalculator() {
     try {
       await addDoc(collection(db, 'laserJobs'), {
         storeId: activeStore.id,
+        channel: selectedChannel?.name ?? 'Venda Direta',
         name: jobName,
         machineId: selectedMachine.id,
         machineName: selectedMachine.label,
@@ -555,6 +566,21 @@ export function LaserCalculator() {
               )}
             </div>
 
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-neutral-600">Canal de venda</label>
+              <select
+                value={channelId}
+                onChange={e => setChannelId(e.target.value)}
+                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+              >
+                {channels.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
@@ -660,7 +686,7 @@ export function LaserCalculator() {
 
                 <SuggestedPrice
                   markupPct={markupPct}
-                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit)}
+                  realMarginPct={realMargin(result.suggestedUnit, result.totalCostUnit, channelFeePct, channelFixedFee)}
                   suggestedUnit={result.suggestedUnit}
                   suggestedBatch={result.suggestedBatch}
                   quantity={quantity}

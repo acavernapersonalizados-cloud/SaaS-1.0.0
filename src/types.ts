@@ -144,6 +144,8 @@ export interface LaserJob {
   id: string;
   storeId: string;
   name: string;
+  /** Canal de venda usado no cálculo (Etapa 7). */
+  channel?: string;
   machineId: string; // references LaserMachineProfile.id (or legacy LaserMachine string)
   machineName?: string; // snapshot
   material: string;
@@ -385,6 +387,8 @@ export interface PapelariaJob {
   id: string;
   storeId: string;
   name: string;
+  /** Canal de venda usado no cálculo (Etapa 7). */
+  channel?: string;
   /** Legado (T6): o campo saiu da tela; trabalhos antigos podem ter. */
   printQuantity?: number;
   materials: PapelariaMaterialItem[];
@@ -417,6 +421,8 @@ export interface CestaJob {
   id: string;
   storeId: string;
   name: string;
+  /** Canal de venda usado no cálculo (Etapa 7). */
+  channel?: string;
   items: CestaItem[]; // produtos internos
   packagingCost?: number; // celofane, caixa, palha, papel seda
   ribbonCost?: number; // fitas e laços

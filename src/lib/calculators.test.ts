@@ -46,6 +46,16 @@ describe('Corte a Laser (seção 12)', () => {
     expect(r.profit).toBeCloseTo(-2.54, 2);
     expect(r.margin).toBeCloseTo(-16.96, 2);
   });
+  it('canal Shopee (20% + R$ 4): (custo + 4) × (1 + markup) ÷ 0,8; lucro (custo + 4) × markup', () => {
+    const base = calcLaserJob(input)!;
+    const r = calcLaserJob({ ...input, channelFeePct: 20, channelFixedFee: 4 })!;
+    expect(r.suggestedUnit).toBeCloseTo(((base.totalCostUnit + 4) * 2.5) / 0.8, 10);
+    expect(r.profit).toBeCloseTo((base.totalCostUnit + 4) * 1.5, 10);
+    expect(r.margin).toBeCloseTo((r.profit / r.suggestedUnit) * 100, 10);
+  });
+  it('Venda Direta (sem taxa) dá o mesmo resultado de antes', () => {
+    expect(calcLaserJob({ ...input, channelFeePct: 0, channelFixedFee: 0 })).toEqual(calcLaserJob(input));
+  });
   it('sem tempo de máquina não calcula; vida útil 0 não divide por zero', () => {
     expect(calcLaserJob({ ...input, cuttingTimeMin: 0, engravingTimeMin: 0 })).toBeNull();
     expect(calcLaserJob({ ...input, diodeLifeH: 0 })!.wearCost).toBe(0);
@@ -91,6 +101,11 @@ describe('Papelaria (seção 14)', () => {
   });
   it('14.4 material do estoque: TESTE Fita cetim R$ 1,20 × 3 = R$ 3,60', () => {
     expect(sumItemsCost([{ unitCost: 1.2, quantity: 3 }])).toBeCloseTo(3.6, 10);
+  });
+  it('canal Shopee (20% + R$ 4): sugerido R$ 46,88, lucro R$ 22,50', () => {
+    const r = calcPapelariaJob({ ...input, channelFeePct: 20, channelFixedFee: 4 })!;
+    expect(r.suggestedUnit).toBeCloseTo(46.875, 10);
+    expect(r.profit).toBeCloseTo(22.5, 10);
   });
   it('sem materiais nem tempo não calcula', () => {
     expect(
@@ -140,6 +155,13 @@ describe('Cestas (seção 15)', () => {
   });
   it('15.4 mesmos dados com 2 cestas: custo por cesta R$ 35,75 (itens são do lote inteiro)', () => {
     expect(calcCestaJob({ ...input, quantity: 2 })!.totalCostUnit).toBeCloseTo(35.75, 10);
+  });
+  it('comissão 10% + canal Shopee (20% + R$ 4): sugerido R$ 269,64, lucro R$ 113,25', () => {
+    const r = calcCestaJob({ ...input, channelFeePct: 20, channelFixedFee: 4 })!;
+    expect(r.suggestedUnit).toBeCloseTo((75.5 * 2.5) / 0.7, 10);
+    expect(r.commissionValue).toBeCloseTo(r.suggestedUnit * 0.1, 10);
+    expect(r.channelCost).toBeCloseTo(r.suggestedUnit * 0.2 + 4, 10);
+    expect(r.profit).toBeCloseTo(113.25, 10);
   });
   it('15.6 comissão de 95%: sem preço possível, sugerido R$ 0,00', () => {
     const r = calcCestaJob({ ...input, commissionPct: 95 })!;
