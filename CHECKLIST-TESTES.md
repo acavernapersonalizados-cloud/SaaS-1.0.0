@@ -14,6 +14,14 @@ exatamente (diferenças de 1 centavo são arredondamento).
   que você cadastrar chega ao banco real. Entre com `admin@teste.local` / `Teste@123` (ADMIN); a
   **"Loja Teste"** e a Base de Custos da tabela abaixo já vêm criadas. Detalhes no `README.md`.
 - Para recomeçar do zero: `npm run dev:limpo`.
+- **Para desligar, use Ctrl+C no terminal** e espere a mensagem de export do emulador. Fechar pelo painel ou matar
+  o processo não salva o que você cadastrou (o `.emulator-data` fica com a versão anterior).
+- **O emulador já vem com dados de teste** (criados pelo `scripts/seed-emulator.mjs` a cada `npm run dev`):
+  "TESTE Cliente", "TESTE Fornecedor", o produto "TESTE Chaveiro" (sem materiais), a impressora "TESTE 3D", o laser
+  "TESTE Laser" e 3 orçamentos do TESTE Cliente: **Aprovado R$ 230,00** (10/10/2026), **Pendente R$ 60,00** (15/10) e
+  **Finalizado R$ 90,00** (05/10, gravado só com o nome do cliente, sem o vínculo). Para os testes das seções 6, 8 e
+  12–13, crie os seus com os nomes indicados ou use os que já existem; **não crie outro cliente chamado
+  "TESTE Cliente"** (veja a seção 17).
 - **Só o site publicado (`saas-1-0-0.web.app`) usa o banco real.** Se testar lá, use a "Loja Teste",
   nomes começando com **"TESTE"**, apague tudo no final e **não teste a importação de backup**
   (seção 17), que sobrescreve registros.
@@ -48,7 +56,7 @@ exatamente (diferenças de 1 centavo são arredondamento).
 |---|---|---|
 | 2.1 | Entrar com o e-mail de administrador | Entra direto no Dashboard. Menu mostra também **Lojas**, **Usuários** e **Backup**. |
 | 2.2 | Criar conta nova com um e-mail qualquer (aba de cadastro: Nome, Telefone, E-mail, Senha) | Conta criada com status **pendente**: a pessoa não entra no sistema até ser aprovada. |
-| 2.3 | Como admin, ir em **Usuários** e aprovar essa conta | Mensagem "Usuário aprovado com sucesso!". A pessoa agora consegue entrar. |
+| 2.3 | Como admin, ir em **Usuários** e aprovar essa conta | A janela pergunta só "Deseja aprovar o usuário …?" (sem prometer e-mail). Mensagem "Usuário aprovado com sucesso!". A pessoa agora consegue entrar. |
 | 2.4 | Bloquear essa conta | Mensagem "Usuário bloqueado com sucesso!". A pessoa não consegue mais usar o sistema. |
 | 2.5 | Tentar bloquear ou excluir o seu próprio usuário | Erro: "Você não pode bloquear/excluir seu próprio usuário." |
 | 2.6 | "Esqueci a senha" com um e-mail cadastrado | Chega um e-mail de redefinição de senha. |
@@ -58,6 +66,7 @@ exatamente (diferenças de 1 centavo são arredondamento).
 
 - [ ] Criar **"Loja Teste"** com Razão Social, Nome Fantasia, Telefone, E-mail, Endereço, Bairro, CEP, Cidade, Estado.
 - [ ] Enviar um logo (imagem) e escolher Cor Primária e Cor Secundária → aparecem no cadastro da loja.
+- [ ] Não existe mais o campo "Logo (URL)". Uma loja que já tinha logo por endereço continua mostrando a imagem.
 - [ ] A loja aparece no seletor de loja no topo da tela.
 - [ ] Trocar de loja no seletor → as listas (produtos, materiais etc.) mudam para os dados daquela loja.
 
@@ -98,7 +107,7 @@ Crie dois usuários de teste: um **GERENTE** e um **OPERADOR**, os dois vinculad
 - [ ] Criar "TESTE Fornecedor" com Nome da Empresa, Nome do Contato, E-mail, Telefone, Website, Endereço, Observações.
 - [ ] Forma de Pagamento: as opções são Dinheiro, Pix, Crédito, Boleto.
 - [ ] Condição: Crédito à vista, Crédito parcelado, Boleto 30, 60, 90, 30/60, 30/60/90.
-- [ ] Campo Desconto aceita número.
+- [ ] Não existe mais o campo **Desconto** (nem nos detalhes do fornecedor): ele não entrava em conta nenhuma.
 - [ ] Buscar por nome, contato ou e-mail → filtra a lista.
 - [ ] Editar e excluir → "Fornecedor excluído com sucesso!".
 
@@ -118,6 +127,10 @@ Cadastre estes três materiais (com o fornecedor de teste):
 - [ ] Deixar o Nome ou o Preço vazio e salvar → o navegador pede para preencher o campo.
 - [ ] Preço de Compra **0** → aviso "Preencha o nome e um preço de compra maior que zero."
 - [ ] Pacote com **0** itens → aviso "Informe a quantidade de itens no pacote (maior que zero)."
+- [ ] O campo se chama **"Estoque Mínimo (opcional)"**: cadastrar "TESTE Sem mínimo" (un, R$ 10, quantidade 2, estoque
+  5) **sem** mínimo → salva. Em **Estoque**, a coluna Estoque Mínimo mostra **"—"** e o item **não** aparece como baixo.
+- [ ] Conhecido (no Estacionamento, não é falha desta etapa): o campo **Estoque Atual** ainda não aceita **0** no
+  cadastro.
 
 ## 8. Produtos
 
@@ -191,7 +204,7 @@ Antes: anote o estoque atual de TESTE MDF (10) e TESTE Argola (100). Use o orça
 | 11.6b | Clicar **Finalizado** de novo no mesmo orçamento | O estoque **não** baixa uma segunda vez |
 | 11.7 | Orçamento novo: **Aprovado**, depois voltar para **Pendente** | A reserva some do painel de Produção (fica "liberada"); o estoque não muda |
 | 11.8 | Cliente com WhatsApp: botão de mensagem | Abre o WhatsApp com a mensagem do orçamento. Sem telefone: erro "Este cliente não possui telefone cadastrado." |
-| 11.9 | Botão Nota Fiscal / PDF Cliente / PDF Interno | Baixa o PDF correspondente. |
+| 11.9 | Botões **Gerar Recibo** / PDF Cliente / PDF Interno | Baixa o PDF correspondente. O recibo se chama `Recibo_<cliente>.pdf`, tem o título **RECIBO**, "VALOR TOTAL" e o rodapé "Este recibo não é nota fiscal e não tem valor fiscal." Mensagem "Recibo gerado com sucesso!". |
 | 11.10 | Excluir orçamento | "Orçamento excluído com sucesso!" |
 
 ## 12. Corte a Laser
@@ -221,7 +234,7 @@ Quantidade **4** · nas Configurações Avançadas: Tarifa **0,78938** (padrão)
 | 12.7 | Máquina antiga sem lista de materiais | O campo Material vira texto livre; digitar "MDF" permite salvar |
 
 > Os tempos são **por peça**: energia, desgaste e mão de obra se repetem em cada peça do lote.
-> Largura e altura da peça não aparecem na tela (ficam sempre 100 × 100 mm).
+> Largura e altura da peça não existem na tela e não são mais gravadas (trabalhos antigos mantêm o valor no banco).
 
 ## 13. Impressão 3D
 
@@ -293,7 +306,7 @@ Valor Hora **25** · Margem **60%**.
 | 14.5 | Do estoque com quantidade maior que o saldo (ex.: 50) | Aviso em laranja "quantidade acima do estoque atual" (não bloqueia) |
 | 14.6 | Salvar sem nome | Erro "Preencha nome, materiais e/ou tempos de producao." |
 
-> O campo "Quantidade de folhas/peças impressas" só é guardado; ele **não muda** o cálculo.
+> Não existe mais o campo "Quantidade de folhas/peças impressas" (ele não mudava o cálculo).
 > Salvar aqui **não baixa** o estoque.
 
 ## 15. Cestas
@@ -340,9 +353,20 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 - [ ] Barras de status dos produtos (Excelente, Bom, Margem Baixa, Arriscado, Prejuízo, Sem Preço) batem com a tela Produtos.
 
 **Clientes:**
-- [ ] Criar "TESTE Cliente" (Nome/Razão Social, Tipo PF ou PJ, Documento, WhatsApp `5511999999999`, E-mail, Cidade, Estado, Observações).
+- [ ] O "TESTE Cliente" do seed já existe. Para testar o cadastro, crie **"TESTE Cliente 2"** (Nome/Razão Social, Tipo PF
+  ou PJ, Documento, WhatsApp `5511999999999`, E-mail, Cidade, Estado, Observações). **Não** crie outro com o nome
+  "TESTE Cliente": com dois clientes do mesmo nome, orçamentos sem vínculo não são ligados a nenhum dos dois.
 - [ ] Buscar por nome, telefone ou documento.
-- [ ] Depois de um orçamento, o cliente mostra o histórico dele.
+- [ ] **Números do cliente** (contam só orçamentos **Aprovados, Em produção e Finalizados**; pendentes não contam):
+  com os dados do seed, o cartão do TESTE Cliente mostra **Total Gasto R$ 320,00** (230 + 90) e **Orçamentos 2**; a
+  janela de detalhes mostra **Última compra 10/10/2026**.
+- [ ] O orçamento **Finalizado de R$ 90,00** foi gravado só com o nome ("teste cliente", sem o vínculo) e mesmo assim
+  entra nos números: orçamento sem vínculo é ligado pelo nome quando um único cliente tem esse nome.
+- [ ] A janela de detalhes lista o histórico com **os 3 orçamentos** (inclusive o Pendente de R$ 60,00, que não entra
+  nos números).
+- [ ] Mudar o Pendente de R$ 60,00 para **Aprovado** no Histórico → o cartão passa na hora para **R$ 380,00** e
+  **Orçamentos 3**. Volte para Pendente depois.
+- [ ] Um cliente sem orçamentos fechados mostra **R$ 0,00**, **0** e "Nenhuma".
 
 **Catálogo e Catálogo Público:**
 - [ ] Copiar o link → "Link do catálogo copiado!" (formato `http://localhost:5173/catalogo/<id-da-loja>`).
@@ -363,7 +387,25 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 - [ ] **Não teste a importação** com o banco real: ela sobrescreve registros. Se for testar num banco de testes, um arquivo
   antigo sem `_meta` (como `backup_precifica_ja_2026-10-17.json`) deve gerar o aviso de "backup antigo" antes de gravar.
 
-## 18. Limpeza no final
+## 18. Botões sempre visíveis (computador e celular)
+
+Teste em duas larguras: a janela do navegador normal (zoom **100%**) e o modo celular (F12 → ícone de celular, ou o
+próprio celular).
+
+- [ ] **Matéria-prima → Novo Insumo**: com zoom 100%, o botão **Cadastrar Material** aparece sem rolar e continua
+  visível ao rolar o formulário. (Antes ficava fora da tela.)
+- [ ] O mesmo vale para o botão de salvar em: **Novo Cliente**, **Novo Fornecedor**, **Novo Produto**, **Nova
+  Máquina** (Laser), **Nova Impressora** (3D), **Novo Usuário**, **Orçamento Gerado** ("Concluir e Novo"), prévia do
+  **Backup** ("Restaurar"/"Cancelar") e **Detalhes do Orçamento** no Histórico.
+- [ ] Botões de editar/excluir aparecem **sem passar o mouse** em: máquinas do Laser, Lojas, Usuários (Aprovar,
+  Bloquear, Editar, Excluir), Produtos e Fornecedores.
+- [ ] No celular, a coluna **Ações** de **Matéria-prima** e **Histórico** fica visível à direita (a tabela rola por
+  baixo dela).
+- [ ] No celular, os botões sobre a foto do produto e sobre o logo da loja aparecem sem precisar "passar o mouse".
+- [ ] A tela de login abre rápido; o Dashboard (gráficos) carrega depois de entrar; o PDF só é baixado ao clicar num
+  botão de PDF.
+
+## 19. Limpeza no final
 
 - [ ] Apagar orçamentos, produtos, materiais, clientes, fornecedores, categorias, máquinas e trabalhos com "TESTE".
 - [ ] Apagar os usuários GERENTE e OPERADOR de teste.
@@ -373,7 +415,12 @@ Frete **10** · Comissão Vendedor **10%** · Margem **60%**.
 
 ## Situação dos problemas encontrados na análise
 
-Corrigidos na branch `validacao` (confira com os testes indicados):
+**Mudanças do enxugamento (Etapas 3 a 5)**, que este checklist já considera: rodapé fixo e ações sempre visíveis
+(18), abertura do app 44% menor (18), números reais do cliente (17), Recibo no lugar de "Nota Fiscal" (11.9), estoque
+mínimo opcional (7), sem desconto de fornecedor (6), sem "Logo (URL)" (3), sem largura/altura no Laser (12) e sem
+"folhas/peças impressas" na Papelaria (14). Nenhuma delas muda preço.
+
+Corrigidos antes do enxugamento (confira com os testes indicados):
 
 1. ✅ **Laser:** máquinas agora têm o campo "Materiais que a máquina trabalha" (12.0, 12.6, 12.7).
 2. ✅ **Laser:** os tempos são por peça e o lote = peça × quantidade (12.4).
