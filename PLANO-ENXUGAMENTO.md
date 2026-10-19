@@ -391,6 +391,9 @@ O Elo7 foi encerrado pela Enjoei.
     de canais (T4), lado a lado.
   - **Catálogo com preço no Pix e preço no crédito** (com a taxa do cartão embutida no preço do crédito), com
     opção de escolher o que aparece no catálogo.
+  - **Markup extra opcional por canal** na tabela de canais (19/10/2026): com o markup da Etapa 7, Shopee e Mercado
+    Livre ficam ~30% mais baratos que hoje (o lucro em R$ fica igual ao da venda direta). Um campo opcional por
+    canal permite cobrar a mais em um canal específico, se você quiser.
 
 ### Etapa 9 — Monitor de taxas
 
