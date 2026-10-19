@@ -19,11 +19,11 @@
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
-| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **ainda não publicada**: proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
+| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):** Etapa 7 concluída no código (tag `etapa-7-ok`), **ainda não publicada**: a publicação espera o seu pedido, depois dos seus testes no emulador. Antes de testar, o `CHECKLIST-TESTES.md` precisa ser atualizado com os valores de markup e da tabela de canais (seções 5, 8, 10 e 12–15). T3 (tarifa de energia única) ficou adiado. **Próximo passo: o que você decidir** (atualizar o checklist e testar a Etapa 7, ou seguir para a Etapa 8). Nada ficou pela metade.
+**Onde paramos (19/10/2026):** Etapa 7 concluída e **publicada** (só hosting, regras do banco intactas). Pendências: abrir **Produtos na T&N** uma vez para regravar os 60 preços de catálogo; atualizar o `CHECKLIST-TESTES.md` com os valores de markup e da tabela de canais; T3 (tarifa de energia única) adiado. **Próximo passo: Etapa 8 — Central de Calculadoras, ainda não começada.** Nada ficou pela metade.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -343,7 +343,7 @@ Você testa o app no Firebase Emulator (configurado na Etapa 2) seguindo o `CHEC
 
 Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do momento em que foram criados.
 
-**✅ Feita (19/10/2026), tag `etapa-7-ok` (não publicada).** Comparação antes/depois aprovada com o backup do banco
+**✅ Feita e publicada (19/10/2026), tag `etapa-7-ok`.** Backup do banco real conferido antes da publicação: completo, 0 falhas, 885 documentos; os 59 preços de catálogo da T&N estavam zerados pela versão antiga (sincronização com a meta de 100%) e voltam aos valores exatos da manhã (59 de 59) na primeira abertura de Produtos na T&N. Comparação antes/depois aprovada com o backup do banco
 real de 19/10 (só leitura); refeita no fim com o código final: **65 de 65 produtos com preço igual ao do catálogo
 gravado** (T&N volta a ter preço; A Caverna não muda), nenhum sem preço.
 
