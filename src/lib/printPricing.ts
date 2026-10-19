@@ -25,7 +25,6 @@ export const PRINT_CHANNELS: PrintChannelPreset[] = [
   { id: 'instagram', label: 'Instagram / WhatsApp', fees: { ...noFees, paymentPercent: 3.5 } },
   { id: 'shopee', label: 'Shopee', fees: { ...noFees, commissionPercent: 14, fixedFee: 4 } },
   { id: 'mercado-livre', label: 'Mercado Livre', fees: { ...noFees, commissionPercent: 14, fixedFee: 6 } },
-  { id: 'elo7', label: 'Elo7', fees: { ...noFees, commissionPercent: 12 } },
   { id: 'custom', label: 'Personalizado', fees: { ...noFees } },
 ];
 

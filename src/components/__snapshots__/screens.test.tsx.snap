@@ -11887,11 +11887,6 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                     Mercado Livre
                   </option>
                   <option
-                    value="elo7"
-                  >
-                    Elo7
-                  </option>
-                  <option
                     value="custom"
                   >
                     Personalizado
@@ -13066,11 +13061,6 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                     value="mercado-livre"
                   >
                     Mercado Livre
-                  </option>
-                  <option
-                    value="elo7"
-                  >
-                    Elo7
                   </option>
                   <option
                     value="custom"
@@ -14311,11 +14301,6 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                     value="mercado-livre"
                   >
                     Mercado Livre
-                  </option>
-                  <option
-                    value="elo7"
-                  >
-                    Elo7
                   </option>
                   <option
                     value="custom"

@@ -1,6 +1,13 @@
 // Impressão 3D — valores do CHECKLIST-TESTES.md (seção 13).
 import { describe, expect, it } from 'vitest';
-import { calculatePrintPrice, getPrintChannel, parsePrintGcode } from './printPricing';
+import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from './printPricing';
+
+describe('Canais da Impressão 3D', () => {
+  it('Elo7 não aparece mais (plataforma encerrada pela Enjoei)', () => {
+    expect(PRINT_CHANNELS.map(c => c.label)).not.toContain('Elo7');
+    expect(PRINT_CHANNELS.map(c => c.id)).not.toContain('elo7');
+  });
+});
 
 // Impressora "TESTE 3D" + trabalho PLA da seção 13.
 const base = {
