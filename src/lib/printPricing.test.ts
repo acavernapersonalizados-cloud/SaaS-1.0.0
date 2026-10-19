@@ -1,11 +1,18 @@
 // Impressão 3D — valores do CHECKLIST-TESTES.md (seção 13).
 import { describe, expect, it } from 'vitest';
-import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from './printPricing';
+import { calculatePrintPrice, NO_PRINT_FEES, parsePrintGcode, printFeesFromChannel } from './printPricing';
+import { DEFAULT_SALES_CHANNELS, findChannel } from './channels';
 
-describe('Canais da Impressão 3D', () => {
+const shopee = printFeesFromChannel(findChannel(DEFAULT_SALES_CHANNELS, 'shopee'));
+
+describe('Canais da Impressão 3D (tabela da loja)', () => {
   it('Elo7 não aparece mais (plataforma encerrada pela Enjoei)', () => {
-    expect(PRINT_CHANNELS.map(c => c.label)).not.toContain('Elo7');
-    expect(PRINT_CHANNELS.map(c => c.id)).not.toContain('elo7');
+    expect(findChannel(DEFAULT_SALES_CHANNELS, 'elo7')).toBeUndefined();
+    expect(findChannel(DEFAULT_SALES_CHANNELS, 'Elo7')).toBeUndefined();
+  });
+  it('taxas da 3D vêm da tabela: Shopee 20% + R$ 4', () => {
+    expect(shopee).toEqual({ commissionPercent: 20, paymentPercent: 0, fixedFee: 4, logisticsCost: 0 });
+    expect(printFeesFromChannel(undefined)).toEqual(NO_PRINT_FEES);
   });
 });
 
@@ -32,7 +39,7 @@ const base = {
   quantity: 1,
   manualPrice: null as number | null,
 };
-const direct = getPrintChannel('direct').fees;
+const direct = NO_PRINT_FEES;
 
 describe('Impressão 3D — custo (13.1)', () => {
   const r = calculatePrintPrice({ ...base, fees: direct });
@@ -57,9 +64,9 @@ describe('Impressão 3D — custo (13.1)', () => {
 });
 
 describe('Impressão 3D — canais, lote e preço manual', () => {
-  it('13.3 Shopee (14% + R$ 4), markup 150%: sugerido R$ 53,22, lucro (custo + R$ 4) × 1,5 = R$ 27,46', () => {
-    const r = calculatePrintPrice({ ...base, fees: getPrintChannel('shopee').fees });
-    expect(r.suggestedUnit).toBeCloseTo(((14.306 + 4) * 2.5) / 0.86, 3);
+  it('13.3 Shopee da tabela (20% + R$ 4), markup 150%: sugerido R$ 57,21, lucro (custo + R$ 4) × 1,5 = R$ 27,46', () => {
+    const r = calculatePrintPrice({ ...base, fees: shopee });
+    expect(r.suggestedUnit).toBeCloseTo(((14.306 + 4) * 2.5) / 0.8, 3);
     expect(r.profit).toBeCloseTo((14.306 + 4) * 1.5, 3);
     expect(r.margin).toBeCloseTo((r.profit / r.suggestedUnit) * 100, 10);
   });

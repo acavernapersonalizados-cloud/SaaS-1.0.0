@@ -11891,14 +11891,19 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                   class="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl outline-none text-sm"
                 >
                   <option
-                    value="direct"
+                    value="venda-direta"
                   >
-                    Venda direta
+                    Venda Direta
                   </option>
                   <option
                     value="instagram"
                   >
-                    Instagram / WhatsApp
+                    Instagram
+                  </option>
+                  <option
+                    value="atacado"
+                  >
+                    Atacado
                   </option>
                   <option
                     value="shopee"
@@ -11909,6 +11914,16 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                     value="mercado-livre"
                   >
                     Mercado Livre
+                  </option>
+                  <option
+                    value="ifood"
+                  >
+                    iFood
+                  </option>
+                  <option
+                    value="99food"
+                  >
+                    99Food
                   </option>
                   <option
                     value="custom"
@@ -11931,7 +11946,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                   min="0"
                   step="0.1"
                   type="number"
-                  value="14"
+                  value="20"
                 />
               </div>
             </div>
@@ -11983,7 +11998,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
               <input
                 class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                 min="0"
-                placeholder="R$ 29,09"
+                placeholder="R$ 31,27"
                 step="0.01"
                 type="number"
                 value=""
@@ -12232,7 +12247,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 8,07
+                    R$ 10,25
                   </span>
                 </div>
                 <div
@@ -12259,7 +12274,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 29,09
+                  R$ 31,27
                   <span
                     class="text-sm font-medium"
                   >
@@ -12271,7 +12286,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                 >
                   Margem real:
                    
-                  51,6%
+                  48,0%
                 </p>
               </div>
               <div
@@ -13074,14 +13089,19 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                   class="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl outline-none text-sm"
                 >
                   <option
-                    value="direct"
+                    value="venda-direta"
                   >
-                    Venda direta
+                    Venda Direta
                   </option>
                   <option
                     value="instagram"
                   >
-                    Instagram / WhatsApp
+                    Instagram
+                  </option>
+                  <option
+                    value="atacado"
+                  >
+                    Atacado
                   </option>
                   <option
                     value="shopee"
@@ -13092,6 +13112,16 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                     value="mercado-livre"
                   >
                     Mercado Livre
+                  </option>
+                  <option
+                    value="ifood"
+                  >
+                    iFood
+                  </option>
+                  <option
+                    value="99food"
+                  >
+                    99Food
                   </option>
                   <option
                     value="custom"
@@ -13114,7 +13144,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                   min="0"
                   step="0.1"
                   type="number"
-                  value="14"
+                  value="20"
                 />
               </div>
             </div>
@@ -13166,7 +13196,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
               <input
                 class="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold text-lg"
                 min="0"
-                placeholder="R$ 29,09"
+                placeholder="R$ 31,27"
                 step="0.01"
                 type="number"
                 value="20"
@@ -13415,7 +13445,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                   <span
                     class="font-bold"
                   >
-                    R$ 6,80
+                    R$ 8,00
                   </span>
                 </div>
                 <div
@@ -13442,7 +13472,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                 <p
                   class="text-2xl font-black text-emerald-700"
                 >
-                  R$ 29,09
+                  R$ 31,27
                   <span
                     class="text-sm font-medium"
                   >
@@ -13454,7 +13484,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                 >
                   Margem real:
                    
-                  51,6%
+                  48,0%
                 </p>
               </div>
               <div
@@ -13503,7 +13533,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-emerald-600"
                     >
-                      R$ 7,19
+                      R$ 5,99
                     </p>
                   </div>
                   <div>
@@ -13515,7 +13545,7 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                     <p
                       class="font-black text-sm text-emerald-600"
                     >
-                      36.0
+                      30.0
                       %
                     </p>
                   </div>
@@ -14321,14 +14351,19 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                   class="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl outline-none text-sm"
                 >
                   <option
-                    value="direct"
+                    value="venda-direta"
                   >
-                    Venda direta
+                    Venda Direta
                   </option>
                   <option
                     value="instagram"
                   >
-                    Instagram / WhatsApp
+                    Instagram
+                  </option>
+                  <option
+                    value="atacado"
+                  >
+                    Atacado
                   </option>
                   <option
                     value="shopee"
@@ -14339,6 +14374,16 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                     value="mercado-livre"
                   >
                     Mercado Livre
+                  </option>
+                  <option
+                    value="ifood"
+                  >
+                    iFood
+                  </option>
+                  <option
+                    value="99food"
+                  >
+                    99Food
                   </option>
                   <option
                     value="custom"

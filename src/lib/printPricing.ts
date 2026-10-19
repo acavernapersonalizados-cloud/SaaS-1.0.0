@@ -1,3 +1,4 @@
+import type { SalesChannel } from '../types';
 import { energyCost as energyFor, laborCostFromHours, priceForMarkup, wearCost } from './pricingEngine';
 
 export interface PrintChannelFees {
@@ -7,28 +8,26 @@ export interface PrintChannelFees {
   logisticsCost: number;
 }
 
-export interface PrintChannelPreset {
-  id: string;
-  label: string;
-  fees: PrintChannelFees;
-}
-
-const noFees: PrintChannelFees = {
+export const NO_PRINT_FEES: PrintChannelFees = {
   commissionPercent: 0,
   paymentPercent: 0,
   fixedFee: 0,
   logisticsCost: 0,
 };
 
-export const PRINT_CHANNELS: PrintChannelPreset[] = [
-  { id: 'direct', label: 'Venda direta', fees: { ...noFees } },
-  { id: 'instagram', label: 'Instagram / WhatsApp', fees: { ...noFees, paymentPercent: 3.5 } },
-  { id: 'shopee', label: 'Shopee', fees: { ...noFees, commissionPercent: 14, fixedFee: 4 } },
-  { id: 'mercado-livre', label: 'Mercado Livre', fees: { ...noFees, commissionPercent: 14, fixedFee: 6 } },
-  { id: 'custom', label: 'Personalizado', fees: { ...noFees } },
-];
+/** Opção "Personalizado": taxas digitadas à mão na própria 3D. */
+export const CUSTOM_PRINT_CHANNEL = 'custom';
 
-export const getPrintChannel = (id: string) => PRINT_CHANNELS.find(channel => channel.id === id) ?? PRINT_CHANNELS[0];
+/** Taxas da 3D a partir de um canal da tabela da loja (Etapa 7). Logística fica para digitar à mão. */
+export const printFeesFromChannel = (channel: SalesChannel | undefined): PrintChannelFees =>
+  channel
+    ? {
+        commissionPercent: channel.commissionPct,
+        paymentPercent: channel.paymentPct,
+        fixedFee: channel.fixedFee,
+        logisticsCost: 0,
+      }
+    : { ...NO_PRINT_FEES };
 
 const safe = (value: number) => (Number.isFinite(value) && value >= 0 ? value : 0);
 

@@ -16,7 +16,15 @@ import { Material, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { clampMarkup, realMargin } from '../lib/pricingEngine';
-import { calculatePrintPrice, getPrintChannel, parsePrintGcode, PRINT_CHANNELS } from '../lib/printPricing';
+import {
+  calculatePrintPrice,
+  CUSTOM_PRINT_CHANNEL,
+  NO_PRINT_FEES,
+  parsePrintGcode,
+  printFeesFromChannel,
+} from '../lib/printPricing';
+import { channelsOf, findChannel } from '../lib/channels';
+import { useCostBase } from '../hooks/useCostBase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -101,8 +109,11 @@ export function PrintCalculator() {
   const [postProcessHours, setPostProcessHours] = useState(0);
   const [packagingCost, setPackagingCost] = useState(0);
   const [extrasCost, setExtrasCost] = useState(0);
-  const [channelId, setChannelId] = useState('direct');
-  const [fees, setFees] = useState(getPrintChannel('direct').fees);
+  // Canais da tabela da loja (Base de Custos) + "Personalizado".
+  const { costs } = useCostBase();
+  const channels = channelsOf(costs);
+  const [channelId, setChannelId] = useState('venda-direta');
+  const [fees, setFees] = useState(NO_PRINT_FEES);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [materialId, setMaterialId] = useState('');
   const [deductStock, setDeductStock] = useState(false);
@@ -198,7 +209,7 @@ export function PrintCalculator() {
 
   const handleChannelChange = (value: string) => {
     setChannelId(value);
-    setFees({ ...getPrintChannel(value).fees });
+    setFees(value === CUSTOM_PRINT_CHANNEL ? { ...NO_PRINT_FEES } : printFeesFromChannel(findChannel(channels, value)));
   };
 
   const handleGcode = async (file: File) => {
@@ -678,11 +689,12 @@ export function PrintCalculator() {
                   onChange={e => handleChannelChange(e.target.value)}
                   className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl outline-none text-sm"
                 >
-                  {PRINT_CHANNELS.map(channel => (
+                  {channels.map(channel => (
                     <option key={channel.id} value={channel.id}>
-                      {channel.label}
+                      {channel.name}
                     </option>
                   ))}
+                  <option value={CUSTOM_PRINT_CHANNEL}>Personalizado</option>
                 </select>
               </div>
               <div className="space-y-1">
