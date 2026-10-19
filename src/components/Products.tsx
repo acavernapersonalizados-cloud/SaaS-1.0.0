@@ -15,6 +15,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs } from '../lib/pricingEngine';
+import { nextCatalogPrice } from '../lib/catalog';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -153,9 +154,9 @@ export function Products() {
     if (!activeStore || !costs || products.length === 0) return;
     const timer = setTimeout(() => {
       products.forEach(p => {
-        const price = Number(calcProductPricing(p, materials, costs).effectivePrice) || 0;
-        const stored = Number(p.catalogPrice) || 0;
-        if (Math.abs(price - stored) > 0.01) {
+        // Nunca troca um preço gravado por R$ 0 (ex.: meta de lucro inválida).
+        const price = nextCatalogPrice(p.catalogPrice, Number(calcProductPricing(p, materials, costs).effectivePrice));
+        if (price !== null) {
           updateDoc(doc(db, 'products', p.id), { catalogPrice: price }).catch(() => {});
         }
       });
@@ -184,8 +185,11 @@ export function Products() {
         // Mantém o campo antigo preenchido para telas/dados legados
         category: newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', ') || '',
         storeId: activeStore.id,
-        // Preço público pré-calculado: o catálogo não precisa mais ler custos
-        catalogPrice: Number(pricing.effectivePrice) || 0,
+        // Preço público pré-calculado: o catálogo não precisa mais ler custos.
+        // Preço inválido (R$ 0) não apaga o preço que já estava gravado.
+        catalogPrice:
+          nextCatalogPrice(editingProduct?.catalogPrice, Number(pricing.effectivePrice)) ??
+          (Number(editingProduct?.catalogPrice) || 0),
         updatedAt: new Date().toISOString(),
       };
       if (editingProduct) {
