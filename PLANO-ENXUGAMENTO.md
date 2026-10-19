@@ -17,10 +17,10 @@
 | 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
 | 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
-| 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ⏳ Pendente |
+| 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ⏳ Pendente |
 | 7 — Unificar parâmetros de preço | T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
-| 8 — Central de Calculadoras | As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
@@ -105,7 +105,7 @@ Componentes de apoio das telas, todos usados: `Layout.tsx` (373, menu e botão "
 | `signInWithGoogle` e `googleProvider` em `firebase.ts:65-68` | 4 linhas | `signInWithGoogle` → só a declaração; `googleProvider` só é usado por ela. O login é por e-mail e senha (`Login.tsx`). |
 | `isFirebaseConfigured` em `firebase.ts:58` | 1 linha | `grep -rnw` → só a declaração. |
 | `type LaserMachineId` em `types.ts:108` | 1 linha | `grep -rnw` → só a declaração. |
-| Campo `discount` no formulário de Fornecedores | 4 pontos (`Suppliers.tsx:47,108,141,299`) | O valor é zerado e copiado, mas **não existe campo na tela** para digitar; sempre grava 0. **Decidido (T12): remover**, na Etapa 5. |
+| Campo `discount` no formulário de Fornecedores | 4 pontos (`Suppliers.tsx:47,108,141,299`) | O valor é zerado e copiado, mas **não existe campo na tela** para digitar; sempre grava 0. **Decidido (T12): remover**, na Etapa 5. **Correção (18/10/2026):** o campo "Desconto (%)" existia, sim (formulário e detalhes); não entrava em conta nenhuma e foi removido mesmo assim, com sua confirmação. |
 | Campo `followUpStatus` do orçamento | 1 ponto (`Pricing.tsx:399`) | Gravado como "Pendente" e **nunca lido** em nenhuma tela. Parar de gravar não perde nada; o valor antigo fica no banco. |
 | `console.log` de depuração | 5 linhas (`Suppliers.tsx:76,78,85,91`, `Layout.tsx:56`) | Mensagens de teste no console. Os 2 de `Users.tsx:99-101` ficam para a seção 5 (T11). |
 | Código comentado | **0 blocos** | Busca por linhas `//` com código e por `/* */` com JSX: nada. Os 103 comentários JSX são títulos de seção (`{/* Header */}`) e ficam. |
@@ -211,7 +211,7 @@ Os 10 somam 8.678 linhas (52% de `src/`).
 | T9 | Estoque × Matéria-prima | Estoque só tem +1/−1 e um contador, e o mesmo saldo é editado em Matéria-prima. | 🅿️ Estacionamento. | Seção 7 |
 | T10 | Histórico | O botão "Gerar Nota Fiscal" gera um PDF que **não é nota fiscal** (`pdf.ts:256` diz "representação"). Pode confundir o cliente. | ✅ **Aprovado:** renomear para **"Recibo"** (botão, mensagens e título do PDF). | Etapa 5 |
 | T11 | Usuários | Ao aprovar, a função diz notificar por e-mail e WhatsApp, mas só escreve no console (`Users.tsx:97-104`). | ✅ **Aprovado:** remover a função que finge notificar. A notificação real fica no estacionamento. | Etapa 5 |
-| T12 | Fornecedores | O campo "desconto" existe no registro, mas não há onde digitar (sempre 0). | ✅ **Aprovado:** remover (registros antigos mantêm o valor no banco). | Etapa 5 |
+| T12 | Fornecedores | O campo "desconto" existe no registro, mas não há onde digitar (sempre 0). **Correção (18/10/2026):** havia campo "Desconto (%)"; não entrava em conta nenhuma. | ✅ **Aprovado:** remover (registros antigos mantêm o valor no banco). Confirmado de novo em 18/10/2026. | Etapa 5 |
 | T14 | Matéria-prima | O campo de estoque mínimo não diz que é opcional; vazio, é gravado como 0. O código já trata 0 como "sem mínimo" (`isLowStock` em `lib/utils.ts`, usada também pela Lista de Compras). Ao começar, conferir todas as telas que mostram alerta de estoque e deixar o campo claramente opcional. | ✅ **Aprovado (18/10/2026):** estoque mínimo opcional. Itens sem mínimo não geram alerta de estoque baixo nem entram na lista de compras por falta de mínimo. Não muda preço. | Etapa 5 |
 
 ---
@@ -273,19 +273,24 @@ snapshots e comparando o HTML final (`DUMP_HTML`) antigo × novo caractere a car
 
 ### Etapa 5 — Peso e telas aprovadas
 
-| Item | Risco |
-|---|---|
-| **T13 (primeiro item):** botões sempre visíveis — Salvar/Cancelar em rodapé fixo nas janelas de cadastro/edição e ações das tabelas sem rolagem lateral nem passar o mouse (detalhes abaixo) | médio |
-| Carregar gráficos e PDF só quando usados (Dashboard sob demanda e ajuste do `manualChunks`): carga inicial −45% | médio |
-| T1: Clientes mostram total gasto, nº de orçamentos e última compra reais | baixo |
-| T5: Laser deixa de gravar largura e altura | baixo |
-| T6: Papelaria sem o campo "folhas/peças impressas" | baixo |
-| T8: Lojas sem o campo "Logo (URL)", mantendo a exibição das logos já cadastradas | baixo |
-| T10: "Gerar Nota Fiscal" vira "Recibo" | baixo |
-| T11: remover a notificação falsa ao aprovar usuário | baixo |
-| T12: remover o desconto de fornecedor | baixo |
-| T14: estoque mínimo opcional na Matéria-prima — itens sem mínimo não geram alerta de estoque baixo nem entram na lista de compras por falta de mínimo | baixo |
-| Quebrar `Products.tsx` e `Pricing.tsx` em partes menores, depois das etapas acima | médio |
+**✅ Feita (18/10/2026), tag `etapa-5-ok`.** Conferida no app com o emulador em 1366×768, 1366×650 (notebook com as
+barras do navegador) e 375×812 (celular). Dados de teste novos no seed do emulador: cliente, fornecedor, produto e 2
+orçamentos.
+
+| Item | Resultado | Risco |
+|---|---|---|
+| **T13a:** rodapé fixo nas janelas | Salvar/Cadastrar sempre visível (rodapé `sticky`, janela até 90% da tela) em Novo Insumo (que não rolava), Cliente, Fornecedor, Produto, Máquina (Laser), Impressora (3D), Usuário, Orçamento Gerado, prévia do Backup e Detalhes do Orçamento | médio |
+| **T13b:** ações sem esconder | Botões de ação sempre visíveis em Laser, Lojas, Usuários, Produtos e Fornecedores; sobre imagens (foto do produto, logo), sempre visíveis em telas sem mouse; coluna "Ações" presa à direita em Matéria-prima e Histórico | médio |
+| Carga inicial menor | O ajudante do Vite e o React tinham ido parar nos pacotes de PDF e de gráficos; agora têm pacote próprio, o Dashboard carrega sob demanda e o PDF só baixa quando é pedido. Abertura: **1.778 → 989 KB (−44%)** | médio |
+| T1 | Total gasto (aprovados, em produção e finalizados), nº de orçamentos e última compra calculados dos orçamentos (`lib/clientStats.ts`, 6 testes) | baixo |
+| T5 | Laser deixa de gravar largura e altura | baixo |
+| T6 | Papelaria sem "folhas/peças impressas" e sem `printedAreaCm2` | baixo |
+| T8 | Lojas sem "Logo (URL)"; logos antigas continuam aparecendo | baixo |
+| T10 | "Gerar Recibo": botão, mensagens, título, rodapé e nome do PDF (`Recibo_…pdf`) | baixo |
+| T11 | Sem a função que fingia notificar e sem a promessa de e-mail na janela de aprovar | baixo |
+| T12 | Desconto de fornecedor removido (havia campo; ver correção na seção 5) | baixo |
+| T14 | Estoque mínimo opcional (não é mais obrigatório); Estoque mostra "—" sem mínimo | baixo |
+| ~~Quebrar `Products.tsx` e `Pricing.tsx`~~ | **Movido para o início da Etapa 8** (decisão de 18/10/2026), que já vai mexer nessas telas | — |
 
 Nenhum item aprovado da Etapa 5 muda preço ou cálculo.
 
@@ -342,6 +347,7 @@ Orçamentos e trabalhos já gravados não mudam: eles guardam os valores do mome
 
 **Só começa depois da Etapa 7. Por enquanto é só planejamento:** o detalhamento (telas, campos, riscos e testes) será feito quando a etapa começar.
 
+- **Primeiro item (vindo da Etapa 5):** dividir `Products.tsx` (1.342 linhas) e `Pricing.tsx` (1.142) em partes menores, sem mudar nada na tela, com os testes de HTML da Etapa 4B como rede de segurança.
 - As 4 calculadoras (Corte a Laser, Impressão 3D, Papelaria e Cestas) **continuam independentes**, mas ficam numa **única guia do menu**.
 - Um **trabalho salvo** pode ser transformado em **Produto** e publicado no **Catálogo**, na hora ou depois.
 
@@ -374,4 +380,6 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 - **Lista de Compras:** o registro de compra atualiza o estoque sem transação (`PurchaseList.tsx`), diferente do resto do app.
 - **Janela de exclusão de Clientes com largura `max-md`** (`Clients.tsx`): provável erro de digitação de `max-w-md`. Mantido igual na Etapa 4B, porque corrigir muda o visual.
 - **Unificações de tela que ficaram de fora na Etapa 4B:** janela de exclusão de Usuários; buscas de Catálogo, Produtos, Catálogo público e Lista de Compras; histórico e cartão de resultado da Impressão 3D; `useStoreJobs`. Todas exigem aceitar uma pequena mudança visual ou ter teste da exclusão primeiro.
+- **Estoque Atual não aceita 0 no cadastro de Matéria-prima** (`Materials.tsx`): o campo é obrigatório e mostra 0 como vazio, então não dá para cadastrar um insumo com estoque zero. Mesmo problema que o T14 resolveu no estoque mínimo (encontrado em 18/10/2026).
+- **Precificação: mensagem de PDF gerado antes de o PDF ficar pronto** (`Pricing.tsx`, botões do Orçamento Gerado): falta `await` na geração, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
 - **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.
