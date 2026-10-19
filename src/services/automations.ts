@@ -1,5 +1,5 @@
 import { doc, updateDoc, getDoc, collection, addDoc, query, where, getDocs, runTransaction } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, notifyError } from '../firebase';
 import { QuoteStatus, Quote, StockReservation } from '../types';
 import { sendWhatsAppMessage, generateStatusMessage } from './whatsapp';
 
@@ -121,10 +121,10 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
           reason: `Orçamento ${newStatus}`,
           reservations,
           createdAt: new Date().toISOString(),
-        }).catch(() => {});
+        }).catch(err => notifyError('Registro do movimento de estoque (reserva) não foi gravado', err, 'warning'));
       }
     } catch (err) {
-      console.warn('[automations] Reservation creation failed:', err);
+      notifyError('A reserva de estoque não foi criada', err, 'warning');
       // Don't block status update — reservation failure is non-critical
     }
   }
@@ -188,7 +188,7 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
             reason: `Orçamento ${newStatus}`,
             deductions,
             createdAt: new Date().toISOString(),
-          }).catch(() => {});
+          }).catch(err => notifyError('Registro do movimento de estoque (baixa) não foi gravado', err, 'warning'));
 
           if (phone && productName) {
             const msg = generateStatusMessage(newStatus, productName);
@@ -198,7 +198,7 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
         }
         // Nada foi baixado (já processado): segue para a atualização simples de status.
       } catch (err) {
-        console.warn('[automations] Stock deduction failed, falling through to simple status update:', err);
+        notifyError('O estoque NÃO foi baixado; o status do orçamento será atualizado mesmo assim', err);
         // Fall through to simple status update below
       }
     }
@@ -222,9 +222,9 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
           reason: `Orçamento ${newStatus}`,
           released: reservation.reservations,
           createdAt: new Date().toISOString(),
-        }).catch(() => {});
+        }).catch(err => notifyError('Registro do movimento de estoque (liberação) não foi gravado', err, 'warning'));
       } catch (err) {
-        console.warn('[automations] Reservation release failed:', err);
+        notifyError('A reserva de estoque não foi liberada', err, 'warning');
       }
     }
   }

@@ -17,3 +17,4 @@ export enum OperationType {
 }
 
 export function handleFirestoreError() {}
+export function notifyError() {}

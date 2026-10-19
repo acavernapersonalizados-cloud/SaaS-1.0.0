@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { friendlyFirestoreMessage } from './lib/firestoreErrors';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Desenvolvimento (npm run dev) usa SEMPRE o Firebase Emulator, nunca o banco
@@ -124,11 +125,21 @@ export interface FirestoreErrorInfo {
   };
 }
 
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const message = error instanceof Error ? error.message : String(error);
-  const isPermissionError = message.includes('permission-denied') || message.includes('insufficient permissions');
+/**
+ * Mostra um aviso na tela (via ToastContext) com o contexto e o motivo do erro, sem lançar exceção.
+ * Para falhas que não podem passar em silêncio (ex.: estoque não baixado).
+ */
+export function notifyError(context: string, error: unknown, type: 'error' | 'warning' = 'error') {
+  const message = `${context}: ${friendlyFirestoreMessage(error)}`;
+  console.error(`[Firestore] ${message}`, error);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('firestore-error', { detail: { message, type } }));
+  }
+}
 
-  const userMessage = isPermissionError ? 'Acesso negado. Você não tem permissão para esta ação.' : message;
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const userMessage = friendlyFirestoreMessage(error);
+  const isPermissionError = userMessage.startsWith('Acesso negado');
 
   const errInfo: FirestoreErrorInfo = {
     error: userMessage,

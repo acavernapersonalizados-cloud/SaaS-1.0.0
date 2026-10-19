@@ -15,7 +15,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs, markupOf } from '../lib/pricingEngine';
-import { nextCatalogPrice } from '../lib/catalog';
+import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -152,14 +152,16 @@ export function Products() {
   // Necessário porque o catálogo público não lê mais custos nem materiais.
   useEffect(() => {
     if (!activeStore || !costs || products.length === 0) return;
-    const timer = setTimeout(() => {
-      products.forEach(p => {
+    const timer = setTimeout(async () => {
+      const writes = products.flatMap(p => {
         // Nunca troca um preço gravado por R$ 0 (ex.: meta de lucro inválida).
         const price = nextCatalogPrice(p.catalogPrice, Number(calcProductPricing(p, materials, costs).effectivePrice));
-        if (price !== null) {
-          updateDoc(doc(db, 'products', p.id), { catalogPrice: price }).catch(() => {});
-        }
+        return price !== null ? [updateDoc(doc(db, 'products', p.id), { catalogPrice: price })] : [];
       });
+      // Falha nunca é silenciosa: um aviso por rodada, com a quantidade e o motivo.
+      const failures = (await Promise.allSettled(writes)).flatMap(r => (r.status === 'rejected' ? [r.reason] : []));
+      const warning = catalogSyncFailureMessage(failures);
+      if (warning) addToast(warning, 'error');
     }, 1500);
     return () => clearTimeout(timer);
   }, [activeStore, products, materials, costs]);
