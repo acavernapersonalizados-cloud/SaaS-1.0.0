@@ -21,10 +21,11 @@
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **ainda não publicada** (publicar hosting + regras do banco quando você pedir). |
+| 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **ainda não publicada** (vai junto com a 7.1). |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):** Etapa 7.1 (segurança) concluída no código, tag `etapa-7.1-ok`, **ainda não publicada**: a publicação será **hosting + regras do banco** (`firebase deploy --only hosting,firestore:rules`), só quando você pedir, depois do backup conferido. A Etapa 7 está publicada e o catálogo da T&N foi recuperado. T3 (tarifa de energia única) continua adiado. **Próximo passo: publicar a 7.1 quando você pedir; depois, Etapa 8 — Central de Calculadoras.** Nada ficou pela metade.
+**Onde paramos (19/10/2026):** Etapas 7.1 (segurança) e 7.2 (tarifa de energia única, T3) concluídas no código, tags `etapa-7.1-ok` e `etapa-7.2-ok`, **ainda não publicadas**: a publicação das duas juntas será **hosting + regras do banco** (`firebase deploy --only hosting,firestore:rules`), só quando você pedir, depois do backup conferido. **Próximo passo: publicar 7.1 + 7.2 quando você pedir; depois, Etapa 8 — Central de Calculadoras.** Nada ficou pela metade.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -356,7 +357,7 @@ gravado** (T&N volta a ter preço; A Caverna não muda), nenhum sem preço.
 | 4. Markup sobre o custo (0–500%) | Base de Custos, Produtos, orçamento e calculadoras. Conversão na leitura: margem ÷ (1 − margem); 95% ou mais já era markup (T&N 100% → 100%; A Caverna 60% → 150%). Ao salvar, grava `markupPct` (e a margem equivalente em `profitGoal`). A margem real depois das taxas aparece ao lado. Nos canais com taxa, o preço cai ~30% em relação à regra de margem (mesmo lucro em R$ da venda direta) |
 | 5. Tabela única de canais por loja | Em `costBases/{loja}.salesChannels`, editável na Base de Custos (comissão, taxa fixa, pagamento, observação, conferido em). Valores: Venda Direta 0%, Instagram 3,5%, Atacado 5%, Shopee 20% + R$ 4 (opção A: markup também sobre a taxa fixa), Mercado Livre 18%, iFood 26,5%, 99Food 13%. Usada pelo orçamento, pela 3D e (campo novo) por Laser, Papelaria e Cestas |
 | 6. T2 | As calculadoras abrem com o valor da hora e o markup da Base de Custos (editáveis) |
-| T3 | **Adiado** (sem a tarifa de energia real) |
+| T3 | Feito na **Etapa 7.2** (tarifa única de R$ 0,79/kWh na Base de Custos) |
 
 Testes: 121 → 149. Regras do banco não mudaram.
 
@@ -409,6 +410,20 @@ Etapa 7, quando uma aba com a versão antiga regravou R$ 0 no catálogo da T&N.
 | 3. Checklist | Markup, tabela de canais (margem real por canal), orçamento nos 7 canais, calculadoras, aviso de versão |
 
 Testes: 149 → 155.
+
+### Etapa 7.2 — Tarifa de energia única (T3)
+
+**✅ Feita (19/10/2026), tag `etapa-7.2-ok` (não publicada).** Tarifa da sua conta da Enel: **R$ 0,79/kWh**
+(TU 0,39492 + TE 0,39401, com tributos, faixa sem desconto social).
+
+| Item | Resultado |
+|---|---|
+| Campo na Base de Custos | "Tarifa de energia (R$/kWh)" por loja; sem valor gravado mostra 0,79 com aviso, e grava ao salvar (`costBases/{loja}.electricityRate`) |
+| Laser e 3D | Abrem com a tarifa da loja (mesmo mecanismo do T2), campo editável. Conferido no emulador: loja com 0,83 → Laser e 3D abrem com 0,83 |
+| Padrão | Sem Base de Custos, 0,79 nas duas (antes 0,78938 no Laser e 0,85 na 3D) |
+| Comparação aprovada | Laser: diferença desprezível (R$ 43,86 = R$ 43,86); 3D do checklist R$ 35,77 → R$ 35,70 (−0,18%); trabalho 3D real (1.150 W, 7,3 h), se refeito hoje, R$ 52,75 → R$ 51,38 (−2,6%). **Nada gravado foi recalculado** (o trabalho real segue com R$ 33,76) |
+
+Testes: 155 → 157.
 
 ### Etapa 8 — Central de Calculadoras
 

@@ -104,6 +104,7 @@ Crie dois usuários de teste: um **GERENTE** e um **OPERADOR**, os dois vinculad
 > preço = (custo + taxa fixa) × (1 + markup) ÷ (1 − taxa %), e o lucro em R$ fica igual ao da venda direta.
 
 - [ ] O campo aceita de 0 a 500.
+- [ ] **Tarifa de energia (R$/kWh)** aparece com **0,79** e o aviso "Valor padrão: confira e salve…". Gravar **0,83** e salvar → o Corte a Laser e a Impressão 3D abrem com **0,83** nas Configurações Avançadas. Volte para **0,79** e salve.
 - [ ] Uma loja com meta antiga gravada (ex.: 60% "do preço") aparece convertida (60% → 150%) com o aviso
   "Convertido da meta antiga… Salve para gravar"; depois de salvar, o aviso some e o preço dos produtos não muda.
 
@@ -246,7 +247,7 @@ Cadastre a máquina "TESTE Laser":
 | (outros) | deixe o padrão |
 
 Trabalho: Material **MDF 3mm** · Tempo de Corte por peça **10** min · Tempo de Gravação **5** min · Passadas **2** · Custo do Material **20** (total) ·
-Quantidade **4** · nas Configurações Avançadas: Tarifa **0,78938** (padrão), digite Valor Hora **25** e Markup **150%** · Canal **Venda Direta**.
+Quantidade **4** · nas Configurações Avançadas: Tarifa **0,79** (da Base de Custos), digite Valor Hora **25** e Markup **150%** · Canal **Venda Direta**.
 
 - [ ] Ao abrir, Valor Hora e Markup vêm da Base de Custos (**R$ 20** e **100%**); com eles o sugerido é **R$ 30,09**.
 
@@ -278,16 +279,16 @@ Cadastre a impressora "TESTE 3D":
 | Manutenção Geral (R$/h) | 0,1 |
 
 Trabalho: Filamento **PLA** · Custo do Filamento **80** R$/kg · Filamento Usado **50** g · Tempo **2** h ·
-Taxa de Falha **5%** · Quantidade **1** · Avançadas: Tarifa **0,85**, Valor Hora Operador **12**, Markup **150**,
+Taxa de Falha **5%** · Quantidade **1** · Avançadas: Tarifa **0,79** (da Base de Custos), Valor Hora Operador **12**, Markup **150**,
 Pós-processamento **0,5** h, Embalagem **2**, Outros custos **0** · Canal **Venda direta**.
 
 | # | Teste | Resultado esperado |
 |---|---|---|
-| 13.1 | Detalhamento | Energia **R$ 0,36** · Filamento **R$ 4,20** · Hotend **R$ 0,34** · Mesa **R$ 0,06** · Depreciação **R$ 0,84** · Manutenção **R$ 0,21** · Mão de obra **R$ 6,30** · Embalagem **R$ 2,00** · Taxas **R$ 0,00** |
-| 13.2 | Totais | Custo **R$ 14,31** · Sugerido **R$ 35,77** · Lucro **R$ 21,46** · Margem **60%** |
-| 13.3 | Canal **Shopee** da tabela (20% + R$ 4 fixo) | Sugerido **R$ 57,21** · Taxas **R$ 15,44** · Lucro **R$ 27,46** · Margem real **48,0%** |
-| 13.4 | Quantidade 3 (venda direta) | Custo do lote **R$ 42,92** · Sugerido do lote **R$ 107,30** |
-| 13.5 | Preço manual 20 (venda direta) | Lucro **R$ 5,69** · Margem **28,5%** |
+| 13.1 | Detalhamento | Energia **R$ 0,33** · Filamento **R$ 4,20** · Hotend **R$ 0,34** · Mesa **R$ 0,06** · Depreciação **R$ 0,84** · Manutenção **R$ 0,21** · Mão de obra **R$ 6,30** · Embalagem **R$ 2,00** · Taxas **R$ 0,00** |
+| 13.2 | Totais | Custo **R$ 14,28** · Sugerido **R$ 35,70** · Lucro **R$ 21,42** · Margem **60%** |
+| 13.3 | Canal **Shopee** da tabela (20% + R$ 4 fixo) | Sugerido **R$ 57,13** · Taxas **R$ 15,43** · Lucro **R$ 27,42** · Margem real **48,0%** |
+| 13.4 | Quantidade 3 (venda direta) | Custo do lote **R$ 42,84** · Sugerido do lote **R$ 107,11** |
+| 13.5 | Preço manual 20 (venda direta) | Lucro **R$ 5,72** · Margem **28,6%** |
 | 13.6 | Comissão + pagamento = 120 | O campo trava em **95** |
 | 13.7 | Salvar sem nome | Erro "Preencha nome e tempo de impressão." |
 | 13.8 | Canal Personalizado com comissão **95** | Aviso vermelho "As taxas do canal chegam a 95%…" e sugerido **R$ 0,00** |
