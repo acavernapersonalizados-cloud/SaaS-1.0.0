@@ -11,7 +11,6 @@
  */
 
 import type { Product, Material, CostBase, QuoteItem } from '../types';
-import { CHANNELS } from '../types';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
 
@@ -291,6 +290,8 @@ export function calcQuoteItem(
   materials: Material[],
   costs: CostBase,
   channelFeePercent: number,
+  /** Taxa fixa do canal por unidade (R$), ex.: Shopee R$ 4,00. */
+  channelFixedFee = 0,
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
 
@@ -307,7 +308,8 @@ export function calcQuoteItem(
 
   // Markup sobre o custo, com a taxa do canal somada por cima: depois de pagar a taxa,
   // o lucro em R$ é o mesmo da venda direta (custo × markup).
-  const markupPrice = priceForMarkup(totalProductionCost, markup, platformFeePercent);
+  const fixedFee = Math.max(0, Number(channelFixedFee) || 0);
+  const markupPrice = priceForMarkup(totalProductionCost, markup, platformFeePercent, fixedFee);
   const invalidMargin = markupPrice === null;
   const baseUnitPrice = markupPrice ?? 0;
 
@@ -332,7 +334,7 @@ export function calcQuoteItem(
   const pricePerItem = isPackage ? unitPrice / packageQuantity : unitPrice;
 
   const itemTotalCost = totalProductionCost * quantity;
-  const itemPlatformFee = totalPrice * (platformFeePercent / 100);
+  const itemPlatformFee = totalPrice * (platformFeePercent / 100) + fixedFee * quantity;
   const itemProfit = totalPrice - itemTotalCost - itemPlatformFee;
 
   const finishingNames = (product.finishingOptions || [])

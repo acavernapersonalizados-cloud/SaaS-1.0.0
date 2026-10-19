@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Product, Material, CostBase, Channel, CHANNELS, Quote, Client, QuoteItem } from '../types';
+import { Product, Material, CostBase, Quote, Client, QuoteItem } from '../types';
+import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
@@ -51,7 +52,7 @@ export function Pricing() {
   const [clientName, setClientName] = useState('');
   const [clientType, setClientType] = useState<'PF' | 'PJ'>('PF');
   const [cnpj, setCnpj] = useState('');
-  const [channel, setChannel] = useState<Channel>('Venda Direta');
+  const [channel, setChannel] = useState('Venda Direta');
   const [customMarkup, setCustomMarkup] = useState<number | null>(null);
   const [clientSearch, setClientSearch] = useState('');
   const [showClientList, setShowClientList] = useState(false);
@@ -76,16 +77,6 @@ export function Pricing() {
   };
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
-
-  // Totals calculation
-  const totals = quoteItems.reduce(
-    (acc, item) => ({
-      amount: acc.amount + item.totalPrice,
-      profit: acc.profit + (item.totalPrice * (1 - (CHANNELS[channel] || 0) / 100) - item.basePrice),
-      count: acc.count + 1,
-    }),
-    { amount: 0, profit: 0, count: 0 },
-  );
 
   // AI state
   const [aiAnalysis, setAiAnalysis] = useState('');
@@ -161,14 +152,19 @@ export function Pricing() {
     };
   }, [activeStore]);
 
+  // Canais da tabela da loja (Base de Custos); orçamentos guardam o nome do canal.
+  const channels = channelsOf(costs);
+  const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(findChannel(channels, channel));
+  const feeLabel = (pct: number, fixed: number) =>
+    `${formatPercent(pct)}${fixed > 0 ? ` + ${formatCurrency(fixed)}/un` : ''}`;
+
   // ── Fonte única de verdade: delega ao pricingEngine ──────────────────────
   const calculateItemCosts = (
     item: Partial<QuoteItem & { selectedFinishingIds: string[]; selectedAccessoryIds: string[] }>,
   ) => {
     const product = products.find(p => p.id === item.productId);
     if (!product || !costs) return null;
-    const channelFee = Number(CHANNELS[channel]) || 0;
-    return calcQuoteItem(item, product, materials, costs, channelFee);
+    return calcQuoteItem(item, product, materials, costs, channelFeePct, channelFixedFee);
   };
 
   const currentItemResults = calculateItemCosts(currentItem);
@@ -400,6 +396,8 @@ export function Pricing() {
         totalProfit: isFinite(totalProfit) ? totalProfit : 0,
         avgMargin: isFinite(avgMargin) ? avgMargin : 0,
         channel,
+        platformFee: channelFeePct,
+        channelFixedFee,
         status: 'Pendente',
         createdBy: user?.id || 'unknown',
         createdByName: user?.name || 'Sistema',
@@ -504,12 +502,12 @@ export function Pricing() {
         <div className="flex items-center gap-3">
           <select
             value={channel}
-            onChange={e => setChannel(e.target.value as Channel)}
+            onChange={e => setChannel(e.target.value)}
             className="px-4 py-3 bg-white border-2 border-neutral-100 rounded-2xl text-sm font-bold text-neutral-700 outline-none focus:border-neutral-900 transition-all shadow-sm"
           >
-            {Object.keys(CHANNELS).map(c => (
-              <option key={c} value={c}>
-                {c}
+            {channels.map(c => (
+              <option key={c.id} value={c.name}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -775,7 +773,7 @@ export function Pricing() {
                 )}
               </button>
               <p className="text-[10px] text-center text-neutral-400 font-bold uppercase tracking-widest">
-                Válido por {QUOTE_VALIDITY_DAYS} dias • {CHANNELS[channel]}% de acréscimo canal
+                Válido por {QUOTE_VALIDITY_DAYS} dias • taxas do canal: {feeLabel(channelFeePct, channelFixedFee)}
               </p>
             </div>
 
@@ -1084,7 +1082,9 @@ export function Pricing() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-neutral-400">Canal ({generatedQuote.channel})</span>
-                      <span className="font-bold">+{formatPercent(CHANNELS[generatedQuote.channel as Channel])}</span>
+                      <span className="font-bold">
+                        {feeLabel(generatedQuote.platformFee ?? 0, generatedQuote.channelFixedFee ?? 0)}
+                      </span>
                     </div>
                     <div className="h-px bg-white/10" />
                     <div className="flex justify-between items-end">

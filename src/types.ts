@@ -279,6 +279,8 @@ export interface Quote {
   avgMargin: number;
   channel: string;
   platformFee: number;
+  /** Taxa fixa do canal por unidade (R$), da tabela de canais (Etapa 7). */
+  channelFixedFee?: number;
   status: QuoteStatus;
   /** Legado: não é mais gravado nem lido; orçamentos antigos podem ter o valor. */
   followUpStatus?: FollowUpStatus;
@@ -321,16 +323,6 @@ export interface User {
   status: 'pendente' | 'aprovado' | 'bloqueado';
   createdAt: string;
 }
-
-export type Channel = 'Shopee' | 'Mercado Livre' | 'Instagram' | 'Venda Direta' | 'Atacado';
-
-export const CHANNELS: Record<Channel, number> = {
-  Shopee: 20,
-  'Mercado Livre': 18,
-  Instagram: 0,
-  'Venda Direta': 0,
-  Atacado: 5,
-};
 
 // ── Stock Reservation ──────────────────────────────────────────────────────
 export type ReservationStatus = 'active' | 'converted' | 'released';

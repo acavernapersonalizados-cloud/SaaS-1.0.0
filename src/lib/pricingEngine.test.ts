@@ -227,6 +227,14 @@ describe('Orçamento (seção 10) — 10 chaveiros, markup 100% (meta 50% conver
     expect(r.invalidMargin).toBe(true);
     expect(r.unitPrice).toBe(0);
   });
+  it('Shopee da tabela nova (20% + R$ 4 por unidade, opção A): R$ 28,75 / lucro R$ 115,00 (= (custo + 4) × markup)', () => {
+    const r = calcQuoteItem({ quantity: 10 }, chaveiro, materials, costs, 20, 4)!;
+    expect(r.unitPrice).toBeCloseTo(28.75, 10);
+    expect(r.totalPrice).toBeCloseTo(287.5, 10);
+    expect(r.itemPlatformFee).toBeCloseTo(287.5 * 0.2 + 40, 10);
+    expect(r.itemProfit).toBeCloseTo(115, 10);
+    expect(r.margin).toBeCloseTo(40, 10);
+  });
   it('markup alto (500%) com taxa continua válido', () => {
     expect(item(20, { customMarkup: 500 }).invalidMargin).toBe(false);
   });
