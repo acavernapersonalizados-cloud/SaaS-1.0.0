@@ -19,7 +19,7 @@
 | 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
-| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com Keeta, iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
+| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ⏳ Pendente |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
@@ -205,7 +205,7 @@ Os 10 somam 8.678 linhas (52% de `src/`).
 | T1 | Clientes | Os cartões "Total gasto", "Orçamentos" e "Última compra" sempre mostram **R$ 0,00 / 0 / —**: são gravados zerados (`Clients.tsx:144-146`) e nada os atualiza. | ✅ **Aprovado:** mostrar os valores reais, calculados a partir dos orçamentos do cliente. | Etapa 5 |
 | T2 | Calculadoras | "Valor Hora Trabalho" (25 ou 12) e "Margem de Lucro" (60%) não dependem da **Base de Custos** (R$ 20/h e Meta de Lucro da loja). São duas fontes para o mesmo número. | ➡️ Usar a Base de Custos como valor inicial, mantendo o campo editável. | Etapa 7 |
 | T3 | Calculadoras | Tarifa de energia padrão diferente: 0,78938 (Laser) e 0,85 (3D). | ➡️ Um valor só, guardado na Base de Custos. | Etapa 7 |
-| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | ➡️ Uma tabela só de canais, **editável e por loja** (comissão %, taxa fixa R$, taxa de pagamento %, observação e data da última conferência), usada pelos Orçamentos e por todas as calculadoras; com Keeta, iFood e 99Food (18/10/2026). **Primeiro item da Etapa 7.** | Etapa 7 |
+| T4 | Precificação × Impressão 3D | Duas tabelas de canais diferentes: o orçamento usa Shopee 20%, e a 3D usa Shopee 14% + R$ 4. | ➡️ Uma tabela só de canais, **editável e por loja** (comissão %, taxa fixa R$, taxa de pagamento %, observação e data da última conferência), usada pelos Orçamentos e por todas as calculadoras; com iFood e 99Food (18/10/2026; Keeta retirado em 19/10/2026). **Primeiro item da Etapa 7.** | Etapa 7 |
 | T5 | Corte a Laser | Largura e altura da peça são gravadas, mas não aparecem na tela (sempre 100 × 100 mm). | ✅ **Aprovado:** deixar de gravar (trabalhos antigos mantêm o valor no banco). | Etapa 5 |
 | T6 | Papelaria | "Quantidade de folhas/peças impressas" não muda o cálculo, e o campo `printedAreaCm2` do tipo nunca é usado. | ✅ **Aprovado:** tirar o campo da tela (e o `printedAreaCm2` do tipo). | Etapa 5 |
 | T7 | Produtos | "Categoria principal (opcional)", em texto livre, convive com as **categorias** múltiplas da tela Categorias. | 🅿️ Estacionamento. | Seção 7 |
@@ -366,8 +366,14 @@ O Elo7 foi encerrado pela Enjoei.
   - data da última conferência.
 - **Quem usa:** os Orçamentos (Precificação) e **todas as calculadoras** (Corte a Laser, Impressão 3D, Papelaria e
   Cestas). Hoje há duas tabelas fixas no código, com valores diferentes (orçamento: Shopee 20%; 3D: Shopee 14% + R$ 4).
-- **Canais novos:** **Keeta**, **iFood** e **99Food**. **Os valores serão preenchidos por você, conforme o seu
-  contrato**: o app não inventa taxas para eles.
+- **Canais novos:** **iFood** e **99Food**. **Os valores serão preenchidos por você, conforme o seu
+  contrato**: o app não inventa taxas para eles. O **Keeta** saiu da Etapa 7 por ora (19/10/2026) e está no
+  Estacionamento.
+- **Taxas informadas por você (19/10/2026):** Shopee **20% + R$ 4,00 por produto** · iFood **26,5%** ·
+  99Food **13%** · Mercado Livre: você quer a **API oficial**, que está prevista na **Etapa 9**.
+- **Comparação antes/depois feita (19/10/2026)** com o backup do banco real de 19/10 (só leitura): nenhum registro
+  usa Elo7; os 2 orçamentos, o trabalho 3D e os 65 produtos gravados não mudam; na Shopee, os R$ 4 fixos aumentam o
+  preço por unidade de orçamentos novos.
 - A comparação de preço antes/depois (passos 1 a 3 acima) vale também para esta tabela.
 
 ### Etapa 8 — Central de Calculadoras
@@ -410,4 +416,5 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 - **Estoque Atual não aceita 0 no cadastro de Matéria-prima** (`Materials.tsx`): o campo é obrigatório e mostra 0 como vazio, então não dá para cadastrar um insumo com estoque zero. Mesmo problema que o T14 resolveu no estoque mínimo (encontrado em 18/10/2026).
 - **Precificação: mensagem de PDF gerado antes de o PDF ficar pronto** (`Pricing.tsx`, botões do Orçamento Gerado): falta `await` na geração, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
 - **Desconto de fornecedor aplicado de verdade no custo da matéria-prima** (campo que reduz o custo unitário). O campo antigo, que não entrava em conta nenhuma, foi removido no T12 (Etapa 5); fornecedores antigos ainda guardam o valor `discount` no banco. **Muda preço:** entra com comparação antes/depois, como na Etapa 7.
+- **Keeta como canal de venda:** retirado da Etapa 7 em 19/10/2026, a seu pedido. Volta para a tabela de canais quando você tiver a taxa do contrato.
 - **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.
