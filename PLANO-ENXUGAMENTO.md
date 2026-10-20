@@ -20,12 +20,19 @@
 | 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
 | 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
-| 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **ainda não publicada** (publicar hosting + regras do banco quando você pedir). |
-| 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **ainda não publicada** (vai junto com a 7.1). |
+| 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
+| 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
 | 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):** Etapas 7.1 (segurança) e 7.2 (tarifa de energia única, T3) concluídas no código, tags `etapa-7.1-ok` e `etapa-7.2-ok`, **ainda não publicadas**: a publicação das duas juntas será **hosting + regras do banco** (`firebase deploy --only hosting,firestore:rules`), só quando você pedir, depois do backup conferido. **Próximo passo: publicar 7.1 + 7.2 quando você pedir; depois, Etapa 8 — Central de Calculadoras.** Nada ficou pela metade.
+**Onde paramos (19/10/2026):**
+
+- Etapas 7.1 (segurança) e 7.2 (tarifa de energia única) **publicadas** juntas em 19/10/2026: hosting + regras do banco, versão "19/10 21:59".
+- Antes de publicar, o backup das 19:38 foi conferido: 888 documentos, catálogo da T&N 62/62 e A Caverna 6/6 com preço.
+- No ar: aviso "Nova versão disponível" (versão antiga não grava) e a regra do banco que recusa zerar o preço de catálogo.
+- Falta você: fechar e reabrir o app em todos os aparelhos e conferir "versão 19/10 21:59" no menu lateral.
+- Código e tags (até `etapa-7.2-ok`) estão no GitHub. Nada ficou pela metade.
+- **Próximo passo: Etapa 8 — Central de Calculadoras** (começa dividindo `Products.tsx` e `Pricing.tsx`), só quando você pedir.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -396,7 +403,7 @@ O Elo7 foi encerrado pela Enjoei.
 
 ### Etapa 7.1 — Segurança
 
-**✅ Feita (19/10/2026), tag `etapa-7.1-ok` (não publicada).** Puxada do Estacionamento depois da publicação da
+**✅ Feita (19/10/2026), tag `etapa-7.1-ok`, publicada em 19/10/2026.** Puxada do Estacionamento depois da publicação da
 Etapa 7, quando uma aba com a versão antiga regravou R$ 0 no catálogo da T&N.
 
 | Item | Resultado |
@@ -413,7 +420,7 @@ Testes: 149 → 155.
 
 ### Etapa 7.2 — Tarifa de energia única (T3)
 
-**✅ Feita (19/10/2026), tag `etapa-7.2-ok` (não publicada).** Tarifa da sua conta da Enel: **R$ 0,79/kWh**
+**✅ Feita (19/10/2026), tag `etapa-7.2-ok`, publicada em 19/10/2026.** Tarifa da sua conta da Enel: **R$ 0,79/kWh**
 (TU 0,39492 + TE 0,39401, com tributos, faixa sem desconto social).
 
 | Item | Resultado |
