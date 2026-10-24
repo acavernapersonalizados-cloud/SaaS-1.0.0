@@ -18953,10 +18953,7 @@ exports[`Menu > nomes do menu lateral e dos 5 itens do menu de baixo 1`] = `
   "Categorias",
   "Catálogo",
   "Orçamentos",
-  "Corte a Laser",
-  "Impressão 3D",
-  "Papelaria",
-  "Cestas",
+  "Calculadoras",
   "Produção",
   "Lista de Compras",
   "Histórico de Orçamentos",
@@ -18968,11 +18965,11 @@ exports[`Menu > nomes do menu lateral e dos 5 itens do menu de baixo 1`] = `
 
 exports[`Menu > nomes do menu lateral e dos 5 itens do menu de baixo 2`] = `
 [
-  "Dashboard",
-  "Clientes",
-  "Fornecedores",
-  "Base de Custos",
-  "Matéria-prima",
+  "Orçamentos",
+  "Calculadoras",
+  "Produtos",
+  "Histórico",
+  "Estoque",
   "Menu",
 ]
 `;

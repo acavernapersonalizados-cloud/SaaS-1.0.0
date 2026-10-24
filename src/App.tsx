@@ -7,6 +7,7 @@ import { Login } from './components/Login';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { UpdateGate } from './components/UpdateGate';
+import { CalculatorsHub } from './components/CalculatorsHub';
 
 // ── Carregamento sob demanda: cada tela vira um chunk separado ──────────────
 // O Dashboard também: assim a tela de login não baixa os gráficos.
@@ -68,6 +69,12 @@ function AppContent() {
     return <Login />;
   }
 
+  const calculators = (screen: React.ReactNode) => (
+    <CalculatorsHub active={activeTab} onChange={setActiveTab}>
+      {screen}
+    </CalculatorsHub>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -92,18 +99,19 @@ function AppContent() {
         return <Pricing />;
       case 'history':
         return <History />;
+      // Etapa 8B, item 3: as 4 calculadoras ficam na guia Calculadoras, com os mesmos códigos.
       case 'laser':
-        return <LaserCalculator />;
+        return calculators(<LaserCalculator />);
       case 'print3d':
-        return <PrintCalculator />;
+        return calculators(<PrintCalculator />);
       case 'purchases':
         return <PurchaseList />;
       case 'production':
         return <ProductionPanel />;
       case 'papelaria':
-        return <PapelariaCalculator />;
+        return calculators(<PapelariaCalculator />);
       case 'cestas':
-        return <CestaCalculator />;
+        return calculators(<CestaCalculator />);
       case 'stores':
         return isAdmin ? <Stores /> : <AccessDenied />;
       case 'users':

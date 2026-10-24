@@ -18,16 +18,14 @@ import {
   Database,
   AlertCircle,
   Truck,
-  Zap,
-  Printer,
   ShoppingCart,
   Factory,
-  FileText,
-  Gift,
+  Shapes,
   Tags,
   BookOpen,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { CALCULATORS_MENU_ID, CALCULATOR_TABS, isCalculatorTab, MOBILE_NAV } from '../lib/navigation';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -89,10 +87,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
     { id: 'categories', label: 'Categorias', icon: Tags, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'catalog', label: 'Catálogo', icon: BookOpen, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'pricing', label: 'Orçamentos', icon: Calculator, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
-    { id: 'laser', label: 'Corte a Laser', icon: Zap, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
-    { id: 'print3d', label: 'Impressão 3D', icon: Printer, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
-    { id: 'papelaria', label: 'Papelaria', icon: FileText, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
-    { id: 'cestas', label: 'Cestas', icon: Gift, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
+    // Etapa 8B, item 3: Laser, 3D, Papelaria e Cestas numa guia só (abas dentro da tela).
+    { id: CALCULATORS_MENU_ID, label: 'Calculadoras', icon: Shapes, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'production', label: 'Produção', icon: Factory, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'purchases', label: 'Lista de Compras', icon: ShoppingCart, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
     { id: 'history', label: 'Histórico de Orçamentos', icon: History, roles: ['ADMIN', 'GERENTE', 'OPERADOR'] },
@@ -108,8 +104,17 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
     return false;
   });
 
+  // "Calculadoras" fica ativo em qualquer uma das 4 calculadoras.
+  const isActive = (id: string) => activeTab === id || (id === CALCULATORS_MENU_ID && isCalculatorTab(activeTab));
+
+  // Menu de baixo do celular: lista própria (MOBILE_NAV), com nome curto quando existe.
+  const mobileNavItems = MOBILE_NAV.flatMap(m => {
+    const item = filteredNavItems.find(i => i.id === m.id);
+    return item ? [{ ...item, label: m.shortLabel ?? item.label }] : [];
+  });
+
   const handleTabChange = (id: string) => {
-    onTabChange(id);
+    onTabChange(id === CALCULATORS_MENU_ID ? CALCULATOR_TABS[0].id : id);
     setIsMobileMenuOpen(false);
   };
 
@@ -266,7 +271,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
               onClick={() => handleTabChange(item.id)}
               className={cn(
                 'flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl text-sm font-medium transition-all group',
-                activeTab === item.id
+                isActive(item.id)
                   ? 'bg-neutral-900 text-white shadow-sm'
                   : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900',
               )}
@@ -274,7 +279,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
               <item.icon
                 className={cn(
                   'w-5 h-5',
-                  activeTab === item.id ? 'text-white' : 'text-neutral-400 group-hover:text-neutral-900',
+                  isActive(item.id) ? 'text-white' : 'text-neutral-400 group-hover:text-neutral-900',
                 )}
               />
               {item.label}
@@ -328,16 +333,16 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-neutral-200 px-2 py-1 z-40 flex items-center justify-around shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-        {filteredNavItems.slice(0, 5).map(item => (
+        {mobileNavItems.map(item => (
           <button
             key={item.id}
             onClick={() => handleTabChange(item.id)}
             className={cn(
               'flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px]',
-              activeTab === item.id ? 'text-neutral-900' : 'text-neutral-400',
+              isActive(item.id) ? 'text-neutral-900' : 'text-neutral-400',
             )}
           >
-            <item.icon className={cn('w-5 h-5', activeTab === item.id ? 'text-neutral-900' : 'text-neutral-400')} />
+            <item.icon className={cn('w-5 h-5', isActive(item.id) ? 'text-neutral-900' : 'text-neutral-400')} />
             <span className="text-[10px] font-bold">{item.label}</span>
           </button>
         ))}

@@ -357,8 +357,8 @@ describe('Produtos (telas internas)', () => {
 describe('Menu', () => {
   beforeAll(() => {
     // jsdom não tem matchMedia (o Layout usa para saber se o app está instalado).
-    window.matchMedia ??= ((query: string) =>
-      ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
+    window.matchMedia ??= (query: string) =>
+      ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList;
   });
   const load = async () => {
     const { Layout } = await import('./Layout');
@@ -368,11 +368,48 @@ describe('Menu', () => {
       </Layout>
     );
   };
-  const labels = (selector: string) =>
-    Array.from(document.querySelectorAll(selector)).map(b => b.textContent?.trim());
+  const labels = (selector: string) => Array.from(document.querySelectorAll(selector)).map(b => b.textContent?.trim());
   it('nomes do menu lateral e dos 5 itens do menu de baixo', async () => {
     await show(await load());
     expect(labels('aside nav button, nav.flex-col button')).toMatchSnapshot();
     expect(labels('nav[class*="md:hidden"] > button')).toMatchSnapshot();
+  });
+
+  // Etapa 8B, item 3 — "Calculadoras" abre o Corte a Laser e fica ativo em qualquer calculadora.
+  it('Calculadoras: abre o Laser e fica ativo nas 4 calculadoras', async () => {
+    const { Layout } = await import('./Layout');
+    const onTabChange = vi.fn();
+    await show(
+      <Layout activeTab="print3d" onTabChange={onTabChange}>
+        <div />
+      </Layout>,
+    );
+    const side = Array.from(document.querySelectorAll('nav.flex-col button'));
+    const calc = side.find(b => b.textContent?.trim() === 'Calculadoras')!;
+    expect(calc.className).toContain('bg-neutral-900');
+    expect(side.filter(b => b.className.includes('bg-neutral-900 text-white'))).toHaveLength(1);
+    await click(calc);
+    expect(onTabChange).toHaveBeenLastCalledWith('laser');
+    const bottom = Array.from(document.querySelectorAll('nav[class*="md:hidden"] > button'));
+    await click(bottom.find(b => b.textContent?.trim() === 'Histórico')!);
+    expect(onTabChange).toHaveBeenLastCalledWith('history');
+  });
+});
+
+describe('Guia Calculadoras', () => {
+  it('abas das 4 calculadoras; a aberta fica marcada e o clique troca de calculadora', async () => {
+    const { CalculatorsHub } = await import('./CalculatorsHub');
+    const onChange = vi.fn();
+    await show(
+      <CalculatorsHub active="papelaria" onChange={onChange}>
+        <p>conteúdo</p>
+      </CalculatorsHub>,
+    );
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    expect(tabs.map(t => t.textContent?.trim())).toEqual(['Corte a Laser', 'Impressão 3D', 'Papelaria', 'Cestas']);
+    expect(tabs.map(t => t.getAttribute('aria-selected'))).toEqual(['false', 'false', 'true', 'false']);
+    await click(tabs[3]);
+    expect(onChange).toHaveBeenLastCalledWith('cestas');
+    expect(document.body.textContent).toContain('conteúdo');
   });
 });
