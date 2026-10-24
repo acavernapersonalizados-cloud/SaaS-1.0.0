@@ -25,18 +25,19 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **não publicada**; 8C pendente. |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 8C e 8D pendentes. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 **Onde paramos (24/10/2026):**
 
-- 8A publicada (versão "24/10 12:56"). **8B feita** (tag `etapa-8b-ok`), **não publicada**: menu "Orçamentos" e
-  "Histórico de Orçamentos"; lucro do preço manual em cada canal; preço sugerido por canal em Produtos; guia
-  "Calculadoras" (4 abas) e menu de baixo do celular com Orçamentos, Calculadoras, Produtos, Histórico e Estoque
-  (os 6 botões cabem em 360 e 375 px: largura mínima 44 px).
-- Falta você: testar o 8B no emulador; publicar só quando você pedir.
-- **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada), só depois
-  do seu "aprovado".
+- 8A e **8B publicadas** (só hosting; regras do banco sem mudança), versão no ar "24/10 18:45", testada por você no
+  emulador. 8B: menu "Orçamentos" e "Histórico de Orçamentos"; lucro do preço manual em cada canal; preço sugerido
+  por canal em Produtos; guia "Calculadoras" (4 abas); menu de baixo do celular (Orçamentos, Calculadoras, Produtos,
+  Histórico, Estoque) cabendo em 360/375 px; editar/excluir da máquina do Laser no rodapé do cartão.
+- Código e tags (até `etapa-8b-ok`) no GitHub.
+- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora") e conferir "versão 24/10 18:45".
+- **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada) ou **8D**
+  (Calculadora de Sublimação), só depois do seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
