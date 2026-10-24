@@ -760,10 +760,11 @@ export function Pricing() {
             <div className="space-y-3">
               <button
                 onClick={handleGenerateQuote}
-                disabled={loading || quoteItems.length === 0}
+                // Etapa 8A: sem itens o botão continua clicável, para o clique explicar o que falta.
+                disabled={isGenerating}
                 className="w-full py-5 bg-neutral-900 text-white rounded-2xl font-black text-lg hover:bg-black transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-neutral-200"
               >
-                {loading ? (
+                {isGenerating ? (
                   <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
@@ -775,6 +776,23 @@ export function Pricing() {
               <p className="text-[10px] text-center text-neutral-400 font-bold uppercase tracking-widest">
                 Válido por {QUOTE_VALIDITY_DAYS} dias • taxas do canal: {feeLabel(channelFeePct, channelFixedFee)}
               </p>
+              {quoteError && (
+                <div
+                  role="alert"
+                  className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium flex items-center gap-3"
+                >
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  {quoteError}
+                </div>
+              )}
+              {quoteSuccess && (
+                <div
+                  role="status"
+                  className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-sm font-medium"
+                >
+                  {quoteSuccess}
+                </div>
+              )}
             </div>
 
             {/* AI Insights in Sidebar */}

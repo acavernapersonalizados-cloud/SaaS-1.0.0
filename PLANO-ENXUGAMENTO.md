@@ -438,7 +438,15 @@ Testes: 155 → 157.
 
 ### Etapa 8 — Central de Calculadoras
 
-**Só começa depois da Etapa 7. Por enquanto é só planejamento:** o detalhamento (telas, campos, riscos e testes) será feito quando a etapa começar.
+**Dividida em três blocos (24/10/2026), cada um com tag própria:**
+
+| Bloco | Itens | Natureza |
+|---|---|---|
+| **8A** (aprovado em 24/10/2026) | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Tag `etapa-8a-ok` |
+| **8B** | 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
+| **8C** | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal | Mudam dados/preço: só com comparação antes/depois aprovada |
+
+A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
 
 - **Primeiro item (24/10/2026): "Gerar Orçamento" sem resposta.** O botão não fazia nada, sem nenhum aviso. Voltou
   a funcionar em janela anônima ou preenchendo os dados. Investigar o que o clique valida e mostrar uma mensagem

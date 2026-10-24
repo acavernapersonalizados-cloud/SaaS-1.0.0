@@ -228,3 +228,26 @@ for (const [name, file, component] of [
     });
   });
 }
+
+// Etapa 8A, item 1 — Precificação: o botão "Gerar Orçamento" e o que ele mostra quando falta algo.
+describe('Precificação', () => {
+  const load = async () => React.createElement((await import('./Pricing')).Pricing);
+  const generate = () => buttonWithText('Gerar Orçamento');
+  it('inicial: sem itens', async () => {
+    await show(await load());
+    expect(html()).toMatchSnapshot();
+  });
+  it('sem itens: clique em Gerar Orçamento', async () => {
+    await show(await load());
+    await click(generate());
+    expect(html()).toMatchSnapshot();
+  });
+  it('com item e sem cliente: clique em Gerar Orçamento', async () => {
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await click(buttonWithText('Confirmar Item'));
+    await click(generate());
+    expect(html()).toMatchSnapshot();
+  });
+});
