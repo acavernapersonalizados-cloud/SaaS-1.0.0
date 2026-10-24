@@ -445,6 +445,7 @@ Testes: 155 → 157.
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
 | **8C** | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal | Mudam dados/preço: só com comparação antes/depois aprovada |
+| **8D** (registrado em 24/10/2026, não implementar ainda) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
 
 A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
 
@@ -480,6 +481,30 @@ gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
     Livre ficam ~30% mais baratos que hoje (o lucro em R$ fica igual ao da venda direta). Um campo opcional por
     canal permite cobrar a mais em um canal específico, se você quiser.
 
+#### Bloco 8D — Calculadora de Sublimação (registrado em 24/10/2026, não implementar ainda)
+
+Dados: `tabela-sublimacao.md` (raiz do projeto), montado a partir das fotos das etiquetas/manuais e da tabela
+sugestiva da STC Smart Deko. Todas as máquinas em 220 V: mini prensa portátil 250 W; prensa plana 38 × 38 cm 1.800 W;
+prensa 4 em 1 (boné 300 W, logo 15 × 15 600 W, caneta 200 W, caneca 11 oz 300 W); Sun Special SSH-012A-1 350 W.
+Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pressão).
+
+- **Aba "Sublimação"** na guia Calculadoras (5ª aba, junto de Laser, 3D, Papelaria e Cestas).
+- **Ao escolher máquina e produto**, a tabela preenche sozinha temperatura, tempo e pressão; os três continuam
+  editáveis.
+- **Custo** considera: peça base (do estoque), papel sublimático, tinta por impressão, energia (potência × tempo,
+  incluindo o aquecimento da prensa), mão de obra, embalagem, markup e canal (mesma tabela de canais e o mesmo
+  quadro de lucro por canal do 8B).
+- **Aba "Tabela de referência"** com busca, para consultar a tabela sem calcular.
+- **A decidir antes de começar:**
+  - qual é o tipo da Sun Special SSH-012A-1 (o arquivo pede para confirmar);
+  - como ligar os equipamentos da tabela (prensa de canetas, de canecas e copos, de pratos, 3D) às máquinas
+    cadastradas (ex.: acessórios da 4 em 1);
+  - tempo e potência do aquecimento;
+  - consumo de tinta e de papel por impressão;
+  - onde guardar as máquinas (cadastro, como no Laser e na 3D).
+- A tabela é sugestiva (o fabricante avisa que varia conforme o material): mostrar o aviso e as dicas do arquivo na
+  tela.
+
 ### Etapa 9 — Monitor de taxas
 
 **Só começa depois da Etapa 8. Por enquanto é só planejamento:** o detalhamento será feito quando a etapa começar.
@@ -494,6 +519,12 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 ---
 
 ## 7. Estacionamento (não é enxugamento — para depois)
+
+- **Acentos faltando nas telas das calculadoras** (24/10/2026): Papelaria e Cestas mostram "Composicao", "Laminacao",
+  "Mao de obra" e "Observacoes", e também "Encadernacao", "Comissao (vendedor)", "Preco de Venda", "Seu preco por
+  unidade/cesta", "Analise IA" e "tempos de producao" (`PapelariaCalculator.tsx`, `CestaCalculator.tsx`). Só textos.
+  Cuidado: os testes de tela procuram alguns desses rótulos (ex.: "Seu preco por unidade"), então precisam mudar
+  junto.
 
 
 - **Ícone do app instalado quebrado:** o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
