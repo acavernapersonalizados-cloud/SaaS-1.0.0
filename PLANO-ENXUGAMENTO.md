@@ -25,18 +25,20 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **não publicada** (publicar regras do banco antes do site); 8C e 8D-2 pendentes. |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 8C e 8D-2 pendentes. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 **Onde paramos (24/10/2026):**
 
-- No ar: 8A e 8B (só hosting), versão "24/10 18:45".
-- **8D-1 feita** (tag `etapa-8d1-ok`), **não publicada**: aba "Sublimação" na guia Calculadoras, cadastro das 4
-  máquinas (220 V), temperatura/tempo/pressão ao escolher máquina e produto, e "Tabela de referência" com busca.
-- Publicação do 8D-1, quando você pedir: **regras do banco primeiro, depois o site** (coleção nova
-  `sublimationMachines`).
-- **Próximo passo:** testar o 8D-1 no emulador; depois **8D-2** (custo e preço da sublimação) ou **8C**, só depois do
-  seu "aprovado".
+- No ar, versão "24/10 20:02": 8A, 8B e **8D-1** (testado por você no emulador). Publicação do 8D-1: **regras do banco
+  primeiro** (coleção `sublimationMachines`), **depois o site**.
+- 8D-1: aba "Sublimação" na guia Calculadoras, cadastro das máquinas (botão "Cadastrar as 4 máquinas da tabela"),
+  temperatura/tempo/pressão ao escolher máquina e produto, e "Tabela de referência" com busca. Tamanhos em cm, com
+  polegadas só na prensa grande: "38 × 38 cm (15")".
+- Código e tags (até `etapa-8d1-ok`) no GitHub.
+- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora") e conferir "versão 24/10 20:02".
+- **Próximo passo: 8D-2** (custo e preço da sublimação): lista com riscos apresentada em 24/10/2026, **aguardando o seu
+  "aprovado"**. Também nova coleção (`sublimationJobs`): publicar regras antes do site.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -483,7 +485,7 @@ gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
 
 #### Bloco 8D — Calculadora de Sublimação (registrado em 24/10/2026)
 
-**8D-1 ✅ feita (24/10/2026), tag `etapa-8d1-ok`, não publicada.** Sem custo nem preço (isso é o 8D-2).
+**8D-1 ✅ feita (24/10/2026), tag `etapa-8d1-ok`, publicada em 24/10/2026 (regras do banco primeiro, depois o site; versão "24/10 20:02").** Sem custo nem preço (isso é o 8D-2). Tamanhos sempre em cm; polegadas só na prensa grande: "38 × 38 cm (15")".
 
 | Item | Resultado |
 |---|---|
