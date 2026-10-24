@@ -168,6 +168,13 @@ service cloud.firestore {
       allow delete: if canDelete(resource.data.storeId);
     }
 
+    // Etapa 8D-2: trabalhos salvos da sublimação (iguais aos do Laser: excluir só ADMIN/GERENTE, como na tela).
+    match /sublimationJobs/{jobId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
+    }
+
     match /printJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
       allow create, update: if canWrite(request.resource.data.storeId);

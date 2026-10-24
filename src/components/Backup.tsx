@@ -25,6 +25,7 @@ const STORE_COLLECTIONS = [
   'printers',
   'printJobs',
   'sublimationMachines',
+  'sublimationJobs',
   'papelariaJobs',
   'cestaJobs',
   'purchaseList',
