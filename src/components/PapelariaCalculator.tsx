@@ -14,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
 import { analyzePapelariaPrice } from '../services/gemini';
 import {
@@ -600,6 +601,13 @@ export function PapelariaCalculator() {
                   Prejuizo de {formatCurrency(Math.abs(result.profit))}/un. Minimo:{' '}
                   {formatCurrency(result.totalCostUnit)}.
                 </ManualPriceCheck>
+                <ChannelProfitTable
+                  price={manualPrice}
+                  cost={result.totalCostUnit}
+                  channels={channels}
+                  markupPct={markupPct}
+                  selectedChannelId={selectedChannel?.id}
+                />
               </div>
             )}
           </div>

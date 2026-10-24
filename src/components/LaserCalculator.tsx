@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import { analyzeLaserPrice } from '../services/gemini';
 import {
   Zap,
@@ -704,6 +705,13 @@ export function LaserCalculator() {
                   Prejuízo de {formatCurrency(Math.abs(result.profit))}/peça. Mínimo:{' '}
                   {formatCurrency(result.totalCostUnit)}.
                 </ManualPriceCheck>
+                <ChannelProfitTable
+                  price={manualPrice}
+                  cost={result.totalCostUnit}
+                  channels={channels}
+                  markupPct={markupPct}
+                  selectedChannelId={selectedChannel?.id}
+                />
 
                 {selectedMachine && (
                   <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 text-xs text-neutral-400">

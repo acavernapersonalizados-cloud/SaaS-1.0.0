@@ -4,7 +4,7 @@
  * salvar a sua, vale a tabela padrão abaixo. Usada pelos Orçamentos e pelas calculadoras.
  */
 import type { SalesChannel } from '../types';
-import { MAX_CHANNEL_FEE_PERCENT } from './pricingEngine';
+import { MAX_CHANNEL_FEE_PERCENT, priceForMarkup } from './pricingEngine';
 
 /** Valores aprovados em 19/10/2026. Mercado Livre fica editável até a consulta pela API (Etapa 9). */
 export const DEFAULT_SALES_CHANNELS: SalesChannel[] = [
@@ -39,4 +39,53 @@ export function channelFees(channel: Pick<SalesChannel, 'commissionPct' | 'payme
     feePct: Math.min(MAX_CHANNEL_FEE_PERCENT, Math.max(0, pct)),
     fixedFee: Math.max(0, Number(channel.fixedFee) || 0),
   };
+}
+
+/** Resultado de um preço manual num canal (Etapa 8B, item 5). */
+export interface ChannelProfit {
+  channel: SalesChannel;
+  /** Taxas % do canal (com o % extra, ex.: comissão do vendedor nas Cestas) e taxa fixa por unidade. */
+  feePct: number;
+  fixedFee: number;
+  /** Quanto o canal cobra dessa venda (R$). */
+  fees: number;
+  /** O que sobra depois do custo e das taxas (R$) e em % do preço (margem real). */
+  profit: number;
+  margin: number;
+  /** Preço que bate a meta (markup) neste canal; null quando não existe (taxas ≥ 95%). */
+  goalPrice: number | null;
+  /** O preço manual cobre a meta neste canal? null quando não existe preço de meta. */
+  meetsGoal: boolean | null;
+}
+
+/**
+ * Lucro de um preço manual em cada canal da tabela, com as mesmas contas do orçamento:
+ * taxas = preço × % + taxa fixa; lucro = preço − custo − taxas; meta = priceForMarkup.
+ */
+export function manualPriceByChannel(
+  price: number,
+  cost: number,
+  channels: SalesChannel[],
+  markupPct: number,
+  extraFeePct = 0,
+): ChannelProfit[] {
+  return channels.map(channel => {
+    const base = channelFees(channel);
+    const feePct = base.feePct + (Number(extraFeePct) || 0);
+    const fixedFee = base.fixedFee;
+    const fees = price > 0 ? price * (feePct / 100) + fixedFee : 0;
+    const profit = price - cost - fees;
+    const goalPrice = priceForMarkup(cost, markupPct, feePct, fixedFee);
+    return {
+      channel,
+      feePct,
+      fixedFee,
+      fees,
+      profit,
+      margin: price > 0 ? (profit / price) * 100 : 0,
+      goalPrice,
+      // Meio centavo de folga: o preço da meta digitado arredondado conta como "na meta".
+      meetsGoal: goalPrice === null ? null : price >= goalPrice - 0.005,
+    };
+  });
 }

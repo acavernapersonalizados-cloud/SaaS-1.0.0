@@ -4,7 +4,9 @@ import React from 'react';
 import { CostBase, Product } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { markupOf, ProductPricingResult, ReversePricingResult } from '../lib/pricingEngine';
+import { channelsOf } from '../lib/channels';
 import { ProductImageUpload } from './ProductImageUpload';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import { AlertCircle, DollarSign, Image, Loader2, Sparkles } from 'lucide-react';
 
 type SetProduct = React.Dispatch<React.SetStateAction<Partial<Product>>>;
@@ -138,6 +140,16 @@ export function ProductPricingSection({
             {reverseResult.profitStatus.description}
           </p>
         </div>
+      )}
+
+      {/* Lucro do preço manual em cada canal (Etapa 8B, item 5) */}
+      {costs && (
+        <ChannelProfitTable
+          price={newProduct.manualPrice}
+          cost={modalPricing.totalCost}
+          channels={channelsOf(costs)}
+          markupPct={markupOf(costs)}
+        />
       )}
 
       {/* AI button */}

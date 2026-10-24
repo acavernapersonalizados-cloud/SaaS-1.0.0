@@ -14,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
 import { analyzeCestaPrice } from '../services/gemini';
 import {
@@ -640,6 +641,14 @@ export function CestaCalculator() {
                 <ManualPriceCheck manualPrice={manualPrice} profit={result.profit} margin={result.margin}>
                   Prejuizo de {formatCurrency(Math.abs(result.profit))}/cesta.
                 </ManualPriceCheck>
+                <ChannelProfitTable
+                  price={manualPrice}
+                  cost={result.totalCostUnit}
+                  channels={channels}
+                  markupPct={markupPct}
+                  extraFeePct={commissionPct}
+                  selectedChannelId={selectedChannel?.id}
+                />
               </div>
             )}
           </div>

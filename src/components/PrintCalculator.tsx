@@ -28,6 +28,7 @@ import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import {
   Box,
   Plus,
@@ -876,6 +877,14 @@ export function PrintCalculator() {
                     )}
                   </div>
                 )}
+
+                <ChannelProfitTable
+                  price={manualPrice}
+                  cost={result.totalCostUnit}
+                  channels={channels}
+                  markupPct={markupPct}
+                  selectedChannelId={channelId}
+                />
 
                 <div className="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-400">
                   {selectedPrinter?.label} · {failureRatePct}% buffer de falha incluído
