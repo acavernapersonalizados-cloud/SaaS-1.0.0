@@ -41215,6 +41215,179 @@ exports[`Sublimação > custos da peça: exemplo à mão e peça base do estoque
             </p>
           </div>
         </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -42467,6 +42640,179 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
             </p>
           </div>
         </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -43718,6 +44064,179 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               50,0%
             </p>
           </div>
+        </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <div
@@ -45503,6 +46022,179 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
             </p>
           </div>
         </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -46711,6 +47403,179 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
                total
             </p>
           </div>
+        </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -48288,6 +49153,179 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
             </div>
           </div>
         </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -48487,6 +49525,126 @@ exports[`Sublimação > sem máquinas: botão para cadastrar as 4 da tabela 1`] 
             </svg>
             Cadastrar as 4 máquinas da tabela
           </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -48820,6 +49978,1388 @@ exports[`Sublimação > tabela de referência: 40 linhas e busca 1`] = `
             • 
             Se houver variação de temperatura na prensa, fazer testes antes de produzir.
           </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Sublimação > trabalhos salvos: histórico e salvar (limpa o formulário só quando grava) 1`] = `
+<body>
+  <div>
+    <div
+      class="space-y-8 pb-20"
+    >
+      <header
+        class="flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
+        <div>
+          <div
+            class="flex items-center gap-2 text-neutral-400 mb-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-flame w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"
+              />
+            </svg>
+            <span
+              class="text-xs font-bold uppercase tracking-widest"
+            >
+              Calculadora
+            </span>
+          </div>
+          <h1
+            class="text-3xl font-black text-neutral-900"
+          >
+            Sublimação
+          </h1>
+        </div>
+        <button
+          class="flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-all text-sm font-bold"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-plus w-4 h-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+            <path
+              d="M12 5v14"
+            />
+          </svg>
+           Nova Máquina
+        </button>
+      </header>
+      <div
+        aria-label="Sublimação"
+        class="flex gap-2"
+        role="tablist"
+      >
+        <button
+          aria-selected="true"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-all bg-neutral-900 text-white border-neutral-900"
+          role="tab"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-settings w-4 h-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+          Máquinas e parâmetros
+        </button>
+        <button
+          aria-selected="false"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-all bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400"
+          role="tab"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-book-open w-4 h-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 7v14"
+            />
+            <path
+              d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+            />
+          </svg>
+          Tabela de referência
+        </button>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-settings w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+           Máquina
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+        >
+          <div
+            class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all border-neutral-100 hover:border-neutral-300"
+          >
+            <div
+              class="flex items-start justify-between gap-3 mb-1"
+            >
+              <p
+                class="font-bold text-sm text-neutral-900 leading-tight"
+              >
+                Prensa 4 em 1
+              </p>
+            </div>
+            <p
+              class="text-xs text-neutral-400"
+            >
+              220
+               V
+               · Cada acessório tem potência própria.
+            </p>
+            <div
+              class="flex gap-1.5 mt-2 flex-wrap"
+            >
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Boné 
+                300
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Logo 15 × 15 cm 
+                600
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Caneta 10 × 15 cm 
+                200
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Caneca 11 oz 
+                300
+                 W
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+            >
+              <button
+                aria-label="Editar Prensa 4 em 1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                title="Editar máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-pen w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  />
+                </svg>
+                 Editar
+              </button>
+              <button
+                aria-label="Excluir Prensa 4 em 1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                title="Excluir máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                 Excluir
+              </button>
+            </div>
+          </div>
+          <div
+            class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all border-neutral-900 bg-neutral-50"
+          >
+            <div
+              class="flex items-start justify-between gap-3 mb-1"
+            >
+              <p
+                class="font-bold text-sm text-neutral-900 leading-tight"
+              >
+                Prensa de caneca Sun Special SSH-012A-1
+              </p>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-circle-check w-4 h-4 text-neutral-900 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <path
+                  d="m9 12 2 2 4-4"
+                />
+              </svg>
+            </div>
+            <p
+              class="text-xs text-neutral-400"
+            >
+              220
+               V
+               · Usada somente para canecas.
+            </p>
+            <div
+              class="flex gap-1.5 mt-2 flex-wrap"
+            >
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                350
+                 W
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+            >
+              <button
+                aria-label="Editar Prensa de caneca Sun Special SSH-012A-1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                title="Editar máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-pen w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  />
+                </svg>
+                 Editar
+              </button>
+              <button
+                aria-label="Excluir Prensa de caneca Sun Special SSH-012A-1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                title="Excluir máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                 Excluir
+              </button>
+            </div>
+          </div>
+          <div
+            class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all border-neutral-100 hover:border-neutral-300"
+          >
+            <div
+              class="flex items-start justify-between gap-3 mb-1"
+            >
+              <p
+                class="font-bold text-sm text-neutral-900 leading-tight"
+              >
+                Prensa plana 38 × 38 cm (15")
+              </p>
+            </div>
+            <p
+              class="text-xs text-neutral-400"
+            >
+              220
+               V
+               · 0–250 °C, 0–999 s.
+            </p>
+            <div
+              class="flex gap-1.5 mt-2 flex-wrap"
+            >
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                1800
+                 W
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+            >
+              <button
+                aria-label="Editar Prensa plana 38 × 38 cm (15")"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                title="Editar máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-pen w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  />
+                </svg>
+                 Editar
+              </button>
+              <button
+                aria-label="Excluir Prensa plana 38 × 38 cm (15")"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                title="Excluir máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                 Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-thermometer w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"
+            />
+          </svg>
+           Parâmetros da prensa
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Produto
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value=""
+              >
+                Selecione o produto
+              </option>
+              <option
+                value="Caneca de alumínio"
+              >
+                Caneca de alumínio
+              </option>
+              <option
+                value="Caneca de plástico/acrílico"
+              >
+                Caneca de plástico/acrílico
+              </option>
+              <option
+                value="Caneca de porcelana"
+              >
+                Caneca de porcelana
+              </option>
+              <option
+                value="Caneca de vidro"
+              >
+                Caneca de vidro
+              </option>
+              <option
+                value="Caneca de vidro (chopp)"
+              >
+                Caneca de vidro (chopp)
+              </option>
+              <option
+                value="Squeeze de alumínio"
+              >
+                Squeeze de alumínio
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-3 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Temperatura (°C)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="185"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Tempo (s)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="200"
+            />
+            <p
+              class="text-[10px] text-neutral-400 font-bold"
+            >
+              = 
+              200 s
+            </p>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Pressão
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder=""
+              type="text"
+              value="Forte"
+            />
+          </div>
+        </div>
+        <div
+          class="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1"
+        >
+          <p
+            class="flex items-center gap-1.5 font-bold text-neutral-700"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-alert w-3.5 h-3.5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <line
+                x1="12"
+                x2="12"
+                y1="8"
+                y2="12"
+              />
+              <line
+                x1="12"
+                x2="12.01"
+                y1="16"
+                y2="16"
+              />
+            </svg>
+             Tabela sugestiva: varia conforme o material; faça um teste antes de produzir. Os valores aqui não são gravados.
+          </p>
+          <p>
+            • 
+            Papel ímã: colocar na quina da prensa para evitar entrada de ar.
+          </p>
+          <p>
+            • 
+            Caneca de vidro (chopp): pré-aquecer cerca de 15 s e cuidado ao retirar a fita adesiva para não descascar a resina.
+          </p>
+          <p>
+            • 
+            Se houver variação de temperatura na prensa, fazer testes antes de produzir.
+          </p>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-package w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+            />
+            <path
+              d="M12 22V12"
+            />
+            <polyline
+              points="3.29 7 12 12 20.71 7"
+            />
+            <path
+              d="m7.5 4.27 9 5.15"
+            />
+          </svg>
+           Custos da peça
+        </h2>
+        <div
+          class="space-y-2"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Peça base
+            </label>
+            <div
+              class="flex gap-1"
+            >
+              <button
+                class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400"
+                type="button"
+              >
+                Do estoque
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all bg-neutral-900 text-white border-neutral-900"
+                type="button"
+              >
+                Valor avulso
+              </button>
+            </div>
+          </div>
+          <input
+            aria-label="Peça base (R$ por peça)"
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            min="0"
+            placeholder="R$ por peça"
+            step="0.01"
+            type="number"
+            value="12"
+          />
+          <p
+            class="text-[10px] text-neutral-400 font-bold"
+          >
+            Peça base: 
+            R$ 12,00
+             por peça
+          </p>
+        </div>
+        <div
+          class="grid grid-cols-2 md:grid-cols-4 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Papel + tinta (R$ por folha A4)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              step="0.01"
+              type="number"
+              value="2.4"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Peças por folha
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="2"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Aquecimento por leva (min)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="10"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Peças na leva
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="10"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Mão de obra por peça (min)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="5"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Embalagem (R$ por peça)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              step="0.01"
+              type="number"
+              value="1.5"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Outros custos (R$ por peça)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              step="0.01"
+              type="number"
+              value="0.5"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Quantidade de peças
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="10"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Valor da hora (R$)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              step="0.01"
+              type="number"
+              value="25"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Markup (% sobre o custo)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              max="500"
+              min="0"
+              type="number"
+              value="150"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Tarifa de energia (R$/kWh)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              step="0.00001"
+              type="number"
+              value="0.79"
+            />
+          </div>
+        </div>
+        <p
+          class="text-[10px] text-neutral-400 font-bold"
+        >
+          Energia: 
+          350
+           W × (tempo de prensa 
+          200
+           s + aquecimento rateado
+           
+          60
+           s) × tarifa.
+        </p>
+        <div
+          class="flex items-center justify-between p-4 bg-neutral-50 rounded-xl"
+        >
+          <span
+            class="text-sm font-bold text-neutral-700"
+          >
+            Custo por peça
+          </span>
+          <span
+            class="text-xl font-black text-neutral-900"
+          >
+            R$ 17,30
+          </span>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-dollar-sign w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="12"
+              x2="12"
+              y1="2"
+              y2="22"
+            />
+            <path
+              d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+            />
+          </svg>
+           Preço de venda
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Canal de venda
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value="venda-direta"
+              >
+                Venda Direta
+              </option>
+              <option
+                value="instagram"
+              >
+                Instagram
+              </option>
+              <option
+                value="atacado"
+              >
+                Atacado
+              </option>
+              <option
+                value="shopee"
+              >
+                Shopee
+              </option>
+              <option
+                value="mercado-livre"
+              >
+                Mercado Livre
+              </option>
+              <option
+                value="ifood"
+              >
+                iFood
+              </option>
+              <option
+                value="99food"
+              >
+                99Food
+              </option>
+            </select>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Seu preço por peça (opcional)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 font-bold"
+              min="0"
+              placeholder="R$ 43,26"
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="space-y-3"
+        >
+          <div
+            class="p-4 bg-neutral-50 rounded-xl space-y-2"
+          >
+            <p
+              class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider"
+            >
+              Composição / peça
+            </p>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Peça base
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 12,00
+              </span>
+            </div>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Papel + tinta
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 1,20
+              </span>
+            </div>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Energia
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,02
+              </span>
+            </div>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Mão de obra
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 2,08
+              </span>
+            </div>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Embalagem
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 1,50
+              </span>
+            </div>
+            <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,50
+              </span>
+            </div>
+            <div
+              class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
+            >
+              <span>
+                Custo / peça
+              </span>
+              <span>
+                R$ 17,30
+              </span>
+            </div>
+          </div>
+          <div
+            class="p-4 bg-emerald-50 rounded-xl border border-emerald-100"
+          >
+            <p
+              class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
+            >
+              Sugerido (markup 
+              150
+              %)
+            </p>
+            <p
+              class="text-2xl font-black text-emerald-700"
+            >
+              R$ 43,26
+              <span
+                class="text-sm font-medium"
+              >
+                /peça
+              </span>
+            </p>
+            <p
+              class="text-xs text-emerald-700 font-bold"
+            >
+              Margem real: 
+              60,0%
+            </p>
+            <p
+              class="text-sm text-emerald-600 font-bold mt-0.5"
+            >
+              R$ 432,58
+               total
+            </p>
+          </div>
+        </div>
+        <div
+          class="pt-4 border-t border-neutral-100 space-y-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Nome do trabalho
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Ex: 10 canecas de porcelana — aniversário"
+              type="text"
+              value=""
+            />
+          </div>
+          <textarea
+            class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+            placeholder="Observações (opcional)"
+            rows="2"
+          />
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-save w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+              />
+              <path
+                d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"
+              />
+              <path
+                d="M7 3v4a1 1 0 0 0 1 1h7"
+              />
+            </svg>
+            Salvar Trabalho
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-base font-bold text-neutral-900"
+        >
+          Trabalhos Salvos
+        </h2>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead>
+              <tr
+                class="border-b border-neutral-100"
+              >
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Trabalho
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Máquina
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Qtd
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="text-left py-2 pr-4 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-neutral-50 hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900"
+                >
+                  TESTE 10 canecas de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Prensa de caneca Sun Special SSH-012A-1
+                   · Caneca
+                </td>
+                <td
+                  class="py-3 pr-4 text-neutral-500 text-xs"
+                >
+                  Caneca de porcelana
+                </td>
+                <td
+                  class="py-3 pr-4 text-right text-neutral-600"
+                >
+                  10
+                </td>
+                <td
+                  class="py-3 pr-4 font-bold text-neutral-900 text-right"
+                >
+                  R$ 40,00
+                </td>
+                <td
+                  class="py-3 text-right"
+                >
+                  <button
+                    class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

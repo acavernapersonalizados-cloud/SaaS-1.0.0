@@ -517,6 +517,27 @@ describe('Sublimação', () => {
     expect(html()).toMatchSnapshot();
   });
 
+  // 8D-2, item 5: salvar trabalho e histórico.
+  it('trabalhos salvos: histórico e salvar (limpa o formulário só quando grava)', async () => {
+    await show(await load());
+    const historyRow = Array.from(document.querySelectorAll('tbody tr')).find(tr =>
+      tr.textContent?.includes('TESTE 10 canecas de porcelana'),
+    )!;
+    expect(historyRow.textContent).toContain('Prensa de caneca Sun Special SSH-012A-1 · Caneca');
+    expect(historyRow.textContent).toContain('Caneca de porcelana');
+    expect(historyRow.textContent?.replace(/\s/g, ' ')).toContain('R$ 40,00');
+    await fillHandExample();
+    await type(field('Seu preço por peça'), '40');
+    // Sem nome: não grava, o preço digitado fica.
+    await click(buttonWithText('Salvar Trabalho'));
+    expect((field('Seu preço por peça') as HTMLInputElement).value).toBe('40');
+    await type(field('Nome do trabalho'), 'Canecas da Maria');
+    await click(buttonWithText('Salvar Trabalho'));
+    expect((field('Nome do trabalho') as HTMLInputElement).value).toBe('');
+    expect((field('Seu preço por peça') as HTMLInputElement).value).toBe('');
+    expect(html()).toMatchSnapshot();
+  });
+
   // Item 5: tabela de referência com busca (sem acento).
   it('tabela de referência: 40 linhas e busca', async () => {
     await show(await load());

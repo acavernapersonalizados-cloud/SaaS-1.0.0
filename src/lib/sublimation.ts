@@ -161,3 +161,44 @@ export function formatSublimationTime(seconds: number): string {
   const s = Math.max(0, Math.round(Number(seconds) || 0));
   return s >= 180 && s % 60 === 0 ? `${s / 60} min` : `${s} s`;
 }
+
+/**
+ * Trabalho salvo da sublimação (Etapa 8D-2): guarda o que foi digitado e, como foto do momento, o custo por peça e o
+ * preço sugerido (nada é recalculado depois).
+ */
+export interface SublimationJob {
+  id: string;
+  storeId: string;
+  name: string;
+  channel: string;
+  machineId: string;
+  machineLabel: string;
+  headId: string;
+  headName: string;
+  powerW: number;
+  product: string;
+  tempC: number | null;
+  timeS: number;
+  pressure: string;
+  baseMode: 'stock' | 'manual';
+  baseMaterialId: string | null;
+  baseMaterialName: string | null;
+  baseQty: number;
+  baseCost: number;
+  sheetCost: number;
+  piecesPerSheet: number;
+  heatUpMin: number;
+  piecesPerBatch: number;
+  laborMinPerPiece: number;
+  hourlyRate: number;
+  packagingCost: number;
+  otherCost: number;
+  electricityRate: number;
+  markupPct: number;
+  quantity: number;
+  manualPrice: number | null;
+  totalCostUnit: number;
+  suggestedUnit: number;
+  notes: string;
+  createdAt: string;
+}

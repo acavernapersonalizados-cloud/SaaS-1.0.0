@@ -13,6 +13,7 @@ import { clampMarkup, markupOf, MAX_MARKUP_PERCENT, realMargin } from '../lib/pr
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
+import { JobHistoryList } from './JobHistoryList';
 import { calcSublimationJob } from '../lib/calculators';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
@@ -25,6 +26,7 @@ import {
   SublimationHead,
   SublimationMachine,
   SublimationMachineData,
+  SublimationJob,
 } from '../lib/sublimation';
 import {
   AlertCircle,
@@ -36,6 +38,7 @@ import {
   Loader2,
   Package,
   Plus,
+  Save,
   Search,
   Settings,
   Thermometer,
@@ -111,6 +114,37 @@ export function SublimationCalculator() {
   const selectedChannel = findChannel(channels, channelId);
   const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(selectedChannel);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
+
+  // ── Trabalhos salvos (8D-2, item 5) ──────────────────────────────────────────
+  const [jobName, setJobName] = useState('');
+  const [notes, setNotes] = useState('');
+  const [jobs, setJobs] = useState<SublimationJob[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [savingJob, setSavingJob] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeStore) {
+      setLoadingJobs(false);
+      return;
+    }
+    // Sem orderBy no banco (dispensa índice composto novo): mais recentes primeiro, ordenando aqui.
+    return onSnapshot(
+      query(collection(db, 'sublimationJobs'), where('storeId', '==', activeStore.id)),
+      snap => {
+        setJobs(
+          snap.docs
+            .map(d => ({ ...(d.data() as Omit<SublimationJob, 'id'>), id: d.id }))
+            .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')),
+        );
+        setLoadingJobs(false);
+      },
+      err => {
+        handleFirestoreError(err, OperationType.LIST, 'sublimationJobs');
+        setLoadingJobs(false);
+      },
+    );
+  }, [activeStore]);
   useCostBaseDefaults(costs, c => {
     if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
     setMarkupPct(Math.round(markupOf(c) * 100) / 100);
@@ -203,6 +237,71 @@ export function SublimationCalculator() {
     setTempC(r ? r.tempC : '');
     setTimeS(r ? r.timeS : '');
     setPressure(r?.pressure ?? '');
+  };
+
+  const handleSaveJob = async () => {
+    if (!activeStore || !selectedMachine || !selectedHead || !result || !jobName.trim()) {
+      addToast('Preencha o nome do trabalho e os custos da peça.', 'error');
+      return;
+    }
+    setSavingJob(true);
+    try {
+      // Sem campos undefined (o banco recusa): tudo com valor ou null.
+      const job: Omit<SublimationJob, 'id'> = {
+        storeId: activeStore.id,
+        name: jobName.trim(),
+        channel: selectedChannel?.name ?? 'Venda Direta',
+        machineId: selectedMachine.id,
+        machineLabel: selectedMachine.label,
+        headId: selectedHead.id,
+        headName: selectedHead.name,
+        powerW: selectedHead.powerW,
+        product: product || '',
+        tempC: tempC === '' ? null : tempC,
+        timeS: timeS === '' ? 0 : timeS,
+        pressure: pressure || '',
+        baseMode,
+        baseMaterialId: baseMode === 'stock' ? baseMaterialId || null : null,
+        baseMaterialName: baseMode === 'stock' ? (baseMaterial?.name ?? null) : null,
+        baseQty: baseMode === 'stock' ? Number(baseQty) || 0 : 1,
+        baseCost,
+        sheetCost,
+        piecesPerSheet,
+        heatUpMin,
+        piecesPerBatch,
+        laborMinPerPiece,
+        hourlyRate,
+        packagingCost,
+        otherCost,
+        electricityRate,
+        markupPct,
+        quantity,
+        manualPrice: manualPrice ?? null,
+        totalCostUnit: result.totalCostUnit,
+        suggestedUnit: result.suggestedUnit,
+        notes: notes.trim(),
+        createdAt: new Date().toISOString(),
+      };
+      await addDoc(collection(db, 'sublimationJobs'), job);
+      addToast('Trabalho salvo!', 'success');
+      setJobName('');
+      setNotes('');
+      setManualPrice(null);
+    } catch (err) {
+      handleFirestoreError(err, OperationType.CREATE, 'sublimationJobs');
+    }
+    setSavingJob(false);
+  };
+
+  const handleDeleteJob = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await deleteDoc(doc(db, 'sublimationJobs', id));
+      addToast('Trabalho excluído.', 'success');
+    } catch (err) {
+      handleFirestoreError(err, OperationType.DELETE, `sublimationJobs/${id}`);
+    }
+    setDeletingId(null);
   };
 
   const openForm = (machine: SublimationMachine | null) => {
@@ -886,8 +985,59 @@ export function SublimationCalculator() {
                   />
                 </div>
               )}
+
+              {/* Salvar trabalho (8D-2, item 5) */}
+              <div className="pt-4 border-t border-neutral-100 space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Nome do trabalho</label>
+                  <input
+                    type="text"
+                    value={jobName}
+                    onChange={e => setJobName(e.target.value)}
+                    placeholder="Ex: 10 canecas de porcelana — aniversário"
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  rows={2}
+                  placeholder="Observações (opcional)"
+                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveJob}
+                  disabled={savingJob}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
+                >
+                  {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Salvar Trabalho
+                </button>
+              </div>
             </div>
           )}
+
+          <JobHistoryList
+            title="Trabalhos Salvos"
+            emptyText="Nenhum trabalho salvo."
+            headers={['Trabalho', 'Máquina', 'Produto', 'Qtd', 'Preço', '']}
+            extraCells={(job: SublimationJob) => (
+              <>
+                <td className="py-3 pr-4 text-neutral-500 text-xs">
+                  {job.machineLabel}
+                  {job.headName ? ` · ${job.headName}` : ''}
+                </td>
+                <td className="py-3 pr-4 text-neutral-500 text-xs">{job.product || '—'}</td>
+              </>
+            )}
+            noPrice="—"
+            jobs={jobs}
+            loading={loadingJobs}
+            canDelete={canManage}
+            deletingId={deletingId}
+            onDelete={handleDeleteJob}
+          />
         </>
       )}
 
