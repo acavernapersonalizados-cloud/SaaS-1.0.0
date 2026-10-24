@@ -25,15 +25,15 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **não publicada**; 8B e 8C pendentes. |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 8B e 8C pendentes. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 **Onde paramos (24/10/2026):**
 
-- Etapa 8A feita (tag `etapa-8a-ok`), **não publicada**: o "Gerar Orçamento" agora diz o que falta (cliente, item,
-  canal, permissão, erro do banco) e `Products.tsx`/`Pricing.tsx` foram divididos sem mudar nenhuma tela.
-- No ar continua a versão "19/10 21:59" (Etapas 7.1 + 7.2). Publicar a 8A só quando você pedir.
-- Falta você: testar o "Gerar Orçamento" no emulador (sem item, sem cliente e com tudo preenchido).
+- Etapa 8A feita (tag `etapa-8a-ok`), testada por você no emulador e **publicada** em 24/10/2026 (só hosting;
+  regras do banco sem mudança), versão "24/10 12:56": o "Gerar Orçamento" diz o que falta (cliente, item, canal,
+  permissão, erro do banco) e `Products.tsx`/`Pricing.tsx` foram divididos sem mudar nenhuma tela.
+- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora" no aviso) e conferir "versão 24/10 12:56".
 - **Próximo passo: Etapa 8B** (itens 5, 6 e 3, só exibem, não mudam preço), só depois do seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
