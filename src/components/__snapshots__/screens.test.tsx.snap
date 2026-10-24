@@ -30285,6 +30285,38 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 />
               </svg>
             </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
+                />
+              </svg>
+            </button>
           </div>
         </div>
         <div
@@ -31833,6 +31865,38 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
               >
                 <path
                   d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
                 />
               </svg>
             </button>
@@ -33833,6 +33897,38 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
               >
                 <path
                   d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
                 />
               </svg>
             </button>
@@ -35945,6 +36041,38 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                 />
               </svg>
             </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
+                />
+              </svg>
+            </button>
           </div>
         </div>
         <div
@@ -36880,6 +37008,483 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
 </body>
 `;
 
+exports[`Produtos (telas internas) > preço sugerido por canal 1`] = `
+<body>
+  <div>
+    <div
+      class="space-y-8"
+    >
+      <header
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
+        <div>
+          <h1
+            class="text-3xl font-bold tracking-tight text-neutral-900"
+          >
+            Produtos
+          </h1>
+          <p
+            class="text-neutral-500 mt-1"
+          >
+            Cadastre produtos e visualize sua rentabilidade.
+          </p>
+        </div>
+        <button
+          class="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-plus w-5 h-5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+            />
+            <path
+              d="M8 12h8"
+            />
+            <path
+              d="M12 8v8"
+            />
+          </svg>
+           Novo Produto
+        </button>
+      </header>
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Margem Média
+          </p>
+          <p
+            class="text-2xl font-black text-neutral-900 mt-1"
+          >
+            50.0
+            %
+          </p>
+        </div>
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Lucro Médio/Und
+          </p>
+          <p
+            class="text-2xl font-black text-emerald-700 mt-1"
+          >
+            R$ 7,50
+          </p>
+        </div>
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Sem Preço
+          </p>
+          <p
+            class="text-2xl font-black text-amber-600 mt-1"
+          >
+            0
+          </p>
+        </div>
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-xs font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Com Prejuízo
+          </p>
+          <p
+            class="text-2xl font-black text-red-600 mt-1"
+          >
+            0
+          </p>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <div
+          class="flex flex-col md:flex-row gap-3"
+        >
+          <div
+            class="relative flex-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-search absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m21 21-4.34-4.34"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+            </svg>
+            <input
+              class="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+              placeholder="Buscar produto ou categoria..."
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="w-full md:w-auto"
+          >
+            <div
+              class="flex items-center gap-2 flex-wrap"
+            >
+              <button
+                class="px-3 py-1.5 rounded-full text-xs font-bold border transition-all bg-neutral-900 text-white border-neutral-900"
+                type="button"
+              >
+                Todas
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-full text-xs font-bold border transition-all bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50"
+                type="button"
+              >
+                TESTE Presentes
+              </button>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-2"
+          >
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-layout-grid w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="7"
+                  rx="1"
+                  width="7"
+                  x="3"
+                  y="3"
+                />
+                <rect
+                  height="7"
+                  rx="1"
+                  width="7"
+                  x="14"
+                  y="3"
+                />
+                <rect
+                  height="7"
+                  rx="1"
+                  width="7"
+                  x="14"
+                  y="14"
+                />
+                <rect
+                  height="7"
+                  rx="1"
+                  width="7"
+                  x="3"
+                  y="14"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-table2 lucide-table-2 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all bg-neutral-900 text-white border-neutral-900"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border bg-neutral-900 text-white border-neutral-900"
+          >
+            Todos
+             
+            <span
+              class="ml-1 opacity-60"
+            >
+              (
+              1
+              )
+            </span>
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            Sem Preço
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⛔ Prejuízo
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            🔴 Arriscado
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            🟠 Margem Baixa
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            🟡 Bom
+             
+            <span
+              class="ml-1 opacity-60"
+            >
+              (
+              1
+              )
+            </span>
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            🟢 Excelente
+             
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden"
+      >
+        <div
+          class="px-4 py-3 border-b border-neutral-100 flex flex-wrap items-baseline justify-between gap-2"
+        >
+          <p
+            class="text-xs font-black text-neutral-900 uppercase tracking-wider"
+          >
+            Preço sugerido por canal
+          </p>
+          <p
+            class="text-[10px] text-neutral-400 font-bold"
+          >
+            Markup 
+            100,0%
+             sobre o custo, com as taxas de cada canal
+          </p>
+        </div>
+        <div
+          class="overflow-x-auto"
+        >
+          <table
+            class="w-full text-sm"
+          >
+            <thead
+              class="bg-neutral-50 border-b border-neutral-200"
+            >
+              <tr>
+                <th
+                  class="text-left px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Produto
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider"
+                >
+                  Custo
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  Venda Direta
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  Instagram
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  Atacado
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  Shopee
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  Mercado Livre
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  iFood
+                </th>
+                <th
+                  class="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  99Food
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="divide-y divide-neutral-50"
+            >
+              <tr
+                class="hover:bg-neutral-50 transition-colors"
+              >
+                <td
+                  class="px-4 py-3 whitespace-nowrap"
+                >
+                  <button
+                    class="font-bold text-neutral-900 hover:underline text-left"
+                  >
+                    TESTE Chaveiro
+                  </button>
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-mono text-neutral-600 text-xs whitespace-nowrap"
+                >
+                  R$ 7,50
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 15,00
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 15,54
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 15,79
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 28,75
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 18,29
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 20,41
+                </td>
+                <td
+                  class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
+                >
+                  R$ 17,24
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`Produtos (telas internas) > tabela e ordenação por preço 1`] = `
 <body>
   <div>
@@ -37118,6 +37723,38 @@ exports[`Produtos (telas internas) > tabela e ordenação por preço 1`] = `
               >
                 <path
                   d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
                 />
               </svg>
             </button>
@@ -37752,6 +38389,38 @@ exports[`Produtos (telas internas) > tabela e ordenação por preço 2`] = `
                 />
               </svg>
             </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
+                />
+              </svg>
+            </button>
           </div>
         </div>
         <div
@@ -38383,6 +39052,38 @@ exports[`Produtos > busca 1`] = `
                 />
               </svg>
             </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
+                />
+              </svg>
+            </button>
           </div>
         </div>
         <div
@@ -38938,6 +39639,38 @@ exports[`Produtos > lista 1`] = `
               >
                 <path
                   d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"
+                />
+              </svg>
+            </button>
+            <button
+              class="p-2.5 rounded-xl border transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400"
+              title="Preço sugerido por canal"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-columns3 lucide-columns-3 w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="18"
+                  rx="2"
+                  width="18"
+                  x="3"
+                  y="3"
+                />
+                <path
+                  d="M9 3v18"
+                />
+                <path
+                  d="M15 3v18"
                 />
               </svg>
             </button>

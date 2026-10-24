@@ -1,7 +1,8 @@
 // Lista de produtos (Etapa 8A): visão em tabela e em cartões, só exibição.
 // Os dados (filtro, ordenação e preços) vêm calculados de Products.tsx.
 import React from 'react';
-import { Category, CostBase, Product } from '../types';
+import { Category, CostBase, Product, SalesChannel } from '../types';
+import { suggestedPriceByChannel } from '../lib/channels';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { markupOf, ProductPricingResult } from '../lib/pricingEngine';
 import { categoryNames } from '../hooks/useCategories';
@@ -286,6 +287,88 @@ export function ProductCards({
       {filteredAndSorted.length === 0 && (
         <div className="col-span-full py-20 text-center text-neutral-400 italic">Nenhum produto encontrado.</div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Preço sugerido de cada produto em cada canal da tabela da loja (Etapa 8B, item 6). Só exibição:
+ * o mesmo preço que o orçamento calcula para o canal (suggestedPriceByChannel).
+ */
+export function ProductChannelTable({
+  filteredAndSorted,
+  channels,
+  markupPct,
+  hasCosts,
+  handleEdit,
+}: {
+  filteredAndSorted: ProductRow[];
+  channels: SalesChannel[];
+  markupPct: number;
+  hasCosts: boolean;
+  handleEdit: (product: Product) => void;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-neutral-100 flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-xs font-black text-neutral-900 uppercase tracking-wider">Preço sugerido por canal</p>
+        <p className="text-[10px] text-neutral-400 font-bold">
+          Markup {formatPercent(markupPct)} sobre o custo, com as taxas de cada canal
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-neutral-50 border-b border-neutral-200">
+            <tr>
+              <th className="text-left px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider">
+                Produto
+              </th>
+              <th className="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider">
+                Custo
+              </th>
+              {channels.map(c => (
+                <th
+                  key={c.id}
+                  className="text-right px-4 py-3 text-[10px] font-black text-neutral-400 uppercase tracking-wider whitespace-nowrap"
+                >
+                  {c.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-50">
+            {filteredAndSorted.map(({ product: p, pricing }) => (
+              <tr key={p.id} className="hover:bg-neutral-50 transition-colors">
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <button
+                    onClick={() => handleEdit(p)}
+                    className="font-bold text-neutral-900 hover:underline text-left"
+                  >
+                    {p.name}
+                  </button>
+                </td>
+                <td className="px-4 py-3 text-right font-mono text-neutral-600 text-xs whitespace-nowrap">
+                  {hasCosts && pricing.totalCost > 0 ? formatCurrency(pricing.totalCost) : '—'}
+                </td>
+                {suggestedPriceByChannel(hasCosts ? pricing.totalCost : 0, channels, markupPct).map(
+                  ({ channel, price }) => (
+                    <td key={channel.id} className="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap">
+                      {price != null ? formatCurrency(price) : '—'}
+                    </td>
+                  ),
+                )}
+              </tr>
+            ))}
+            {filteredAndSorted.length === 0 && (
+              <tr>
+                <td colSpan={channels.length + 2} className="px-4 py-16 text-center text-neutral-400 italic">
+                  Nenhum produto encontrado.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -89,3 +89,18 @@ export function manualPriceByChannel(
     };
   });
 }
+
+/**
+ * Preço sugerido de um custo em cada canal da tabela (Etapa 8B, item 6): o mesmo do orçamento,
+ * priceForMarkup(custo, markup, taxas %, taxa fixa). null quando o canal não tem preço possível.
+ */
+export function suggestedPriceByChannel(
+  cost: number,
+  channels: SalesChannel[],
+  markupPct: number,
+): Array<{ channel: SalesChannel; price: number | null }> {
+  return channels.map(channel => {
+    const { feePct, fixedFee } = channelFees(channel);
+    return { channel, price: cost > 0 ? priceForMarkup(cost, markupPct, feePct, fixedFee) : null };
+  });
+}

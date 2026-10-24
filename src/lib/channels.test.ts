@@ -1,6 +1,13 @@
 // Etapa 7, item 5 — tabela única de canais de venda por loja.
 import { describe, expect, it } from 'vitest';
-import { channelFees, channelsOf, DEFAULT_SALES_CHANNELS, findChannel, manualPriceByChannel } from './channels';
+import {
+  channelFees,
+  channelsOf,
+  DEFAULT_SALES_CHANNELS,
+  findChannel,
+  manualPriceByChannel,
+  suggestedPriceByChannel,
+} from './channels';
 import type { Material, Product } from '../types';
 import { calcProductCost, calcQuoteItem, markupOf } from './pricingEngine';
 import { calcCestaJob, calcLaserJob } from './calculators';
@@ -64,7 +71,7 @@ describe('Preço manual em cada canal (manualPriceByChannel)', () => {
   } as unknown as Product;
 
   it('o preço do orçamento em cada canal, digitado como manual, dá o mesmo lucro e fica na meta', () => {
-    const cost = calcProductCost(chaveiro, materials, costs).totalCost; // R$ 7,00
+    const cost = calcProductCost(chaveiro, materials, costs).totalCost; // R$ 7,50
     for (const channel of DEFAULT_SALES_CHANNELS) {
       const { feePct, fixedFee } = channelFees(channel);
       const quote = calcQuoteItem(
@@ -150,5 +157,50 @@ describe('Preço manual em cada canal (manualPriceByChannel)', () => {
     const [row] = manualPriceByChannel(50, 10, [caro], 150);
     expect(row.goalPrice).toBeNull();
     expect(row.meetsGoal).toBeNull();
+  });
+});
+
+// Etapa 8B, item 6 — preço sugerido em cada canal: igual ao preço unitário do orçamento.
+describe('Preço sugerido em cada canal (suggestedPriceByChannel)', () => {
+  const costs = { storeId: 'loja', fixedCosts: 0, productiveHours: 0, profitGoal: 0, markupPct: 150, hourlyRate: 20 };
+  const materials = [
+    { id: 'mdf', unitCost: 15 },
+    { id: 'argola', unitCost: 0.25 },
+  ] as Material[];
+  const chaveiro = {
+    id: 'chaveiro',
+    name: 'TESTE Chaveiro',
+    productionTime: 15,
+    packagingCost: 0.75,
+    materials: [
+      { materialId: 'mdf', quantity: 0.1 },
+      { materialId: 'argola', quantity: 1 },
+    ],
+  } as unknown as Product;
+
+  it('bate centavo a centavo com o orçamento em todos os canais padrão', () => {
+    const cost = calcProductCost(chaveiro, materials, costs).totalCost;
+    const rows = suggestedPriceByChannel(cost, DEFAULT_SALES_CHANNELS, markupOf(costs));
+    expect(rows).toHaveLength(DEFAULT_SALES_CHANNELS.length);
+    for (const { channel, price } of rows) {
+      const { feePct, fixedFee } = channelFees(channel);
+      const quote = calcQuoteItem(
+        { productId: 'chaveiro', quantity: 1 },
+        chaveiro,
+        materials,
+        costs,
+        feePct,
+        fixedFee,
+      )!;
+      expect(price).toBeCloseTo(quote.unitPrice, 10);
+    }
+    expect(rows[0].price).toBeCloseTo(18.75, 10); // Venda Direta: R$ 7,50 × 2,5
+    expect(rows.find(r => r.channel.id === 'shopee')!.price).toBeCloseTo(35.9375, 10); // (7,50 + 4) × 2,5 ÷ 0,8
+  });
+
+  it('sem custo ou com taxas de 95%: sem preço', () => {
+    expect(suggestedPriceByChannel(0, DEFAULT_SALES_CHANNELS, 150).every(r => r.price === null)).toBe(true);
+    const caro = { id: 'x', name: 'X', commissionPct: 95, fixedFee: 0, paymentPct: 0 };
+    expect(suggestedPriceByChannel(10, [caro], 150)[0].price).toBeNull();
   });
 });

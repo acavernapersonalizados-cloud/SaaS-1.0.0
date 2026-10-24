@@ -22,7 +22,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { analyzeManualPrice } from '../services/gemini';
 import { uploadProductImage, uploadGalleryImage, deleteImageByUrl } from '../services/imageUpload';
-import { ProductCards, ProductTable, SortField } from './ProductList';
+import { ProductCards, ProductChannelTable, ProductTable, SortField } from './ProductList';
+import { channelsOf } from '../lib/channels';
 import { ProductFormModal } from './ProductFormModal';
 import { ProductCatalogSection, ProductPricingSection } from './ProductFormSections';
 import { CategoryFilterBar } from './CategoryPicker';
@@ -45,6 +46,7 @@ import {
   CheckCircle2,
   LayoutGrid,
   Table2,
+  Columns3,
   ArrowUpDown,
   Filter,
   ArrowRight,
@@ -53,7 +55,7 @@ import {
   Image,
 } from 'lucide-react';
 
-type ViewMode = 'cards' | 'table';
+type ViewMode = 'cards' | 'table' | 'channels';
 type FilterMode = 'all' | 'no_price' | 'loss' | 'risky' | 'low' | 'good' | 'excellent';
 
 export function Products() {
@@ -505,6 +507,13 @@ export function Products() {
             >
               <Table2 className="w-4 h-4" />
             </button>
+            <button
+              onClick={() => setViewMode('channels')}
+              title="Preço sugerido por canal"
+              className={`p-2.5 rounded-xl border transition-all ${viewMode === 'channels' ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-400'}`}
+            >
+              <Columns3 className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -542,6 +551,17 @@ export function Products() {
           setProductToDelete={setProductToDelete}
           sortField={sortField}
           handleSort={handleSort}
+        />
+      )}
+
+      {/* PREÇO POR CANAL (Etapa 8B, item 6) */}
+      {viewMode === 'channels' && (
+        <ProductChannelTable
+          filteredAndSorted={filteredAndSorted}
+          channels={channelsOf(costs)}
+          markupPct={markupOf(costs)}
+          hasCosts={!!costs}
+          handleEdit={handleEdit}
         />
       )}
 

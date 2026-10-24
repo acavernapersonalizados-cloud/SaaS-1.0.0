@@ -320,6 +320,12 @@ describe('Produtos (telas internas)', () => {
     await click(buttonWithText('Preço'));
     expect(html()).toMatchSnapshot();
   });
+  // Etapa 8B, item 6 — preço sugerido de cada produto em cada canal.
+  it('preço sugerido por canal', async () => {
+    await show(await load());
+    await click(buttonWithIcon('columns-3'));
+    expect(html()).toMatchSnapshot();
+  });
   it('janela de novo produto', async () => {
     await show(await load());
     await click(buttonWithText('Novo Produto'));
