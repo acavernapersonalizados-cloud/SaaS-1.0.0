@@ -487,7 +487,7 @@ gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
 
 | Item | Resultado |
 |---|---|
-| 1. Dados | `src/lib/sublimation.ts`: tabela de 40 linhas igual, linha a linha, ao `tabela-sublimacao.md` (o teste lê o arquivo); 4 máquinas padrão em 220 V; logo 15 × 15 da 4 em 1 ligado às linhas de "Prensa plana"; boné da 4 em 1 e mini prensa sem referência |
+| 1. Dados | `src/lib/sublimation.ts`: tabela de 40 linhas igual, linha a linha, ao `tabela-sublimacao.md` (o teste lê o arquivo); 4 máquinas padrão em 220 V; logo 15 × 15 cm da 4 em 1 ligado às linhas de "Prensa plana"; boné da 4 em 1 e mini prensa sem referência |
 | 2. Banco | Coleção `sublimationMachines` com regra igual à do Laser (emulador: ADMIN e OPERADOR da loja 200; outra loja, OPERADOR apagando e sem login 403) e incluída no Backup. Sem índice novo (ordena na tela) |
 | 3. Aba "Sublimação" | 5ª aba da guia Calculadoras; cadastro (adicionar/editar/excluir, só ADMIN e GERENTE) e botão "Cadastrar as 4 máquinas da tabela" quando a loja não tem nenhuma |
 | 4. Parâmetros | Parte da máquina + produto preenchem temperatura, tempo e pressão (editáveis, não gravados); parte sem referência mostra "use os valores do fabricante"; aviso de tabela sugestiva e dicas |
@@ -501,8 +501,8 @@ Testes: 178 → 188.
 
 
 Dados: `tabela-sublimacao.md` (raiz do projeto), montado a partir das fotos das etiquetas/manuais e da tabela
-sugestiva da STC Smart Deko. Todas as máquinas em 220 V: mini prensa portátil 250 W; prensa plana 38 × 38 cm 1.800 W;
-prensa 4 em 1 (boné 300 W, logo 15 × 15 600 W, caneta 200 W, caneca 11 oz 300 W); prensa de caneca Sun Special
+sugestiva da STC Smart Deko. Todas as máquinas em 220 V: mini prensa portátil 250 W; prensa plana 38 × 38 cm (15") 1.800 W;
+prensa 4 em 1 (boné 300 W, logo 15 × 15 cm 600 W, caneta 200 W, caneca 11 oz 300 W); prensa de caneca Sun Special
 SSH-012A-1 350 W (confirmado em 24/10/2026: só canecas, com a linha "Prensa de canecas e copos" da tabela).
 Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pressão).
 

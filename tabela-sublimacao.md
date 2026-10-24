@@ -8,7 +8,7 @@ A tabela é SUGESTIVA (o próprio fabricante avisa que varia conforme o material
 | Máquina | Potência (220 V) | Observação |
 |---|---|---|
 | Mini prensa portátil (tipo "mini heat press", base 6,2 × 10,6 cm) | 250 W | para bonés, sapatos, lugares difíceis |
-| Prensa plana 38 × 38 cm | 1.800 W | 0–250 °C, 0–999 s |
+| Prensa plana 38 × 38 cm (15") | 1.800 W | 0–250 °C, 0–999 s (uma máquina só; não confundir com a placa logo 15 × 15 cm da 4 em 1) |
 | Prensa 4 em 1 (220 V) | boné 300 W · logo 15×15 cm 600 W · caneta 10×15 cm 200 W · caneca 11 oz 300 W | cada acessório tem potência própria |
 | Prensa de caneca Sun Special SSH-012A-1 | 350 W | usada SOMENTE para canecas (usa a linha "Prensa de canecas e copos" da tabela) |
 

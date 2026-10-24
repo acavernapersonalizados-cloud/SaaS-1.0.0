@@ -40324,7 +40324,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
               <p
                 class="font-bold text-sm text-neutral-900 leading-tight"
               >
-                Prensa plana 38 × 38 cm
+                Prensa plana 38 × 38 cm (15")
               </p>
             </div>
             <p
@@ -40348,7 +40348,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
               class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
             >
               <button
-                aria-label="Editar Prensa plana 38 × 38 cm"
+                aria-label="Editar Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
                 title="Editar máquina"
                 type="button"
@@ -40373,7 +40373,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
                  Editar
               </button>
               <button
-                aria-label="Excluir Prensa plana 38 × 38 cm"
+                aria-label="Excluir Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
                 title="Excluir máquina"
                 type="button"
@@ -40920,7 +40920,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               <p
                 class="font-bold text-sm text-neutral-900 leading-tight"
               >
-                Prensa plana 38 × 38 cm
+                Prensa plana 38 × 38 cm (15")
               </p>
             </div>
             <p
@@ -40944,7 +40944,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
             >
               <button
-                aria-label="Editar Prensa plana 38 × 38 cm"
+                aria-label="Editar Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
                 title="Editar máquina"
                 type="button"
@@ -40969,7 +40969,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
                  Editar
               </button>
               <button
-                aria-label="Excluir Prensa plana 38 × 38 cm"
+                aria-label="Excluir Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
                 title="Excluir máquina"
                 type="button"
@@ -41251,7 +41251,7 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               </label>
               <input
                 class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                placeholder="Ex: Prensa plana 38 × 38 cm"
+                placeholder="Ex: Prensa plana 38 × 38 cm (15")"
                 required=""
                 type="text"
                 value="Prensa 4 em 1"
@@ -42008,7 +42008,7 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
               <p
                 class="font-bold text-sm text-neutral-900 leading-tight"
               >
-                Prensa plana 38 × 38 cm
+                Prensa plana 38 × 38 cm (15")
               </p>
             </div>
             <p
@@ -42032,7 +42032,7 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
               class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
             >
               <button
-                aria-label="Editar Prensa plana 38 × 38 cm"
+                aria-label="Editar Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
                 title="Editar máquina"
                 type="button"
@@ -42057,7 +42057,7 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
                  Editar
               </button>
               <button
-                aria-label="Excluir Prensa plana 38 × 38 cm"
+                aria-label="Excluir Prensa plana 38 × 38 cm (15")"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
                 title="Excluir máquina"
                 type="button"

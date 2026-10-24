@@ -459,7 +459,7 @@ describe('Sublimação', () => {
     await type(field('Parte da máquina'), 'bone');
     expect(document.body.textContent).toContain('Sem referência na tabela; use os valores do fabricante.');
     expect(values()).toEqual(['', '', '']);
-    await click(textElement('Prensa plana 38 × 38 cm'));
+    await click(textElement('Prensa plana 38 × 38 cm (15")'));
     await type(field('Produto'), 'Tecidos em poliéster');
     expect(values()).toEqual(['230', '35', 'Forte']);
   });

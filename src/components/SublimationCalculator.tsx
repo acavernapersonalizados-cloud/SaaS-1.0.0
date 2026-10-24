@@ -524,7 +524,7 @@ export function SublimationCalculator() {
                   required
                   value={draft.label}
                   onChange={e => setDraft(d => ({ ...d, label: e.target.value }))}
-                  placeholder="Ex: Prensa plana 38 × 38 cm"
+                  placeholder='Ex: Prensa plana 38 × 38 cm (15")'
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                 />
               </div>

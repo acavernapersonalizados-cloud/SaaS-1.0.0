@@ -111,10 +111,12 @@ export const DEFAULT_SUBLIMATION_MACHINES: SublimationMachineData[] = [
     heads: [{ id: 'base', name: 'Base 6,2 × 10,6 cm', powerW: 250, equipment: null }],
   },
   {
-    label: 'Prensa plana 38 × 38 cm',
+    // Tamanhos sempre em cm; polegadas entre parênteses só nesta (15" = 38 cm). Não confundir com a placa
+    // "Logo 15 × 15 cm" da 4 em 1, que é outra (600 W).
+    label: 'Prensa plana 38 × 38 cm (15")',
     voltage: 220,
     note: '0–250 °C, 0–999 s.',
-    heads: [{ id: 'placa', name: 'Placa 38 × 38 cm', powerW: 1800, equipment: 'Prensa plana' }],
+    heads: [{ id: 'placa', name: 'Placa 38 × 38 cm (15")', powerW: 1800, equipment: 'Prensa plana' }],
   },
   {
     label: 'Prensa 4 em 1',

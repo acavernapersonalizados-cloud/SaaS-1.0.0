@@ -331,10 +331,10 @@ export const fixtures: Record<string, any[]> = {
     {
       id: 'sub-plana',
       storeId: S,
-      label: 'Prensa plana 38 × 38 cm',
+      label: 'Prensa plana 38 × 38 cm (15")',
       voltage: 220,
       note: '0–250 °C, 0–999 s.',
-      heads: [{ id: 'placa', name: 'Placa 38 × 38 cm', powerW: 1800, equipment: 'Prensa plana' }],
+      heads: [{ id: 'placa', name: 'Placa 38 × 38 cm (15")', powerW: 1800, equipment: 'Prensa plana' }],
       createdAt: T0,
     },
     {
