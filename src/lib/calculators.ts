@@ -182,3 +182,70 @@ export function calcCestaJob(input: CestaJobInput) {
     channelCost,
   };
 }
+
+// ─── Sublimação (Etapa 8D-2) ─────────────────────────────────────────────────
+
+export interface SublimationJobInput {
+  /** Peça base por unidade (R$): do estoque (Matéria-prima) ou valor avulso. */
+  baseCost: number;
+  /** Papel sublimático + tinta: custo por folha A4 (R$) e quantas peças saem de uma folha. */
+  sheetCost: number;
+  piecesPerSheet: number;
+  /** Tempo de prensa por peça (s), da tabela ou digitado. */
+  pressTimeS: number;
+  /** Aquecimento da prensa por leva (min) e peças na leva: o aquecimento é dividido entre elas. */
+  heatUpMin: number;
+  piecesPerBatch: number;
+  /** Potência da máquina/acessório (W) e tarifa de energia (R$/kWh). */
+  powerW: number;
+  electricityRate: number;
+  /** Mão de obra por peça (min) e valor da hora (R$). */
+  laborMinPerPiece: number;
+  hourlyRate: number;
+  /** Embalagem e outros custos por peça (R$). */
+  packagingCost: number;
+  otherCost: number;
+  /** Quantidade de peças do trabalho. */
+  quantity: number;
+  /** Markup sobre o custo (%). */
+  markupPct: number;
+  /** Taxa do canal de venda (% do preço) e taxa fixa por unidade (R$); sem canal = 0. */
+  channelFeePct?: number;
+  channelFixedFee?: number;
+  manualPrice: number | null;
+}
+
+export function calcSublimationJob(input: SublimationJobInput) {
+  const paperInkCost = input.sheetCost / Math.max(input.piecesPerSheet, 1);
+  // Aquecimento rateado: os minutos de aquecer a prensa divididos pelas peças da leva.
+  const heatShareS = (input.heatUpMin * 60) / Math.max(input.piecesPerBatch, 1);
+  const energyTimeH = (input.pressTimeS + heatShareS) / 3600;
+  const energy = energyCost(input.powerW, energyTimeH, input.electricityRate);
+  const laborCost = laborCostFromMinutes(input.hourlyRate, input.laborMinPerPiece);
+  const totalCostUnit = input.baseCost + paperInkCost + energy + laborCost + input.packagingCost + input.otherCost;
+  if (totalCostUnit <= 0) return null;
+  const quantity = Math.max(input.quantity, 1);
+  const totalCostBatch = totalCostUnit * quantity;
+  const fee = input.channelFeePct ?? 0;
+  const fixed = input.channelFixedFee ?? 0;
+  const suggestedUnit = priceForMarkup(totalCostUnit, input.markupPct, fee, fixed) ?? 0;
+  const suggestedBatch = suggestedUnit * quantity;
+  const priceRef = input.manualPrice ?? suggestedUnit;
+  const profit = priceRef - totalCostUnit - channelCostOf(priceRef, fee, fixed);
+  const margin = priceRef > 0 ? (profit / priceRef) * 100 : 0;
+  return {
+    baseCost: input.baseCost,
+    paperInkCost,
+    heatShareS,
+    energyCost: energy,
+    laborCost,
+    packagingCost: input.packagingCost,
+    otherCost: input.otherCost,
+    totalCostUnit,
+    totalCostBatch,
+    suggestedUnit,
+    suggestedBatch,
+    profit,
+    margin,
+  };
+}

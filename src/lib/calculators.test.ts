@@ -1,6 +1,13 @@
 // Corte a Laser, Papelaria e Cestas — valores do CHECKLIST-TESTES.md (seções 12, 14 e 15).
 import { describe, expect, it } from 'vitest';
-import { calcCestaJob, calcLaserJob, calcPapelariaJob, laserTotalTimeMin, sumItemsCost } from './calculators';
+import {
+  calcCestaJob,
+  calcLaserJob,
+  calcPapelariaJob,
+  calcSublimationJob,
+  laserTotalTimeMin,
+  sumItemsCost,
+} from './calculators';
 
 describe('Corte a Laser (seção 12)', () => {
   // Máquina "TESTE Laser": 60 W, módulo de R$ 400 com 10.000 h. Trabalho: 10 + 5 min, 2 passadas,
@@ -167,5 +174,67 @@ describe('Cestas (seção 15)', () => {
     const r = calcCestaJob({ ...input, commissionPct: 95 })!;
     expect(r.invalidMargin).toBe(true);
     expect(r.suggestedUnit).toBe(0);
+  });
+});
+
+describe('Sublimação (Etapa 8D-2) — caneca de porcelana na Sun Special, conferida à mão', () => {
+  // Sun Special SSH-012A-1: 350 W; tabela: caneca de porcelana 185 °C, 200 s. Aquecimento 10 min para uma leva
+  // de 10 canecas (60 s por caneca). Tarifa 0,79. Peça base R$ 12,00; folha A4 (papel + tinta) R$ 2,40 com 2 canecas
+  // por folha; mão de obra 5 min a R$ 25/h; embalagem R$ 1,50; outros R$ 0,50; 10 canecas; markup 150%.
+  const input = {
+    baseCost: 12,
+    sheetCost: 2.4,
+    piecesPerSheet: 2,
+    pressTimeS: 200,
+    heatUpMin: 10,
+    piecesPerBatch: 10,
+    powerW: 350,
+    electricityRate: 0.79,
+    laborMinPerPiece: 5,
+    hourlyRate: 25,
+    packagingCost: 1.5,
+    otherCost: 0.5,
+    quantity: 10,
+    markupPct: 150,
+    manualPrice: null,
+  };
+  it('partes do custo: papel R$ 1,20; aquecimento 60 s/caneca; energia 0,35 kW × 260 s × 0,79 = R$ 0,0200; mão de obra R$ 2,0833', () => {
+    const r = calcSublimationJob(input)!;
+    expect(r.paperInkCost).toBeCloseTo(1.2, 10);
+    expect(r.heatShareS).toBeCloseTo(60, 10);
+    expect(r.energyCost).toBeCloseTo(0.35 * (260 / 3600) * 0.79, 10); // 0,019969…
+    expect(r.energyCost).toBeCloseTo(0.02, 4);
+    expect(r.laborCost).toBeCloseTo(25 / 12, 10); // 2,0833…
+  });
+  it('custo por caneca R$ 17,30 e lote de 10 R$ 173,03', () => {
+    const r = calcSublimationJob(input)!;
+    expect(r.totalCostUnit).toBeCloseTo(17.3033, 4);
+    expect(r.totalCostBatch).toBeCloseTo(173.033, 3);
+  });
+  it('sugerido com markup 150%: Venda Direta R$ 43,26; Shopee (20% + R$ 4) R$ 66,57', () => {
+    expect(calcSublimationJob(input)!.suggestedUnit).toBeCloseTo(43.2583, 4);
+    const shopee = calcSublimationJob({ ...input, channelFeePct: 20, channelFixedFee: 4 })!;
+    expect(shopee.suggestedUnit).toBeCloseTo(((17.303302 + 4) * 2.5) / 0.8, 3); // 66,57
+  });
+  it('preço manual R$ 40 na Venda Direta: lucro R$ 22,70; na Shopee: R$ 40 − 17,30 − (8 + 4) = R$ 10,70', () => {
+    expect(calcSublimationJob({ ...input, manualPrice: 40 })!.profit).toBeCloseTo(22.6967, 4);
+    const shopee = calcSublimationJob({ ...input, manualPrice: 40, channelFeePct: 20, channelFixedFee: 4 })!;
+    expect(shopee.profit).toBeCloseTo(40 - 17.303302 - 12, 4);
+  });
+  it('mesmas funções das outras calculadoras: sem peças na leva/folha conta 1; sem custo nenhum, sem resultado', () => {
+    const umaPorVez = calcSublimationJob({ ...input, piecesPerBatch: 0, piecesPerSheet: 0 })!;
+    expect(umaPorVez.heatShareS).toBe(600);
+    expect(umaPorVez.paperInkCost).toBeCloseTo(2.4, 10);
+    const zero = {
+      ...input,
+      baseCost: 0,
+      sheetCost: 0,
+      pressTimeS: 0,
+      heatUpMin: 0,
+      laborMinPerPiece: 0,
+      packagingCost: 0,
+      otherCost: 0,
+    };
+    expect(calcSublimationJob(zero)).toBeNull();
   });
 });
