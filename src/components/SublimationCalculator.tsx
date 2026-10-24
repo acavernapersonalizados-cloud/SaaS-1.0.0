@@ -7,12 +7,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
+  formatSublimationTime,
+  rowsForEquipment,
+  SUBLIMATION_TIPS,
   SublimationEquipment,
   SublimationHead,
   SublimationMachine,
   SublimationMachineData,
 } from '../lib/sublimation';
-import { CheckCircle2, Edit2, Flame, Loader2, Plus, Settings, Trash2, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Edit2, Flame, Loader2, Plus, Settings, Thermometer, Trash2, X } from 'lucide-react';
 
 const EQUIPMENTS: SublimationEquipment[] = [
   'Prensa plana',
@@ -45,6 +48,13 @@ export function SublimationCalculator() {
   const [saving, setSaving] = useState(false);
   const [seeding, setSeeding] = useState(false);
 
+  // ── Parâmetros (item 4): parte da máquina + produto → temperatura, tempo e pressão (editáveis, não gravados) ──
+  const [headId, setHeadId] = useState('');
+  const [product, setProduct] = useState('');
+  const [tempC, setTempC] = useState<number | ''>('');
+  const [timeS, setTimeS] = useState<number | ''>('');
+  const [pressure, setPressure] = useState('');
+
   useEffect(() => {
     if (!activeStore) {
       setMachinesLoading(false);
@@ -67,6 +77,31 @@ export function SublimationCalculator() {
       },
     );
   }, [activeStore]);
+
+  const selectedMachine = machines.find(m => m.id === selectedMachineId) ?? null;
+  const selectedHead = selectedMachine?.heads.find(h => h.id === headId) ?? selectedMachine?.heads[0] ?? null;
+  const productRows = rowsForEquipment(selectedHead?.equipment ?? null);
+
+  // Trocou de máquina ou de parte: volta a parte para a primeira e limpa o produto e os valores.
+  useEffect(() => {
+    setHeadId(current =>
+      selectedMachine?.heads.some(h => h.id === current) ? current : (selectedMachine?.heads[0]?.id ?? ''),
+    );
+  }, [selectedMachine]);
+  useEffect(() => {
+    setProduct('');
+    setTempC('');
+    setTimeS('');
+    setPressure('');
+  }, [selectedMachineId, headId]);
+
+  const chooseProduct = (name: string) => {
+    setProduct(name);
+    const r = productRows.find(row => row.product === name);
+    setTempC(r ? r.tempC : '');
+    setTimeS(r ? r.timeS : '');
+    setPressure(r?.pressure ?? '');
+  };
 
   const openForm = (machine: SublimationMachine | null) => {
     setEditing(machine);
@@ -264,6 +299,100 @@ export function SublimationCalculator() {
           </div>
         )}
       </div>
+
+      {/* Parâmetros: temperatura, tempo e pressão da tabela */}
+      {selectedMachine && selectedHead && (
+        <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+            <Thermometer className="w-3.5 h-3.5" /> Parâmetros da prensa
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {selectedMachine.heads.length > 1 && (
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-neutral-700">Parte da máquina</label>
+                <select
+                  value={selectedHead.id}
+                  onChange={e => setHeadId(e.target.value)}
+                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                >
+                  {selectedMachine.heads.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {h.name} ({h.powerW} W)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-neutral-700">Produto</label>
+              {productRows.length > 0 ? (
+                <select
+                  value={product}
+                  onChange={e => chooseProduct(e.target.value)}
+                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                >
+                  <option value="">Selecione o produto</option>
+                  {productRows.map(r => (
+                    <option key={r.product} value={r.product}>
+                      {r.product}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <p className="px-4 py-3 bg-amber-50 border border-amber-100 text-amber-800 rounded-xl text-sm font-medium">
+                  Sem referência na tabela; use os valores do fabricante.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-neutral-700">Temperatura (°C)</label>
+              <input
+                type="number"
+                min={0}
+                value={tempC}
+                onChange={e => setTempC(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-neutral-700">Tempo (s)</label>
+              <input
+                type="number"
+                min={0}
+                value={timeS}
+                onChange={e => setTimeS(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              />
+              {timeS !== '' && timeS >= 180 && (
+                <p className="text-[10px] text-neutral-400 font-bold">= {formatSublimationTime(timeS)}</p>
+              )}
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-neutral-700">Pressão</label>
+              <input
+                type="text"
+                value={pressure}
+                onChange={e => setPressure(e.target.value)}
+                placeholder={product && !pressure ? 'não indicada' : ''}
+                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              />
+            </div>
+          </div>
+
+          <div className="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1">
+            <p className="flex items-center gap-1.5 font-bold text-neutral-700">
+              <AlertCircle className="w-3.5 h-3.5" /> Tabela sugestiva: varia conforme o material; faça um teste antes
+              de produzir. Os valores aqui não são gravados.
+            </p>
+            {SUBLIMATION_TIPS.map(tip => (
+              <p key={tip}>• {tip}</p>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Janela de cadastro/edição */}
       {showForm && (

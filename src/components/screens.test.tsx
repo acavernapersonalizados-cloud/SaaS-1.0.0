@@ -445,4 +445,22 @@ describe('Sublimação', () => {
     expect(heads.map(s => s.value)).toEqual(['', 'Prensa plana', 'Prensa de canetas', 'Prensa de canecas e copos']);
     expect(html()).toMatchSnapshot();
   });
+
+  // Item 4: parte da máquina + produto preenchem temperatura, tempo e pressão (editáveis, não gravados).
+  it('parâmetros: 4 em 1 (caneca e boné) e prensa plana', async () => {
+    await show(await load());
+    const value = (label: string) => (field(label) as HTMLInputElement).value;
+    const values = () => [value('Temperatura'), value('Tempo (s)'), value('Pressão')];
+    // A 4 em 1 vem primeiro (ordem alfabética) e já está selecionada.
+    await type(field('Parte da máquina'), 'caneca');
+    await type(field('Produto'), 'Caneca de porcelana');
+    expect(values()).toEqual(['185', '200', 'Forte']);
+    expect(html()).toMatchSnapshot();
+    await type(field('Parte da máquina'), 'bone');
+    expect(document.body.textContent).toContain('Sem referência na tabela; use os valores do fabricante.');
+    expect(values()).toEqual(['', '', '']);
+    await click(textElement('Prensa plana 38 × 38 cm'));
+    await type(field('Produto'), 'Tecidos em poliéster');
+    expect(values()).toEqual(['230', '35', 'Forte']);
+  });
 });

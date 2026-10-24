@@ -40351,6 +40351,196 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
           </div>
         </div>
       </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-thermometer w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"
+            />
+          </svg>
+           Parâmetros da prensa
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Parte da máquina
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value="bone"
+              >
+                Boné
+                 (
+                300
+                 W)
+              </option>
+              <option
+                value="logo"
+              >
+                Logo 15 × 15 cm
+                 (
+                600
+                 W)
+              </option>
+              <option
+                value="caneta"
+              >
+                Caneta 10 × 15 cm
+                 (
+                200
+                 W)
+              </option>
+              <option
+                value="caneca"
+              >
+                Caneca 11 oz
+                 (
+                300
+                 W)
+              </option>
+            </select>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Produto
+            </label>
+            <p
+              class="px-4 py-3 bg-amber-50 border border-amber-100 text-amber-800 rounded-xl text-sm font-medium"
+            >
+              Sem referência na tabela; use os valores do fabricante.
+            </p>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-3 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Temperatura (°C)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Tempo (s)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Pressão
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder=""
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1"
+        >
+          <p
+            class="flex items-center gap-1.5 font-bold text-neutral-700"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-alert w-3.5 h-3.5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <line
+                x1="12"
+                x2="12"
+                y1="8"
+                y2="12"
+              />
+              <line
+                x1="12"
+                x2="12.01"
+                y1="16"
+                y2="16"
+              />
+            </svg>
+             Tabela sugestiva: varia conforme o material; faça um teste antes de produzir. Os valores aqui não são gravados.
+          </p>
+          <p>
+            • 
+            Papel ímã: colocar na quina da prensa para evitar entrada de ar.
+          </p>
+          <p>
+            • 
+            Caneca de vidro (chopp): pré-aquecer cerca de 15 s e cuidado ao retirar a fita adesiva para não descascar a resina.
+          </p>
+          <p>
+            • 
+            Se houver variação de temperatura na prensa, fazer testes antes de produzir.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </body>
@@ -40693,6 +40883,196 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-thermometer w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"
+            />
+          </svg>
+           Parâmetros da prensa
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Parte da máquina
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value="bone"
+              >
+                Boné
+                 (
+                300
+                 W)
+              </option>
+              <option
+                value="logo"
+              >
+                Logo 15 × 15 cm
+                 (
+                600
+                 W)
+              </option>
+              <option
+                value="caneta"
+              >
+                Caneta 10 × 15 cm
+                 (
+                200
+                 W)
+              </option>
+              <option
+                value="caneca"
+              >
+                Caneca 11 oz
+                 (
+                300
+                 W)
+              </option>
+            </select>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Produto
+            </label>
+            <p
+              class="px-4 py-3 bg-amber-50 border border-amber-100 text-amber-800 rounded-xl text-sm font-medium"
+            >
+              Sem referência na tabela; use os valores do fabricante.
+            </p>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-3 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Temperatura (°C)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Tempo (s)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value=""
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Pressão
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder=""
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1"
+        >
+          <p
+            class="flex items-center gap-1.5 font-bold text-neutral-700"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-alert w-3.5 h-3.5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <line
+                x1="12"
+                x2="12"
+                y1="8"
+                y2="12"
+              />
+              <line
+                x1="12"
+                x2="12.01"
+                y1="16"
+                y2="16"
+              />
+            </svg>
+             Tabela sugestiva: varia conforme o material; faça um teste antes de produzir. Os valores aqui não são gravados.
+          </p>
+          <p>
+            • 
+            Papel ímã: colocar na quina da prensa para evitar entrada de ar.
+          </p>
+          <p>
+            • 
+            Caneca de vidro (chopp): pré-aquecer cerca de 15 s e cuidado ao retirar a fita adesiva para não descascar a resina.
+          </p>
+          <p>
+            • 
+            Se houver variação de temperatura na prensa, fazer testes antes de produzir.
+          </p>
         </div>
       </div>
       <div
@@ -41185,6 +41565,580 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               Atualizar Máquina
             </button>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] = `
+<body>
+  <div>
+    <div
+      class="space-y-8 pb-20"
+    >
+      <header
+        class="flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
+        <div>
+          <div
+            class="flex items-center gap-2 text-neutral-400 mb-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-flame w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"
+              />
+            </svg>
+            <span
+              class="text-xs font-bold uppercase tracking-widest"
+            >
+              Calculadora
+            </span>
+          </div>
+          <h1
+            class="text-3xl font-black text-neutral-900"
+          >
+            Sublimação
+          </h1>
+        </div>
+        <button
+          class="flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-all text-sm font-bold"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-plus w-4 h-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+            <path
+              d="M12 5v14"
+            />
+          </svg>
+           Nova Máquina
+        </button>
+      </header>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-settings w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+           Máquina
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+        >
+          <div
+            class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all border-neutral-900 bg-neutral-50"
+          >
+            <div
+              class="flex items-start justify-between gap-3 mb-1"
+            >
+              <p
+                class="font-bold text-sm text-neutral-900 leading-tight"
+              >
+                Prensa 4 em 1
+              </p>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-circle-check w-4 h-4 text-neutral-900 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <path
+                  d="m9 12 2 2 4-4"
+                />
+              </svg>
+            </div>
+            <p
+              class="text-xs text-neutral-400"
+            >
+              220
+               V
+               · Cada acessório tem potência própria.
+            </p>
+            <div
+              class="flex gap-1.5 mt-2 flex-wrap"
+            >
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Boné 
+                300
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Logo 15 × 15 cm 
+                600
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Caneta 10 × 15 cm 
+                200
+                 W
+              </span>
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                Caneca 11 oz 
+                300
+                 W
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+            >
+              <button
+                aria-label="Editar Prensa 4 em 1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                title="Editar máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-pen w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  />
+                </svg>
+                 Editar
+              </button>
+              <button
+                aria-label="Excluir Prensa 4 em 1"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                title="Excluir máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                 Excluir
+              </button>
+            </div>
+          </div>
+          <div
+            class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all border-neutral-100 hover:border-neutral-300"
+          >
+            <div
+              class="flex items-start justify-between gap-3 mb-1"
+            >
+              <p
+                class="font-bold text-sm text-neutral-900 leading-tight"
+              >
+                Prensa plana 38 × 38 cm
+              </p>
+            </div>
+            <p
+              class="text-xs text-neutral-400"
+            >
+              220
+               V
+               · 0–250 °C, 0–999 s.
+            </p>
+            <div
+              class="flex gap-1.5 mt-2 flex-wrap"
+            >
+              <span
+                class="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+              >
+                1800
+                 W
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+            >
+              <button
+                aria-label="Editar Prensa plana 38 × 38 cm"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                title="Editar máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-pen w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  />
+                </svg>
+                 Editar
+              </button>
+              <button
+                aria-label="Excluir Prensa plana 38 × 38 cm"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                title="Excluir máquina"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                 Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <h2
+          class="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-thermometer w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"
+            />
+          </svg>
+           Parâmetros da prensa
+        </h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Parte da máquina
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value="bone"
+              >
+                Boné
+                 (
+                300
+                 W)
+              </option>
+              <option
+                value="logo"
+              >
+                Logo 15 × 15 cm
+                 (
+                600
+                 W)
+              </option>
+              <option
+                value="caneta"
+              >
+                Caneta 10 × 15 cm
+                 (
+                200
+                 W)
+              </option>
+              <option
+                value="caneca"
+              >
+                Caneca 11 oz
+                 (
+                300
+                 W)
+              </option>
+            </select>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Produto
+            </label>
+            <select
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+            >
+              <option
+                value=""
+              >
+                Selecione o produto
+              </option>
+              <option
+                value="Caneca de alumínio"
+              >
+                Caneca de alumínio
+              </option>
+              <option
+                value="Caneca de plástico/acrílico"
+              >
+                Caneca de plástico/acrílico
+              </option>
+              <option
+                value="Caneca de porcelana"
+              >
+                Caneca de porcelana
+              </option>
+              <option
+                value="Caneca de vidro"
+              >
+                Caneca de vidro
+              </option>
+              <option
+                value="Caneca de vidro (chopp)"
+              >
+                Caneca de vidro (chopp)
+              </option>
+              <option
+                value="Squeeze de alumínio"
+              >
+                Squeeze de alumínio
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="grid grid-cols-3 gap-3"
+        >
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Temperatura (°C)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="185"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Tempo (s)
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              min="0"
+              type="number"
+              value="200"
+            />
+            <p
+              class="text-[10px] text-neutral-400 font-bold"
+            >
+              = 
+              200 s
+            </p>
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <label
+              class="text-xs font-bold text-neutral-700"
+            >
+              Pressão
+            </label>
+            <input
+              class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder=""
+              type="text"
+              value="Forte"
+            />
+          </div>
+        </div>
+        <div
+          class="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1"
+        >
+          <p
+            class="flex items-center gap-1.5 font-bold text-neutral-700"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-alert w-3.5 h-3.5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <line
+                x1="12"
+                x2="12"
+                y1="8"
+                y2="12"
+              />
+              <line
+                x1="12"
+                x2="12.01"
+                y1="16"
+                y2="16"
+              />
+            </svg>
+             Tabela sugestiva: varia conforme o material; faça um teste antes de produzir. Os valores aqui não são gravados.
+          </p>
+          <p>
+            • 
+            Papel ímã: colocar na quina da prensa para evitar entrada de ar.
+          </p>
+          <p>
+            • 
+            Caneca de vidro (chopp): pré-aquecer cerca de 15 s e cuidado ao retirar a fita adesiva para não descascar a resina.
+          </p>
+          <p>
+            • 
+            Se houver variação de temperatura na prensa, fazer testes antes de produzir.
+          </p>
         </div>
       </div>
     </div>
