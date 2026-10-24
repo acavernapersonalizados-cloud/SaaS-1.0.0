@@ -463,4 +463,21 @@ describe('Sublimação', () => {
     await type(field('Produto'), 'Tecidos em poliéster');
     expect(values()).toEqual(['230', '35', 'Forte']);
   });
+
+  // Item 5: tabela de referência com busca (sem acento).
+  it('tabela de referência: 40 linhas e busca', async () => {
+    await show(await load());
+    await click(buttonWithText('Tabela de referência'));
+    expect(document.querySelectorAll('tbody tr')).toHaveLength(40);
+    expect(document.body.textContent).toContain('40 de 40');
+    await type(searchBox(), 'ceramica');
+    const rows = Array.from(document.querySelectorAll('tbody tr')).map(tr => tr.textContent);
+    expect(rows).toEqual([
+      'Prensa planaAzulejo de cerâmica200 °C400 sMédia/fraca',
+      'Prensa 3DAzulejo de cerâmica200 °C7 min—',
+    ]);
+    expect(html()).toMatchSnapshot();
+    await type(searchBox(), 'xyz');
+    expect(document.body.textContent).toContain('Nenhum produto encontrado.');
+  });
 });

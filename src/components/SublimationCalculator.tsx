@@ -5,17 +5,33 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { cn } from '../lib/utils';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
   formatSublimationTime,
   rowsForEquipment,
+  searchSublimationTable,
+  SUBLIMATION_TABLE,
   SUBLIMATION_TIPS,
   SublimationEquipment,
   SublimationHead,
   SublimationMachine,
   SublimationMachineData,
 } from '../lib/sublimation';
-import { AlertCircle, CheckCircle2, Edit2, Flame, Loader2, Plus, Settings, Thermometer, Trash2, X } from 'lucide-react';
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle2,
+  Edit2,
+  Flame,
+  Loader2,
+  Plus,
+  Search,
+  Settings,
+  Thermometer,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 const EQUIPMENTS: SublimationEquipment[] = [
   'Prensa plana',
@@ -49,6 +65,11 @@ export function SublimationCalculator() {
   const [seeding, setSeeding] = useState(false);
 
   // ── Parâmetros (item 4): parte da máquina + produto → temperatura, tempo e pressão (editáveis, não gravados) ──
+  // Item 5: duas vistas na tela; a tabela de referência tem busca.
+  const [view, setView] = useState<'maquinas' | 'tabela'>('maquinas');
+  const [search, setSearch] = useState('');
+  const found = searchSublimationTable(search);
+
   const [headId, setHeadId] = useState('');
   const [product, setProduct] = useState('');
   const [tempC, setTempC] = useState<number | ''>('');
@@ -219,179 +240,270 @@ export function SublimationCalculator() {
         )}
       </header>
 
-      {/* Máquinas */}
-      <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
-        <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-          <Settings className="w-3.5 h-3.5" /> Máquina
-        </h2>
-        {machinesLoading ? (
-          <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
-        ) : machines.length === 0 ? (
-          <div className="space-y-3">
-            <p className="text-sm text-neutral-500">
-              Nenhuma máquina de sublimação cadastrada.
-              {canManage ? '' : ' Administradores e gerentes podem cadastrar.'}
-            </p>
-            {canManage && (
-              <button
-                onClick={handleSeedDefaults}
-                disabled={seeding}
-                className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white rounded-xl hover:bg-black transition-all text-sm font-bold disabled:opacity-50"
-              >
-                {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                Cadastrar as 4 máquinas da tabela
-              </button>
+      <div role="tablist" aria-label="Sublimação" className="flex gap-2">
+        {(
+          [
+            ['maquinas', 'Máquinas e parâmetros', Settings],
+            ['tabela', 'Tabela de referência', BookOpen],
+          ] as const
+        ).map(([id, label, Icon]) => (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={view === id}
+            onClick={() => setView(id)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-all',
+              view === id
+                ? 'bg-neutral-900 text-white border-neutral-900'
+                : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400',
             )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {machines.map(m => (
-              <div
-                key={m.id}
-                className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedMachineId === m.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}
-                onClick={() => setSelectedMachineId(m.id)}
-              >
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <p className="font-bold text-sm text-neutral-900 leading-tight">{m.label}</p>
-                  {selectedMachineId === m.id && <CheckCircle2 className="w-4 h-4 text-neutral-900 flex-shrink-0" />}
-                </div>
-                <p className="text-xs text-neutral-400">
-                  {m.voltage} V{m.note ? ` · ${m.note}` : ''}
-                </p>
-                <div className="flex gap-1.5 mt-2 flex-wrap">
-                  {m.heads.map(h => (
-                    <span
-                      key={h.id}
-                      className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
-                    >
-                      {m.heads.length > 1 ? `${h.name} ` : ''}
-                      {h.powerW} W
-                    </span>
-                  ))}
-                </div>
-                {canManage && (
-                  <div
-                    className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      title="Editar máquina"
-                      aria-label={`Editar ${m.label}`}
-                      onClick={() => openForm(m)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" /> Editar
-                    </button>
-                    <button
-                      type="button"
-                      title="Excluir máquina"
-                      aria-label={`Excluir ${m.label}`}
-                      onClick={() => handleDelete(m)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Excluir
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
       </div>
 
-      {/* Parâmetros: temperatura, tempo e pressão da tabela */}
-      {selectedMachine && selectedHead && (
+      {view === 'tabela' && (
         <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
-          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-            <Thermometer className="w-3.5 h-3.5" /> Parâmetros da prensa
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {selectedMachine.heads.length > 1 && (
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-700">Parte da máquina</label>
-                <select
-                  value={selectedHead.id}
-                  onChange={e => setHeadId(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
-                >
-                  {selectedMachine.heads.map(h => (
-                    <option key={h.id} value={h.id}>
-                      {h.name} ({h.powerW} W)
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-700">Produto</label>
-              {productRows.length > 0 ? (
-                <select
-                  value={product}
-                  onChange={e => chooseProduct(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
-                >
-                  <option value="">Selecione o produto</option>
-                  {productRows.map(r => (
-                    <option key={r.product} value={r.product}>
-                      {r.product}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <p className="px-4 py-3 bg-amber-50 border border-amber-100 text-amber-800 rounded-xl text-sm font-medium">
-                  Sem referência na tabela; use os valores do fabricante.
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-700">Temperatura (°C)</label>
-              <input
-                type="number"
-                min={0}
-                value={tempC}
-                onChange={e => setTempC(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-700">Tempo (s)</label>
-              <input
-                type="number"
-                min={0}
-                value={timeS}
-                onChange={e => setTimeS(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
-              />
-              {timeS !== '' && timeS >= 180 && (
-                <p className="text-[10px] text-neutral-400 font-bold">= {formatSublimationTime(timeS)}</p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-700">Pressão</label>
+          <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
               <input
                 type="text"
-                value={pressure}
-                onChange={e => setPressure(e.target.value)}
-                placeholder={product && !pressure ? 'não indicada' : ''}
-                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Buscar produto ou equipamento..."
+                className="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
               />
             </div>
+            <p className="text-xs font-bold text-neutral-400">
+              {found.length} de {SUBLIMATION_TABLE.length}
+            </p>
           </div>
-
+          <div className="overflow-x-auto rounded-xl border border-neutral-100">
+            <table className="w-full text-sm">
+              <thead className="bg-neutral-50 text-[10px] text-neutral-400 uppercase">
+                <tr>
+                  <th className="text-left px-4 py-3 font-black">Equipamento</th>
+                  <th className="text-left px-4 py-3 font-black">Produto</th>
+                  <th className="text-right px-4 py-3 font-black">Temp.</th>
+                  <th className="text-right px-4 py-3 font-black">Tempo</th>
+                  <th className="text-left px-4 py-3 font-black">Pressão</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-50">
+                {found.map(r => (
+                  <tr key={r.equipment + '|' + r.product}>
+                    <td className="px-4 py-2.5 text-neutral-500 whitespace-nowrap">{r.equipment}</td>
+                    <td className="px-4 py-2.5 font-bold text-neutral-900 whitespace-nowrap">{r.product}</td>
+                    <td className="px-4 py-2.5 text-right whitespace-nowrap">{r.tempC} °C</td>
+                    <td className="px-4 py-2.5 text-right whitespace-nowrap">{formatSublimationTime(r.timeS)}</td>
+                    <td className="px-4 py-2.5 text-neutral-600 whitespace-nowrap">{r.pressure ?? '—'}</td>
+                  </tr>
+                ))}
+                {found.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-10 text-center text-neutral-400 italic">
+                      Nenhum produto encontrado.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
           <div className="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1">
             <p className="flex items-center gap-1.5 font-bold text-neutral-700">
-              <AlertCircle className="w-3.5 h-3.5" /> Tabela sugestiva: varia conforme o material; faça um teste antes
-              de produzir. Os valores aqui não são gravados.
+              <AlertCircle className="w-3.5 h-3.5" /> Tabela sugestiva (STC Smart Deko): varia conforme o material; faça
+              um teste antes de produzir.
             </p>
             {SUBLIMATION_TIPS.map(tip => (
               <p key={tip}>• {tip}</p>
             ))}
           </div>
         </div>
+      )}
+
+      {view === 'maquinas' && (
+        <>
+          {/* Máquinas */}
+          <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
+            <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+              <Settings className="w-3.5 h-3.5" /> Máquina
+            </h2>
+            {machinesLoading ? (
+              <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
+            ) : machines.length === 0 ? (
+              <div className="space-y-3">
+                <p className="text-sm text-neutral-500">
+                  Nenhuma máquina de sublimação cadastrada.
+                  {canManage ? '' : ' Administradores e gerentes podem cadastrar.'}
+                </p>
+                {canManage && (
+                  <button
+                    onClick={handleSeedDefaults}
+                    disabled={seeding}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white rounded-xl hover:bg-black transition-all text-sm font-bold disabled:opacity-50"
+                  >
+                    {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                    Cadastrar as 4 máquinas da tabela
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {machines.map(m => (
+                  <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedMachineId === m.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}
+                    onClick={() => setSelectedMachineId(m.id)}
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-1">
+                      <p className="font-bold text-sm text-neutral-900 leading-tight">{m.label}</p>
+                      {selectedMachineId === m.id && (
+                        <CheckCircle2 className="w-4 h-4 text-neutral-900 flex-shrink-0" />
+                      )}
+                    </div>
+                    <p className="text-xs text-neutral-400">
+                      {m.voltage} V{m.note ? ` · ${m.note}` : ''}
+                    </p>
+                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                      {m.heads.map(h => (
+                        <span
+                          key={h.id}
+                          className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full font-bold"
+                        >
+                          {m.heads.length > 1 ? `${h.name} ` : ''}
+                          {h.powerW} W
+                        </span>
+                      ))}
+                    </div>
+                    {canManage && (
+                      <div
+                        className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <button
+                          type="button"
+                          title="Editar máquina"
+                          aria-label={`Editar ${m.label}`}
+                          onClick={() => openForm(m)}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" /> Editar
+                        </button>
+                        <button
+                          type="button"
+                          title="Excluir máquina"
+                          aria-label={`Excluir ${m.label}`}
+                          onClick={() => handleDelete(m)}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Excluir
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Parâmetros: temperatura, tempo e pressão da tabela */}
+          {selectedMachine && selectedHead && (
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <Thermometer className="w-3.5 h-3.5" /> Parâmetros da prensa
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {selectedMachine.heads.length > 1 && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-neutral-700">Parte da máquina</label>
+                    <select
+                      value={selectedHead.id}
+                      onChange={e => setHeadId(e.target.value)}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                    >
+                      {selectedMachine.heads.map(h => (
+                        <option key={h.id} value={h.id}>
+                          {h.name} ({h.powerW} W)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Produto</label>
+                  {productRows.length > 0 ? (
+                    <select
+                      value={product}
+                      onChange={e => chooseProduct(e.target.value)}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                    >
+                      <option value="">Selecione o produto</option>
+                      {productRows.map(r => (
+                        <option key={r.product} value={r.product}>
+                          {r.product}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="px-4 py-3 bg-amber-50 border border-amber-100 text-amber-800 rounded-xl text-sm font-medium">
+                      Sem referência na tabela; use os valores do fabricante.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Temperatura (°C)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={tempC}
+                    onChange={e => setTempC(e.target.value === '' ? '' : Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Tempo (s)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={timeS}
+                    onChange={e => setTimeS(e.target.value === '' ? '' : Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                  {timeS !== '' && timeS >= 180 && (
+                    <p className="text-[10px] text-neutral-400 font-bold">= {formatSublimationTime(timeS)}</p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Pressão</label>
+                  <input
+                    type="text"
+                    value={pressure}
+                    onChange={e => setPressure(e.target.value)}
+                    placeholder={product && !pressure ? 'não indicada' : ''}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-neutral-50 rounded-xl text-xs text-neutral-500 space-y-1">
+                <p className="flex items-center gap-1.5 font-bold text-neutral-700">
+                  <AlertCircle className="w-3.5 h-3.5" /> Tabela sugestiva: varia conforme o material; faça um teste
+                  antes de produzir. Os valores aqui não são gravados.
+                </p>
+                {SUBLIMATION_TIPS.map(tip => (
+                  <p key={tip}>• {tip}</p>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Janela de cadastro/edição */}
