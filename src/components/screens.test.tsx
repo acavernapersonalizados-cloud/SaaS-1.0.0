@@ -251,3 +251,41 @@ describe('Precificação', () => {
     expect(html()).toMatchSnapshot();
   });
 });
+
+// Etapa 8A, item 2 — Produtos: estados internos que a divisão de Products.tsx mexe
+// (tabela, ordenação, janela de cadastro, edição com preço manual e pacote).
+describe('Produtos (telas internas)', () => {
+  const load = async () => React.createElement((await import('./Products')).Products);
+  it('tabela e ordenação por preço', async () => {
+    await show(await load());
+    await click(buttonWithIcon('table2'));
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithText('Preço'));
+    await click(buttonWithText('Preço'));
+    expect(html()).toMatchSnapshot();
+  });
+  it('janela de novo produto', async () => {
+    await show(await load());
+    await click(buttonWithText('Novo Produto'));
+    expect(html()).toMatchSnapshot();
+  });
+  it('edição: preço manual (reversa), pacote, material, acabamento e acessório', async () => {
+    await show(await load());
+    await click(buttonWithIcon('pen'));
+    expect(html()).toMatchSnapshot();
+    await type(field('Preço de Venda Manual'), '4');
+    expect(html()).toMatchSnapshot();
+    await type(field('Preço de Venda Manual'), '30');
+    const pacote = Array.from(document.querySelectorAll('label')).find(l => l.textContent?.includes('pacote/kit'));
+    await click(pacote!.querySelector('input')!);
+    await type(document.querySelector('input[placeholder="Pesquisar material..."]')!, 'Fita');
+    const fita = Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Fita'));
+    if (fita) await click(fita);
+    const nomes = document.querySelectorAll('input[placeholder="Nome"]');
+    await type(nomes[0], 'Brilho');
+    await click(Array.from(document.querySelectorAll('button')).filter(b => b.textContent?.trim() === 'Adicionar')[0]);
+    await type(nomes[1], 'Laço');
+    await click(Array.from(document.querySelectorAll('button')).filter(b => b.textContent?.trim() === 'Adicionar')[1]);
+    expect(html()).toMatchSnapshot();
+  });
+});
