@@ -161,6 +161,13 @@ service cloud.firestore {
       allow delete: if canDelete(resource.data.storeId);
     }
 
+    // Etapa 8D-1: máquinas de sublimação (mesmas regras das máquinas do Laser e da 3D).
+    match /sublimationMachines/{machineId} {
+      allow read: if canRead(resource.data.storeId);
+      allow create, update: if canWrite(request.resource.data.storeId);
+      allow delete: if canDelete(resource.data.storeId);
+    }
+
     match /printJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
       allow create, update: if canWrite(request.resource.data.storeId);
