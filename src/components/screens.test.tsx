@@ -464,6 +464,35 @@ describe('Sublimação', () => {
     expect(values()).toEqual(['230', '35', 'Forte']);
   });
 
+  // 8D-2, item 3: custos da peça. Exemplo feito à mão (caneca de porcelana, 200 s), na Caneca 11 oz da 4 em 1
+  // (300 W): base 12 + papel 2,40/2 + energia 0,3 kW × 260 s × 0,79 + 5 min a R$ 25/h + 1,50 + 0,50 = R$ 17,30.
+  it('custos da peça: exemplo à mão e peça base do estoque', async () => {
+    await show(await load());
+    const byAria = (label: string) => document.querySelector(`[aria-label="${label}"]`)!;
+    await type(field('Parte da máquina'), 'caneca');
+    await type(field('Produto'), 'Caneca de porcelana');
+    await click(buttonWithText('Valor avulso'));
+    await type(byAria('Peça base (R$ por peça)'), '12');
+    await type(field('Papel + tinta'), '2.4');
+    await type(field('Peças por folha'), '2');
+    expect((field('Aquecimento por leva') as HTMLInputElement).value).toBe('10'); // padrão
+    await type(field('Peças na leva'), '10');
+    await type(field('Mão de obra por peça'), '5');
+    await type(field('Valor da hora'), '25');
+    await type(field('Embalagem'), '1.5');
+    await type(field('Outros custos'), '0.5');
+    const costLine = () => textElement('Custo por peça').parentElement!.textContent;
+    expect(costLine()).toContain('17,30');
+    expect(document.body.textContent).toContain('aquecimento rateado 60 s');
+    expect(html()).toMatchSnapshot();
+    // Peça base do estoque: MDF R$ 15,00 × 1 no lugar dos R$ 12,00 avulsos → custo sobe R$ 3,00.
+    await click(buttonWithText('Do estoque'));
+    await type(byAria('Peça base do estoque'), 'mdf');
+    const baseLine = Array.from(document.querySelectorAll('p')).find(p => p.textContent?.startsWith('Peça base:'));
+    expect(baseLine?.textContent).toMatch(/Peça base:\s*R\$\s*15,00 por peça/);
+    expect(costLine()).toContain('20,30');
+  });
+
   // Item 5: tabela de referência com busca (sem acento).
   it('tabela de referência: 40 linhas e busca', async () => {
     await show(await load());

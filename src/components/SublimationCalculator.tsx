@@ -1,11 +1,16 @@
-// Calculadora de Sublimação (Etapa 8D-1): cadastro das máquinas da loja. Sem custo nem preço (8D-2).
+// Calculadora de Sublimação (Etapas 8D-1 e 8D-2): máquinas, parâmetros da tabela, custo e preço.
 import React, { useEffect, useState } from 'react';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { cn } from '../lib/utils';
+import { cn, formatCurrency } from '../lib/utils';
+import { Material } from '../types';
+import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
+import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
+import { clampMarkup, markupOf, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
+import { calcSublimationJob } from '../lib/calculators';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
   formatSublimationTime,
@@ -25,6 +30,7 @@ import {
   Edit2,
   Flame,
   Loader2,
+  Package,
   Plus,
   Search,
   Settings,
@@ -76,6 +82,46 @@ export function SublimationCalculator() {
   const [timeS, setTimeS] = useState<number | ''>('');
   const [pressure, setPressure] = useState('');
 
+  // ── Custos (8D-2, item 3): todos editáveis; hora, markup e tarifa abrem com os da Base de Custos ─────────
+  const D = CALCULATOR_DEFAULTS.sublimacao;
+  const [baseMode, setBaseMode] = useState<'stock' | 'manual'>('stock');
+  const [stockMaterials, setStockMaterials] = useState<Material[]>([]);
+  const [baseMaterialId, setBaseMaterialId] = useState('');
+  const [baseQty, setBaseQty] = useState(1);
+  const [baseManualCost, setBaseManualCost] = useState(0);
+  const [sheetCost, setSheetCost] = useState(0);
+  const [piecesPerSheet, setPiecesPerSheet] = useState(1);
+  const [heatUpMin, setHeatUpMin] = useState(D.heatUpMin);
+  const [piecesPerBatch, setPiecesPerBatch] = useState(1);
+  const [laborMinPerPiece, setLaborMinPerPiece] = useState(0);
+  const [packagingCost, setPackagingCost] = useState(0);
+  const [otherCost, setOtherCost] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [hourlyRate, setHourlyRate] = useState(D.hourlyRate);
+  const [markupPct, setMarkupPct] = useState(D.markupPct);
+  const [electricityRate, setElectricityRate] = useState(D.electricityRate);
+  const { costs } = useCostBase();
+  useCostBaseDefaults(costs, c => {
+    if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
+    setMarkupPct(Math.round(markupOf(c) * 100) / 100);
+    setElectricityRate(electricityRateOf(c));
+  });
+
+  // Matéria-prima da loja, para a peça base (só leitura).
+  useEffect(() => {
+    if (!activeStore) return;
+    return onSnapshot(
+      query(collection(db, 'materials'), where('storeId', '==', activeStore.id)),
+      snap =>
+        setStockMaterials(
+          snap.docs
+            .map(d => ({ id: d.id, ...d.data() }) as Material)
+            .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR')),
+        ),
+      err => handleFirestoreError(err, OperationType.LIST, 'materials'),
+    );
+  }, [activeStore]);
+
   useEffect(() => {
     if (!activeStore) {
       setMachinesLoading(false);
@@ -102,6 +148,29 @@ export function SublimationCalculator() {
   const selectedMachine = machines.find(m => m.id === selectedMachineId) ?? null;
   const selectedHead = selectedMachine?.heads.find(h => h.id === headId) ?? selectedMachine?.heads[0] ?? null;
   const productRows = rowsForEquipment(selectedHead?.equipment ?? null);
+
+  const baseMaterial = stockMaterials.find(m => m.id === baseMaterialId) ?? null;
+  const baseCost =
+    baseMode === 'stock' ? (Number(baseMaterial?.unitCost) || 0) * (Number(baseQty) || 0) : Number(baseManualCost) || 0;
+  const result = selectedHead
+    ? calcSublimationJob({
+        baseCost,
+        sheetCost,
+        piecesPerSheet,
+        pressTimeS: timeS === '' ? 0 : timeS,
+        heatUpMin,
+        piecesPerBatch,
+        powerW: selectedHead.powerW,
+        electricityRate,
+        laborMinPerPiece,
+        hourlyRate,
+        packagingCost,
+        otherCost,
+        quantity,
+        markupPct,
+        manualPrice: null,
+      })
+    : null;
 
   // Trocou de máquina ou de parte: volta a parte para a primeira e limpa o produto e os valores.
   useEffect(() => {
@@ -500,6 +569,218 @@ export function SublimationCalculator() {
                 {SUBLIMATION_TIPS.map(tip => (
                   <p key={tip}>• {tip}</p>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Custos da peça (8D-2, item 3) */}
+          {selectedMachine && selectedHead && (
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <Package className="w-3.5 h-3.5" /> Custos da peça
+              </h2>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-xs font-bold text-neutral-700">Peça base</label>
+                  <div className="flex gap-1">
+                    {(
+                      [
+                        ['stock', 'Do estoque'],
+                        ['manual', 'Valor avulso'],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setBaseMode(id)}
+                        className={cn(
+                          'px-3 py-1.5 rounded-lg text-xs font-bold border transition-all',
+                          baseMode === id
+                            ? 'bg-neutral-900 text-white border-neutral-900'
+                            : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400',
+                        )}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {baseMode === 'stock' ? (
+                  stockMaterials.length === 0 ? (
+                    <p className="text-xs text-neutral-400 italic">
+                      Nenhuma matéria-prima cadastrada nesta loja. Cadastre em "Matéria-prima" ou use "Valor avulso".
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-[1fr_7rem] gap-2">
+                      <select
+                        aria-label="Peça base do estoque"
+                        value={baseMaterialId}
+                        onChange={e => setBaseMaterialId(e.target.value)}
+                        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                      >
+                        <option value="">Selecione a peça</option>
+                        {stockMaterials.map(m => (
+                          <option key={m.id} value={m.id}>
+                            {m.name} ({formatCurrency(Number(m.unitCost) || 0)}/{m.unit || 'un'})
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        aria-label="Quantidade por peça"
+                        title="Quantidade por peça"
+                        value={baseQty || ''}
+                        onChange={e => setBaseQty(Number(e.target.value))}
+                        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                      />
+                    </div>
+                  )
+                ) : (
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    aria-label="Peça base (R$ por peça)"
+                    value={baseManualCost || ''}
+                    onChange={e => setBaseManualCost(Number(e.target.value))}
+                    placeholder="R$ por peça"
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                )}
+                <p className="text-[10px] text-neutral-400 font-bold">Peça base: {formatCurrency(baseCost)} por peça</p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Papel + tinta (R$ por folha A4)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={sheetCost || ''}
+                    onChange={e => setSheetCost(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Peças por folha</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={piecesPerSheet || ''}
+                    onChange={e => setPiecesPerSheet(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Aquecimento por leva (min)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={heatUpMin || ''}
+                    onChange={e => setHeatUpMin(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Peças na leva</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={piecesPerBatch || ''}
+                    onChange={e => setPiecesPerBatch(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Mão de obra por peça (min)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={laborMinPerPiece || ''}
+                    onChange={e => setLaborMinPerPiece(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Embalagem (R$ por peça)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={packagingCost || ''}
+                    onChange={e => setPackagingCost(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Outros custos (R$ por peça)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={otherCost || ''}
+                    onChange={e => setOtherCost(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Quantidade de peças</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={quantity || ''}
+                    onChange={e => setQuantity(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Valor da hora (R$)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={hourlyRate || ''}
+                    onChange={e => setHourlyRate(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Markup (% sobre o custo)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={MAX_MARKUP_PERCENT}
+                    value={markupPct}
+                    onChange={e => setMarkupPct(clampMarkup(Number(e.target.value)))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Tarifa de energia (R$/kWh)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.00001"
+                    value={electricityRate || ''}
+                    onChange={e => setElectricityRate(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  />
+                </div>
+              </div>
+
+              <p className="text-[10px] text-neutral-400 font-bold">
+                Energia: {selectedHead.powerW} W × (tempo de prensa {timeS === '' ? 0 : timeS} s + aquecimento rateado{' '}
+                {result ? Math.round(result.heatShareS) : 0} s) × tarifa.
+              </p>
+              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+                <span className="text-sm font-bold text-neutral-700">Custo por peça</span>
+                <span className="text-xl font-black text-neutral-900">
+                  {formatCurrency(result?.totalCostUnit ?? 0)}
+                </span>
               </div>
             </div>
           )}

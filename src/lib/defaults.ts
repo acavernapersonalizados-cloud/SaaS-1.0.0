@@ -22,4 +22,6 @@ export const CALCULATOR_DEFAULTS = {
   print3d: { hourlyRate: 12, markupPct: 150, electricityRate: DEFAULT_ELECTRICITY_RATE },
   papelaria: { hourlyRate: 25, markupPct: 150 },
   cesta: { hourlyRate: 25, markupPct: 150 },
+  // Etapa 8D-2: mesmos padrões das outras; aquecimento padrão de 10 min por leva.
+  sublimacao: { hourlyRate: 25, markupPct: 150, electricityRate: DEFAULT_ELECTRICITY_RATE, heatUpMin: 10 },
 };

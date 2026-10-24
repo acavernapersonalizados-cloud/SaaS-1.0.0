@@ -16,6 +16,14 @@ describe('Valores padrão das calculadoras', () => {
   it('Cestas: hora R$ 25, markup 150%', () => {
     expect(CALCULATOR_DEFAULTS.cesta).toEqual({ hourlyRate: 25, markupPct: 150 });
   });
+  it('Sublimação: hora R$ 25, markup 150%, tarifa 0,79, aquecimento 10 min por leva', () => {
+    expect(CALCULATOR_DEFAULTS.sublimacao).toEqual({
+      hourlyRate: 25,
+      markupPct: 150,
+      electricityRate: 0.79,
+      heatUpMin: 10,
+    });
+  });
 });
 
 describe('Tarifa de energia da loja (Etapa 7.2)', () => {
