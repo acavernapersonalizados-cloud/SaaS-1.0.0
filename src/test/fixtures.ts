@@ -351,5 +351,14 @@ export const fixtures: Record<string, any[]> = {
       ],
       createdAt: T0,
     },
+    {
+      id: 'sub-sun',
+      storeId: S,
+      label: 'Prensa de caneca Sun Special SSH-012A-1',
+      voltage: 220,
+      note: 'Usada somente para canecas.',
+      heads: [{ id: 'caneca', name: 'Caneca', powerW: 350, equipment: 'Prensa de canecas e copos' }],
+      createdAt: T0,
+    },
   ],
 };

@@ -464,12 +464,12 @@ describe('Sublimação', () => {
     expect(values()).toEqual(['230', '35', 'Forte']);
   });
 
-  // 8D-2, item 3: custos da peça. Exemplo feito à mão (caneca de porcelana, 200 s), na Caneca 11 oz da 4 em 1
-  // (300 W): base 12 + papel 2,40/2 + energia 0,3 kW × 260 s × 0,79 + 5 min a R$ 25/h + 1,50 + 0,50 = R$ 17,30.
-  it('custos da peça: exemplo à mão e peça base do estoque', async () => {
-    await show(await load());
-    const byAria = (label: string) => document.querySelector(`[aria-label="${label}"]`)!;
-    await type(field('Parte da máquina'), 'caneca');
+  // 8D-2: exemplo feito à mão — caneca de porcelana (200 s) na Sun Special (350 W): base 12 + papel 2,40/2 +
+  // energia 0,35 kW × (200 + 60) s × 0,79 + 5 min a R$ 25/h + 1,50 + 0,50 = R$ 17,30 por caneca.
+  const byAria = (label: string) => document.querySelector(`[aria-label="${label}"]`)!;
+  const costLine = () => textElement('Custo por peça').parentElement!.textContent;
+  async function fillHandExample() {
+    await click(textElement('Prensa de caneca Sun Special SSH-012A-1'));
     await type(field('Produto'), 'Caneca de porcelana');
     await click(buttonWithText('Valor avulso'));
     await type(byAria('Peça base (R$ por peça)'), '12');
@@ -481,7 +481,14 @@ describe('Sublimação', () => {
     await type(field('Valor da hora'), '25');
     await type(field('Embalagem'), '1.5');
     await type(field('Outros custos'), '0.5');
-    const costLine = () => textElement('Custo por peça').parentElement!.textContent;
+    await type(field('Quantidade de peças'), '10');
+    await type(field('Markup (% sobre o custo)'), '150');
+  }
+
+  // Item 3: custos da peça.
+  it('custos da peça: exemplo à mão e peça base do estoque', async () => {
+    await show(await load());
+    await fillHandExample();
     expect(costLine()).toContain('17,30');
     expect(document.body.textContent).toContain('aquecimento rateado 60 s');
     expect(html()).toMatchSnapshot();
@@ -491,6 +498,23 @@ describe('Sublimação', () => {
     const baseLine = Array.from(document.querySelectorAll('p')).find(p => p.textContent?.startsWith('Peça base:'));
     expect(baseLine?.textContent).toMatch(/Peça base:\s*R\$\s*15,00 por peça/);
     expect(costLine()).toContain('20,30');
+  });
+
+  // Item 4: preço sugerido, canal, preço manual e lucro em cada canal (mesmos quadros das outras calculadoras).
+  it('resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (Shopee); preço manual R$ 40 → lucro R$ 22,70', async () => {
+    await show(await load());
+    await fillHandExample();
+    const text = () => document.body.textContent!.replace(/\s/g, ' ');
+    expect(text()).toContain('Custo / peça');
+    expect(text()).toMatch(/R\$ 43,26/);
+    expect(html()).toMatchSnapshot();
+    await type(field('Canal de venda'), 'shopee');
+    expect(text()).toMatch(/R\$ 66,57/);
+    await type(field('Canal de venda'), 'venda-direta');
+    await type(field('Seu preço por peça'), '40');
+    expect(text()).toMatch(/R\$ 22,70/);
+    expect(document.querySelector('[data-testid="channel-profit-table"]')).toBeTruthy();
+    expect(html()).toMatchSnapshot();
   });
 
   // Item 5: tabela de referência com busca (sem acento).

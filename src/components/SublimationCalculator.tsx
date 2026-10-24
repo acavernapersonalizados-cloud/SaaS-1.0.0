@@ -9,7 +9,10 @@ import { cn, formatCurrency } from '../lib/utils';
 import { Material } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
-import { clampMarkup, markupOf, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
+import { clampMarkup, markupOf, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
+import { channelFees, channelsOf, findChannel } from '../lib/channels';
+import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
+import { ChannelProfitTable } from './ChannelProfitTable';
 import { calcSublimationJob } from '../lib/calculators';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
@@ -28,6 +31,7 @@ import {
   BookOpen,
   CheckCircle2,
   Edit2,
+  DollarSign,
   Flame,
   Loader2,
   Package,
@@ -101,6 +105,12 @@ export function SublimationCalculator() {
   const [markupPct, setMarkupPct] = useState(D.markupPct);
   const [electricityRate, setElectricityRate] = useState(D.electricityRate);
   const { costs } = useCostBase();
+  // Canal de venda (tabela da Base de Custos) e preço manual (8D-2, item 4).
+  const channels = channelsOf(costs);
+  const [channelId, setChannelId] = useState('venda-direta');
+  const selectedChannel = findChannel(channels, channelId);
+  const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(selectedChannel);
+  const [manualPrice, setManualPrice] = useState<number | null>(null);
   useCostBaseDefaults(costs, c => {
     if (Number(c.hourlyRate) > 0) setHourlyRate(Math.round(Number(c.hourlyRate) * 100) / 100);
     setMarkupPct(Math.round(markupOf(c) * 100) / 100);
@@ -168,7 +178,9 @@ export function SublimationCalculator() {
         otherCost,
         quantity,
         markupPct,
-        manualPrice: null,
+        channelFeePct,
+        channelFixedFee,
+        manualPrice,
       })
     : null;
 
@@ -782,6 +794,98 @@ export function SublimationCalculator() {
                   {formatCurrency(result?.totalCostUnit ?? 0)}
                 </span>
               </div>
+            </div>
+          )}
+
+          {/* Preço de venda e resultado (8D-2, item 4) */}
+          {selectedMachine && selectedHead && (
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
+                <DollarSign className="w-3.5 h-3.5" /> Preço de venda
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Canal de venda</label>
+                  <select
+                    value={channelId}
+                    onChange={e => setChannelId(e.target.value)}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
+                  >
+                    {channels.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Seu preço por peça (opcional)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={manualPrice ?? ''}
+                    onChange={e => setManualPrice(e.target.value ? Number(e.target.value) : null)}
+                    placeholder={result ? formatCurrency(result.suggestedUnit) : 'R$'}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 font-bold"
+                  />
+                </div>
+              </div>
+
+              {!result ? (
+                <p className="py-6 text-center text-neutral-400 text-sm italic">
+                  Preencha os custos da peça para calcular.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-4 bg-neutral-50 rounded-xl space-y-2">
+                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Composição / peça</p>
+                    {[
+                      { label: 'Peça base', val: result.baseCost },
+                      { label: 'Papel + tinta', val: result.paperInkCost },
+                      { label: 'Energia', val: result.energyCost },
+                      { label: 'Mão de obra', val: result.laborCost },
+                      { label: 'Embalagem', val: result.packagingCost },
+                      { label: 'Outros', val: result.otherCost },
+                    ].map(r => (
+                      <div key={r.label} className="flex justify-between text-sm">
+                        <span className="text-neutral-600">{r.label}</span>
+                        <span className="font-bold">{formatCurrency(r.val)}</span>
+                      </div>
+                    ))}
+                    <div className="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm">
+                      <span>Custo / peça</span>
+                      <span>{formatCurrency(result.totalCostUnit)}</span>
+                    </div>
+                  </div>
+
+                  <SuggestedPrice
+                    markupPct={markupPct}
+                    realMarginPct={realMargin(
+                      result.suggestedUnit,
+                      result.totalCostUnit,
+                      channelFeePct,
+                      channelFixedFee,
+                    )}
+                    suggestedUnit={result.suggestedUnit}
+                    suggestedBatch={result.suggestedBatch}
+                    quantity={quantity}
+                    unit="/peça"
+                  />
+
+                  <ManualPriceCheck manualPrice={manualPrice} profit={result.profit} margin={result.margin}>
+                    Prejuízo de {formatCurrency(Math.abs(result.profit))}/peça. Mínimo:{' '}
+                    {formatCurrency(result.totalCostUnit)}.
+                  </ManualPriceCheck>
+                  <ChannelProfitTable
+                    price={manualPrice}
+                    cost={result.totalCostUnit}
+                    channels={channels}
+                    markupPct={markupPct}
+                    selectedChannelId={selectedChannel?.id}
+                  />
+                </div>
+              )}
             </div>
           )}
         </>
