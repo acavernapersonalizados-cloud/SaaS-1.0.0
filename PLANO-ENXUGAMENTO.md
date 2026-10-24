@@ -6,6 +6,9 @@
 2. **Cada etapa termina com:** testes + `npm run lint` + `npm run build` + commit + tag `etapa-N-ok`.
 3. **Ideias novas vão para o Estacionamento** (seção 7), não entram na etapa em andamento.
 4. **Enxugar não muda nenhum preço.** Mudanças de preço só na Etapa 7, com comparação antes/depois aprovada.
+5. **REGRA FIXA (24/10/2026): o trabalho "founder" é um projeto SEPARADO** (fica em `C:\caverna-founder\`) e
+   **nunca se mistura com o PrecificaAteliê**. Aqui não se lê, não se cita e não se usa nada da pasta `founder/` nem
+   das sessões "founder".
 
 ## Rota
 
@@ -22,7 +25,7 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa dividindo `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 **Onde paramos (19/10/2026):**
@@ -32,7 +35,8 @@
 - No ar: aviso "Nova versão disponível" (versão antiga não grava) e a regra do banco que recusa zerar o preço de catálogo.
 - Falta você: fechar e reabrir o app em todos os aparelhos e conferir "versão 19/10 21:59" no menu lateral.
 - Código e tags (até `etapa-7.2-ok`) estão no GitHub. Nada ficou pela metade.
-- **Próximo passo: Etapa 8 — Central de Calculadoras** (começa dividindo `Products.tsx` e `Pricing.tsx`), só quando você pedir.
+- 24/10/2026: removida a pasta temporária da exportação do emulador.
+- **Próximo passo: Etapa 8 — Central de Calculadoras** (começa pelo aviso do "Gerar Orçamento", depois divide `Products.tsx` e `Pricing.tsx`), só depois do seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -436,7 +440,13 @@ Testes: 155 → 157.
 
 **Só começa depois da Etapa 7. Por enquanto é só planejamento:** o detalhamento (telas, campos, riscos e testes) será feito quando a etapa começar.
 
-- **Primeiro item (vindo da Etapa 5):** dividir `Products.tsx` (1.342 linhas) e `Pricing.tsx` (1.142) em partes menores, sem mudar nada na tela, com os testes de HTML da Etapa 4B como rede de segurança.
+- **Primeiro item (24/10/2026): "Gerar Orçamento" sem resposta.** O botão não fazia nada, sem nenhum aviso. Voltou
+  a funcionar em janela anônima ou preenchendo os dados. Investigar o que o clique valida e mostrar uma mensagem
+  clara quando faltar algo. Leitura do código (sem alterar): `handleGenerateQuote` (`Pricing.tsx`) já tem as
+  mensagens (falta cliente, falta item, valor inválido, taxa do canal, permissão, erro do banco), mas grava em
+  `quoteError`/`quoteSuccess` e **nenhuma parte da tela mostra esses dois**. Além disso, o botão fica desativado sem
+  explicação quando não há item (`quoteItems.length === 0`).
+- **Segundo item (vindo da Etapa 5):** dividir `Products.tsx` (1.342 linhas) e `Pricing.tsx` (1.142) em partes menores, sem mudar nada na tela, com os testes de HTML da Etapa 4B como rede de segurança.
 - As 4 calculadoras (Corte a Laser, Impressão 3D, Papelaria e Cestas) **continuam independentes**, mas ficam numa **única guia do menu**.
 - Um **trabalho salvo** pode ser transformado em **Produto** e publicado no **Catálogo**, na hora ou depois.
 - **Acrescentado em 19/10/2026 (não implementar antes da Etapa 8):**
