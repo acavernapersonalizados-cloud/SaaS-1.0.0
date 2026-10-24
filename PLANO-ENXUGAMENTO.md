@@ -485,7 +485,8 @@ gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
 
 Dados: `tabela-sublimacao.md` (raiz do projeto), montado a partir das fotos das etiquetas/manuais e da tabela
 sugestiva da STC Smart Deko. Todas as máquinas em 220 V: mini prensa portátil 250 W; prensa plana 38 × 38 cm 1.800 W;
-prensa 4 em 1 (boné 300 W, logo 15 × 15 600 W, caneta 200 W, caneca 11 oz 300 W); Sun Special SSH-012A-1 350 W.
+prensa 4 em 1 (boné 300 W, logo 15 × 15 600 W, caneta 200 W, caneca 11 oz 300 W); prensa de caneca Sun Special
+SSH-012A-1 350 W (confirmado em 24/10/2026: só canecas, com a linha "Prensa de canecas e copos" da tabela).
 Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pressão).
 
 - **Aba "Sublimação"** na guia Calculadoras (5ª aba, junto de Laser, 3D, Papelaria e Cestas).
@@ -496,9 +497,8 @@ Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pres
   quadro de lucro por canal do 8B).
 - **Aba "Tabela de referência"** com busca, para consultar a tabela sem calcular.
 - **A decidir antes de começar:**
-  - qual é o tipo da Sun Special SSH-012A-1 (o arquivo pede para confirmar);
-  - como ligar os equipamentos da tabela (prensa de canetas, de canecas e copos, de pratos, 3D) às máquinas
-    cadastradas (ex.: acessórios da 4 em 1);
+  - como ligar os demais equipamentos da tabela (prensa de canetas, de pratos, 3D) às máquinas cadastradas
+    (ex.: acessórios da 4 em 1); a Sun Special já está ligada a "Prensa de canecas e copos";
   - tempo e potência do aquecimento;
   - consumo de tinta e de papel por impressão;
   - onde guardar as máquinas (cadastro, como no Laser e na 3D).
