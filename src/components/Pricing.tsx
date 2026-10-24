@@ -31,11 +31,9 @@ import {
   Trash2,
 } from 'lucide-react';
 
-/** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
-const loadPdf = () => import('../lib/pdf');
-
-// Validade do orçamento: usada na data gravada (e no PDF) e no texto da tela.
-const QUOTE_VALIDITY_DAYS = 5;
+import { QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
+import { QuoteClientCard, QuoteItemsCard, QuoteSummary } from './QuoteForm';
+import { AddItemModal, GeneratedQuoteModal } from './QuoteModals';
 
 export function Pricing() {
   const { activeStore } = useStore();
@@ -155,8 +153,6 @@ export function Pricing() {
   // Canais da tabela da loja (Base de Custos); orçamentos guardam o nome do canal.
   const channels = channelsOf(costs);
   const { feePct: channelFeePct, fixedFee: channelFixedFee } = channelFees(findChannel(channels, channel));
-  const feeLabel = (pct: number, fixed: number) =>
-    `${formatPercent(pct)}${fixed > 0 ? ` + ${formatCurrency(fixed)}/un` : ''}`;
 
   // ── Fonte única de verdade: delega ao pricingEngine ──────────────────────
   const calculateItemCosts = (
@@ -463,6 +459,27 @@ export function Pricing() {
     }
   };
 
+  // Abre a janela de item em branco (botão "Adicionar Item").
+  const handleOpenNewItem = () => {
+    setEditingItemId(null);
+    setSelectedProductId('');
+    setQuantity(1);
+    setSelectedFinishes([]);
+    setSelectedAccessories([]);
+    setCustomMarkup(null);
+    setIsAddingItem(true);
+  };
+
+  // "Concluir e Novo" na janela do orçamento gerado: fecha e limpa o formulário.
+  const handleFinishQuote = () => {
+    setShowQuoteModal(false);
+    setQuoteItems([]);
+    setClientName('');
+    setClientSearch('');
+    setSelectedClientId('');
+    setCnpj('');
+  };
+
   if (!activeStore) {
     return (
       <div className="flex flex-col items-center justify-center h-96 space-y-4">
@@ -518,652 +535,77 @@ export function Pricing() {
         {/* Form Column */}
         <div className="lg:col-span-2 space-y-8">
           {/* Client Selection */}
-          <div className="bg-white p-8 rounded-[32px] shadow-sm border border-neutral-100 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-neutral-900">Dados do Cliente</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2 relative">
-                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                  Buscar ou Nome do Cliente
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={clientSearch}
-                    onChange={e => {
-                      setClientSearch(e.target.value);
-                      setClientName(e.target.value);
-                      setShowClientList(true);
-                    }}
-                    onFocus={() => setShowClientList(true)}
-                    placeholder="Ex: João Silva ou Empresa ABC"
-                    className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 placeholder-neutral-300 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-                  />
-                  <Search className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-300" />
-                </div>
-
-                {showClientList && clientSearch && (
-                  <div className="absolute z-50 w-full mt-2 bg-white border border-neutral-100 rounded-2xl shadow-2xl max-h-60 overflow-y-auto overflow-x-hidden">
-                    {clients
-                      .filter(c => (c.name || '').toLowerCase().includes(clientSearch.toLowerCase()))
-                      .map(client => (
-                        <button
-                          key={client.id}
-                          onClick={() => handleSelectClient(client)}
-                          className="w-full px-5 py-4 text-left hover:bg-neutral-50 flex items-center justify-between group transition-colors"
-                        >
-                          <div>
-                            <p className="font-bold text-neutral-900 group-hover:text-black">{client.name}</p>
-                            <p className="text-xs text-neutral-400">
-                              {client.type} • {client.document || 'Sem documento'}
-                            </p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-neutral-200 group-hover:text-neutral-400 transition-all" />
-                        </button>
-                      ))}
-                    {clients.filter(c => (c.name || '').toLowerCase().includes(clientSearch.toLowerCase())).length ===
-                      0 && (
-                      <div className="px-5 py-4 text-sm text-neutral-400 italic">
-                        Nenhum cliente encontrado. Continue digitando para cadastrar novo.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                  Tipo de Cliente
-                </label>
-                <div className="flex bg-neutral-50 p-1 rounded-2xl border-2 border-transparent focus-within:border-neutral-900 transition-all">
-                  <button
-                    onClick={() => setClientType('PF')}
-                    className={cn(
-                      'flex-1 py-3 rounded-xl text-sm font-bold transition-all',
-                      clientType === 'PF'
-                        ? 'bg-white text-neutral-900 shadow-sm'
-                        : 'text-neutral-400 hover:text-neutral-600',
-                    )}
-                  >
-                    Pessoa Física
-                  </button>
-                  <button
-                    onClick={() => setClientType('PJ')}
-                    className={cn(
-                      'flex-1 py-3 rounded-xl text-sm font-bold transition-all',
-                      clientType === 'PJ'
-                        ? 'bg-white text-neutral-900 shadow-sm'
-                        : 'text-neutral-400 hover:text-neutral-600',
-                    )}
-                  >
-                    Pessoa Jurídica
-                  </button>
-                </div>
-              </div>
-
-              {clientType === 'PJ' && (
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                    CNPJ (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    value={cnpj}
-                    onChange={e => setCnpj(e.target.value)}
-                    placeholder="00.000.000/0000-00"
-                    className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 placeholder-neutral-300 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          <QuoteClientCard
+            clientSearch={clientSearch}
+            setClientSearch={setClientSearch}
+            setClientName={setClientName}
+            showClientList={showClientList}
+            setShowClientList={setShowClientList}
+            clients={clients}
+            handleSelectClient={handleSelectClient}
+            clientType={clientType}
+            setClientType={setClientType}
+            cnpj={cnpj}
+            setCnpj={setCnpj}
+          />
 
           {/* Items List */}
-          <div className="bg-white p-8 rounded-[32px] shadow-sm border border-neutral-100 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center">
-                  <Package className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-neutral-900">Itens do Orçamento</h2>
-              </div>
-              <button
-                onClick={() => {
-                  setEditingItemId(null);
-                  setSelectedProductId('');
-                  setQuantity(1);
-                  setSelectedFinishes([]);
-                  setSelectedAccessories([]);
-                  setCustomMarkup(null);
-                  setIsAddingItem(true);
-                }}
-                className="px-4 py-2 bg-neutral-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Adicionar Item
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {quoteItems.length === 0 ? (
-                <div className="text-center py-12 border-2 border-dashed border-neutral-100 rounded-[32px] space-y-3">
-                  <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center mx-auto">
-                    <Package className="w-6 h-6 text-neutral-200" />
-                  </div>
-                  <p className="text-neutral-400 text-sm font-medium">Nenhum item adicionado ainda.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {quoteItems.map((item, index) => {
-                    const results = calculateItemCosts(item);
-                    return (
-                      <div
-                        key={item.id}
-                        className="group flex items-center justify-between p-5 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-neutral-200 transition-all"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-row sm:flex-col items-center gap-1 bg-white p-1 rounded-xl border border-neutral-100">
-                            <button
-                              onClick={() => handleUpdateItemQuantity(item.id, -1)}
-                              className="p-1 hover:bg-neutral-50 rounded transition-colors"
-                            >
-                              <ArrowRight className="w-3 h-3 text-neutral-400 rotate-180" />
-                            </button>
-                            <div className="w-8 h-8 flex items-center justify-center font-black text-neutral-900 text-sm">
-                              {item.quantity}
-                            </div>
-                            <button
-                              onClick={() => handleUpdateItemQuantity(item.id, 1)}
-                              className="p-1 hover:bg-neutral-50 rounded transition-colors"
-                            >
-                              <Plus className="w-3 h-3 text-neutral-400" />
-                            </button>
-                          </div>
-                          <div>
-                            <p className="font-bold text-neutral-900">{results?.productName}</p>
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400">
-                              <span>{formatCurrency(results?.unitPrice || 0)} / un</span>
-                              {(results?.finishingValue ?? 0) > 0 && (
-                                <span className="px-1.5 py-0.5 bg-neutral-200 rounded text-neutral-600 font-bold">
-                                  +{formatCurrency(results?.finishingValue ?? 0)} acab.
-                                </span>
-                              )}
-                              {(results?.accessoriesValue ?? 0) > 0 && (
-                                <span className="px-1.5 py-0.5 bg-neutral-200 rounded text-neutral-600 font-bold">
-                                  +{formatCurrency(results?.accessoriesValue ?? 0)} aces.
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-lg font-black text-neutral-900">
-                              {formatCurrency(results?.totalPrice || 0)}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleEditItem(item)}
-                              className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors"
-                            >
-                              <FileText className="w-5 h-5" />
-                            </button>
-                            <button
-                              onClick={() => handleRemoveItem(index)}
-                              className="p-2 text-neutral-300 hover:text-red-500 transition-colors"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
+          <QuoteItemsCard
+            quoteItems={quoteItems}
+            calculateItemCosts={calculateItemCosts}
+            handleOpenNewItem={handleOpenNewItem}
+            handleUpdateItemQuantity={handleUpdateItemQuantity}
+            handleEditItem={handleEditItem}
+            handleRemoveItem={handleRemoveItem}
+          />
         </div>
 
         {/* Summary Sidebar */}
-        <div className="space-y-8">
-          <div className="bg-white p-8 rounded-[32px] shadow-sm border border-neutral-100 space-y-8 sticky top-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center">
-                <Receipt className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-neutral-900">Resumo</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-400 font-bold uppercase tracking-wider">Subtotal</span>
-                <span className="text-neutral-900 font-black">{formatCurrency(totalAmount)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-400 font-bold uppercase tracking-wider">Itens</span>
-                <span className="text-neutral-900 font-black">{quoteItems.length}</span>
-              </div>
-              <div className="h-px bg-neutral-100" />
-              <div className="flex justify-between items-end">
-                <span className="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1">Total Geral</span>
-                <span className="text-3xl font-black text-neutral-900">{formatCurrency(totalAmount)}</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={handleGenerateQuote}
-                // Etapa 8A: sem itens o botão continua clicável, para o clique explicar o que falta.
-                disabled={isGenerating}
-                className="w-full py-5 bg-neutral-900 text-white rounded-2xl font-black text-lg hover:bg-black transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-neutral-200"
-              >
-                {isGenerating ? (
-                  <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <FileText className="w-6 h-6" />
-                    Gerar Orçamento
-                  </>
-                )}
-              </button>
-              <p className="text-[10px] text-center text-neutral-400 font-bold uppercase tracking-widest">
-                Válido por {QUOTE_VALIDITY_DAYS} dias • taxas do canal: {feeLabel(channelFeePct, channelFixedFee)}
-              </p>
-              {quoteError && (
-                <div
-                  role="alert"
-                  className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium flex items-center gap-3"
-                >
-                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                  {quoteError}
-                </div>
-              )}
-              {quoteSuccess && (
-                <div
-                  role="status"
-                  className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-sm font-medium"
-                >
-                  {quoteSuccess}
-                </div>
-              )}
-            </div>
-
-            {/* AI Insights in Sidebar */}
-            {quoteItems.length > 0 && (
-              <div className="pt-8 border-t border-neutral-100 space-y-4">
-                <div className="flex items-center gap-2 text-neutral-900">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="text-xs font-black uppercase tracking-widest">Insights IA</span>
-                </div>
-                <div className="p-4 bg-neutral-50 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase">Saúde do Preço</span>
-                    <span
-                      className={cn(
-                        'px-2 py-0.5 rounded-full text-[10px] font-black uppercase',
-                        avgMargin >= 30 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700',
-                      )}
-                    >
-                      {avgMargin >= 30 ? 'Excelente' : 'Atenção'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-600 leading-relaxed">
-                    Margem média de <span className="font-bold text-neutral-900">{formatPercent(avgMargin)}</span>.
-                    {avgMargin < 30
-                      ? ' Considere revisar os custos dos acessórios para melhorar a rentabilidade.'
-                      : ' Preço competitivo com ótima margem de lucro.'}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <QuoteSummary
+          totalAmount={totalAmount}
+          quoteItems={quoteItems}
+          handleGenerateQuote={handleGenerateQuote}
+          isGenerating={isGenerating}
+          channelFeePct={channelFeePct}
+          channelFixedFee={channelFixedFee}
+          quoteError={quoteError}
+          quoteSuccess={quoteSuccess}
+          avgMargin={avgMargin}
+        />
       </div>
 
       {/* Add Item Modal */}
       {isAddingItem && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl p-8 space-y-8 animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-neutral-900 rounded-xl flex items-center justify-center">
-                  {editingItemId ? (
-                    <FileText className="w-5 h-5 text-white" />
-                  ) : (
-                    <Plus className="w-5 h-5 text-white" />
-                  )}
-                </div>
-                <h2 className="text-xl font-bold text-neutral-900">
-                  {editingItemId ? 'Editar Item' : 'Adicionar Item'}
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsAddingItem(false)}
-                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5 text-neutral-400" />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Produto</label>
-                <select
-                  value={selectedProductId}
-                  onChange={e => setSelectedProductId(e.target.value)}
-                  className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-                >
-                  <option value="">Selecione um produto</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Quantidade</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={e => setQuantity(Number(e.target.value))}
-                    className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                    Markup personalizado (% sobre o custo)
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={MAX_MARKUP_PERCENT}
-                    value={customMarkup !== null ? customMarkup : ''}
-                    onChange={e => setCustomMarkup(e.target.value === '' ? null : Number(e.target.value))}
-                    placeholder="Padrão"
-                    className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-                  />
-                </div>
-              </div>
-
-              {selectedProduct && selectedProduct.finishingOptions && selectedProduct.finishingOptions.length > 0 && (
-                <div className="space-y-3">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                    Acabamentos
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {selectedProduct.finishingOptions.map(opt => (
-                      <button
-                        key={opt.id}
-                        onClick={() => {
-                          setSelectedFinishes(prev =>
-                            prev.includes(opt.id) ? prev.filter(id => id !== opt.id) : [...prev, opt.id],
-                          );
-                        }}
-                        className={cn(
-                          'p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group',
-                          selectedFinishes.includes(opt.id)
-                            ? 'border-neutral-900 bg-neutral-900 text-white'
-                            : 'border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200',
-                        )}
-                      >
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold">{opt.name}</p>
-                          <p
-                            className={cn(
-                              'text-[10px]',
-                              selectedFinishes.includes(opt.id) ? 'text-neutral-400' : 'text-neutral-400',
-                            )}
-                          >
-                            +{formatCurrency(opt.additionalValue)}
-                          </p>
-                        </div>
-                        {selectedFinishes.includes(opt.id) && <CheckCircle2 className="w-4 h-4" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedProduct && selectedProduct.accessories && selectedProduct.accessories.length > 0 && (
-                <div className="space-y-3">
-                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Acessórios</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {selectedProduct.accessories.map(acc => (
-                      <button
-                        key={acc.id}
-                        onClick={() => {
-                          setSelectedAccessories(prev =>
-                            prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id],
-                          );
-                        }}
-                        className={cn(
-                          'p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group',
-                          selectedAccessories.includes(acc.id)
-                            ? 'border-neutral-900 bg-neutral-900 text-white'
-                            : 'border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200',
-                        )}
-                      >
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold">{acc.name}</p>
-                          <p
-                            className={cn(
-                              'text-[10px]',
-                              selectedAccessories.includes(acc.id) ? 'text-neutral-400' : 'text-neutral-400',
-                            )}
-                          >
-                            +{formatCurrency(acc.additionalValue)}
-                          </p>
-                        </div>
-                        {selectedAccessories.includes(acc.id) && <CheckCircle2 className="w-4 h-4" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {currentItemResults?.invalidMargin && (
-              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />A taxa do canal ({currentItemResults.platformFee}%)
-                chega a {MAX_CHANNEL_FEE_PERCENT}%: não existe preço possível. Troque o canal.
-              </div>
-            )}
-
-            <div className="pt-6 border-t border-neutral-100 flex items-center justify-between">
-              <div className="text-left">
-                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total do Item</p>
-                <p className="text-2xl font-black text-neutral-900">
-                  {formatCurrency(
-                    calculateItemCosts({
-                      productId: selectedProductId,
-                      quantity,
-                      selectedFinishingIds: selectedFinishes,
-                      selectedAccessoryIds: selectedAccessories,
-                      customMarkup: customMarkup !== null ? customMarkup : undefined,
-                    })?.totalPrice || 0,
-                  )}
-                </p>
-                {currentItemResults && !currentItemResults.invalidMargin && currentItemResults.totalPrice > 0 && (
-                  <p className="text-xs font-bold text-emerald-700">
-                    Markup {formatPercent(currentItemResults.markup)} · margem real{' '}
-                    {formatPercent(currentItemResults.margin)} · lucro {formatCurrency(currentItemResults.itemProfit)}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={handleAddItem}
-                disabled={!selectedProductId || !!currentItemResults?.invalidMargin}
-                className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black hover:bg-black transition-all disabled:opacity-50"
-              >
-                {editingItemId ? 'Salvar Alterações' : 'Confirmar Item'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <AddItemModal
+          editingItemId={editingItemId}
+          setIsAddingItem={setIsAddingItem}
+          products={products}
+          selectedProduct={selectedProduct}
+          selectedProductId={selectedProductId}
+          setSelectedProductId={setSelectedProductId}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          customMarkup={customMarkup}
+          setCustomMarkup={setCustomMarkup}
+          selectedFinishes={selectedFinishes}
+          setSelectedFinishes={setSelectedFinishes}
+          selectedAccessories={selectedAccessories}
+          setSelectedAccessories={setSelectedAccessories}
+          currentItemResults={currentItemResults}
+          calculateItemCosts={calculateItemCosts}
+          handleAddItem={handleAddItem}
+        />
       )}
 
       {/* Quote Modal */}
       {showQuoteModal && generatedQuote && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white w-full max-w-4xl rounded-[32px] shadow-2xl p-10 space-y-10 animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-8">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-neutral-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl">
-                  Q
-                </div>
-                <div>
-                  <h2 className="text-3xl font-black text-neutral-900">Orçamento Gerado</h2>
-                  <p className="text-sm text-neutral-400 font-bold uppercase tracking-widest mt-1">
-                    Válido até {new Date(generatedQuote.expiryDate).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowQuoteModal(false)}
-                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6 text-neutral-400" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              <div className="md:col-span-2 space-y-8">
-                <div className="space-y-4">
-                  <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest">Itens do Orçamento</h3>
-                  <div className="border border-neutral-100 rounded-2xl overflow-hidden">
-                    <table className="w-full text-left">
-                      <thead className="bg-neutral-50 border-b border-neutral-100">
-                        <tr>
-                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase">Item</th>
-                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-center">
-                            Qtd
-                          </th>
-                          <th className="px-5 py-3 text-[10px] font-black text-neutral-400 uppercase text-right">
-                            Total
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-neutral-100">
-                        {generatedQuote.items.map((item, i) => (
-                          <tr key={i}>
-                            <td className="px-5 py-4">
-                              <p className="font-bold text-neutral-900 text-sm">{item.productName}</p>
-                              <p className="text-[10px] text-neutral-400">Unitário: {formatCurrency(item.unitPrice)}</p>
-                            </td>
-                            <td className="px-5 py-4 text-center font-bold text-neutral-900 text-sm">
-                              {item.quantity}
-                            </td>
-                            <td className="px-5 py-4 text-right font-black text-neutral-900 text-sm">
-                              {formatCurrency(item.totalPrice)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div className="p-6 bg-neutral-50 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-neutral-900 mb-2">
-                    <Sparkles className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Descrição Inteligente</span>
-                  </div>
-                  <p className="text-sm text-neutral-600 leading-relaxed italic">
-                    "
-                    {generatedQuote.description ||
-                      'Este orçamento foi cuidadosamente calculado para oferecer o melhor custo-benefício para o seu projeto.'}
-                    "
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <div className="bg-neutral-900 p-8 rounded-[32px] text-white space-y-6">
-                  <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
-                    Resumo Financeiro
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-neutral-400">Total Bruto</span>
-                      <span className="font-black text-lg">{formatCurrency(generatedQuote.totalAmount)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-neutral-400">Canal ({generatedQuote.channel})</span>
-                      <span className="font-bold">
-                        {feeLabel(generatedQuote.platformFee ?? 0, generatedQuote.channelFixedFee ?? 0)}
-                      </span>
-                    </div>
-                    <div className="h-px bg-white/10" />
-                    <div className="flex justify-between items-end">
-                      <span className="text-xs text-neutral-400 mb-1">Total Final</span>
-                      <span className="text-3xl font-black text-white">
-                        {formatCurrency(generatedQuote.totalAmount)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <button
-                    onClick={async () => {
-                      try {
-                        (await loadPdf()).generateClientPDF(generatedQuote, activeStore);
-                        addToast('PDF do Cliente gerado com sucesso!', 'success');
-                      } catch (error) {
-                        addToast('Erro ao gerar PDF do Cliente', 'error');
-                      }
-                    }}
-                    className="w-full py-4 bg-neutral-100 text-neutral-900 rounded-2xl font-black text-sm hover:bg-neutral-200 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Download className="w-5 h-5" />
-                    Baixar PDF Cliente
-                  </button>
-                  <button
-                    onClick={async () => {
-                      try {
-                        (await loadPdf()).generateInternalPDF(generatedQuote, activeStore);
-                        addToast('PDF Interno gerado com sucesso!', 'success');
-                      } catch (error) {
-                        addToast('Erro ao gerar PDF Interno', 'error');
-                      }
-                    }}
-                    className="w-full py-4 bg-neutral-50 text-neutral-400 rounded-2xl font-bold text-xs hover:bg-neutral-100 transition-all flex items-center justify-center gap-2"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Relatório Interno
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-8 border-t border-neutral-100 sticky -bottom-10 -mx-10 -mb-10 px-10 pb-10 bg-white">
-              <button
-                onClick={() => {
-                  setShowQuoteModal(false);
-                  setQuoteItems([]);
-                  setClientName('');
-                  setClientSearch('');
-                  setSelectedClientId('');
-                  setCnpj('');
-                }}
-                className="px-10 py-4 bg-neutral-900 text-white rounded-2xl font-black text-lg hover:bg-black transition-all shadow-xl shadow-neutral-200"
-              >
-                Concluir e Novo
-              </button>
-            </div>
-          </div>
-        </div>
+        <GeneratedQuoteModal
+          generatedQuote={generatedQuote}
+          setShowQuoteModal={setShowQuoteModal}
+          activeStore={activeStore}
+          addToast={addToast}
+          handleFinishQuote={handleFinishQuote}
+        />
       )}
     </div>
   );

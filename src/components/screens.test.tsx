@@ -24,6 +24,19 @@ vi.mock('../firebase', () => import('../test/firebaseMock'));
 vi.mock('../contexts/StoreContext', () => import('../test/contextMocks'));
 vi.mock('../contexts/AuthContext', () => import('../test/contextMocks'));
 vi.mock('../contexts/ToastContext', () => import('../test/contextMocks'));
+// IA nunca é chamada de verdade nos testes (o .env pode ter a chave): toda função responde "sem IA".
+vi.mock('../services/gemini', () => {
+  const none = async () => null;
+  return {
+    analyzePriceHealth: none,
+    suggestIdealMargin: none,
+    analyzeManualPrice: none,
+    analyzeLaserPrice: none,
+    rewriteDescription: none,
+    analyzePapelariaPrice: none,
+    analyzeCestaPrice: none,
+  };
+});
 
 beforeAll(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
@@ -247,6 +260,49 @@ describe('Precificação', () => {
     await click(buttonWithText('Adicionar Item'));
     await type(field('Produto'), 'chaveiro');
     await click(buttonWithText('Confirmar Item'));
+    await click(generate());
+    expect(html()).toMatchSnapshot();
+  });
+
+  // Etapa 8A, item 2 — estados que a divisão de Pricing.tsx mexe.
+  const clientInput = () => document.querySelector('input[placeholder="Ex: João Silva ou Empresa ABC"]')!;
+  it('cliente: busca na lista e Pessoa Jurídica com CNPJ', async () => {
+    await show(await load());
+    await type(clientInput(), 'TESTE');
+    expect(html()).toMatchSnapshot();
+    await type(clientInput(), 'Ninguém');
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithText('Pessoa Jurídica'));
+    expect(html()).toMatchSnapshot();
+  });
+  it('item com acabamento, acessório e markup; quantidade e edição', async () => {
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await click(textElement('Verniz'));
+    await click(textElement('Caixinha'));
+    await type(field('Markup personalizado'), '200');
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithText('Confirmar Item'));
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithIcon('plus', 1));
+    await click(buttonWithIcon('file-text', 0));
+    expect(html()).toMatchSnapshot();
+  });
+  it('canal Shopee no resumo', async () => {
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await click(buttonWithText('Confirmar Item'));
+    await type(document.querySelector('select')!, 'Shopee');
+    expect(html()).toMatchSnapshot();
+  });
+  it('orçamento gerado', async () => {
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await click(buttonWithText('Confirmar Item'));
+    await type(clientInput(), 'Maria Teste');
     await click(generate());
     expect(html()).toMatchSnapshot();
   });

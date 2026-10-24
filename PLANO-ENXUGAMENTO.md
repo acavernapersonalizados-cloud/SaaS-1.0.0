@@ -25,18 +25,16 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Só depois da Etapa 7. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **não publicada**; 8B e 8C pendentes. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (19/10/2026):**
+**Onde paramos (24/10/2026):**
 
-- Etapas 7.1 (segurança) e 7.2 (tarifa de energia única) **publicadas** juntas em 19/10/2026: hosting + regras do banco, versão "19/10 21:59".
-- Antes de publicar, o backup das 19:38 foi conferido: 888 documentos, catálogo da T&N 62/62 e A Caverna 6/6 com preço.
-- No ar: aviso "Nova versão disponível" (versão antiga não grava) e a regra do banco que recusa zerar o preço de catálogo.
-- Falta você: fechar e reabrir o app em todos os aparelhos e conferir "versão 19/10 21:59" no menu lateral.
-- Código e tags (até `etapa-7.2-ok`) estão no GitHub. Nada ficou pela metade.
-- 24/10/2026: removida a pasta temporária da exportação do emulador.
-- **Próximo passo: Etapa 8 — Central de Calculadoras** (começa pelo aviso do "Gerar Orçamento", depois divide `Products.tsx` e `Pricing.tsx`), só depois do seu "aprovado".
+- Etapa 8A feita (tag `etapa-8a-ok`), **não publicada**: o "Gerar Orçamento" agora diz o que falta (cliente, item,
+  canal, permissão, erro do banco) e `Products.tsx`/`Pricing.tsx` foram divididos sem mudar nenhuma tela.
+- No ar continua a versão "19/10 21:59" (Etapas 7.1 + 7.2). Publicar a 8A só quando você pedir.
+- Falta você: testar o "Gerar Orçamento" no emulador (sem item, sem cliente e com tudo preenchido).
+- **Próximo passo: Etapa 8B** (itens 5, 6 e 3, só exibem, não mudam preço), só depois do seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -442,11 +440,22 @@ Testes: 155 → 157.
 
 | Bloco | Itens | Natureza |
 |---|---|---|
-| **8A** (aprovado em 24/10/2026) | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Tag `etapa-8a-ok` |
+| **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** | 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
 | **8C** | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal | Mudam dados/preço: só com comparação antes/depois aprovada |
 
 A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
+
+**Resultado da 8A:**
+
+| Item | Resultado |
+|---|---|
+| 1. "Gerar Orçamento" | As mensagens que já existiam aparecem abaixo do botão (vermelho = o que falta; verde = criado). Sem itens o botão continua clicável e explica "Adicione pelo menos um item". Durante a gravação o botão mostra o carregando (antes usava `loading`, sempre falso ali) |
+| 2. `Products.tsx` | 1.366 → 653 linhas; tabela/cartões em `ProductList.tsx`, janela em `ProductFormModal.tsx`, Precificação e Imagens & Catálogo em `ProductFormSections.tsx`. HTML final idêntico nos 8 estados testados |
+| 2. `Pricing.tsx` | 1.170 → 612 linhas; cliente, itens e resumo em `QuoteForm.tsx`, janelas de item e de orçamento gerado em `QuoteModals.tsx`, validade e rótulo de taxas em `lib/quoteFormat.ts`. HTML final idêntico nos 11 estados testados |
+
+Testes: 157 → 167 (telas novas de Produtos e Precificação; a IA é simulada nos testes de tela). O estado, as
+gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
 
 - **Primeiro item (24/10/2026): "Gerar Orçamento" sem resposta.** O botão não fazia nada, sem nenhum aviso. Voltou
   a funcionar em janela anônima ou preenchendo os dados. Investigar o que o clique valida e mostrar uma mensagem
