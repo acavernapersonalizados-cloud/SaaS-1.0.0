@@ -345,3 +345,28 @@ describe('Produtos (telas internas)', () => {
     expect(html()).toMatchSnapshot();
   });
 });
+
+// Etapa 8B, item 0 — nomes do menu lateral e do menu de baixo do celular (a versão muda a cada build,
+// por isso compara só os nomes). O código interno de cada aba (activeTab) não muda.
+describe('Menu', () => {
+  beforeAll(() => {
+    // jsdom não tem matchMedia (o Layout usa para saber se o app está instalado).
+    window.matchMedia ??= ((query: string) =>
+      ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
+  });
+  const load = async () => {
+    const { Layout } = await import('./Layout');
+    return (
+      <Layout activeTab="dashboard" onTabChange={() => {}}>
+        <div />
+      </Layout>
+    );
+  };
+  const labels = (selector: string) =>
+    Array.from(document.querySelectorAll(selector)).map(b => b.textContent?.trim());
+  it('nomes do menu lateral e dos 5 itens do menu de baixo', async () => {
+    await show(await load());
+    expect(labels('aside nav button, nav.flex-col button')).toMatchSnapshot();
+    expect(labels('nav[class*="md:hidden"] > button')).toMatchSnapshot();
+  });
+});

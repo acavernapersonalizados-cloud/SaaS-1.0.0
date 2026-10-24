@@ -18038,6 +18038,42 @@ exports[`Matéria-prima > lista 1`] = `
 </body>
 `;
 
+exports[`Menu > nomes do menu lateral e dos 5 itens do menu de baixo 1`] = `
+[
+  "Dashboard",
+  "Clientes",
+  "Fornecedores",
+  "Base de Custos",
+  "Matéria-prima",
+  "Estoque",
+  "Produtos",
+  "Categorias",
+  "Catálogo",
+  "Orçamentos",
+  "Corte a Laser",
+  "Impressão 3D",
+  "Papelaria",
+  "Cestas",
+  "Produção",
+  "Lista de Compras",
+  "Histórico de Orçamentos",
+  "Lojas",
+  "Usuários",
+  "Backup",
+]
+`;
+
+exports[`Menu > nomes do menu lateral e dos 5 itens do menu de baixo 2`] = `
+[
+  "Dashboard",
+  "Clientes",
+  "Fornecedores",
+  "Base de Custos",
+  "Matéria-prima",
+  "Menu",
+]
+`;
+
 exports[`Papelaria > inicial com histórico 1`] = `
 <body>
   <div>
