@@ -363,7 +363,7 @@ export function LaserCalculator() {
                   setMaterial('');
                 }}
               >
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between gap-3 mb-2">
                   <p className="font-bold text-sm text-neutral-900 leading-tight">{m.label}</p>
                   {selectedMachineId === m.id && <CheckCircle2 className="w-4 h-4 text-neutral-900 flex-shrink-0" />}
                 </div>
@@ -379,23 +379,33 @@ export function LaserCalculator() {
                   </span>
                 </div>
                 {(isAdmin || user?.role === 'GERENTE') && (
-                  <div className="absolute top-2 right-2 flex gap-1" onClick={e => e.stopPropagation()}>
+                  // Etapa 8B: no rodapé do cartão (igual à Impressão 3D), longe do check de selecionada.
+                  <div
+                    className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100"
+                    onClick={e => e.stopPropagation()}
+                  >
                     <button
+                      type="button"
+                      title="Editar máquina"
+                      aria-label={`Editar ${m.label}`}
                       onClick={() => {
                         setEditingMachine(m);
                         setNewMachine(m);
                         setMachineMaterialsText((m.materials || []).join(', '));
                         setShowMachineForm(true);
                       }}
-                      className="p-1 hover:bg-neutral-200 rounded-lg transition-all"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg"
                     >
-                      <Edit2 className="w-3 h-3" />
+                      <Edit2 className="w-3.5 h-3.5" /> Editar
                     </button>
                     <button
+                      type="button"
+                      title="Excluir máquina"
+                      aria-label={`Excluir ${m.label}`}
                       onClick={() => handleDeleteMachine(m)}
-                      className="p-1 hover:bg-red-100 rounded-lg transition-all text-red-500"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-3.5 h-3.5" /> Excluir
                     </button>
                   </div>
                 )}
