@@ -25,19 +25,18 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 8C e 8D pendentes. |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **não publicada** (publicar regras do banco antes do site); 8C e 8D-2 pendentes. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
 **Onde paramos (24/10/2026):**
 
-- 8A e **8B publicadas** (só hosting; regras do banco sem mudança), versão no ar "24/10 18:45", testada por você no
-  emulador. 8B: menu "Orçamentos" e "Histórico de Orçamentos"; lucro do preço manual em cada canal; preço sugerido
-  por canal em Produtos; guia "Calculadoras" (4 abas); menu de baixo do celular (Orçamentos, Calculadoras, Produtos,
-  Histórico, Estoque) cabendo em 360/375 px; editar/excluir da máquina do Laser no rodapé do cartão.
-- Código e tags (até `etapa-8b-ok`) no GitHub.
-- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora") e conferir "versão 24/10 18:45".
-- **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada) ou **8D**
-  (Calculadora de Sublimação), só depois do seu "aprovado".
+- No ar: 8A e 8B (só hosting), versão "24/10 18:45".
+- **8D-1 feita** (tag `etapa-8d1-ok`), **não publicada**: aba "Sublimação" na guia Calculadoras, cadastro das 4
+  máquinas (220 V), temperatura/tempo/pressão ao escolher máquina e produto, e "Tabela de referência" com busca.
+- Publicação do 8D-1, quando você pedir: **regras do banco primeiro, depois o site** (coleção nova
+  `sublimationMachines`).
+- **Próximo passo:** testar o 8D-1 no emulador; depois **8D-2** (custo e preço da sublimação) ou **8C**, só depois do
+  seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -446,7 +445,7 @@ Testes: 155 → 157.
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
 | **8C** | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal | Mudam dados/preço: só com comparação antes/depois aprovada |
-| **8D** (registrado em 24/10/2026, não implementar ainda) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
+| **8D** — 8D-1 ✅ **feita** (24/10/2026), tag `etapa-8d1-ok`; 8D-2 (custo e preço) pendente | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
 
 A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
 
@@ -482,7 +481,24 @@ gravações e as contas continuam em `Products.tsx` e `Pricing.tsx`.
     Livre ficam ~30% mais baratos que hoje (o lucro em R$ fica igual ao da venda direta). Um campo opcional por
     canal permite cobrar a mais em um canal específico, se você quiser.
 
-#### Bloco 8D — Calculadora de Sublimação (registrado em 24/10/2026, não implementar ainda)
+#### Bloco 8D — Calculadora de Sublimação (registrado em 24/10/2026)
+
+**8D-1 ✅ feita (24/10/2026), tag `etapa-8d1-ok`, não publicada.** Sem custo nem preço (isso é o 8D-2).
+
+| Item | Resultado |
+|---|---|
+| 1. Dados | `src/lib/sublimation.ts`: tabela de 40 linhas igual, linha a linha, ao `tabela-sublimacao.md` (o teste lê o arquivo); 4 máquinas padrão em 220 V; logo 15 × 15 da 4 em 1 ligado às linhas de "Prensa plana"; boné da 4 em 1 e mini prensa sem referência |
+| 2. Banco | Coleção `sublimationMachines` com regra igual à do Laser (emulador: ADMIN e OPERADOR da loja 200; outra loja, OPERADOR apagando e sem login 403) e incluída no Backup. Sem índice novo (ordena na tela) |
+| 3. Aba "Sublimação" | 5ª aba da guia Calculadoras; cadastro (adicionar/editar/excluir, só ADMIN e GERENTE) e botão "Cadastrar as 4 máquinas da tabela" quando a loja não tem nenhuma |
+| 4. Parâmetros | Parte da máquina + produto preenchem temperatura, tempo e pressão (editáveis, não gravados); parte sem referência mostra "use os valores do fabricante"; aviso de tabela sugestiva e dicas |
+| 5. Tabela de referência | Vista com as 40 linhas, busca sem acento e contador "N de 40" |
+
+**Publicação do 8D-1 (quando você pedir):** primeiro as **regras do banco**
+(`firebase deploy --only firestore:rules`), depois o **site** (`--only hosting`). Na ordem inversa, o Backup do
+site novo sairia incompleto (sem permissão para ler `sublimationMachines`).
+
+Testes: 178 → 188.
+
 
 Dados: `tabela-sublimacao.md` (raiz do projeto), montado a partir das fotos das etiquetas/manuais e da tabela
 sugestiva da STC Smart Deko. Todas as máquinas em 220 V: mini prensa portátil 250 W; prensa plana 38 × 38 cm 1.800 W;
@@ -520,6 +536,10 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 ---
 
 ## 7. Estacionamento (não é enxugamento — para depois)
+
+- **Meus próprios produtos na tabela de referência da sublimação** (24/10/2026): permitir acrescentar produtos com
+  temperatura, tempo e pressão (por loja), além das 40 linhas da tabela sugestiva. Exige gravar no banco (coleção ou
+  campo novo, com regra) e mostrar na busca e na escolha de produto.
 
 - **Acentos faltando nas telas das calculadoras** (24/10/2026): Papelaria e Cestas mostram "Composicao", "Laminacao",
   "Mao de obra" e "Observacoes", e também "Encadernacao", "Comissao (vendedor)", "Preco de Venda", "Seu preco por
