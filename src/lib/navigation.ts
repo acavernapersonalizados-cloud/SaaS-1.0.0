@@ -7,6 +7,8 @@ export const CALCULATOR_TABS = [
   { id: 'print3d', label: 'Impressão 3D' },
   { id: 'papelaria', label: 'Papelaria' },
   { id: 'cestas', label: 'Cestas' },
+  // Etapa 8D-1.
+  { id: 'sublimacao', label: 'Sublimação' },
 ] as const;
 
 /** Código do item "Calculadoras" no menu; ao clicar, abre a primeira calculadora. */

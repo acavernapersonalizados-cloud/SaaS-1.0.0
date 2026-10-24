@@ -326,4 +326,30 @@ export const fixtures: Record<string, any[]> = {
   ],
   stockReservations: [],
   stockMovements: [],
+  // Etapa 8D-1: duas das máquinas padrão de sublimação (tabela-sublimacao.md).
+  sublimationMachines: [
+    {
+      id: 'sub-plana',
+      storeId: S,
+      label: 'Prensa plana 38 × 38 cm',
+      voltage: 220,
+      note: '0–250 °C, 0–999 s.',
+      heads: [{ id: 'placa', name: 'Placa 38 × 38 cm', powerW: 1800, equipment: 'Prensa plana' }],
+      createdAt: T0,
+    },
+    {
+      id: 'sub-4em1',
+      storeId: S,
+      label: 'Prensa 4 em 1',
+      voltage: 220,
+      note: 'Cada acessório tem potência própria.',
+      heads: [
+        { id: 'bone', name: 'Boné', powerW: 300, equipment: null },
+        { id: 'logo', name: 'Logo 15 × 15 cm', powerW: 600, equipment: 'Prensa plana' },
+        { id: 'caneta', name: 'Caneta 10 × 15 cm', powerW: 200, equipment: 'Prensa de canetas' },
+        { id: 'caneca', name: 'Caneca 11 oz', powerW: 300, equipment: 'Prensa de canecas e copos' },
+      ],
+      createdAt: T0,
+    },
+  ],
 };

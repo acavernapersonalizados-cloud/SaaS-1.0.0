@@ -397,7 +397,7 @@ describe('Menu', () => {
 });
 
 describe('Guia Calculadoras', () => {
-  it('abas das 4 calculadoras; a aberta fica marcada e o clique troca de calculadora', async () => {
+  it('abas das 5 calculadoras; a aberta fica marcada e o clique troca de calculadora', async () => {
     const { CalculatorsHub } = await import('./CalculatorsHub');
     const onChange = vi.fn();
     await show(
@@ -406,10 +406,43 @@ describe('Guia Calculadoras', () => {
       </CalculatorsHub>,
     );
     const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
-    expect(tabs.map(t => t.textContent?.trim())).toEqual(['Corte a Laser', 'Impressão 3D', 'Papelaria', 'Cestas']);
-    expect(tabs.map(t => t.getAttribute('aria-selected'))).toEqual(['false', 'false', 'true', 'false']);
+    expect(tabs.map(t => t.textContent?.trim())).toEqual([
+      'Corte a Laser',
+      'Impressão 3D',
+      'Papelaria',
+      'Cestas',
+      'Sublimação',
+    ]);
+    expect(tabs.map(t => t.getAttribute('aria-selected'))).toEqual(['false', 'false', 'true', 'false', 'false']);
     await click(tabs[3]);
     expect(onChange).toHaveBeenLastCalledWith('cestas');
+    await click(tabs[4]);
+    expect(onChange).toHaveBeenLastCalledWith('sublimacao');
     expect(document.body.textContent).toContain('conteúdo');
+  });
+});
+
+// Etapa 8D-1 — Calculadora de Sublimação.
+describe('Sublimação', () => {
+  const load = async () => React.createElement((await import('./SublimationCalculator')).SublimationCalculator);
+  it('sem máquinas: botão para cadastrar as 4 da tabela', async () => {
+    const { fixtures } = await import('../test/fixtures');
+    const saved = fixtures.sublimationMachines;
+    fixtures.sublimationMachines = [];
+    try {
+      await show(await load());
+      expect(buttonWithText('Cadastrar as 4 máquinas da tabela')).toBeTruthy();
+      expect(html()).toMatchSnapshot();
+    } finally {
+      fixtures.sublimationMachines = saved;
+    }
+  });
+  it('máquinas cadastradas e janela de edição da 4 em 1', async () => {
+    await show(await load());
+    expect(html()).toMatchSnapshot();
+    await click(document.querySelector('[aria-label="Editar Prensa 4 em 1"]')!);
+    const heads = Array.from(document.querySelectorAll('select[aria-label="Linhas da tabela"]')) as HTMLSelectElement[];
+    expect(heads.map(s => s.value)).toEqual(['', 'Prensa plana', 'Prensa de canetas', 'Prensa de canecas e copos']);
+    expect(html()).toMatchSnapshot();
   });
 });

@@ -31,6 +31,9 @@ const PapelariaCalculator = lazy(() =>
   import('./components/PapelariaCalculator').then(m => ({ default: m.PapelariaCalculator })),
 );
 const CestaCalculator = lazy(() => import('./components/CestaCalculator').then(m => ({ default: m.CestaCalculator })));
+const SublimationCalculator = lazy(() =>
+  import('./components/SublimationCalculator').then(m => ({ default: m.SublimationCalculator })),
+);
 const Categories = lazy(() => import('./components/Categories').then(m => ({ default: m.Categories })));
 const Catalog = lazy(() => import('./components/Catalog').then(m => ({ default: m.Catalog })));
 const PublicCatalog = lazy(() => import('./components/PublicCatalog').then(m => ({ default: m.PublicCatalog })));
@@ -112,6 +115,8 @@ function AppContent() {
         return calculators(<PapelariaCalculator />);
       case 'cestas':
         return calculators(<CestaCalculator />);
+      case 'sublimacao':
+        return calculators(<SublimationCalculator />);
       case 'stores':
         return isAdmin ? <Stores /> : <AccessDenied />;
       case 'users':

@@ -1,7 +1,7 @@
 // Guia "Calculadoras" (Etapa 8B, item 3): as 4 calculadoras continuam independentes; aqui só
 // há a barra de abas acima da calculadora aberta. Trocar de aba é o mesmo que trocar pelo menu.
 import React from 'react';
-import { FileText, Gift, Printer, Zap } from 'lucide-react';
+import { FileText, Flame, Gift, Printer, Zap } from 'lucide-react';
 import { CALCULATOR_TABS } from '../lib/navigation';
 import { cn } from '../lib/utils';
 
@@ -10,6 +10,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   print3d: Printer,
   papelaria: FileText,
   cestas: Gift,
+  sublimacao: Flame,
 };
 
 export function CalculatorsHub({
