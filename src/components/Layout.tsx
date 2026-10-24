@@ -338,7 +338,8 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
             key={item.id}
             onClick={() => handleTabChange(item.id)}
             className={cn(
-              'flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px]',
+              // 6 botões cabem em 360 px: largura mínima 44 px (alvo de toque) e espaço lateral de 4 px.
+              'flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all min-w-[44px]',
               isActive(item.id) ? 'text-neutral-900' : 'text-neutral-400',
             )}
           >
@@ -348,7 +349,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
         ))}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="flex flex-col items-center gap-1 p-2 rounded-xl text-neutral-400 min-w-[64px]"
+          className="flex flex-col items-center gap-1 px-1 py-2 rounded-xl text-neutral-400 min-w-[44px]"
         >
           <Menu className="w-5 h-5" />
           <span className="text-[10px] font-bold">Menu</span>

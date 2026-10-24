@@ -32,7 +32,8 @@
 
 - 8A publicada (versão "24/10 12:56"). **8B feita** (tag `etapa-8b-ok`), **não publicada**: menu "Orçamentos" e
   "Histórico de Orçamentos"; lucro do preço manual em cada canal; preço sugerido por canal em Produtos; guia
-  "Calculadoras" (4 abas) e menu de baixo do celular com Orçamentos, Calculadoras, Produtos, Histórico e Estoque.
+  "Calculadoras" (4 abas) e menu de baixo do celular com Orçamentos, Calculadoras, Produtos, Histórico e Estoque
+  (os 6 botões cabem em 360 e 375 px: largura mínima 44 px).
 - Falta você: testar o 8B no emulador; publicar só quando você pedir.
 - **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada), só depois
   do seu "aprovado".
@@ -494,9 +495,6 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 
 ## 7. Estacionamento (não é enxugamento — para depois)
 
-- **Menu de baixo do celular passa da tela em aparelhos de 375 px** (encontrado em 24/10/2026, na Etapa 8B): são 6
-  botões (5 itens + "Menu") com largura mínima de 64 px, e o "Menu" fica 17 px fora da borda direita. Já era assim
-  antes da 8B (5 itens + "Menu", mesma largura). Corrigir muda o visual: reduzir a largura mínima ou o espaçamento.
 
 - **Ícone do app instalado quebrado:** o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
 - **Deploy automático:** cadastrar os secrets `VITE_FIREBASE_*` no GitHub para o merge na `main` voltar a publicar.
