@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Product } from '../types';
+import { CatalogPriceDisplay, Product } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { catalogPriceDisplayOf, catalogPriceLines } from '../lib/catalog';
 import { useStore } from '../contexts/StoreContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useCategories, categoryNames } from '../hooks/useCategories';
 import { CategoryChips, CategoryFilterBar } from './CategoryPicker';
@@ -24,7 +26,13 @@ import {
 export function Catalog() {
   const { activeStore } = useStore();
   const { addToast } = useToast();
+  const { isAdmin, isGerente } = useAuth();
   const { categories } = useCategories('product');
+  // Etapa 8C: preço que o catálogo mostra (Pix, crédito = Pix ÷ 0,95, ou os dois). Fica no documento da loja,
+  // o único que o catálogo público lê; a regra do banco deixa só gerente ou administrador alterar.
+  const [priceDisplay, setPriceDisplay] = useState<CatalogPriceDisplay>(catalogPriceDisplayOf(activeStore));
+  useEffect(() => setPriceDisplay(catalogPriceDisplayOf(activeStore)), [activeStore]);
+  const canEditDisplay = isAdmin || isGerente;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +58,17 @@ export function Catalog() {
     );
     return () => unsub();
   }, [activeStore]);
+
+  const savePriceDisplay = async (display: CatalogPriceDisplay) => {
+    if (!activeStore || display === priceDisplay) return;
+    try {
+      await updateDoc(doc(db, 'stores', activeStore.id), { catalogPriceDisplay: display });
+      setPriceDisplay(display);
+      addToast('Preço do catálogo atualizado.', 'success');
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, `stores/${activeStore.id}`);
+    }
+  };
 
   const publicUrl = activeStore ? `${window.location.origin}/catalogo/${activeStore.id}` : '';
 
@@ -159,6 +178,40 @@ export function Catalog() {
         </div>
       </div>
 
+      {/* Preço no catálogo (Etapa 8C) */}
+      <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
+        <div className="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-wider">
+          <DollarSign className="w-3.5 h-3.5" /> Preço no catálogo
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              ['pix', 'No Pix'],
+              ['credito', 'No crédito'],
+              ['ambos', 'Os dois'],
+            ] as Array<[CatalogPriceDisplay, string]>
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              disabled={!canEditDisplay}
+              onClick={() => savePriceDisplay(value)}
+              className={
+                priceDisplay === value
+                  ? 'px-4 py-2 rounded-xl text-sm font-bold bg-neutral-900 text-white disabled:opacity-60'
+                  : 'px-4 py-2 rounded-xl text-sm font-bold bg-neutral-100 text-neutral-600 hover:bg-neutral-200 disabled:opacity-60'
+              }
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-neutral-400">
+          O preço calculado é o do Pix. No crédito, o catálogo mostra Pix ÷ 0,95, para cobrir os 5% do cartão.
+          {!canEditDisplay && ' Só gerente ou administrador altera esta opção.'}
+        </p>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
@@ -232,7 +285,11 @@ export function Catalog() {
                       <CategoryChips names={categoryNames(p.categoryIds, categories)} />
                     </div>
                     <p className="text-xs font-bold text-neutral-500">
-                      {price > 0 ? formatCurrency(price) : 'Sem preço calculado'}
+                      {price > 0
+                        ? catalogPriceLines(price, priceDisplay)
+                            .map(l => `${formatCurrency(l.value)} ${l.label}`)
+                            .join(' · ')
+                        : 'Sem preço calculado'}
                       {p.showPrice === false && price > 0 ? ' · preço oculto' : ''}
                     </p>
                   </div>

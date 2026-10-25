@@ -1653,6 +1653,65 @@ exports[`Catálogo > busca 1`] = `
         </div>
       </div>
       <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3"
+      >
+        <div
+          class="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-wider"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-dollar-sign w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="12"
+              x2="12"
+              y1="2"
+              y2="22"
+            />
+            <path
+              d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+            />
+          </svg>
+           Preço no catálogo
+        </div>
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-900 text-white disabled:opacity-60"
+            type="button"
+          >
+            No Pix
+          </button>
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-100 text-neutral-600 hover:bg-neutral-200 disabled:opacity-60"
+            type="button"
+          >
+            No crédito
+          </button>
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-100 text-neutral-600 hover:bg-neutral-200 disabled:opacity-60"
+            type="button"
+          >
+            Os dois
+          </button>
+        </div>
+        <p
+          class="text-[11px] text-neutral-400"
+        >
+          O preço calculado é o do Pix. No crédito, o catálogo mostra Pix ÷ 0,95, para cobrir os 5% do cartão.
+        </p>
+      </div>
+      <div
         class="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <div
@@ -1962,7 +2021,7 @@ exports[`Catálogo > busca 1`] = `
               <p
                 class="text-xs font-bold text-neutral-500"
               >
-                R$ 15,00
+                R$ 15,00 no Pix
               </p>
             </div>
             <div
@@ -2219,6 +2278,65 @@ exports[`Catálogo > lista 1`] = `
             </button>
           </div>
         </div>
+      </div>
+      <div
+        class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3"
+      >
+        <div
+          class="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-wider"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-dollar-sign w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="12"
+              x2="12"
+              y1="2"
+              y2="22"
+            />
+            <path
+              d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+            />
+          </svg>
+           Preço no catálogo
+        </div>
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-900 text-white disabled:opacity-60"
+            type="button"
+          >
+            No Pix
+          </button>
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-100 text-neutral-600 hover:bg-neutral-200 disabled:opacity-60"
+            type="button"
+          >
+            No crédito
+          </button>
+          <button
+            class="px-4 py-2 rounded-xl text-sm font-bold bg-neutral-100 text-neutral-600 hover:bg-neutral-200 disabled:opacity-60"
+            type="button"
+          >
+            Os dois
+          </button>
+        </div>
+        <p
+          class="text-[11px] text-neutral-400"
+        >
+          O preço calculado é o do Pix. No crédito, o catálogo mostra Pix ÷ 0,95, para cobrir os 5% do cartão.
+        </p>
       </div>
       <div
         class="grid grid-cols-2 lg:grid-cols-4 gap-4"
@@ -2530,7 +2648,7 @@ exports[`Catálogo > lista 1`] = `
               <p
                 class="text-xs font-bold text-neutral-500"
               >
-                R$ 15,00
+                R$ 15,00 no Pix
               </p>
             </div>
             <div
@@ -2869,6 +2987,11 @@ exports[`Catálogo público > busca 1`] = `
                 style="color: rgb(51, 102, 204);"
               >
                 R$ 15,00
+                <span
+                  class="text-[10px] font-bold text-neutral-400 ml-1"
+                >
+                  no Pix
+                </span>
               </p>
             </div>
           </div>
@@ -3169,6 +3292,324 @@ exports[`Catálogo público > lista 1`] = `
                 style="color: rgb(51, 102, 204);"
               >
                 R$ 15,00
+                <span
+                  class="text-[10px] font-bold text-neutral-400 ml-1"
+                >
+                  no Pix
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer
+        class="border-t border-neutral-200 py-8 mt-8"
+      >
+        <div
+          class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-400"
+        >
+          <p>
+            Loja Teste
+             — Todos os direitos reservados.
+          </p>
+          <div
+            class="flex items-center gap-4"
+          >
+            <a
+              class="hover:text-neutral-700 transition-colors"
+              href="tel:(11) 99999-9999"
+            >
+              (11) 99999-9999
+            </a>
+            <a
+              class="hover:text-neutral-700 transition-colors"
+              href="mailto:loja@teste.local"
+            >
+              loja@teste.local
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público mostra os dois preços quando a loja escolhe "Os dois" 1`] = `
+<body>
+  <div>
+    <div
+      class="min-h-screen bg-neutral-50"
+    >
+      <header
+        class="text-white"
+        style="background-color: rgb(51, 102, 204);"
+      >
+        <div
+          class="max-w-6xl mx-auto px-4 py-6"
+        >
+          <div
+            class="flex items-center justify-between gap-4"
+          >
+            <div
+              class="flex items-center gap-4"
+            >
+              <div>
+                <h1
+                  class="text-2xl font-black"
+                >
+                  Loja Teste
+                </h1>
+                <p
+                  class="text-white/70 text-sm"
+                >
+                  São Paulo
+                  , 
+                  SP
+                </p>
+              </div>
+            </div>
+            <div
+              class="flex items-center gap-2"
+            >
+              <a
+                class="flex items-center gap-2 px-4 py-2.5 bg-green-500 hover:bg-green-400 text-white rounded-xl font-bold text-sm transition-colors shadow-lg"
+                href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento."
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-message-circle w-4 h-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"
+                  />
+                </svg>
+                 WhatsApp
+              </a>
+              <button
+                class="p-2.5 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-share2 lucide-share-2 w-4 h-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="18"
+                    cy="5"
+                    r="3"
+                  />
+                  <circle
+                    cx="6"
+                    cy="12"
+                    r="3"
+                  />
+                  <circle
+                    cx="18"
+                    cy="19"
+                    r="3"
+                  />
+                  <line
+                    x1="8.59"
+                    x2="15.42"
+                    y1="13.51"
+                    y2="17.49"
+                  />
+                  <line
+                    x1="15.41"
+                    x2="8.59"
+                    y1="6.51"
+                    y2="10.49"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div
+        class="sticky top-0 z-10 bg-white border-b border-neutral-200 shadow-sm"
+      >
+        <div
+          class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row gap-3"
+        >
+          <div
+            class="relative flex-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-search absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m21 21-4.34-4.34"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+            </svg>
+            <input
+              class="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 outline-none text-sm"
+              placeholder="Buscar produtos..."
+              style="--tw-ring-color: #3366cc;"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="flex gap-2 overflow-x-auto pb-0.5"
+          >
+            <button
+              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-white border-transparent"
+              style="background-color: rgb(51, 102, 204);"
+            >
+              Todos
+            </button>
+            <button
+              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
+            >
+              Presentes
+            </button>
+            <button
+              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
+            >
+              TESTE Presentes
+            </button>
+          </div>
+        </div>
+      </div>
+      <main
+        class="max-w-6xl mx-auto px-4 py-8"
+      >
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
+          <div
+            class="bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
+          >
+            <div
+              class="aspect-square bg-neutral-100 relative overflow-hidden"
+            >
+              <div
+                class="w-full h-full flex items-center justify-center"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-shopping-bag w-10 h-10 text-neutral-300"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 10a4 4 0 0 1-8 0"
+                  />
+                  <path
+                    d="M3.103 6.034h17.794"
+                  />
+                  <path
+                    d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div
+              class="p-3 space-y-1"
+            >
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
+              >
+                TESTE Presentes · Presentes
+              </span>
+              <p
+                class="font-bold text-neutral-900 text-sm leading-tight line-clamp-2"
+              >
+                TESTE Chaveiro
+              </p>
+              <div
+                class="flex items-center gap-1"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-clock w-3 h-3 text-neutral-400"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 6v6l4 2"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                </svg>
+                <span
+                  class="text-[10px] text-neutral-400"
+                >
+                  7
+                   dias
+                </span>
+              </div>
+              <p
+                class="text-base font-black"
+                style="color: rgb(51, 102, 204);"
+              >
+                R$ 15,00
+                <span
+                  class="text-[10px] font-bold text-neutral-400 ml-1"
+                >
+                  no Pix
+                </span>
+              </p>
+              <p
+                class="text-xs font-bold text-neutral-500"
+              >
+                ou 
+                R$ 15,79
+                 
+                no crédito
               </p>
             </div>
           </div>

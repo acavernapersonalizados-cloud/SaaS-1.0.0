@@ -1,7 +1,26 @@
 /**
  * catalog.ts — preço público do produto (catalogPrice), gravado pela tela Produtos.
  */
+import type { CatalogPriceDisplay } from '../types';
 import { friendlyFirestoreMessage } from './firestoreErrors';
+import { creditPrice } from './pricingEngine';
+
+/** O que o catálogo mostra (Etapa 8C): a opção da loja ou, sem ela, o preço no Pix. */
+export function catalogPriceDisplayOf(
+  store: { catalogPriceDisplay?: CatalogPriceDisplay } | null | undefined,
+): CatalogPriceDisplay {
+  const d = store?.catalogPriceDisplay;
+  return d === 'credito' || d === 'ambos' ? d : 'pix';
+}
+
+/** Linhas de preço do catálogo: o preço gravado (catalogPrice) é o do Pix; o crédito é Pix ÷ 0,95. */
+export function catalogPriceLines(pixPrice: number, display: CatalogPriceDisplay) {
+  const pix = { label: 'no Pix', value: pixPrice };
+  const credit = { label: 'no crédito', value: creditPrice(pixPrice) };
+  if (display === 'credito') return [credit];
+  if (display === 'ambos') return [pix, credit];
+  return [pix];
+}
 
 /** Aviso único de uma rodada da sincronização do catálogo, ou null se nada falhou. */
 export function catalogSyncFailureMessage(errors: unknown[]): string | null {

@@ -32,11 +32,12 @@
 
 - No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a correção do preço de compra (por unidade / total pago).
 - Feito, **não publicado**: acentos; **8C-3a** (Atacado → desconto por quantidade 10/20/30% com piso de custo × 1,30
-  + taxas); **8C-3b** (orçamento e PDFs com total no Pix e no crédito = Pix ÷ 0,95; Instagram 0%).
+  + taxas); **8C-3b** (orçamento e PDFs com Pix e crédito = Pix ÷ 0,95; Instagram 0%); **8C-3c** (catálogo: Pix,
+  crédito ou os dois). Publicar = só o site (nenhuma regra do banco mudou).
 - Hook `.claude/hooks/block-repeat.mjs` bloqueia mensagem repetida em 7 dias (vale a partir da próxima sessão).
 - Falta você: reabrir o app ("versão 24/10 22:39"), testar o hook e corrigir pela tela as matérias-primas erradas.
 - Regra em vigor: checkpoint completo após cada parte. Código no GitHub. Nenhum item aberto.
-- **Próximo passo: 8C-3c** (opção Pix / Crédito / Os dois no catálogo), já aprovada.
+- **Próximo passo:** publicar quando você pedir; depois, 8C itens 4 e 8, só com lista de riscos e "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -444,7 +445,7 @@ Testes: 155 → 157.
 |---|---|---|
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
-| **8C** — 3a e 3b ✅ **feitas** (25/10/2026), não publicadas | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
+| **8C** — parte de canais (3a, 3b, 3c) ✅ **feita** (25/10/2026), não publicada; itens 4 e 8 pendentes | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
 | **8D** — 8D-1 ✅ **feita e publicada** (tag `etapa-8d1-ok`); 8D-2 ✅ **feita e publicada** (tag `etapa-8d2-ok`) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
 
 **Resultado da 8C, parte 3a (atacado por quantidade):** o canal Atacado (+5%) saiu da tabela padrão (nenhuma loja tinha
@@ -461,6 +462,12 @@ os orçamentos novos gravam `creditTotal`, e os 3 PDFs mostram os dois totais (o
 saem exatamente como antes, conferido pelos comandos de desenho). A pedido do usuário, o Instagram passou a 0% de taxa
 (antes 3,5%), para não cobrar o cartão duas vezes: no Instagram o preço no Pix fica igual ao da Venda Direta
 (ex.: Momento Paizão R$ 40,86 → R$ 39,43 no Pix e R$ 41,51 no crédito). Testes: 220 → 224.
+
+**Resultado da 8C, parte 3c (preço no catálogo):** a tela Catálogo tem a opção "Preço no catálogo: No Pix / No crédito /
+Os dois", gravada em `stores/{loja}.catalogPriceDisplay` (o documento que o catálogo público já lê; só gerente ou
+administrador alteram, pela regra atual, sem mudar as regras do banco). Padrão: Pix, o mesmo preço de antes, agora com
+o rótulo "no Pix". O crédito é calculado na hora (catalogPrice ÷ 0,95); nenhum produto foi regravado. Testes: 224 → 228.
+Publicação: só o site.
 
 A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
 

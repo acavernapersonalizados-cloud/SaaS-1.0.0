@@ -732,3 +732,31 @@ describe('Lista de Compras: preço por unidade ou valor total pago', () => {
     expect(porUnidade.saved).toEqual(porTotal.saved);
   });
 });
+
+// Etapa 8C, item 3c — o catálogo mostra o preço no Pix, no crédito (Pix ÷ 0,95) ou os dois.
+describe('Catálogo: preço no Pix, no crédito ou os dois', () => {
+  // A moeda usa espaço não separável depois do R$.
+  const text = () => (document.body.textContent ?? '').replace(/\s/g, ' ');
+  it('a tela Catálogo grava a opção no documento da loja', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(React.createElement((await import('./Catalog')).Catalog));
+    expect(text()).toContain('R$ 15,00 no Pix');
+    writes.length = 0;
+    await click(buttonWithText('Os dois'));
+    expect(writes).toEqual([{ op: 'update', path: 'stores/loja-teste', data: { catalogPriceDisplay: 'ambos' } }]);
+    expect(text()).toContain('R$ 15,00 no Pix · R$ 15,79 no crédito');
+  });
+  it('o catálogo público mostra os dois preços quando a loja escolhe "Os dois"', async () => {
+    const { fixtures } = await import('../test/fixtures');
+    const store = fixtures.stores[0];
+    store.catalogPriceDisplay = 'ambos';
+    try {
+      await show(React.createElement((await import('./PublicCatalog')).PublicCatalog, { storeId: 'loja-teste' }));
+      expect(text()).toContain('R$ 15,00no Pix');
+      expect(text()).toContain('ou R$ 15,79 no crédito');
+      expect(html()).toMatchSnapshot();
+    } finally {
+      delete store.catalogPriceDisplay;
+    }
+  });
+});

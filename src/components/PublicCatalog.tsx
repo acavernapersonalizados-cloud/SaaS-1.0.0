@@ -3,6 +3,7 @@ import { collection, query, where, onSnapshot, doc, getDoc } from 'firebase/fire
 import { db } from '../firebase';
 import { Product, Store, Category } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { catalogPriceDisplayOf, catalogPriceLines } from '../lib/catalog';
 import {
   MessageCircle,
   Share2,
@@ -81,6 +82,8 @@ export function PublicCatalog({ storeId }: CatalogProps) {
   }, [storeId]);
 
   const primaryColor = store?.primaryColor || '#171717';
+  // Etapa 8C: Pix (padrão), crédito (Pix ÷ 0,95) ou os dois, escolhido na tela Catálogo.
+  const priceDisplay = catalogPriceDisplayOf(store);
   const secondaryColor = store?.secondaryColor || '#404040';
 
   // Only show products marked for catalog (showInCatalog defaults to true)
@@ -292,14 +295,25 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                         <span className="text-[10px] text-neutral-400">{p.leadTimeDays} dias</span>
                       </div>
                     )}
-                    {showPrice && catalogPrice > 0 && (
-                      <p className="text-base font-black" style={{ color: primaryColor }}>
-                        {formatCurrency(catalogPrice)}
-                        {p.isPackage && p.packageQuantity && (
-                          <span className="text-xs font-normal text-neutral-400 ml-1">kit {p.packageQuantity}un</span>
-                        )}
-                      </p>
-                    )}
+                    {showPrice &&
+                      catalogPrice > 0 &&
+                      catalogPriceLines(catalogPrice, priceDisplay).map((line, i) =>
+                        i === 0 ? (
+                          <p key={line.label} className="text-base font-black" style={{ color: primaryColor }}>
+                            {formatCurrency(line.value)}
+                            <span className="text-[10px] font-bold text-neutral-400 ml-1">{line.label}</span>
+                            {p.isPackage && p.packageQuantity && (
+                              <span className="text-xs font-normal text-neutral-400 ml-1">
+                                kit {p.packageQuantity}un
+                              </span>
+                            )}
+                          </p>
+                        ) : (
+                          <p key={line.label} className="text-xs font-bold text-neutral-500">
+                            ou {formatCurrency(line.value)} {line.label}
+                          </p>
+                        ),
+                      )}
                     {!showPrice && <p className="text-xs text-neutral-400 italic">Consulte o preço</p>}
                   </div>
                 </div>
@@ -396,16 +410,25 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                     <h2 className="text-2xl font-black text-neutral-900 mt-0.5">{p.name}</h2>
                   </div>
 
-                  {showPrice && catalogPrice > 0 && (
-                    <p className="text-3xl font-black" style={{ color: primaryColor }}>
-                      {formatCurrency(catalogPrice)}
-                      {p.isPackage && p.packageQuantity && (
-                        <span className="text-base font-normal text-neutral-400 ml-2">
-                          kit com {p.packageQuantity} unidades
-                        </span>
-                      )}
-                    </p>
-                  )}
+                  {showPrice &&
+                    catalogPrice > 0 &&
+                    catalogPriceLines(catalogPrice, priceDisplay).map((line, i) =>
+                      i === 0 ? (
+                        <p key={line.label} className="text-3xl font-black" style={{ color: primaryColor }}>
+                          {formatCurrency(line.value)}
+                          <span className="text-sm font-bold text-neutral-400 ml-2">{line.label}</span>
+                          {p.isPackage && p.packageQuantity && (
+                            <span className="text-base font-normal text-neutral-400 ml-2">
+                              kit com {p.packageQuantity} unidades
+                            </span>
+                          )}
+                        </p>
+                      ) : (
+                        <p key={line.label} className="text-base font-bold text-neutral-500">
+                          ou {formatCurrency(line.value)} {line.label}
+                        </p>
+                      ),
+                    )}
                   {!showPrice && <p className="text-lg text-neutral-500 italic">Solicite um orçamento</p>}
 
                   {p.leadTimeDays && (

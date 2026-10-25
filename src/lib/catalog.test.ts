@@ -1,6 +1,6 @@
 // Etapa 7, item 1 — proteção do preço do catálogo (catalogPrice) gravado pela tela Produtos.
 import { describe, expect, it } from 'vitest';
-import { nextCatalogPrice } from './catalog';
+import { catalogPriceDisplayOf, catalogPriceLines, nextCatalogPrice } from './catalog';
 
 describe('nextCatalogPrice', () => {
   it('preço novo válido e diferente do gravado: grava o novo', () => {
@@ -24,5 +24,22 @@ describe('nextCatalogPrice', () => {
   it('produto sem preço gravado que passa a ter preço: grava', () => {
     expect(nextCatalogPrice(undefined, 72.43)).toBe(72.43);
     expect(nextCatalogPrice(0, 72.43)).toBe(72.43);
+  });
+});
+
+// Etapa 8C, item 3c — o catálogo mostra o preço no Pix, no crédito (Pix ÷ 0,95) ou os dois.
+describe('Preço no catálogo: Pix, crédito ou os dois', () => {
+  it('sem opção gravada (ou com valor estranho): Pix', () => {
+    expect(catalogPriceDisplayOf(null)).toBe('pix');
+    expect(catalogPriceDisplayOf({})).toBe('pix');
+    expect(catalogPriceDisplayOf({ catalogPriceDisplay: 'boleto' as never })).toBe('pix');
+    expect(catalogPriceDisplayOf({ catalogPriceDisplay: 'ambos' })).toBe('ambos');
+  });
+  it('linhas de cada opção (ADESIVO FOTOGRAFICO: R$ 9,50 no Pix = R$ 10,00 no crédito)', () => {
+    expect(catalogPriceLines(9.5, 'pix')).toEqual([{ label: 'no Pix', value: 9.5 }]);
+    const [credit] = catalogPriceLines(9.5, 'credito');
+    expect(credit.label).toBe('no crédito');
+    expect(credit.value).toBeCloseTo(10, 10);
+    expect(catalogPriceLines(9.5, 'ambos').map(l => l.label)).toEqual(['no Pix', 'no crédito']);
   });
 });

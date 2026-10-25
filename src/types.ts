@@ -13,7 +13,12 @@ export interface Store {
   primaryColor?: string;
   secondaryColor?: string;
   observations?: string;
+  /** Preço que o catálogo mostra (Etapa 8C). Sem ele, o preço no Pix. */
+  catalogPriceDisplay?: CatalogPriceDisplay;
 }
+
+/** Pix (o preço base), crédito (Pix ÷ 0,95) ou os dois. */
+export type CatalogPriceDisplay = 'pix' | 'credito' | 'ambos';
 
 export interface CostBase {
   id?: string;
