@@ -179,7 +179,7 @@ export function CestaCalculator() {
       const analysis = await analyzeCestaPrice(jobName, result.totalCostUnit, price);
       setAiAnalysis(analysis || '');
     } catch {
-      setAiAnalysis('Erro ao analisar. Verifique sua conexao.');
+      setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
     }
     setAiLoading(false);
   };
@@ -230,7 +230,7 @@ export function CestaCalculator() {
     setDeletingId(id);
     try {
       await deleteDoc(doc(db, 'cestaJobs', id));
-      addToast('Cesta excluida.', 'success');
+      addToast('Cesta excluída.', 'success');
     } catch (err) {
       handleFirestoreError(err, OperationType.DELETE, `cestaJobs/${id}`);
     }
@@ -255,7 +255,7 @@ export function CestaCalculator() {
           <span className="text-xs font-bold uppercase tracking-widest">Calculadora</span>
         </div>
         <h1 className="text-3xl font-black text-neutral-900">Cestas Personalizadas</h1>
-        <p className="text-neutral-500 mt-1">Cestas de café da manha, kits presente e montagens personalizadas.</p>
+        <p className="text-neutral-500 mt-1">Cestas de café da manhã, kits presente e montagens personalizadas.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -271,7 +271,7 @@ export function CestaCalculator() {
                 type="text"
                 value={jobName}
                 onChange={e => setJobName(e.target.value)}
-                placeholder="Ex: Cesta Cafe da Manha Premium"
+                placeholder="Ex: Cesta Café da Manhã Premium"
                 className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
               />
             </div>
@@ -389,7 +389,7 @@ export function CestaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Fitas e Lacos - R$</label>
+                <label className="text-xs font-bold text-neutral-600">Fitas e Laços - R$</label>
                 <input
                   type="number"
                   min="0"
@@ -452,7 +452,7 @@ export function CestaCalculator() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Comissao Vendedor (%)</label>
+                <label className="text-xs font-bold text-neutral-600">Comissão Vendedor (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -513,17 +513,17 @@ export function CestaCalculator() {
               onChange={e => setNotes(e.target.value)}
               rows={2}
               className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
-              placeholder="Observacoes (opcional)"
+              placeholder="Observações (opcional)"
             />
           </div>
 
           {result && (
             <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
               <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-                <DollarSign className="w-3.5 h-3.5" /> Preco de Venda
+                <DollarSign className="w-3.5 h-3.5" /> Preço de Venda
               </h2>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Seu preco por cesta (opcional)</label>
+                <label className="text-xs font-bold text-neutral-600">Seu preço por cesta (opcional)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold text-sm">
                     R$
@@ -563,7 +563,7 @@ export function CestaCalculator() {
                 <div className="p-4 bg-violet-50 rounded-2xl border border-violet-100 space-y-2">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-violet-600" />
-                    <span className="text-xs font-bold text-violet-700 uppercase">Analise IA</span>
+                    <span className="text-xs font-bold text-violet-700 uppercase">Análise IA</span>
                   </div>
                   <p className="text-sm text-violet-900 leading-relaxed whitespace-pre-line">{aiAnalysis}</p>
                 </div>
@@ -593,11 +593,11 @@ export function CestaCalculator() {
             ) : (
               <div className="space-y-3">
                 <div className="p-4 bg-neutral-50 rounded-xl space-y-2">
-                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Composicao / cesta</p>
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Composição / cesta</p>
                   {[
                     { label: 'Produtos internos', val: result.itemsCost / Math.max(quantity, 1) },
                     { label: 'Embalagem', val: result.packagingTotal / Math.max(quantity, 1) },
-                    { label: 'Mao de obra', val: result.laborCost / Math.max(quantity, 1) },
+                    { label: 'Mão de obra', val: result.laborCost / Math.max(quantity, 1) },
                     { label: 'Frete', val: result.deliveryCost / Math.max(quantity, 1) },
                   ].map(r => (
                     <div key={r.label} className="flex justify-between text-sm">
@@ -611,7 +611,7 @@ export function CestaCalculator() {
                   </div>
                   {result.commissionValue > 0 && (
                     <div className="flex justify-between text-xs text-amber-600">
-                      <span>Comissao vendedor</span>
+                      <span>Comissão vendedor</span>
                       <span className="font-bold">{formatCurrency(result.commissionValue)}</span>
                     </div>
                   )}
@@ -639,7 +639,7 @@ export function CestaCalculator() {
                 />
 
                 <ManualPriceCheck manualPrice={manualPrice} profit={result.profit} margin={result.margin}>
-                  Prejuizo de {formatCurrency(Math.abs(result.profit))}/cesta.
+                  Prejuízo de {formatCurrency(Math.abs(result.profit))}/cesta.
                 </ManualPriceCheck>
                 <ChannelProfitTable
                   price={manualPrice}
@@ -658,7 +658,7 @@ export function CestaCalculator() {
       <JobHistoryList
         title="Cestas Salvas"
         emptyText="Nenhuma cesta salva."
-        headers={['Cesta', 'Qtd', 'Preco', '']}
+        headers={['Cesta', 'Qtd', 'Preço', '']}
         noPrice="-"
         jobs={jobs}
         loading={loadingJobs}
@@ -672,11 +672,11 @@ export function CestaCalculator() {
           <Info className="w-4 h-4 text-amber-600" />
         </div>
         <div>
-          <p className="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p>
+          <p className="font-bold text-amber-900 text-sm mb-1">Sobre os cálculos</p>
           <p className="text-amber-700 text-xs leading-relaxed">
-            O custo total soma produtos internos, embalagem (celofane, fitas, tags), mao de obra de montagem e frete. Se
-            houver comissao de vendedor, o preco sugerido e ajustado para que a comissao nao reduza sua margem-alvo,
-            seguindo a mesma logica de taxa de canal usada no restante do sistema.
+            O custo total soma produtos internos, embalagem (celofane, fitas, tags), mão de obra de montagem e frete. Se
+            houver comissão de vendedor, o preço sugerido é ajustado para que a comissão não reduza sua margem-alvo,
+            seguindo a mesma lógica de taxa de canal usada no restante do sistema.
           </p>
         </div>
       </div>

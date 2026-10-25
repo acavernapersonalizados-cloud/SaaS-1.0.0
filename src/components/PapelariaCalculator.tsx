@@ -172,14 +172,14 @@ export function PapelariaCalculator() {
       const analysis = await analyzePapelariaPrice(jobName, result.totalCostUnit, price);
       setAiAnalysis(analysis || '');
     } catch {
-      setAiAnalysis('Erro ao analisar. Verifique sua conexao.');
+      setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
     }
     setAiLoading(false);
   };
 
   const handleSaveJob = async () => {
     if (!activeStore || !jobName || (totalTimeMin <= 0 && materialsCost <= 0)) {
-      addToast('Preencha nome, materiais e/ou tempos de producao.', 'error');
+      addToast('Preencha nome, materiais e/ou tempos de produção.', 'error');
       return;
     }
     setSavingJob(true);
@@ -221,7 +221,7 @@ export function PapelariaCalculator() {
     setDeletingId(id);
     try {
       await deleteDoc(doc(db, 'papelariaJobs', id));
-      addToast('Trabalho excluido.', 'success');
+      addToast('Trabalho excluído.', 'success');
     } catch (err) {
       handleFirestoreError(err, OperationType.DELETE, `papelariaJobs/${id}`);
     }
@@ -246,7 +246,7 @@ export function PapelariaCalculator() {
           <span className="text-xs font-bold uppercase tracking-widest">Calculadora</span>
         </div>
         <h1 className="text-3xl font-black text-neutral-900">Papelaria Personalizada</h1>
-        <p className="text-neutral-500 mt-1">Convites, cadernos, agendas, kits e trabalhos graficos.</p>
+        <p className="text-neutral-500 mt-1">Convites, cadernos, agendas, kits e trabalhos gráficos.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -281,7 +281,7 @@ export function PapelariaCalculator() {
 
             <div className="space-y-2 border-t border-neutral-100 pt-4">
               <p className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
-                Materiais (papel, adesivo, cartao, acetato, wire-o)
+                Materiais (papel, adesivo, cartão, acetato, wire-o)
               </p>
               {materials.map(m => (
                 <div key={m.id} className="flex items-center gap-2 p-2 bg-neutral-50 rounded-xl text-xs">
@@ -374,7 +374,7 @@ export function PapelariaCalculator() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-neutral-100 pt-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Laminacao (BOPP, Hot Stamping) - R$</label>
+                <label className="text-xs font-bold text-neutral-600">Laminação (BOPP, Hot Stamping) - R$</label>
                 <input
                   type="number"
                   min="0"
@@ -387,7 +387,7 @@ export function PapelariaCalculator() {
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">
-                  Encadernacao (Wire-o, Espiral, Elastico) - R$
+                  Encadernação (Wire-o, Espiral, Elástico) - R$
                 </label>
                 <input
                   type="number"
@@ -488,17 +488,17 @@ export function PapelariaCalculator() {
               onChange={e => setNotes(e.target.value)}
               rows={2}
               className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
-              placeholder="Observacoes (opcional)"
+              placeholder="Observações (opcional)"
             />
           </div>
 
           {result && (
             <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
               <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-                <DollarSign className="w-3.5 h-3.5" /> Preco de Venda
+                <DollarSign className="w-3.5 h-3.5" /> Preço de Venda
               </h2>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Seu preco por unidade (opcional)</label>
+                <label className="text-xs font-bold text-neutral-600">Seu preço por unidade (opcional)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold text-sm">
                     R$
@@ -538,7 +538,7 @@ export function PapelariaCalculator() {
                 <div className="p-4 bg-violet-50 rounded-2xl border border-violet-100 space-y-2">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-violet-600" />
-                    <span className="text-xs font-bold text-violet-700 uppercase">Analise IA</span>
+                    <span className="text-xs font-bold text-violet-700 uppercase">Análise IA</span>
                   </div>
                   <p className="text-sm text-violet-900 leading-relaxed whitespace-pre-line">{aiAnalysis}</p>
                 </div>
@@ -569,13 +569,13 @@ export function PapelariaCalculator() {
               <div className="space-y-3">
                 <div className="p-4 bg-neutral-50 rounded-xl space-y-2">
                   <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                    Composicao / unidade
+                    Composição / unidade
                   </p>
                   {[
                     { label: 'Materiais', val: result.materialsCost / Math.max(quantity, 1) },
-                    { label: 'Laminacao', val: result.laminationCost / Math.max(quantity, 1) },
-                    { label: 'Encadernacao', val: result.bindingCost / Math.max(quantity, 1) },
-                    { label: 'Mao de obra', val: result.laborCost / Math.max(quantity, 1) },
+                    { label: 'Laminação', val: result.laminationCost / Math.max(quantity, 1) },
+                    { label: 'Encadernação', val: result.bindingCost / Math.max(quantity, 1) },
+                    { label: 'Mão de obra', val: result.laborCost / Math.max(quantity, 1) },
                   ].map(r => (
                     <div key={r.label} className="flex justify-between text-sm">
                       <span className="text-neutral-600">{r.label}</span>
@@ -598,7 +598,7 @@ export function PapelariaCalculator() {
                 />
 
                 <ManualPriceCheck manualPrice={manualPrice} profit={result.profit} margin={result.margin}>
-                  Prejuizo de {formatCurrency(Math.abs(result.profit))}/un. Minimo:{' '}
+                  Prejuízo de {formatCurrency(Math.abs(result.profit))}/un. Mínimo:{' '}
                   {formatCurrency(result.totalCostUnit)}.
                 </ManualPriceCheck>
                 <ChannelProfitTable
@@ -617,7 +617,7 @@ export function PapelariaCalculator() {
       <JobHistoryList
         title="Trabalhos Salvos"
         emptyText="Nenhum trabalho salvo."
-        headers={['Trabalho', 'Qtd', 'Preco', '']}
+        headers={['Trabalho', 'Qtd', 'Preço', '']}
         noPrice="-"
         jobs={jobs}
         loading={loadingJobs}
@@ -631,11 +631,11 @@ export function PapelariaCalculator() {
           <Info className="w-4 h-4 text-amber-600" />
         </div>
         <div>
-          <p className="font-bold text-amber-900 text-sm mb-1">Sobre os calculos</p>
+          <p className="font-bold text-amber-900 text-sm mb-1">Sobre os cálculos</p>
           <p className="text-amber-700 text-xs leading-relaxed">
-            O custo total soma materiais (papel, adesivo, cartao etc.), acabamentos (laminacao, encadernacao) e mao de
-            obra (montagem + acabamento + embalagem). O custo e dividido pela quantidade final de kits/conjuntos para
-            chegar ao valor unitario.
+            O custo total soma materiais (papel, adesivo, cartão etc.), acabamentos (laminação, encadernação) e mão de
+            obra (montagem + acabamento + embalagem). O custo é dividido pela quantidade final de kits/conjuntos para
+            chegar ao valor unitário.
           </p>
         </div>
       </div>

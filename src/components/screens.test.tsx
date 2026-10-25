@@ -236,7 +236,7 @@ for (const [name, file, component] of [
       await show(await load());
       await type(field('Tempo de Montagem'), '60');
       expect(html()).toMatchSnapshot();
-      await type(field(name === 'Papelaria' ? 'Seu preco por unidade' : 'Seu preco por cesta'), '15');
+      await type(field(name === 'Papelaria' ? 'Seu preço por unidade' : 'Seu preço por cesta'), '15');
       expect(html()).toMatchSnapshot();
     });
   });

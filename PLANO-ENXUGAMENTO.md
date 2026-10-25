@@ -31,10 +31,10 @@
 **Onde paramos (25/10/2026):**
 
 - No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a correção do preço de compra (por unidade / total pago).
-- Novo (só ferramenta, nada no app): hook `.claude/hooks/block-repeat.mjs` bloqueia mensagem repetida em 7 dias
-  (ignora < 40 caracteres e comandos com barra; "REPETIR:" libera). Vale a partir da próxima sessão do Claude Code.
-- Auditoria só leitura entregue (130 matérias-primas com quantidade > 1): corrigir as erradas é com você, pela tela.
-- Falta você: reabrir o app nos aparelhos ("versão 24/10 22:39") e testar o hook mandando a mesma mensagem 2 vezes.
+- Feito, **não publicado**: acentos das telas de Papelaria e Cestas (Composição, Laminação, Mão de obra, Observações,
+  Preço, Análise, Prejuízo, café da manhã etc.; só textos, conferido que nada além de acentos mudou).
+- Hook `.claude/hooks/block-repeat.mjs` bloqueia mensagem repetida em 7 dias (vale a partir da próxima sessão).
+- Falta você: reabrir o app ("versão 24/10 22:39"), testar o hook e corrigir pela tela as matérias-primas erradas.
 - Regra em vigor: checkpoint completo após cada item. Código e tags no GitHub. Nenhum item aberto.
 - **Próximo passo: Etapa 8C** (itens 4, 7 e 8; mudam dados/preço), só com lista de riscos e o seu "aprovado".
 
@@ -570,13 +570,6 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 - **Meus próprios produtos na tabela de referência da sublimação** (24/10/2026): permitir acrescentar produtos com
   temperatura, tempo e pressão (por loja), além das 40 linhas da tabela sugestiva. Exige gravar no banco (coleção ou
   campo novo, com regra) e mostrar na busca e na escolha de produto.
-
-- **Acentos faltando nas telas das calculadoras** (24/10/2026): Papelaria e Cestas mostram "Composicao", "Laminacao",
-  "Mao de obra" e "Observacoes", e também "Encadernacao", "Comissao (vendedor)", "Preco de Venda", "Seu preco por
-  unidade/cesta", "Analise IA" e "tempos de producao" (`PapelariaCalculator.tsx`, `CestaCalculator.tsx`). Só textos.
-  Cuidado: os testes de tela procuram alguns desses rótulos (ex.: "Seu preco por unidade"), então precisam mudar
-  junto.
-
 
 - **Ícone do app instalado quebrado:** o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
 - **Deploy automático:** cadastrar os secrets `VITE_FIREBASE_*` no GitHub para o merge na `main` voltar a publicar.
