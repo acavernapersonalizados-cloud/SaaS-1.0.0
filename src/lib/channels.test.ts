@@ -20,17 +20,17 @@ describe('Tabela de canais', () => {
     expect(t).toEqual({
       'Venda Direta': [0, 0, 0],
       Instagram: [0, 0, 3.5],
-      Atacado: [5, 0, 0],
       Shopee: [20, 4, 0],
       'Mercado Livre': [18, 0, 0],
       iFood: [26.5, 0, 0],
       '99Food': [13, 0, 0],
     });
   });
-  it('não tem Elo7 nem Keeta', () => {
+  it('não tem Elo7, Keeta nem Atacado (Etapa 8C: virou desconto por quantidade)', () => {
     const names = DEFAULT_SALES_CHANNELS.map(c => c.name.toLowerCase());
     expect(names).not.toContain('elo7');
     expect(names).not.toContain('keeta');
+    expect(names).not.toContain('atacado');
   });
   it('loja sem tabela gravada usa a padrão; com tabela, usa a dela', () => {
     expect(channelsOf(null)).toEqual(DEFAULT_SALES_CHANNELS);

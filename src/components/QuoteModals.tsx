@@ -219,6 +219,18 @@ export function AddItemModal({
                 {formatPercent(currentItemResults.margin)} · lucro {formatCurrency(currentItemResults.itemProfit)}
               </p>
             )}
+            {currentItemResults && currentItemResults.wholesaleDiscountPct > 0 && (
+              <p className="text-xs font-bold text-blue-700">
+                Atacado: −{formatPercent(currentItemResults.wholesaleDiscountPct)} pela quantidade (varejo{' '}
+                {formatCurrency(currentItemResults.retailBasePrice)}/un)
+              </p>
+            )}
+            {currentItemResults?.wholesaleFloorApplied && (
+              <p className="text-xs font-bold text-amber-700">
+                O desconto passaria do piso (custo × 1,30 + taxas): preço mantido no piso de{' '}
+                {formatCurrency(currentItemResults.basePrice)}/un.
+              </p>
+            )}
           </div>
           <button
             onClick={handleAddItem}

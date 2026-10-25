@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { CostBase, SalesChannel } from '../types';
+import { CostBase, SalesChannel, WholesaleTier } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, priceForMarkup, realMargin } from '../lib/pricingEngine';
 import { channelFees, channelsOf } from '../lib/channels';
+import {
+  MAX_WHOLESALE_DISCOUNT_PCT,
+  WHOLESALE_FLOOR_MARKUP_PCT,
+  normalizeWholesaleTiers,
+  wholesaleTierLabel,
+  wholesaleTiersOf,
+} from '../lib/wholesale';
 import { electricityRateOf } from '../lib/defaults';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -33,6 +40,18 @@ export function CostBaseSettings() {
   const [channels, setChannels] = useState<SalesChannel[]>(channelsOf(null));
   const setChannel = (i: number, patch: Partial<SalesChannel>) =>
     setChannels(prev => prev.map((c, j) => (j === i ? { ...c, ...patch } : c)));
+  // Faixas de atacado da loja (Etapa 8C); enquanto não são salvas, mostra as padrão.
+  const [tiers, setTiers] = useState<WholesaleTier[]>(wholesaleTiersOf(null));
+  const setTier = (i: number, patch: Partial<WholesaleTier>) =>
+    setTiers(prev => prev.map((t, j) => (j === i ? { ...t, ...patch } : t)));
+  // Rótulo da faixa ("10–29 un") pela ordem das faixas válidas; vazio enquanto a faixa é inválida.
+  const tierLabel = (t: WholesaleTier) => {
+    const sorted = normalizeWholesaleTiers(tiers);
+    return wholesaleTierLabel(
+      sorted,
+      sorted.findIndex(n => n.minQty === Math.floor(Number(t.minQty) || 0)),
+    );
+  };
 
   useEffect(() => {
     if (!activeStore) {
@@ -49,10 +68,12 @@ export function CostBaseSettings() {
         setMarkup(round2(markupOf(data)));
         setElectricityRate(electricityRateOf(data));
         setChannels(channelsOf(data));
+        setTiers(wholesaleTiersOf(data));
       } else {
         setMarkup(0);
         setElectricityRate(electricityRateOf(null));
         setChannels(channelsOf(null));
+        setTiers(wholesaleTiersOf(null));
         setCosts({
           fixedCosts: 0,
           productiveHours: 0,
@@ -90,6 +111,7 @@ export function CostBaseSettings() {
         profitGoal,
         electricityRate: electricityRateOf({ electricityRate }),
         salesChannels,
+        wholesaleTiers: normalizeWholesaleTiers(tiers),
         storeId: activeStore.id,
       };
       await setDoc(doc(db, 'costBases', activeStore.id), updatedCosts);
@@ -358,6 +380,74 @@ export function CostBaseSettings() {
             className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200"
           >
             <Plus className="w-4 h-4" /> Incluir canal
+          </button>
+        </div>
+
+        <div className="space-y-3 pt-6 border-t border-neutral-100">
+          <div>
+            <h2 className="text-sm font-bold text-neutral-700">Desconto de atacado (por quantidade)</h2>
+            <p className="text-[10px] text-neutral-400">
+              Desconto sobre o preço de varejo de cada item do orçamento, pela quantidade, em qualquer canal. O preço
+              nunca fica abaixo do piso: custo × {1 + WHOLESALE_FLOOR_MARKUP_PCT / 100} + taxas do canal.
+              {!costs.wholesaleTiers?.length && ' Valores padrão: confira e salve para gravar as faixas desta loja.'}
+            </p>
+          </div>
+          <table className="w-full text-sm max-w-md">
+            <thead>
+              <tr className="text-left text-[10px] font-bold uppercase text-neutral-400">
+                <th className="py-2 pr-2">A partir de (un)</th>
+                <th className="py-2 pr-2">Desconto %</th>
+                <th className="py-2 pr-2">Faixa</th>
+                <th className="py-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {tiers.map((t, i) => (
+                <tr key={i} className="border-t border-neutral-100">
+                  <td className="py-1 pr-2 w-28">
+                    <input
+                      type="number"
+                      min={2}
+                      step={1}
+                      aria-label={`Quantidade mínima da faixa ${i + 1}`}
+                      className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                      value={t.minQty}
+                      onChange={e => setTier(i, { minQty: Number(e.target.value) })}
+                    />
+                  </td>
+                  <td className="py-1 pr-2 w-28">
+                    <input
+                      type="number"
+                      min={0}
+                      max={MAX_WHOLESALE_DISCOUNT_PCT}
+                      step="0.5"
+                      aria-label={`Desconto da faixa ${i + 1}`}
+                      className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                      value={t.discountPct}
+                      onChange={e => setTier(i, { discountPct: Number(e.target.value) })}
+                    />
+                  </td>
+                  <td className="py-1 pr-2 whitespace-nowrap text-xs text-neutral-500">{tierLabel(t)}</td>
+                  <td className="py-1 text-right">
+                    <button
+                      type="button"
+                      title="Excluir faixa"
+                      onClick={() => setTiers(prev => prev.filter((_, j) => j !== i))}
+                      className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            type="button"
+            onClick={() => setTiers(prev => [...prev, { minQty: 0, discountPct: 0 }])}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200"
+          >
+            <Plus className="w-4 h-4" /> Incluir faixa
           </button>
         </div>
 

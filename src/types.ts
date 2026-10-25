@@ -29,6 +29,14 @@ export interface CostBase {
   electricityRate?: number;
   /** Tabela de canais de venda da loja (Etapa 7). Sem ela, vale a padrão de lib/channels.ts. */
   salesChannels?: SalesChannel[];
+  /** Faixas de desconto de atacado por quantidade (Etapa 8C). Sem elas, valem as padrão de lib/wholesale.ts. */
+  wholesaleTiers?: WholesaleTier[];
+}
+
+/** Faixa de atacado: a partir de minQty unidades no item, desconto de discountPct% sobre o varejo. */
+export interface WholesaleTier {
+  minQty: number;
+  discountPct: number;
 }
 
 /** Canal de venda da tabela única da loja. */
@@ -264,6 +272,10 @@ export interface QuoteItem {
   /** Margem (%): até a Etapa 7, a margem pedida; depois, a margem real após a taxa do canal. */
   margin?: number;
   platformFee?: number;
+  /** Desconto de atacado (%) aplicado ao preço do item pela quantidade (Etapa 8C). */
+  wholesaleDiscountPct?: number;
+  /** O desconto passaria do piso (custo × 1,30 + taxas) e o preço ficou no piso. */
+  wholesaleFloorApplied?: boolean;
 }
 
 export interface Quote {

@@ -10,7 +10,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import type { Product, Material, CostBase, QuoteItem } from '../types';
+import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../types';
+import { applyWholesale } from './wholesale';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
 
@@ -80,6 +81,14 @@ export interface QuoteItemCalcResult {
   /** Margem real (%) depois do custo e da taxa do canal. */
   margin: number;
   platformFee: number;
+  /** Preço de varejo da unidade, antes do desconto de atacado (Etapa 8C). */
+  retailBasePrice: number;
+  /** Desconto de atacado (%) da faixa da quantidade; 0 abaixo da primeira faixa. */
+  wholesaleDiscountPct: number;
+  /** O desconto passaria do piso e o preço ficou no piso. */
+  wholesaleFloorApplied: boolean;
+  /** Piso do canal (custo × 1,30 + taxas) por unidade; null quando não há preço possível. */
+  wholesaleFloorPrice: number | null;
 }
 
 // ─── Classificação de rentabilidade ──────────────────────────────────────────
@@ -292,6 +301,8 @@ export function calcQuoteItem(
   channelFeePercent: number,
   /** Taxa fixa do canal por unidade (R$), ex.: Shopee R$ 4,00. */
   channelFixedFee = 0,
+  /** Faixas de atacado da loja (Etapa 8C); sem elas, não há desconto por quantidade. */
+  wholesaleTiers: WholesaleTier[] = [],
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
 
@@ -311,7 +322,19 @@ export function calcQuoteItem(
   const fixedFee = Math.max(0, Number(channelFixedFee) || 0);
   const markupPrice = priceForMarkup(totalProductionCost, markup, platformFeePercent, fixedFee);
   const invalidMargin = markupPrice === null;
-  const baseUnitPrice = markupPrice ?? 0;
+  const retailBasePrice = markupPrice ?? 0;
+
+  // Atacado (Etapa 8C): desconto pela quantidade do item sobre o preço de varejo, nunca abaixo
+  // do piso (custo × 1,30 + taxas do canal). Acabamentos e acessórios ficam sem desconto.
+  const wholesale = applyWholesale(
+    retailBasePrice,
+    totalProductionCost,
+    Number(item.quantity) || 1,
+    wholesaleTiers,
+    platformFeePercent,
+    fixedFee,
+  );
+  const baseUnitPrice = wholesale.price;
 
   const finishingValue = (product.finishingOptions || [])
     .filter(o => item.selectedFinishingIds?.includes(o.id))
@@ -373,6 +396,10 @@ export function calcQuoteItem(
     // Margem real: o que sobra do preço depois do custo e da taxa do canal.
     margin: totalPrice > 0 && isFinite(itemProfit) ? (itemProfit / totalPrice) * 100 : 0,
     platformFee: platformFeePercent,
+    retailBasePrice: isFinite(retailBasePrice) ? retailBasePrice : 0,
+    wholesaleDiscountPct: wholesale.discountPct,
+    wholesaleFloorApplied: wholesale.floorApplied,
+    wholesaleFloorPrice: wholesale.floorPrice,
   };
 }
 

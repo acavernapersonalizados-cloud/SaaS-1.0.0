@@ -3,6 +3,7 @@ import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } fr
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, CostBase, Quote, Client, QuoteItem } from '../types';
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
+import { wholesaleTiersOf } from '../lib/wholesale';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
@@ -160,7 +161,7 @@ export function Pricing() {
   ) => {
     const product = products.find(p => p.id === item.productId);
     if (!product || !costs) return null;
-    return calcQuoteItem(item, product, materials, costs, channelFeePct, channelFixedFee);
+    return calcQuoteItem(item, product, materials, costs, channelFeePct, channelFixedFee, wholesaleTiersOf(costs));
   };
 
   const currentItemResults = calculateItemCosts(currentItem);
@@ -200,6 +201,8 @@ export function Pricing() {
                 productionCost: currentItemResults.productionCost,
                 margin: currentItemResults.margin,
                 platformFee: currentItemResults.platformFee,
+                wholesaleDiscountPct: currentItemResults.wholesaleDiscountPct,
+                wholesaleFloorApplied: currentItemResults.wholesaleFloorApplied,
               }
             : item,
         ),
@@ -227,6 +230,8 @@ export function Pricing() {
         productionCost: currentItemResults.productionCost,
         margin: currentItemResults.margin,
         platformFee: currentItemResults.platformFee,
+        wholesaleDiscountPct: currentItemResults.wholesaleDiscountPct,
+        wholesaleFloorApplied: currentItemResults.wholesaleFloorApplied,
       };
 
       setQuoteItems([...quoteItems, newItem]);
@@ -387,6 +392,8 @@ export function Pricing() {
           productionCost: r.productionCost,
           margin: r.margin,
           platformFee: r.platformFee,
+          wholesaleDiscountPct: r.wholesaleDiscountPct,
+          wholesaleFloorApplied: r.wholesaleFloorApplied,
         })),
         totalAmount: isFinite(totalAmount) ? totalAmount : 0,
         totalProfit: isFinite(totalProfit) ? totalProfit : 0,

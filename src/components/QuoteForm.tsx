@@ -225,6 +225,16 @@ export function QuoteItemsCard({
                             +{formatCurrency(results?.accessoriesValue ?? 0)} aces.
                           </span>
                         )}
+                        {(results?.wholesaleDiscountPct ?? 0) > 0 && (
+                          <span className="px-1.5 py-0.5 bg-blue-100 rounded text-blue-700 font-bold">
+                            atacado −{formatPercent(results?.wholesaleDiscountPct ?? 0)}
+                          </span>
+                        )}
+                        {results?.wholesaleFloorApplied && (
+                          <span className="px-1.5 py-0.5 bg-amber-100 rounded text-amber-700 font-bold">
+                            no piso (custo × 1,30 + taxas)
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

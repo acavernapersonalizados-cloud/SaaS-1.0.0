@@ -306,6 +306,61 @@ describe('Precificação', () => {
     await click(generate());
     expect(html()).toMatchSnapshot();
   });
+
+  // Etapa 8C, item 3a — desconto de atacado por quantidade, com piso de custo × 1,30 + taxas.
+  const quantityInput = () =>
+    Array.from(document.querySelectorAll('label'))
+      .find(l => l.textContent?.trim() === 'Quantidade')!
+      .parentElement!.querySelector('input')!;
+  it('atacado: 30 unidades com 20% sobre o varejo, gravado no orçamento', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await type(quantityInput(), '9');
+    expect(document.body.textContent).not.toContain('Atacado: −');
+    await type(quantityInput(), '30');
+    expect(document.body.textContent).toContain('Atacado: −20,0% pela quantidade');
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithText('Confirmar Item'));
+    expect(document.body.textContent).toContain('atacado −20,0%');
+    await type(clientInput(), 'Maria Teste');
+    writes.length = 0;
+    await click(generate());
+    const quote = writes.find(w => w.path === 'quotes')!.data as { items: Array<Record<string, unknown>> };
+    expect(quote.items[0]).toMatchObject({ quantity: 30, wholesaleDiscountPct: 20, wholesaleFloorApplied: false });
+    expect(Number(quote.items[0].unitPrice)).toBeCloseTo(Number(quote.items[0].basePrice), 10);
+  });
+  it('atacado: markup personalizado baixo para no piso e avisa', async () => {
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await type(field('Markup personalizado'), '40');
+    await type(quantityInput(), '100');
+    expect(document.body.textContent).toContain('O desconto passaria do piso (custo × 1,30 + taxas)');
+    expect(html()).toMatchSnapshot();
+  });
+});
+
+describe('Base de Custos: faixas de atacado', () => {
+  const load = async () => React.createElement((await import('./CostBase')).CostBaseSettings);
+  it('mostra as faixas padrão e grava as editadas', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(await load());
+    expect(document.body.textContent).toContain('Desconto de atacado (por quantidade)');
+    expect(document.body.textContent).toContain('10–29 un');
+    expect(document.body.textContent).toContain('100+ un');
+    expect(html()).toMatchSnapshot();
+    await type(document.querySelector('input[aria-label="Desconto da faixa 1"]')!, '12');
+    writes.length = 0;
+    await click(buttonWithText('Salvar Configurações'));
+    const saved = writes.find(w => w.path.startsWith('costBases/'))!.data;
+    expect(saved.wholesaleTiers).toEqual([
+      { minQty: 10, discountPct: 12 },
+      { minQty: 30, discountPct: 20 },
+      { minQty: 100, discountPct: 30 },
+    ]);
+  });
 });
 
 // Etapa 8A, item 2 — Produtos: estados internos que a divisão de Products.tsx mexe

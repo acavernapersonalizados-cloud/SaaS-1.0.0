@@ -31,12 +31,12 @@
 **Onde paramos (25/10/2026):**
 
 - No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a correção do preço de compra (por unidade / total pago).
-- Feito, **não publicado**: acentos das telas de Papelaria e Cestas (Composição, Laminação, Mão de obra, Observações,
-  Preço, Análise, Prejuízo, café da manhã etc.; só textos, conferido que nada além de acentos mudou).
+- Feito, **não publicado**: acentos de Papelaria e Cestas; **8C-3a** (Atacado virou desconto por quantidade 10/20/30%,
+  editável na Base de Custos, com piso de custo × 1,30 + taxas e aviso).
 - Hook `.claude/hooks/block-repeat.mjs` bloqueia mensagem repetida em 7 dias (vale a partir da próxima sessão).
 - Falta você: reabrir o app ("versão 24/10 22:39"), testar o hook e corrigir pela tela as matérias-primas erradas.
-- Regra em vigor: checkpoint completo após cada item. Código e tags no GitHub. Nenhum item aberto.
-- **Próximo passo: Etapa 8C** (itens 4, 7 e 8; mudam dados/preço), só com lista de riscos e o seu "aprovado".
+- Regra em vigor: checkpoint completo após cada parte. Código no GitHub. Nenhum item aberto.
+- **Próximo passo: 8C-3b** (Pix/crédito no orçamento e Instagram 0%), já aprovada; depois 3c (catálogo).
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -444,8 +444,16 @@ Testes: 155 → 157.
 |---|---|---|
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
-| **8C** | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal | Mudam dados/preço: só com comparação antes/depois aprovada |
+| **8C** — 3a ✅ **feita** (25/10/2026), não publicada | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
 | **8D** — 8D-1 ✅ **feita e publicada** (tag `etapa-8d1-ok`); 8D-2 ✅ **feita e publicada** (tag `etapa-8d2-ok`) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
+
+**Resultado da 8C, parte 3a (atacado por quantidade):** o canal Atacado (+5%) saiu da tabela padrão (nenhuma loja tinha
+tabela gravada nem orçamento com Atacado). Agora cada item do orçamento, em qualquer canal, tem desconto pela quantidade
+sobre o preço de varejo: 10–29 un = 10%, 30–99 = 20%, 100+ = 30%, editável na Base de Custos (`wholesaleTiers`; sem
+gravar, valem as padrão de `lib/wholesale.ts`). Piso: custo × 1,30 + taxas do canal, nunca acima do varejo; quando o
+desconto passa do piso, usa o piso e mostra aviso. Acabamentos e acessórios ficam sem desconto. Os itens gravam
+`wholesaleDiscountPct` e `wholesaleFloorApplied`. Com os dados reais (backup de 25/10), o piso não é atingido em nenhum
+dos 73 produtos. Testes: 205 → 220; fotos das telas: só saíram a opção, a linha e a coluna "Atacado" (408 linhas).
 
 A numeração dos itens é a da lista apresentada em 24/10/2026 (ordem abaixo).
 
