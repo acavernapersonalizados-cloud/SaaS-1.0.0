@@ -30,13 +30,14 @@
 
 **Onde paramos (25/10/2026):**
 
-- No ar, versão "24/10 22:15": 8A, 8B, 8D-1 e 8D-2.
-- **Correção do preço de compra feita** (tag `preco-compra-ok`), **não publicada**: Matéria-prima e Registrar Compra
-  perguntam se o valor é "preço por unidade" ou "valor total pago" e mostram "= R$ X por unidade · total R$ Y". O que é
-  gravado não muda. Só site (sem regras do banco).
-- Auditoria (só leitura) entregue: 130 matérias-primas com quantidade > 1 e os produtos de cada uma, para você
-  conferir quais foram cadastradas com o preço de uma unidade.
-- **Próximo passo:** testar a correção no emulador e publicar (só o site) quando você pedir; depois **8C**, só depois do
+- No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a **correção do preço de compra** (só o site; regras do banco
+  sem mudança): Matéria-prima e Registrar Compra perguntam se o valor é "preço por unidade" ou "valor total pago" e
+  mostram "= R$ X por unidade · total R$ Y". O que é gravado não mudou.
+- Auditoria (só leitura) entregue: 130 matérias-primas com quantidade > 1 e os produtos de cada uma. Corrigir as
+  cadastradas com o preço de uma unidade é com você, pela tela (editar e escolher "por unidade").
+- Código e tags (até `preco-compra-ok`) no GitHub.
+- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora") e conferir "versão 24/10 22:39".
+- **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada), só depois do
   seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
@@ -541,7 +542,7 @@ Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pres
 
 ### Correção urgente — preço de compra por unidade ou total (25/10/2026)
 
-**✅ Feita, tag `preco-compra-ok`, não publicada.** O "Preço de Compra" da Matéria-prima sempre foi tratado como o
+**✅ Feita, tag `preco-compra-ok`, publicada em 25/10/2026 (só o site; versão "24/10 22:39").** O "Preço de Compra" da Matéria-prima sempre foi tratado como o
 valor TOTAL do lote, mas o nome levava a digitar o preço de UMA unidade (R$ 9 para 10 canecas virava R$ 0,90 cada).
 
 | Item | Resultado |
