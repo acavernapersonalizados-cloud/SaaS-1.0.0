@@ -27,6 +27,7 @@
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
 | 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 8C pendente. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, gerador de anúncio com IA, painel de estoque, Mercado Livre (pedidos e anúncios) e, por último, buscador de tendências. Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
 
 **Onde paramos (25/10/2026):**
 
@@ -34,7 +35,7 @@
   **8C item 3** (atacado 10/20/30% com piso; Pix e crédito = Pix ÷ 0,95, Instagram 0%; catálogo Pix/crédito/os dois).
 - Item 3 testado por você no emulador (orçamento com 15 un, Pix/crédito, PDF, catálogo, acentos): OK.
 - Falta você: reabrir o app no site, testar o hook e corrigir pela tela as matérias-primas erradas.
-- Código no GitHub. Nenhum item aberto.
+- Código no GitHub. Nenhum item aberto. Etapa 10 (Ferramentas de venda) registrada, só planejamento.
 - **Próximo passo:** publicar quando você pedir; depois, 8C itens 4 e 8, só com lista de riscos e "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
@@ -583,6 +584,31 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
   encontradas, com as fontes**.
 - **Nada é alterado no app sem a sua aprovação.**
 
+### Etapa 10 — Ferramentas de venda
+
+**Registrada em 25/10/2026. Só começa depois da Etapa 9. Por enquanto é só planejamento:** cada item terá a lista
+de riscos e o "aprovado" antes de começar.
+
+Inspirada no STL Seller do STLFlix (R$ 99,90/mês), que tem 5 módulos: Finder, My Ads, Calculadora, Pedidos e
+Estoque. A Calculadora já existe aqui, mais completa (3D com G-code, Laser, Papelaria, Cestas, Sublimação, tarifa de
+energia e tabela de canais). O objetivo é ter o resto dentro do app, sem pagar ferramenta de fora.
+
+Ordem:
+
+1. **Chamada do Gemini no servidor** (Cloud Functions). É o item de segurança do Estacionamento: hoje a chave vai no
+   código do navegador e qualquer um pode copiá-la. Exige o plano Blaze do Firebase (cobrança por uso). É o mesmo
+   servidor que o Mercado Livre vai exigir no item 4.
+2. **Gerador de anúncio com IA:** a partir de um produto do Catálogo, gera título, descrição e texto para Instagram e
+   WhatsApp. Aproveita o `rewriteDescription` que já existe. Imagens com IA só depois, porque cobram por imagem.
+   Vídeo fica de fora (custo alto).
+3. **Painel de estoque:** cards com o que está acabando (abaixo do mínimo) e o que já zerou. Só tela, sem mudar o
+   banco.
+4. **Mercado Livre:** a comissão automática é da Etapa 9 e é reaproveitada aqui. Depois vem puxar os pedidos para o
+   app e, por último, publicar anúncios direto do Catálogo. Exige login do Mercado Livre (OAuth) feito pelo servidor.
+   A Shopee fica para depois, porque exige aprovação como parceiro.
+5. **Buscador de tendências** (o que está vendendo no Mercado Livre): só se as vendas no Mercado Livre ficarem
+   fortes. A busca deles exige login de aplicativo e tem limite de uso, e para ateliê vale menos que para 3D.
+
 ---
 
 ## 7. Estacionamento (não é enxugamento — para depois)
@@ -600,7 +626,7 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 - **Notificação real ao aprovar usuário** (e-mail ou WhatsApp). O T11 só remove a notificação falsa.
 - **Estatísticas do cliente** calculadas no servidor: o T1 calcula na tela, a partir dos orçamentos; levar para o servidor se ficar lento com muitos orçamentos.
 - **Margem padrão das calculadoras (60%):** avaliar um valor menor, agora que é margem sobre o preço.
-- **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor.
+- **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor. **Virou o item 1 da Etapa 10** (25/10/2026).
 - **`npm audit`:** a instalação limpa no GitHub mostrou 17 vulnerabilidades em dependências (4 moderadas, 13 altas) na versão antiga; rever na versão atual.
 - **Lista de Compras:** o registro de compra atualiza o estoque sem transação (`PurchaseList.tsx`), diferente do resto do app.
 - **Janela de exclusão de Clientes com largura `max-md`** (`Clients.tsx`): provável erro de digitação de `max-w-md`. Mantido igual na Etapa 4B, porque corrigir muda o visual.
