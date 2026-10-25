@@ -30,12 +30,11 @@
 
 **Onde paramos (25/10/2026):**
 
-- No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a correção do preço de compra (por unidade / total pago).
-- **8C item 3 (canais) pronto**, **não publicado** e **não testado no navegador** (só 228 testes, lint e build):
-  3a atacado 10/20/30% com piso; 3b Pix e crédito (Pix ÷ 0,95), Instagram 0%; 3c catálogo Pix/crédito/os dois.
-- Também não publicado: acentos de Papelaria e Cestas. Publicar = só o site (nenhuma regra do banco mudou).
-- Falta você: testar no navegador, reabrir o app, testar o hook e corrigir pela tela as matérias-primas erradas.
-- Código no GitHub (último: b5b3ecc). Nenhum item aberto. Parado aqui a seu pedido.
+- No ar (25/10/2026, só o site, `index-9CYzabst.js`): 8A, 8B, 8D, preço de compra, acentos de Papelaria e Cestas e
+  **8C item 3** (atacado 10/20/30% com piso; Pix e crédito = Pix ÷ 0,95, Instagram 0%; catálogo Pix/crédito/os dois).
+- Item 3 testado por você no emulador (orçamento com 15 un, Pix/crédito, PDF, catálogo, acentos): OK.
+- Falta você: reabrir o app no site, testar o hook e corrigir pela tela as matérias-primas erradas.
+- Código no GitHub. Nenhum item aberto.
 - **Próximo passo:** publicar quando você pedir; depois, 8C itens 4 e 8, só com lista de riscos e "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
