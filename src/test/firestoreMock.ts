@@ -86,9 +86,18 @@ export function onSnapshot(target: any, next: (snap: any) => void) {
 
 export const getDocs = async (q: any) => querySnap(run(q), q.name);
 export const getDoc = async (ref: any) => docSnap(findDoc(ref), ref);
-export const addDoc = async (col: any) => ({ id: 'novo-id', kind: 'doc', name: col.name });
-export const setDoc = async () => {};
-export const updateDoc = async () => {};
+/** Gravações feitas pela tela no teste (nada vai para banco nenhum), para conferir o que seria gravado. */
+export const writes: Array<{ op: 'add' | 'set' | 'update'; path: string; data: Data }> = [];
+export const addDoc = async (col: any, data?: Data) => {
+  writes.push({ op: 'add', path: col.name, data: data ?? {} });
+  return { id: 'novo-id', kind: 'doc', name: col.name };
+};
+export const setDoc = async (ref?: any, data?: Data) => {
+  writes.push({ op: 'set', path: `${ref?.name}/${ref?.id}`, data: data ?? {} });
+};
+export const updateDoc = async (ref?: any, data?: Data) => {
+  writes.push({ op: 'update', path: `${ref?.name}/${ref?.id}`, data: data ?? {} });
+};
 export const deleteDoc = async () => {};
 export const serverTimestamp = () => '2026-10-17T15:00:00.000Z';
 export const increment = (n: number) => n;

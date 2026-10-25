@@ -14,7 +14,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency, isLowStock } from '../lib/utils';
-import { isPackageMaterial, materialPurchaseQuantity, unitCostFromPurchase } from '../lib/materials';
+import { isPackageMaterial, materialPurchaseQuantity, PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -54,6 +54,9 @@ export function Materials() {
     stockQuantity: 0,
     minStockQuantity: 0,
   });
+  // Como o preço foi digitado: por unidade ou valor total pago. Começa sem escolha (não salva sem escolher);
+  // na edição abre em "valor total pago", que é o que está gravado.
+  const [priceMode, setPriceMode] = useState<PriceInputMode | null>(null);
 
   useEffect(() => {
     if (!activeStore) {
@@ -101,6 +104,10 @@ export function Materials() {
       addToast('Selecione uma loja antes de cadastrar materiais.', 'error');
       return;
     }
+    if (!priceMode) {
+      addToast('Escolha se o valor informado é o preço por unidade ou o valor total pago.', 'error');
+      return;
+    }
     if (!newMaterial.name || !newMaterial.purchasePrice) {
       addToast('Preencha o nome e um preço de compra maior que zero.', 'error');
       return;
@@ -117,12 +124,14 @@ export function Materials() {
     }
 
     const quantity = materialPurchaseQuantity(newMaterial);
-    const unitCost = unitCostFromPurchase(newMaterial.purchasePrice, quantity);
+    // Grava o mesmo de sempre: valor total pago e custo por unidade.
+    const { totalPrice, unitCost } = purchaseFromInput(priceMode, newMaterial.purchasePrice, quantity);
 
     try {
       if (editingMaterial) {
         await updateDoc(doc(db, 'materials', editingMaterial.id), {
           ...newMaterial,
+          purchasePrice: totalPrice,
           isPackage: isActuallyPackage,
           unitCost,
           purchaseQuantity: quantity,
@@ -135,6 +144,7 @@ export function Materials() {
       } else {
         await addDoc(collection(db, 'materials'), {
           ...newMaterial,
+          purchasePrice: totalPrice,
           isPackage: isActuallyPackage,
           storeId: activeStore.id,
           unitCost,
@@ -159,6 +169,7 @@ export function Materials() {
         minStockQuantity: 0,
       });
       setEditingMaterial(null);
+      setPriceMode(null);
       setIsModalOpen(false);
       addToast(editingMaterial ? 'Material atualizado com sucesso!' : 'Material cadastrado com sucesso!', 'success');
     } catch (error) {
@@ -184,8 +195,16 @@ export function Materials() {
       stockQuantity: material.stockQuantity || 0,
       minStockQuantity: material.minStockQuantity || 0,
     });
+    setPriceMode('total');
     setIsModalOpen(true);
   };
+
+  // Prévia ao vivo do que será gravado ("= R$ X por unidade · total R$ Y").
+  const priceUnits = materialPurchaseQuantity(newMaterial) || 0;
+  const pricePreview =
+    priceMode && Number(newMaterial.purchasePrice) > 0 && priceUnits > 0
+      ? purchaseFromInput(priceMode, Number(newMaterial.purchasePrice), priceUnits)
+      : null;
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -275,7 +294,10 @@ export function Materials() {
           <p className="text-neutral-500 mt-1">Gerencie seus insumos e custos unitários.</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setPriceMode(null);
+            setIsModalOpen(true);
+          }}
           className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm"
         >
           <PlusCircle className="w-5 h-5" />
@@ -426,6 +448,7 @@ export function Materials() {
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingMaterial(null);
+                  setPriceMode(null);
                   setNewMaterial({
                     name: '',
                     unit: 'un',
@@ -499,7 +522,13 @@ export function Materials() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Preço de Compra</label>
+                  <label className="text-sm font-bold text-neutral-700">
+                    {priceMode === 'unit'
+                      ? 'Preço por unidade (R$)'
+                      : priceMode === 'total'
+                        ? 'Valor total pago (R$)'
+                        : 'Preço (escolha abaixo)'}
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -511,6 +540,38 @@ export function Materials() {
                   />
                 </div>
               </div>
+
+              <fieldset className="space-y-2">
+                <legend className="text-sm font-bold text-neutral-700">Informar:</legend>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      ['unit', 'preço por unidade'],
+                      ['total', 'valor total pago'],
+                    ] as const
+                  ).map(([mode, label]) => (
+                    <label
+                      key={mode}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-bold cursor-pointer transition-all ${priceMode === mode ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="priceMode"
+                        value={mode}
+                        checked={priceMode === mode}
+                        onChange={() => setPriceMode(mode)}
+                        className="w-4 h-4"
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+                {!priceMode && (
+                  <p className="text-xs font-bold text-amber-700">
+                    Escolha se o valor digitado é o de uma unidade ou o total pago (obrigatório para salvar).
+                  </p>
+                )}
+              </fieldset>
 
               <div className="flex items-center gap-2 py-2">
                 <input
@@ -537,7 +598,7 @@ export function Materials() {
                     placeholder="Ex: 10"
                   />
                   <p className="text-xs text-neutral-500">
-                    O custo unitário será calculado dividindo o preço de compra por esta quantidade.
+                    O custo por item sai do valor informado acima (por unidade = por item do pacote).
                   </p>
                 </div>
               ) : (
@@ -553,6 +614,16 @@ export function Materials() {
                     placeholder="Ex: 10"
                   />
                 </div>
+              )}
+
+              {pricePreview && (
+                <p
+                  role="status"
+                  className="px-4 py-3 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-xl text-sm font-bold"
+                >
+                  = {formatCurrency(pricePreview.unitCost)} por unidade · total{' '}
+                  {formatCurrency(pricePreview.totalPrice)}
+                </p>
               )}
 
               <div className="grid grid-cols-2 gap-4">

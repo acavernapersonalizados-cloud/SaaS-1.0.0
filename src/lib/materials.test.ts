@@ -1,7 +1,7 @@
 // Custo unitário de compra — comportamento atual de Materials.tsx (cadastro) e
 // PurchaseList.tsx (registro de compra). Valores do CHECKLIST-TESTES.md, seções 7 e 16.
 import { describe, expect, it } from 'vitest';
-import { isPackageMaterial, materialPurchaseQuantity, unitCostFromPurchase } from './materials';
+import { isPackageMaterial, materialPurchaseQuantity, purchaseFromInput, unitCostFromPurchase } from './materials';
 import { packageSize } from './utils';
 
 describe('Cadastro de matéria-prima (seção 7)', () => {
@@ -45,5 +45,25 @@ describe('Registro de compra na Lista de Compras (seção 16)', () => {
     const units = 1 * packageSize({ unit: 'pct', packageQuantity: 100 });
     expect(units).toBe(100);
     expect(unitCostFromPurchase(25, units)).toBe(0.25);
+  });
+});
+
+// Seletor "Informar: preço por unidade / valor total pago": a mesma compra grava o mesmo nos dois modos.
+describe('Preço por unidade ou valor total pago', () => {
+  it('10 canecas de R$ 9: "por unidade" R$ 9 = "total pago" R$ 90 → total R$ 90 e R$ 9,00/un', () => {
+    expect(purchaseFromInput('unit', 9, 10)).toEqual({ totalPrice: 90, unitCost: 9 });
+    expect(purchaseFromInput('total', 90, 10)).toEqual({ totalPrice: 90, unitCost: 9 });
+  });
+  it('"total pago" é o comportamento de sempre (TESTE MDF: R$ 60 por 4 → R$ 15)', () => {
+    expect(purchaseFromInput('total', 60, 4)).toEqual({ totalPrice: 60, unitCost: unitCostFromPurchase(60, 4) });
+  });
+  it('pacote: por unidade = por item do pacote (Argola R$ 0,25 × 100 = R$ 25)', () => {
+    const argola = { unit: 'pct', purchaseQuantity: 1, packageQuantity: 100 };
+    const units = materialPurchaseQuantity(argola);
+    expect(purchaseFromInput('unit', 0.25, units)).toEqual({ totalPrice: 25, unitCost: 0.25 });
+    expect(purchaseFromInput('total', 25, units)).toEqual({ totalPrice: 25, unitCost: 0.25 });
+  });
+  it('sem quantidade: custo 0 no total (não divide por zero)', () => {
+    expect(purchaseFromInput('total', 50, 0)).toEqual({ totalPrice: 50, unitCost: 0 });
   });
 });

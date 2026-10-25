@@ -15,3 +15,17 @@ export const materialPurchaseQuantity = (m: PurchaseFields) =>
 
 /** Custo unitário: valor pago ÷ unidades compradas. */
 export const unitCostFromPurchase = (totalPrice: number, units: number) => totalPrice / units;
+
+/** Como o preço foi informado na tela: o de UMA unidade ou o valor TOTAL pago (Matéria-prima e Lista de Compras). */
+export type PriceInputMode = 'unit' | 'total';
+
+/**
+ * O que é gravado a partir do valor digitado (o mesmo de sempre: valor total pago e custo por unidade).
+ * "Por unidade": total = valor × unidades. "Total pago": custo = valor ÷ unidades.
+ */
+export function purchaseFromInput(mode: PriceInputMode, typed: number, units: number) {
+  const value = Number(typed) || 0;
+  const qty = Number(units) || 0;
+  if (mode === 'unit') return { totalPrice: value * qty, unitCost: value };
+  return { totalPrice: value, unitCost: qty > 0 ? unitCostFromPurchase(value, qty) : 0 };
+}

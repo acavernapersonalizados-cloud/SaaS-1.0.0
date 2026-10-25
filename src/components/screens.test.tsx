@@ -555,3 +555,70 @@ describe('Sublimação', () => {
     expect(document.body.textContent).toContain('Nenhum produto encontrado.');
   });
 });
+
+// Matéria-prima: "Informar: preço por unidade / valor total pago" (urgente de 25/10/2026). O que é gravado continua
+// igual: a mesma compra informada dos dois jeitos grava os mesmos valores.
+describe('Matéria-prima: preço por unidade ou valor total pago', () => {
+  const load = async () => React.createElement((await import('./Materials')).Materials);
+  const submit = async () => {
+    fireEvent.submit(document.querySelector('form')!);
+    await flush();
+  };
+  const radio = (mode: string) => document.querySelector(`input[name="priceMode"][value="${mode}"]`)!;
+  const preview = () => document.querySelector('[role="status"]')?.textContent?.replace(/\s/g, ' ').trim();
+  const fillNew = async (price: string) => {
+    await click(buttonWithText('Novo Insumo'));
+    await type(field('Nome do Material'), 'TESTE Caneca branca');
+    await type(field('Preço'), price);
+    await type(field('Quantidade Comprada'), '10');
+    await type(field('Estoque Atual'), '10');
+  };
+  const saved = (data: Record<string, unknown>) => ({
+    purchasePrice: data.purchasePrice,
+    purchaseQuantity: data.purchaseQuantity,
+    unitCost: data.unitCost,
+  });
+
+  it('novo: sem escolha não grava; "por unidade" R$ 9 × 10 grava o mesmo que "total pago" R$ 90', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await fillNew('9');
+    expect(document.body.textContent).toContain('obrigatório para salvar');
+    expect(html()).toMatchSnapshot();
+    await submit();
+    expect(writes).toHaveLength(0); // sem escolher, não grava
+    // O erro de antes fica visível: R$ 9 como total de 10 canecas = R$ 0,90 cada.
+    await click(radio('total'));
+    expect(preview()).toBe('= R$ 0,90 por unidade · total R$ 9,00');
+    await click(radio('unit'));
+    expect(preview()).toBe('= R$ 9,00 por unidade · total R$ 90,00');
+    expect(html()).toMatchSnapshot();
+    await submit();
+    expect(writes).toHaveLength(1);
+    const byUnit = saved(writes[0].data);
+    expect(byUnit).toEqual({ purchasePrice: 90, purchaseQuantity: 10, unitCost: 9 });
+
+    // A mesma compra informada como valor total pago.
+    writes.length = 0;
+    await fillNew('90');
+    await click(radio('total'));
+    expect(preview()).toBe('= R$ 9,00 por unidade · total R$ 90,00');
+    await submit();
+    expect(saved(writes[0].data)).toEqual(byUnit);
+  });
+
+  it('edição: abre em "valor total pago" com o valor gravado e grava igual (TESTE MDF: R$ 60 por 4)', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    const mdfRow = Array.from(document.querySelectorAll('tr')).find(tr => tr.textContent?.includes('TESTE MDF 3mm'))!;
+    await click(mdfRow.querySelector('svg.lucide-pen')!.closest('button')!);
+    expect((radio('total') as HTMLInputElement).checked).toBe(true);
+    expect((field('Valor total pago') as HTMLInputElement).value).toBe('60');
+    expect(preview()).toBe('= R$ 15,00 por unidade · total R$ 60,00');
+    await submit();
+    expect(writes[0].op).toBe('update');
+    expect(saved(writes[0].data)).toEqual({ purchasePrice: 60, purchaseQuantity: 4, unitCost: 15 });
+  });
+});
