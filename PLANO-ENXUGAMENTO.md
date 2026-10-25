@@ -31,11 +31,11 @@
 **Onde paramos (25/10/2026):**
 
 - No ar, versão "24/10 22:39": 8A, 8B, 8D-1, 8D-2 e a correção do preço de compra (por unidade / total pago).
-- Código e tags (até `preco-compra-ok`) no GitHub. Nenhum item aberto; tudo testado (205 testes), lint e build ok.
-- Auditoria só leitura entregue (130 matérias-primas com quantidade > 1 e seus produtos): corrigir as cadastradas com
-  o preço de uma unidade é com você, pela tela (editar e escolher "por unidade").
-- Falta você: reabrir o app nos aparelhos e conferir "versão 24/10 22:39".
-- Regra em vigor: checkpoint completo após cada item (testes, lint, build, commit, GitHub, este resumo, save-session).
+- Novo (só ferramenta, nada no app): hook `.claude/hooks/block-repeat.mjs` bloqueia mensagem repetida em 7 dias
+  (ignora < 40 caracteres e comandos com barra; "REPETIR:" libera). Vale a partir da próxima sessão do Claude Code.
+- Auditoria só leitura entregue (130 matérias-primas com quantidade > 1): corrigir as erradas é com você, pela tela.
+- Falta você: reabrir o app nos aparelhos ("versão 24/10 22:39") e testar o hook mandando a mesma mensagem 2 vezes.
+- Regra em vigor: checkpoint completo após cada item. Código e tags no GitHub. Nenhum item aberto.
 - **Próximo passo: Etapa 8C** (itens 4, 7 e 8; mudam dados/preço), só com lista de riscos e o seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.

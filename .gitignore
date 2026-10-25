@@ -40,3 +40,6 @@ npm-debug.log*
 
 # Cache da Firebase CLI (muda a cada deploy)
 .firebase/
+
+# Hash das mensagens enviadas ao Claude (hook que bloqueia mensagem repetida)
+.claude/prompt-history.json
