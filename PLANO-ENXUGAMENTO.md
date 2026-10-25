@@ -27,7 +27,7 @@
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
 | 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 8C pendente. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
-| 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, gerador de anúncio com IA, painel de estoque, Mercado Livre (pedidos e anúncios) e, por último, buscador de tendências. Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
+| 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, buscador de tendências, Caixa de Ideias (DM do Instagram), gerador de anúncio com IA, painel de estoque e Mercado Livre (pedidos e anúncios). Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
 
 **Onde paramos (25/10/2026):**
 
@@ -598,16 +598,31 @@ Ordem:
 1. **Chamada do Gemini no servidor** (Cloud Functions). É o item de segurança do Estacionamento: hoje a chave vai no
    código do navegador e qualquer um pode copiá-la. Exige o plano Blaze do Firebase (cobrança por uso). É o mesmo
    servidor que o Mercado Livre vai exigir no item 4.
-2. **Gerador de anúncio com IA:** a partir de um produto do Catálogo, gera título, descrição e texto para Instagram e
+2. **Buscador de tendências** (subiu do item 5 em 25/10/2026, a seu pedido: saber o que vende é a maior dor do
+   negócio). Duas partes:
+   - **Tendências do Mercado Livre:** buscas que mais cresceram e mais populares, por categoria (a página pública
+     `tendencias.mercadolivre.com.br` já mostra isso; pela API oficial, exige login de aplicativo e tem limite de uso).
+   - **Pesquisa mensal assistida por IA:** o que está em alta e o que vem nos próximos 3 meses (datas comemorativas,
+     Shopee, Instagram, Pinterest, Google), com os links das fontes. Usa o mesmo mecanismo da verificação mensal da
+     Etapa 9. Modelo: a página "Radar de Vendas do Ateliê" feita em 25/10/2026.
+   - Cada tendência já sai com o preço calculado pela calculadora certa, para ver se a margem fecha no preço da
+     concorrência.
+3. **Caixa de Ideias** (registrada em 25/10/2026): guarda os produtos que pessoas próximas mandam pela DM do
+   Instagram, com foto ou print, link, quem mandou e observação. Colunas: Chegou → Vale a pena? → Preço calculado →
+   Testar → Virou produto ou Descartada.
+   - **Android:** o app instalado aparece no "Compartilhar" do Instagram (Web Share Target no manifesto do PWA) e a
+     ideia entra direto. No iPhone isso não existe: colar o link ou subir o print.
+   - **IA lendo o print:** diz o que é o produto, qual calculadora usar e sugere materiais e preço. Depende do item 1.
+   - Ler as DMs automaticamente fica de fora: exige conta comercial, aplicativo aprovado pela Meta e servidor.
+   - Exige coleção nova no banco (com regra) e guardar imagens no Storage.
+4. **Gerador de anúncio com IA:** a partir de um produto do Catálogo, gera título, descrição e texto para Instagram e
    WhatsApp. Aproveita o `rewriteDescription` que já existe. Imagens com IA só depois, porque cobram por imagem.
    Vídeo fica de fora (custo alto).
-3. **Painel de estoque:** cards com o que está acabando (abaixo do mínimo) e o que já zerou. Só tela, sem mudar o
+5. **Painel de estoque:** cards com o que está acabando (abaixo do mínimo) e o que já zerou. Só tela, sem mudar o
    banco.
-4. **Mercado Livre:** a comissão automática é da Etapa 9 e é reaproveitada aqui. Depois vem puxar os pedidos para o
+6. **Mercado Livre:** a comissão automática é da Etapa 9 e é reaproveitada aqui. Depois vem puxar os pedidos para o
    app e, por último, publicar anúncios direto do Catálogo. Exige login do Mercado Livre (OAuth) feito pelo servidor.
    A Shopee fica para depois, porque exige aprovação como parceiro.
-5. **Buscador de tendências** (o que está vendendo no Mercado Livre): só se as vendas no Mercado Livre ficarem
-   fortes. A busca deles exige login de aplicativo e tem limite de uso, e para ateliê vale menos que para 3D.
 
 ---
 
