@@ -28,17 +28,15 @@
 | 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 8C pendente. |
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 
-**Onde paramos (24/10/2026):**
+**Onde paramos (25/10/2026):**
 
-- No ar, versão "24/10 22:15": 8A, 8B, 8D-1 e **8D-2** (testado por você no emulador). Publicação do 8D-2: **regras do
-  banco primeiro** (coleção `sublimationJobs`), **depois o site**.
-- Sublimação completa: máquinas, temperatura/tempo/pressão da tabela, tabela de referência, custo da peça (peça base,
-  papel + tinta, aquecimento rateado, energia, mão de obra, embalagem, outros), preço sugerido, canal, preço manual,
-  "Lucro em cada canal" e trabalhos salvos. Exemplo à mão: caneca de porcelana na Sun Special = custo R$ 17,30,
-  sugerido R$ 43,26.
-- Código e tags (até `etapa-8d2-ok`) no GitHub.
-- Falta você: fechar e reabrir o app nos aparelhos (ou "Atualizar agora") e conferir "versão 24/10 22:15".
-- **Próximo passo: Etapa 8C** (itens 4, 7 e 8: mudam dados/preço, com comparação antes/depois aprovada), só depois do
+- No ar, versão "24/10 22:15": 8A, 8B, 8D-1 e 8D-2.
+- **Correção do preço de compra feita** (tag `preco-compra-ok`), **não publicada**: Matéria-prima e Registrar Compra
+  perguntam se o valor é "preço por unidade" ou "valor total pago" e mostram "= R$ X por unidade · total R$ Y". O que é
+  gravado não muda. Só site (sem regras do banco).
+- Auditoria (só leitura) entregue: 130 matérias-primas com quantidade > 1 e os produtos de cada uma, para você
+  conferir quais foram cadastradas com o preço de uma unidade.
+- **Próximo passo:** testar a correção no emulador e publicar (só o site) quando você pedir; depois **8C**, só depois do
   seu "aprovado".
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
@@ -540,6 +538,20 @@ Tabela com 40 combinações de equipamento × produto (temperatura, tempo e pres
   - onde guardar as máquinas (cadastro, como no Laser e na 3D).
 - A tabela é sugestiva (o fabricante avisa que varia conforme o material): mostrar o aviso e as dicas do arquivo na
   tela.
+
+### Correção urgente — preço de compra por unidade ou total (25/10/2026)
+
+**✅ Feita, tag `preco-compra-ok`, não publicada.** O "Preço de Compra" da Matéria-prima sempre foi tratado como o
+valor TOTAL do lote, mas o nome levava a digitar o preço de UMA unidade (R$ 9 para 10 canecas virava R$ 0,90 cada).
+
+| Item | Resultado |
+|---|---|
+| 3. Auditoria (só leitura) | Backup de 24/10 22:25: 130 matérias-primas com quantidade > 1 (T&N 66, A Caverna 64), com preço, quantidade, custo por unidade, o custo "se fosse por unidade" e os produtos que usam cada uma. Relatório entregue a você; nada foi alterado. O custo gravado bate com preço ÷ quantidade em todas |
+| 1. Matéria-prima | Seletor "Informar: preço por unidade / valor total pago" (começa sem escolha e não salva sem ela; na edição abre em "valor total pago" com o valor gravado) e prévia "= R$ X por unidade · total R$ Y". Grava os mesmos campos (preço total, quantidade, custo por unidade) |
+| 2. Lista de Compras | Mesmo seletor e prévia no "Registrar Compra"; preço abre vazio e a sugestão (último preço pago) entra ao escolher o modo. Grava o mesmo de sempre |
+
+Corrigir as matérias-primas cadastradas erradas é com você, pela tela (editar e escolher "por unidade"): isso muda o
+custo e o preço sugerido dos produtos que usam cada uma (lista na auditoria). Testes: 197 → 205.
 
 ### Etapa 9 — Monitor de taxas
 
