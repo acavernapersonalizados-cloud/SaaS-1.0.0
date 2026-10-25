@@ -622,3 +622,58 @@ describe('Matéria-prima: preço por unidade ou valor total pago', () => {
     expect(saved(writes[0].data)).toEqual({ purchasePrice: 60, purchaseQuantity: 4, unitCost: 15 });
   });
 });
+
+// Lista de Compras → Registrar Compra: o mesmo seletor. Seção 16.7 do checklist: 8 m de fita por R$ 40 = R$ 5,00/m,
+// informado dos dois jeitos, grava o mesmo (purchasedPrice = total pago; unitCost = custo por metro).
+describe('Lista de Compras: preço por unidade ou valor total pago', () => {
+  const load = async () => React.createElement((await import('./PurchaseList')).PurchaseList);
+  const radio = (mode: string) => document.querySelector(`input[name="purchasePriceMode"][value="${mode}"]`)!;
+  const preview = () => document.querySelector('[role="status"]')?.textContent?.replace(/\s/g, ' ').trim();
+  const priceInput = () => document.querySelector('input[aria-label="Preço da compra"]') as HTMLInputElement;
+  const register = async (mode: 'unit' | 'total', price: string) => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await click(buttonWithText('Comprado'));
+    await click(radio(mode));
+    await type(priceInput(), price);
+    const shown = preview();
+    await click(buttonWithText('Confirmar'));
+    const list = writes.find(w => w.path === 'purchaseList/compra-1')!.data;
+    const mat = writes.find(w => w.path === 'materials/fita')!.data;
+    return {
+      shown,
+      saved: { purchasedPrice: list.purchasedPrice, purchasedQty: list.purchasedQty, unitCost: mat.unitCost },
+    };
+  };
+
+  it('abre sem modo e com o preço vazio; com preço e sem modo não registra; o modo traz a sugestão', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await click(buttonWithText('Comprado'));
+    expect(priceInput().value).toBe('');
+    expect(document.body.textContent).toContain('obrigatório para registrar com preço');
+    expect(html()).toMatchSnapshot();
+    await type(priceInput(), '40');
+    await click(buttonWithText('Confirmar'));
+    expect(writes).toHaveLength(0);
+    // Sem nada digitado, escolher o modo preenche com o último preço pago (R$ 1,20/m × 8 m).
+    await click(buttonWithText('Comprado'));
+    await click(radio('unit'));
+    expect(priceInput().value).toBe('1.2');
+    expect(preview()).toBe('= R$ 1,20 por unidade · total R$ 9,60');
+    await click(radio('total'));
+    expect(priceInput().value).toBe('9.6');
+  });
+
+  it('16.7: "total pago" R$ 40 e "por unidade" R$ 5 por 8 m gravam o mesmo (R$ 40, 8 m, R$ 5,00/m)', async () => {
+    const porTotal = await register('total', '40');
+    expect(porTotal.shown).toBe('= R$ 5,00 por unidade · total R$ 40,00');
+    expect(porTotal.saved).toEqual({ purchasedPrice: 40, purchasedQty: 8, unitCost: 5 });
+    cleanup();
+    const porUnidade = await register('unit', '5');
+    expect(porUnidade.shown).toBe('= R$ 5,00 por unidade · total R$ 40,00');
+    expect(porUnidade.saved).toEqual(porTotal.saved);
+  });
+});

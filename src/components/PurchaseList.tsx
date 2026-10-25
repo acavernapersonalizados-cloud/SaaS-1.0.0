@@ -3,7 +3,7 @@ import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
 import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
-import { unitCostFromPurchase } from '../lib/materials';
+import { PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import {
@@ -46,7 +46,15 @@ export function PurchaseList() {
 
   // Registro de compra
   const [purchasingItem, setPurchasingItem] = useState<PurchaseListItem | null>(null);
-  const [purchaseForm, setPurchaseForm] = useState({ qty: 0, price: 0, supplierId: '' });
+  // mode começa sem escolha; estUnit = último preço pago por item (sugestão); touched = preço já digitado.
+  const [purchaseForm, setPurchaseForm] = useState<{
+    qty: number;
+    price: number;
+    supplierId: string;
+    mode: PriceInputMode | null;
+    estUnit: number;
+    touched: boolean;
+  }>({ qty: 0, price: 0, supplierId: '', mode: null, estUnit: 0, touched: false });
   const [saving, setSaving] = useState(false);
 
   // ── Dados da loja ativa ───────────────────────────────────────────────────
@@ -254,19 +262,29 @@ export function PurchaseList() {
 
   const handleMarkPurchased = async () => {
     if (!purchasingItem || !activeStore) return;
+    if (purchaseForm.price > 0 && !purchaseForm.mode) {
+      addToast('Escolha se o valor informado é o preço por unidade ou o valor total pago.', 'error');
+      return;
+    }
     setSaving(true);
     try {
       const supplier = purchaseForm.supplierId ? suppliers.find(s => s.id === purchaseForm.supplierId) : null;
       const mat = materials.find(m => m.id === purchasingItem.materialId);
       // Material em pacote: o formulário pede pacotes, mas estoque e custo são por item.
       const purchasedUnits = purchaseForm.qty * packageSize(mat);
+      // Grava o mesmo de sempre: valor total pago e custo por item.
+      const { totalPrice, unitCost } = purchaseFromInput(
+        purchaseForm.mode ?? 'total',
+        purchaseForm.price,
+        purchasedUnits,
+      );
 
       await updateDoc(doc(db, 'purchaseList', purchasingItem.id), {
         storeId: activeStore.id,
         status: 'purchased',
         purchasedAt: new Date().toISOString(),
         purchasedQty: purchasedUnits,
-        purchasedPrice: purchaseForm.price,
+        purchasedPrice: totalPrice,
         supplierId: purchaseForm.supplierId || purchasingItem.supplierId || null,
         supplierName: supplier?.name || purchasingItem.supplierName || null,
       });
@@ -278,7 +296,7 @@ export function PurchaseList() {
             updatedAt: new Date().toISOString(),
           };
           if (purchaseForm.price > 0) {
-            updateData.unitCost = unitCostFromPurchase(purchaseForm.price, purchasedUnits);
+            updateData.unitCost = unitCost;
           }
           await updateDoc(doc(db, 'materials', purchasingItem.materialId), updateData);
         }
@@ -354,6 +372,18 @@ export function PurchaseList() {
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;
 
   const purchasePack = packageSize(materials.find(m => m.id === purchasingItem?.materialId));
+  const purchaseUnits = purchaseForm.qty * purchasePack;
+  const purchasePreview =
+    purchaseForm.mode && purchaseForm.price > 0 && purchaseUnits > 0
+      ? purchaseFromInput(purchaseForm.mode, purchaseForm.price, purchaseUnits)
+      : null;
+  const choosePurchaseMode = (mode: PriceInputMode) =>
+    setPurchaseForm(f => ({
+      ...f,
+      mode,
+      // Sem nada digitado ainda: preenche com a sugestão (último preço pago) no modo escolhido.
+      price: f.touched ? f.price : mode === 'unit' ? f.estUnit : f.estUnit * f.qty * purchasePack,
+    }));
   const notInList = materials.filter(m => !items.some(i => i.status === 'pending' && i.materialId === m.id));
 
   return (
@@ -584,10 +614,14 @@ export function PurchaseList() {
                               setPurchasingItem(r.item);
                               const pack = packageSize(materials.find(m => m.id === r.item.materialId));
                               const qty = pack > 1 ? Math.ceil(r.suggestedQty / pack) : r.suggestedQty;
+                              // Preço vazio até escolher como informar; ao escolher, entra a sugestão nesse modo.
                               setPurchaseForm({
                                 qty,
-                                price: (Number(r.item.lastPricePaid) || 0) * qty * pack,
+                                price: 0,
                                 supplierId: r.item.supplierId || '',
+                                mode: null,
+                                estUnit: Number(r.item.lastPricePaid) || 0,
+                                touched: false,
                               });
                             }}
                             className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors"
@@ -695,20 +729,66 @@ export function PurchaseList() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-700">Valor total pago (R$)</label>
+                <fieldset className="space-y-2">
+                  <legend className="text-xs font-bold text-neutral-700">Informar:</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {(
+                      [
+                        ['unit', purchasePack > 1 ? 'preço por unidade (item)' : 'preço por unidade'],
+                        ['total', 'valor total pago'],
+                      ] as const
+                    ).map(([mode, label]) => (
+                      <label
+                        key={mode}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all ${purchaseForm.mode === mode ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="purchasePriceMode"
+                          value={mode}
+                          checked={purchaseForm.mode === mode}
+                          onChange={() => choosePurchaseMode(mode)}
+                          className="w-4 h-4"
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                  {!purchaseForm.mode && (
+                    <p className="text-xs font-bold text-amber-700">
+                      Escolha se o valor é o de uma unidade ou o total pago (obrigatório para registrar com preço).
+                    </p>
+                  )}
+                </fieldset>
+                <label className="text-xs font-bold text-neutral-700">
+                  {purchaseForm.mode === 'unit'
+                    ? 'Preço por unidade (R$)'
+                    : purchaseForm.mode === 'total'
+                      ? 'Valor total pago (R$)'
+                      : 'Preço (escolha acima)'}
+                </label>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  value={purchaseForm.price}
-                  onChange={e => setPurchaseForm(f => ({ ...f, price: Number(e.target.value) }))}
+                  aria-label="Preço da compra"
+                  value={purchaseForm.price || ''}
+                  onChange={e => setPurchaseForm(f => ({ ...f, price: Number(e.target.value), touched: true }))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold"
                 />
-                {purchaseForm.qty > 0 && purchaseForm.price > 0 && (
-                  <p className="text-xs text-neutral-400">
-                    {purchasePack > 1
-                      ? `Custo por item: ${formatCurrency(purchaseForm.price / (purchaseForm.qty * purchasePack))} · entram ${purchaseForm.qty * purchasePack} itens no estoque`
-                      : `Custo unitário: ${formatCurrency(purchaseForm.price / purchaseForm.qty)}/${purchasingItem.unit}`}
+                {purchaseForm.estUnit > 0 && (
+                  <p className="text-[10px] text-neutral-400 font-bold">
+                    Último preço pago: {formatCurrency(purchaseForm.estUnit)} por unidade
+                  </p>
+                )}
+                {purchasePreview && (
+                  <p
+                    role="status"
+                    className="px-3 py-2 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-xl text-xs font-bold"
+                  >
+                    = {formatCurrency(purchasePreview.unitCost)} por unidade · total{' '}
+                    {formatCurrency(purchasePreview.totalPrice)}
+                    {purchasePack > 1 ? ` · entram ${purchaseUnits} itens no estoque` : ''}
                   </p>
                 )}
               </div>

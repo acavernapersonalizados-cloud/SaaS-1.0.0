@@ -16692,6 +16692,694 @@ exports[`Lista de Compras > lista 1`] = `
 </body>
 `;
 
+exports[`Lista de Compras: preço por unidade ou valor total pago > abre sem modo e com o preço vazio; com preço e sem modo não registra; o modo traz a sugestão 1`] = `
+<body>
+  <div>
+    <div
+      class="space-y-6"
+    >
+      <header
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
+        <div>
+          <div
+            class="flex items-center gap-2 text-neutral-400 mb-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-shopping-cart w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="8"
+                cy="21"
+                r="1"
+              />
+              <circle
+                cx="19"
+                cy="21"
+                r="1"
+              />
+              <path
+                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+              />
+            </svg>
+            <span
+              class="text-xs font-bold uppercase tracking-widest"
+            >
+              Loja Teste
+            </span>
+          </div>
+          <h1
+            class="text-3xl font-black text-neutral-900"
+          >
+            Lista de Compras
+          </h1>
+          <p
+            class="text-neutral-500 mt-1"
+          >
+            Só o que está abaixo do estoque mínimo desta loja.
+          </p>
+        </div>
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            class="flex items-center gap-2 px-4 py-3 border border-neutral-200 text-neutral-700 rounded-xl font-bold text-sm hover:bg-neutral-50 transition-all"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+             Incluir item
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-3 border border-neutral-200 text-neutral-700 rounded-xl font-bold text-sm hover:bg-neutral-50 transition-all"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-copy w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="14"
+                rx="2"
+                ry="2"
+                width="14"
+                x="8"
+                y="8"
+              />
+              <path
+                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+              />
+            </svg>
+             Copiar
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-xl font-bold text-sm hover:bg-green-400 transition-all"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-message-circle w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"
+              />
+            </svg>
+             Enviar
+          </button>
+          <button
+            class="flex items-center gap-2 px-5 py-3 bg-neutral-900 text-white rounded-xl font-bold text-sm hover:bg-neutral-800 transition-all disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-refresh-cw w-4 h-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+              />
+              <path
+                d="M21 3v5h-5"
+              />
+              <path
+                d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+              />
+              <path
+                d="M8 16H3v5"
+              />
+            </svg>
+            Sincronizar
+          </button>
+        </div>
+      </header>
+      <div
+        class="grid grid-cols-2 lg:grid-cols-3 gap-4"
+      >
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            A comprar
+          </p>
+          <p
+            class="text-3xl font-black text-amber-600 mt-1"
+          >
+            1
+          </p>
+        </div>
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Estimativa
+          </p>
+          <p
+            class="text-3xl font-black text-neutral-900 mt-1"
+          >
+            R$ 9,60
+          </p>
+        </div>
+        <div
+          class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm"
+        >
+          <p
+            class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider"
+          >
+            Comprados
+          </p>
+          <p
+            class="text-3xl font-black text-emerald-600 mt-1"
+          >
+            0
+          </p>
+        </div>
+      </div>
+      <div
+        class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4"
+      >
+        <div
+          class="flex flex-col lg:flex-row gap-3"
+        >
+          <div
+            class="relative flex-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-search absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m21 21-4.34-4.34"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+            </svg>
+            <input
+              class="w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+              placeholder="Buscar item ou fornecedor..."
+              type="text"
+              value=""
+            />
+          </div>
+          <select
+            class="px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none"
+          >
+            <option
+              value=""
+            >
+              Todos os fornecedores
+            </option>
+            <option
+              value="TESTE Fornecedor"
+            >
+              TESTE Fornecedor
+            </option>
+          </select>
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-3 justify-between"
+        >
+          <div
+            class="flex gap-2 bg-neutral-100 p-1 rounded-2xl w-fit"
+          >
+            <button
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-white text-neutral-900 shadow-sm"
+            >
+              A comprar (1)
+            </button>
+            <button
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-neutral-500 hover:text-neutral-700"
+            >
+              Comprados (0)
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="space-y-4"
+      >
+        <div
+          class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden"
+        >
+          <div
+            class="px-5 py-3 bg-neutral-50 border-b border-neutral-100 flex items-center justify-between"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-truck w-3.5 h-3.5 text-neutral-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
+                <circle
+                  cx="17"
+                  cy="18"
+                  r="2"
+                />
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
+                />
+              </svg>
+              <span
+                class="text-xs font-black text-neutral-600 uppercase tracking-wider"
+              >
+                TESTE Fornecedor
+              </span>
+            </div>
+            <span
+              class="text-xs font-bold text-neutral-500"
+            >
+              R$ 9,60
+            </span>
+          </div>
+          <div
+            class="divide-y divide-neutral-50"
+          >
+            <div
+              class="p-5 transition-colors hover:bg-neutral-50"
+            >
+              <div
+                class="flex items-start justify-between gap-4"
+              >
+                <div
+                  class="flex-1 min-w-0"
+                >
+                  <div
+                    class="flex items-center gap-2 flex-wrap"
+                  >
+                    <p
+                      class="font-bold text-neutral-900"
+                    >
+                      TESTE Fita cetim
+                    </p>
+                  </div>
+                  <div
+                    class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3"
+                  >
+                    <div>
+                      <p
+                        class="text-[10px] text-neutral-400 font-bold uppercase"
+                      >
+                        Estoque atual
+                      </p>
+                      <p
+                        class="text-sm font-bold text-red-600"
+                      >
+                        2
+                         
+                        m
+                      </p>
+                    </div>
+                    <div>
+                      <p
+                        class="text-[10px] text-neutral-400 font-bold uppercase"
+                      >
+                        Mínimo
+                      </p>
+                      <p
+                        class="text-sm font-bold text-neutral-700"
+                      >
+                        5
+                         
+                        m
+                      </p>
+                    </div>
+                    <div>
+                      <p
+                        class="text-[10px] text-neutral-400 font-bold uppercase"
+                      >
+                        Comprar
+                      </p>
+                      <p
+                        class="text-sm font-bold text-neutral-900"
+                      >
+                        8
+                         
+                        m
+                      </p>
+                    </div>
+                    <div>
+                      <p
+                        class="text-[10px] text-neutral-400 font-bold uppercase"
+                      >
+                        Estimativa
+                      </p>
+                      <p
+                        class="text-sm font-bold text-neutral-700"
+                      >
+                        R$ 9,60
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-2 flex-shrink-0"
+                >
+                  <button
+                    class="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-circle-check w-4 h-4"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                      <path
+                        d="m9 12 2 2 4-4"
+                      />
+                    </svg>
+                     Comprado
+                  </button>
+                  <button
+                    class="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-trash2 lucide-trash-2 w-4 h-4"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 11v6"
+                      />
+                      <path
+                        d="M14 11v6"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                      />
+                      <path
+                        d="M3 6h18"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      >
+        <div
+          class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-5"
+        >
+          <div
+            class="flex items-center justify-between"
+          >
+            <h3
+              class="text-xl font-bold text-neutral-900"
+            >
+              Registrar Compra
+            </h3>
+            <button
+              class="p-2 hover:bg-neutral-100 rounded-full"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-x w-5 h-5 text-neutral-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6 6 18"
+                />
+                <path
+                  d="m6 6 12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <p
+            class="text-neutral-600 font-medium"
+          >
+            TESTE Fita cetim
+          </p>
+          <div
+            class="space-y-4"
+          >
+            <div
+              class="space-y-1.5"
+            >
+              <label
+                class="text-xs font-bold text-neutral-700"
+              >
+                Quantidade comprada (m)
+              </label>
+              <input
+                class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold"
+                min="0"
+                step="0.01"
+                type="number"
+                value="8"
+              />
+            </div>
+            <div
+              class="space-y-1.5"
+            >
+              <fieldset
+                class="space-y-2"
+              >
+                <legend
+                  class="text-xs font-bold text-neutral-700"
+                >
+                  Informar:
+                </legend>
+                <div
+                  class="flex flex-wrap gap-2"
+                >
+                  <label
+                    class="flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"
+                  >
+                    <input
+                      class="w-4 h-4"
+                      name="purchasePriceMode"
+                      type="radio"
+                      value="unit"
+                    />
+                    preço por unidade
+                  </label>
+                  <label
+                    class="flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"
+                  >
+                    <input
+                      class="w-4 h-4"
+                      name="purchasePriceMode"
+                      type="radio"
+                      value="total"
+                    />
+                    valor total pago
+                  </label>
+                </div>
+                <p
+                  class="text-xs font-bold text-amber-700"
+                >
+                  Escolha se o valor é o de uma unidade ou o total pago (obrigatório para registrar com preço).
+                </p>
+              </fieldset>
+              <label
+                class="text-xs font-bold text-neutral-700"
+              >
+                Preço (escolha acima)
+              </label>
+              <input
+                aria-label="Preço da compra"
+                class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold"
+                min="0"
+                step="0.01"
+                type="number"
+                value=""
+              />
+              <p
+                class="text-[10px] text-neutral-400 font-bold"
+              >
+                Último preço pago: 
+                R$ 1,20
+                 por unidade
+              </p>
+            </div>
+            <div
+              class="space-y-1.5"
+            >
+              <label
+                class="text-xs font-bold text-neutral-700"
+              >
+                Fornecedor
+              </label>
+              <select
+                class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+              >
+                <option
+                  value=""
+                >
+                  Selecione...
+                </option>
+                <option
+                  value="forn-1"
+                >
+                  TESTE Fornecedor
+                </option>
+              </select>
+            </div>
+          </div>
+          <div
+            class="flex gap-3"
+          >
+            <button
+              class="flex-1 py-3 bg-neutral-100 text-neutral-900 rounded-xl font-bold hover:bg-neutral-200 transition-all disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-circle-check w-4 h-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <path
+                  d="m9 12 2 2 4-4"
+                />
+              </svg>
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`Lojas > confirmar exclusão 1`] = `
 <body>
   <div>
