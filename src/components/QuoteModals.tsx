@@ -342,9 +342,15 @@ export function GeneratedQuoteModal({
                 </div>
                 <div className="h-px bg-white/10" />
                 <div className="flex justify-between items-end">
-                  <span className="text-xs text-neutral-400 mb-1">Total Final</span>
+                  <span className="text-xs text-neutral-400 mb-1">Total no Pix</span>
                   <span className="text-3xl font-black text-white">{formatCurrency(generatedQuote.totalAmount)}</span>
                 </div>
+                {(generatedQuote.creditTotal ?? 0) > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-neutral-400">No crédito</span>
+                    <span className="font-black text-lg">{formatCurrency(generatedQuote.creditTotal ?? 0)}</span>
+                  </div>
+                )}
               </div>
             </div>
 

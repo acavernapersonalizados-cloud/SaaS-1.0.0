@@ -16,6 +16,7 @@ import {
   priceForMarkup,
   realMargin,
   wearCost,
+  creditPrice,
 } from './pricingEngine';
 import { isLowStock, packageSize } from './utils';
 
@@ -262,5 +263,15 @@ describe('Estoque (seção 16)', () => {
     expect(packageSize({ isPackage: true, unit: 'un', packageQuantity: 10 })).toBe(10);
     expect(packageSize({ unit: 'm', packageQuantity: 100 })).toBe(1);
     expect(packageSize(null)).toBe(1);
+  });
+});
+
+// Etapa 8C, item 3b — preço no crédito: Pix ÷ 0,95, para os 5% do cartão não reduzirem o que entra.
+describe('Preço no crédito (creditPrice)', () => {
+  it('Pix ÷ 0,95 e, depois dos 5% do cartão, entra o mesmo que no Pix', () => {
+    expect(creditPrice(9.5)).toBeCloseTo(10, 10);
+    expect(creditPrice(39.43)).toBeCloseTo(41.505263, 6);
+    expect(creditPrice(39.43) * 0.95).toBeCloseTo(39.43, 10);
+    expect(creditPrice(0)).toBe(0);
   });
 });

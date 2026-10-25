@@ -8,11 +8,12 @@ import { MAX_CHANNEL_FEE_PERCENT, priceForMarkup } from './pricingEngine';
 
 /**
  * Valores aprovados em 19/10/2026. Mercado Livre fica editável até a consulta pela API (Etapa 9).
- * Etapa 8C: o Atacado saiu (virou desconto por quantidade, lib/wholesale.ts).
+ * Etapa 8C: o Atacado saiu (virou desconto por quantidade, lib/wholesale.ts) e o Instagram ficou sem
+ * taxa de pagamento: o cartão é coberto pelo preço no crédito (Pix ÷ 0,95), sem cobrar duas vezes.
  */
 export const DEFAULT_SALES_CHANNELS: SalesChannel[] = [
   { id: 'venda-direta', name: 'Venda Direta', commissionPct: 0, fixedFee: 0, paymentPct: 0 },
-  { id: 'instagram', name: 'Instagram', commissionPct: 0, fixedFee: 0, paymentPct: 3.5 },
+  { id: 'instagram', name: 'Instagram', commissionPct: 0, fixedFee: 0, paymentPct: 0 },
   { id: 'shopee', name: 'Shopee', commissionPct: 20, fixedFee: 4, paymentPct: 0, note: 'R$ 4,00 por produto' },
   { id: 'mercado-livre', name: 'Mercado Livre', commissionPct: 18, fixedFee: 0, paymentPct: 0 },
   { id: 'ifood', name: 'iFood', commissionPct: 26.5, fixedFee: 0, paymentPct: 0 },

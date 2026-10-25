@@ -20,6 +20,9 @@ function primaryColorOf(store: Store | null): [number, number, number] {
   return store?.primaryColor ? hexToRgb(store.primaryColor) : [20, 20, 20];
 }
 
+/** Total no crédito (Etapa 8C) ou 0 nos orçamentos anteriores, que saem como antes. */
+const creditTotalOf = (quote: Quote) => Number(quote.creditTotal) || 0;
+
 /** Linhas da tabela de itens: produto (com acabamentos/acessórios), quantidade, unitário e total. */
 function itemRows(quote: Quote) {
   return quote.items.map(item => {
@@ -133,7 +136,13 @@ export const generateClientPDF = async (quote: Quote, store: Store | null) => {
     const finalY = (doc as any).lastAutoTable?.finalY || 100;
     doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text(`Total do Orçamento: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 15);
+    const credit = creditTotalOf(quote);
+    doc.text(
+      `${credit ? 'Total no Pix' : 'Total do Orçamento'}: ${formatCurrency(quote.totalAmount)}`,
+      14,
+      finalY + 15,
+    );
+    if (credit) doc.text(`No crédito: ${formatCurrency(credit)}`, 14, finalY + 22);
 
     savePdf(doc, 'Orcamento', quote.clientName);
   } catch (error) {
@@ -168,9 +177,11 @@ export const generateInternalPDF = async (quote: Quote, store: Store | null) => 
 
     const finalY = (doc as any).lastAutoTable?.finalY || 100;
     sectionTitle(doc, 'Resumo Financeiro', 14, finalY + 15);
-    doc.text(`Total Geral: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 22);
+    const credit = creditTotalOf(quote);
+    doc.text(`${credit ? 'Total no Pix' : 'Total Geral'}: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 22);
     doc.text(`Lucro Líquido Total: ${formatCurrency(quote.totalProfit)}`, 14, finalY + 27);
     doc.text(`Margem Média: ${formatPercent(quote.avgMargin)}`, 14, finalY + 32);
+    if (credit) doc.text(`No crédito: ${formatCurrency(credit)} (cobre os 5% do cartão)`, 14, finalY + 37);
 
     savePdf(doc, 'Interno', quote.clientName);
   } catch (error) {
@@ -223,7 +234,9 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
     const finalY = (doc as any).lastAutoTable?.finalY || 120;
     doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text(`VALOR TOTAL: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 15);
+    const credit = creditTotalOf(quote);
+    doc.text(`${credit ? 'VALOR TOTAL NO PIX' : 'VALOR TOTAL'}: ${formatCurrency(quote.totalAmount)}`, 14, finalY + 15);
+    if (credit) doc.text(`NO CRÉDITO: ${formatCurrency(credit)}`, 14, finalY + 22);
 
     doc.setFontSize(8);
     doc.setTextColor(150);

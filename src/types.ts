@@ -290,7 +290,10 @@ export interface Quote {
   clientType: 'PF' | 'PJ';
   cnpj?: string;
   items: QuoteItem[];
+  /** Total no Pix (o preço base). */
   totalAmount: number;
+  /** Total no crédito = Pix ÷ 0,95 (Etapa 8C). Orçamentos anteriores não têm. */
+  creditTotal?: number;
   totalProfit: number;
   avgMargin: number;
   channel: string;

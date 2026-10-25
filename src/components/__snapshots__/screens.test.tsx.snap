@@ -564,7 +564,7 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
                       min="0"
                       step="0.01"
                       type="number"
-                      value="3.5"
+                      value="0"
                     />
                   </td>
                   <td
@@ -587,7 +587,7 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
                   <td
                     class="py-1 pr-2 whitespace-nowrap text-xs font-bold text-emerald-700"
                   >
-                    48,3%
+                    50,0%
                   </td>
                   <td
                     class="py-1 text-right"
@@ -6561,17 +6561,17 @@ exports[`Cestas > resultado e preço manual 2`] = `
                         <td
                           class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                         >
-                          3,5%
+                          0,0%
                         </td>
                         <td
                           class="px-3 py-2 text-right font-black whitespace-nowrap text-red-600"
                         >
-                          -R$ 5,53
+                          -R$ 5,00
                         </td>
                         <td
                           class="px-3 py-2 text-right whitespace-nowrap text-red-600"
                         >
-                          -36,8%
+                          -33,3%
                         </td>
                         <td
                           class="px-3 py-2 whitespace-nowrap"
@@ -6580,7 +6580,7 @@ exports[`Cestas > resultado e preço manual 2`] = `
                             class="text-amber-700 font-bold"
                           >
                             abaixo · mín. 
-                            R$ 41,45
+                            R$ 40,00
                           </span>
                         </td>
                       </tr>
@@ -10782,17 +10782,17 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                         <td
                           class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                         >
-                          3,5%
+                          0,0%
                         </td>
                         <td
                           class="px-3 py-2 text-right font-black whitespace-nowrap text-red-600"
                         >
-                          -R$ 0,57
+                          -R$ 0,04
                         </td>
                         <td
                           class="px-3 py-2 text-right whitespace-nowrap text-red-600"
                         >
-                          -3,8%
+                          -0,3%
                         </td>
                         <td
                           class="px-3 py-2 whitespace-nowrap"
@@ -10801,7 +10801,7 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                             class="text-amber-700 font-bold"
                           >
                             abaixo · mín. 
-                            R$ 31,18
+                            R$ 30,09
                           </span>
                         </td>
                       </tr>
@@ -15980,17 +15980,17 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                         <td
                           class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                         >
-                          3,5%
+                          0,0%
                         </td>
                         <td
                           class="px-3 py-2 text-right font-black whitespace-nowrap text-emerald-600"
                         >
-                          R$ 13,32
+                          R$ 14,02
                         </td>
                         <td
                           class="px-3 py-2 text-right whitespace-nowrap text-emerald-600"
                         >
-                          66,6%
+                          70,1%
                         </td>
                         <td
                           class="px-3 py-2 whitespace-nowrap"
@@ -26250,17 +26250,17 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                         <td
                           class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                         >
-                          3,5%
+                          0,0%
                         </td>
                         <td
                           class="px-3 py-2 text-right font-black whitespace-nowrap text-red-600"
                         >
-                          -R$ 5,53
+                          -R$ 5,00
                         </td>
                         <td
                           class="px-3 py-2 text-right whitespace-nowrap text-red-600"
                         >
-                          -36,8%
+                          -33,3%
                         </td>
                         <td
                           class="px-3 py-2 whitespace-nowrap"
@@ -26269,7 +26269,7 @@ exports[`Papelaria > resultado e preço manual 2`] = `
                             class="text-amber-700 font-bold"
                           >
                             abaixo · mín. 
-                            R$ 41,45
+                            R$ 40,00
                           </span>
                         </td>
                       </tr>
@@ -27003,10 +27003,24 @@ exports[`Precificação > atacado: 30 unidades com 20% sobre o varejo, gravado n
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -27743,10 +27757,24 @@ exports[`Precificação > atacado: markup personalizado baixo para no piso e avi
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -28619,12 +28647,26 @@ exports[`Precificação > canal Shopee no resumo 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
                 >
                   R$ 28,75
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
+                >
+                  R$ 30,26
                 </span>
               </div>
             </div>
@@ -29229,10 +29271,24 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 1`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -29738,10 +29794,24 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 2`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -30262,10 +30332,24 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 3`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -30890,12 +30974,26 @@ exports[`Precificação > com item e sem cliente: clique em Gerar Orçamento 1`]
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
                 >
                   R$ 15,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
+                >
+                  R$ 15,79
                 </span>
               </div>
             </div>
@@ -31498,10 +31596,24 @@ exports[`Precificação > inicial: sem itens 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -31998,10 +32110,24 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -32914,12 +33040,26 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
                 >
                   R$ 27,50
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
+                >
+                  R$ 28,95
                 </span>
               </div>
             </div>
@@ -33627,12 +33767,26 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
                 >
                   R$ 55,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
+                >
+                  R$ 57,89
                 </span>
               </div>
             </div>
@@ -34481,10 +34635,24 @@ exports[`Precificação > orçamento gerado 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -34778,12 +34946,26 @@ exports[`Precificação > orçamento gerado 1`] = `
                     <span
                       class="text-xs text-neutral-400 mb-1"
                     >
-                      Total Final
+                      Total no Pix
                     </span>
                     <span
                       class="text-3xl font-black text-white"
                     >
                       R$ 15,00
+                    </span>
+                  </div>
+                  <div
+                    class="flex justify-between items-center"
+                  >
+                    <span
+                      class="text-xs text-neutral-400"
+                    >
+                      No crédito
+                    </span>
+                    <span
+                      class="font-black text-lg"
+                    >
+                      R$ 15,79
                     </span>
                   </div>
                 </div>
@@ -35309,10 +35491,24 @@ exports[`Precificação > sem itens: clique em Gerar Orçamento 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1"
                 >
-                  Total Geral
+                  Total no Pix
                 </span>
                 <span
                   class="text-3xl font-black text-neutral-900"
+                >
+                  R$ 0,00
+                </span>
+              </div>
+              <div
+                class="flex justify-between text-sm"
+              >
+                <span
+                  class="text-neutral-400 font-bold uppercase tracking-wider"
+                >
+                  No crédito
+                </span>
+                <span
+                  class="text-neutral-900 font-black"
                 >
                   R$ 0,00
                 </span>
@@ -38558,17 +38754,17 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                           <td
                             class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                           >
-                            3,5%
+                            0,0%
                           </td>
                           <td
                             class="px-3 py-2 text-right font-black whitespace-nowrap text-red-600"
                           >
-                            -R$ 3,64
+                            -R$ 3,50
                           </td>
                           <td
                             class="px-3 py-2 text-right whitespace-nowrap text-red-600"
                           >
-                            -91,0%
+                            -87,5%
                           </td>
                           <td
                             class="px-3 py-2 whitespace-nowrap"
@@ -38577,7 +38773,7 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                               class="text-amber-700 font-bold"
                             >
                               abaixo · mín. 
-                              R$ 15,54
+                              R$ 15,00
                             </span>
                           </td>
                         </tr>
@@ -40671,17 +40867,17 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                           <td
                             class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                           >
-                            3,5%
+                            0,0%
                           </td>
                           <td
                             class="px-3 py-2 text-right font-black whitespace-nowrap text-emerald-600"
                           >
-                            R$ 21,45
+                            R$ 22,50
                           </td>
                           <td
                             class="px-3 py-2 text-right whitespace-nowrap text-emerald-600"
                           >
-                            71,5%
+                            75,0%
                           </td>
                           <td
                             class="px-3 py-2 whitespace-nowrap"
@@ -42741,7 +42937,7 @@ exports[`Produtos (telas internas) > preço sugerido por canal 1`] = `
                 <td
                   class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
                 >
-                  R$ 15,54
+                  R$ 15,00
                 </td>
                 <td
                   class="px-4 py-3 text-right font-bold text-neutral-900 whitespace-nowrap"
@@ -54192,17 +54388,17 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
                     <td
                       class="px-3 py-2 text-neutral-500 whitespace-nowrap"
                     >
-                      3,5%
+                      0,0%
                     </td>
                     <td
                       class="px-3 py-2 text-right font-black whitespace-nowrap text-emerald-600"
                     >
-                      R$ 21,30
+                      R$ 22,70
                     </td>
                     <td
                       class="px-3 py-2 text-right whitespace-nowrap text-emerald-600"
                     >
-                      53,2%
+                      56,7%
                     </td>
                     <td
                       class="px-3 py-2 whitespace-nowrap"
@@ -54211,7 +54407,7 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
                         class="text-amber-700 font-bold"
                       >
                         abaixo · mín. 
-                        R$ 44,83
+                        R$ 43,26
                       </span>
                     </td>
                   </tr>

@@ -144,6 +144,12 @@ export function priceForMarkup(cost: number, markupPct: number, feePct = 0, fixe
   return (((Number(cost) || 0) + (Number(fixedFees) || 0)) * (1 + k / 100)) / (1 - fee / 100);
 }
 
+/** Taxa do cartão de crédito coberta pelo preço no crédito (Etapa 8C). */
+export const CREDIT_CARD_FEE_PCT = 5;
+
+/** Preço no crédito: o preço no Pix ÷ 0,95, para os 5% do cartão não reduzirem o que entra. */
+export const creditPrice = (pixPrice: number) => (Number(pixPrice) || 0) / (1 - CREDIT_CARD_FEE_PCT / 100);
+
 /** Margem real (%) que sobra do preço depois do custo e das taxas do canal. */
 export function realMargin(price: number, cost: number, feePct = 0, fixedFees = 0): number {
   if (!(price > 0)) return 0;

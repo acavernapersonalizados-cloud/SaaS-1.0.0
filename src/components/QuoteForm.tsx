@@ -3,7 +3,7 @@
 import React from 'react';
 import { Client, QuoteItem } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
-import { QuoteItemCalcResult } from '../lib/pricingEngine';
+import { QuoteItemCalcResult, creditPrice } from '../lib/pricingEngine';
 import { feeLabel, QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
 import {
   AlertCircle,
@@ -309,8 +309,12 @@ export function QuoteSummary({
           </div>
           <div className="h-px bg-neutral-100" />
           <div className="flex justify-between items-end">
-            <span className="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1">Total Geral</span>
+            <span className="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1">Total no Pix</span>
             <span className="text-3xl font-black text-neutral-900">{formatCurrency(totalAmount)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-neutral-400 font-bold uppercase tracking-wider">No crédito</span>
+            <span className="text-neutral-900 font-black">{formatCurrency(creditPrice(totalAmount))}</span>
           </div>
         </div>
 

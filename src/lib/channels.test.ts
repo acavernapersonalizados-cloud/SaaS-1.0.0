@@ -19,7 +19,8 @@ describe('Tabela de canais', () => {
     );
     expect(t).toEqual({
       'Venda Direta': [0, 0, 0],
-      Instagram: [0, 0, 3.5],
+      Instagram: [0, 0, 0], // Etapa 8C: o cartão é coberto pelo preço no crédito
+
       Shopee: [20, 4, 0],
       'Mercado Livre': [18, 0, 0],
       iFood: [26.5, 0, 0],

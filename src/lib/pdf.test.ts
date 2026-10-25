@@ -123,3 +123,19 @@ describe('Comandos de desenho dos PDFs (não podem mudar)', () => {
     expect(await draw(generateInvoicePDF, null, { ...quote, cnpj: undefined })).toMatchSnapshot();
   });
 });
+
+// Etapa 8C, item 3b — orçamentos novos têm o total no Pix e no crédito (Pix ÷ 0,95).
+describe('PDFs com preço no Pix e no crédito', () => {
+  const withCredit = { ...quote, creditTotal: quote.totalAmount / 0.95 };
+  const texts = (cmds: unknown[][]) => cmds.filter(c => c[0] === 'text').map(c => String(c[1]));
+  const credit = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(withCredit.creditTotal);
+  it.each([
+    ['cliente', generateClientPDF, 'Total no Pix', `No crédito: ${credit}`],
+    ['interno', generateInternalPDF, 'Total no Pix', `No crédito: ${credit} (cobre os 5% do cartão)`],
+    ['recibo', generateInvoicePDF, 'VALOR TOTAL NO PIX', `NO CRÉDITO: ${credit}`],
+  ])('PDF %s mostra os dois totais', async (_name, fn, pixLabel, creditLine) => {
+    const t = texts(await draw(fn, store, withCredit));
+    expect(t.some(s => s.startsWith(`${pixLabel}: `))).toBe(true);
+    expect(t).toContain(creditLine);
+  });
+});

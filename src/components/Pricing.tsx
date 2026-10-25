@@ -5,7 +5,7 @@ import { Product, Material, CostBase, Quote, Client, QuoteItem } from '../types'
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
-import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
+import { calcQuoteItem, creditPrice, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
@@ -396,6 +396,8 @@ export function Pricing() {
           wholesaleFloorApplied: r.wholesaleFloorApplied,
         })),
         totalAmount: isFinite(totalAmount) ? totalAmount : 0,
+        // Etapa 8C: total no crédito (Pix ÷ 0,95), só nos orçamentos novos.
+        creditTotal: isFinite(totalAmount) ? creditPrice(totalAmount) : 0,
         totalProfit: isFinite(totalProfit) ? totalProfit : 0,
         avgMargin: isFinite(avgMargin) ? avgMargin : 0,
         channel,
