@@ -14,44 +14,97 @@
 
 | Etapa | O que é | Status |
 |---|---|---|
-| 0 — Fechar o que está aberto | Juntar todas as branches na `main`, backup novo conferido, item 11 resolvido, tag `antes-de-enxugar`. | ✅ **Feita** (17/10/2026). Nenhuma branch tem commits fora da `main`; backup `backup_precifica_ja_2026-10-17 (4).json` conferido (formato v2, completo, 0 falhas, 2 lojas, 17 coleções, contagens iguais ao `_meta`); item 11 em produção; tag `antes-de-enxugar` em `f5279f0`. |
-| 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), commits `b151c08` e `44dbe4e`. |
-| 2 — Rede de segurança | Configurar o Firebase Emulator para o `npm run dev` usar um banco local, e criar testes automáticos do motor de preços e das 4 calculadoras com os valores do `CHECKLIST-TESTES.md`. Não muda o app. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`. `npm run dev` usa só o emulador (projeto `demo-precificaatelie`); ADMIN de teste `admin@teste.local`; 49 testes (`npm test`). As contas de Laser, Papelaria e Cestas foram movidas sem mudança para `src/lib/calculators.ts` (aprovado), o que adianta parte de D4–D6 da Etapa 4. Requer Java 21. |
-| 3 — Remover lixo | Ver seção 6. | ✅ **Feita** (17/10/2026), tag `etapa-3-ok`. 14 itens removidos (código morto, 3 bibliotecas, `docs/`, `index_Old.html`, `bun.lock`, manifesto duplicado, cache `.firebase/` fora do git); `ATUALIZACAO-MAQUINAS.md` mantido. Testes, lint e build passando; manifesto gerado idêntico. |
-| 4A — Unificar duplicações (Grupo A: contas e textos) | Ver seção 6. Os testes da Etapa 2 têm que dar os mesmos números antes e depois. | ✅ **Feita** (17/10/2026), tags `etapa-4a-ok` e `etapa-4-ok` (commit `665baca`): contas, custo de compra, padrões, textos da IA e PDFs unificados, com 76 testes e 0 diferenças nas comparações. |
-| 4B — Unificar duplicações (Grupo B: telas) | Ver seção 6: `SearchBar`, `ConfirmDeleteModal`, histórico de trabalhos, `MaterialPicker` e `PriceResultCard`, com testes de HTML de cada tela antes de mexer. | ✅ **Feita** (18/10/2026), tag `etapa-4b-ok`: `ConfirmDeleteModal`, `SearchBar`, `StockMaterialPicker`, `JobHistoryList`, `SuggestedPrice` e `ManualPriceCheck`, com o HTML final igual nos 39 estados gravados. |
-| 5 — Peso e telas aprovadas | Ver seção 6 (começa pelo T13; inclui também T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita** (18/10/2026), tag `etapa-5-ok`: botões sempre visíveis (janelas e tabelas, computador e celular), abertura do app 44% menor (1.778 → 989 KB), T1, T5, T6, T8, T10, T11, T12 e T14. A divisão de `Products.tsx` e `Pricing.tsx` foi para o início da Etapa 8. |
-| 6 — Validação final | Você testa o app no emulador seguindo o `CHECKLIST-TESTES.md`; depois code review, build e publicação. | ✅ **Feita** (19/10/2026), tag `etapa-6-ok`: checklist atualizado e testado sem erros, code review sem correções, backup do banco real conferido e site publicado (só hosting) a partir de `80f64b5`. |
-| 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
-| 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
-| 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); ✅ **8C feita e publicada** (25 e 26/10/2026). Etapa 8 concluída. |
-| 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | 🟡 **Em andamento** (aprovada em 26/10/2026, ordem 9A → 9C); 9B (Mercado Livre) foi para o Estacionamento: a API respondeu 403 e exige app cadastrado, login (OAuth) e servidor. |
-| 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, buscador de tendências, Caixa de Ideias (DM do Instagram), gerador de anúncio com IA, painel de estoque e Mercado Livre (pedidos e anúncios). Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
+| 0 — Fechar o que está aberto | Juntar todas as branches na `main`, backup novo conferido, item 11 resolvido, tag `antes-de-enxugar`. | ✅ **Feita e publicada** (17/10/2026): item 11 em produção; tag `antes-de-enxugar` em `f5279f0`. |
+| 1 — Diagnóstico (só leitura) | Este plano + decisões T1–T12. | ✅ **Feita** (17/10/2026), só documento, nada a publicar. |
+| 2 — Rede de segurança | Firebase Emulator no `npm run dev` e testes automáticos do motor de preços e das calculadoras. | ✅ **Feita** (17/10/2026), tag `etapa-2-ok`; ferramentas de teste, nada a publicar. |
+| 3 — Remover lixo | Ver seção 6. | ✅ **Feita e publicada** (17/10/2026, no ar desde 19/10/2026), tag `etapa-3-ok`. |
+| 4A — Unificar duplicações (contas e textos) | Ver seção 6. | ✅ **Feita e publicada** (17/10/2026, no ar desde 19/10/2026), tags `etapa-4a-ok` e `etapa-4-ok`. |
+| 4B — Unificar duplicações (telas) | Ver seção 6. | ✅ **Feita e publicada** (18/10/2026, no ar desde 19/10/2026), tag `etapa-4b-ok`. |
+| 5 — Peso e telas aprovadas | Ver seção 6 (T13, T1, T5, T6, T8, T10, T11, T12 e T14). | ✅ **Feita e publicada** (18/10/2026, no ar desde 19/10/2026), tag `etapa-5-ok`. |
+| 6 — Validação final | Você testa no emulador com o `CHECKLIST-TESTES.md`; code review, build e publicação. | ✅ **Feita e publicada** (19/10/2026), tag `etapa-6-ok`, a partir de `80f64b5`. |
+| 7 — Unificar parâmetros de preço | Elo7 removido, tabela única de canais por loja (T4), meta como markup (T2). Ver seção 6. | ✅ **Feita e publicada** (19/10/2026), tag `etapa-7-ok`. |
+| 7.1 — Segurança | Aviso de nova versão, regra contra zerar o preço do catálogo, falhas visíveis. | ✅ **Feita e publicada** (19/10/2026, site + regras do banco), tag `etapa-7.1-ok`. |
+| 7.2 — Tarifa de energia única (T3) | Tarifa de energia na Base de Custos de cada loja, usada no Laser e na 3D. | ✅ **Feita e publicada** (19/10/2026), tag `etapa-7.2-ok`. |
+| 8 — Central de Calculadoras | Partes 8A, 8B, 8C, 8D-1 e 8D-2, e a correção do Preço de Compra (abaixo). Ver seção 6. | ✅ **Feita e publicada** (24 a 26/10/2026). |
+| 8A — Orçamento e divisão das telas | Aviso do "Gerar Orçamento"; `Products.tsx` e `Pricing.tsx` divididos. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8a-ok`. |
+| 8B — Menu e preço por canal | Nomes no menu, guia única "Calculadoras", preço manual com respaldo, preço sugerido por canal. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8b-ok`. |
+| 8C — Canais e catálogo | Atacado por quantidade, Pix e crédito, Instagram 0%, trabalho salvo vira Produto (item 8 → Estacionamento). | ✅ **Feita e publicada** (item 3 em 25/10/2026; item 4 em 26/10/2026). |
+| 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
+| 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
+| Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
+| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ⏳ **Pendente** (aprovada em 26/10/2026, ordem 9A → 9C; 9B no Estacionamento). |
+| 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. |
 
 **Onde paramos (26/10/2026):**
 
-- No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): 8A, 8B, 8D, preço de compra, acentos e **8C completa**
-  (item 3 canais; item 4 trabalho salvo vira Produto, testado por você no emulador: OK).
-- 8C item 8 (markup extra por canal) e o texto do cartão de produto vindo de trabalho estão no Estacionamento.
-- Falta você: reabrir o app no site e corrigir pela tela as matérias-primas erradas.
-- Código no GitHub. Nenhum item aberto.
+- No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): Etapas 0 a 8 completas, com a correção do Preço de Compra.
+- Etapa 9 aprovada em 26/10/2026, na ordem 9A → 9C; 9B (Mercado Livre pela API) foi para o Estacionamento.
+- O projeto termina na Etapa 9; a Etapa 10 fica só registrada.
+- Falta você: as tarefas fora do código listadas em "Falta".
+- Código no GitHub. Nenhum item aberto. Próximo passo: 9A.
 
-**Entregue (até 26/10/2026, tudo publicado):**
+## Entregue
 
-- Etapas 0 a 7.2: emulador e testes, limpeza, unificações, telas mais leves, tabela de canais por loja, meta como
-  markup, tarifa de energia e proteções do catálogo.
-- Etapa 8: aviso do "Gerar Orçamento", telas divididas, guia Calculadoras, Sublimação (8D), preço de compra por
-  unidade ou total, acentos, atacado por quantidade com piso, Pix e crédito no orçamento e no catálogo, Instagram 0%
-  e trabalho salvo virando Produto.
+O que cada etapa trouxe para quem usa o app:
 
-**Falta (o projeto termina na Etapa 9, decidido em 26/10/2026):**
+- **0** — Tudo o que estava pronto foi juntado num lugar só, com cópia de segurança do banco conferida.
+- **1** — Diagnóstico do app; nada mudou na tela.
+- **2** — Banco de testes no computador e contas testadas sozinhas: dá para mexer sem arriscar os dados reais.
+- **3** — App mais limpo: saiu código e arquivo que não eram usados.
+- **4A** — As mesmas contas em todo lugar: o mesmo produto dá o mesmo preço em qualquer tela.
+- **4B** — Buscas, janelas de exclusão e listas de trabalhos iguais em todas as telas.
+- **5** — App abre quase duas vezes mais rápido e os botões ficam sempre visíveis, no celular e no computador.
+- **6** — Tudo testado por você e publicado.
+- **7** — Meta de lucro como markup sobre o custo e tabela de taxas dos canais de venda de cada loja.
+- **7.1** — Aviso de nova versão e o preço do catálogo nunca vira R$ 0 por engano.
+- **7.2** — Tarifa de energia de cada loja, usada no Corte a Laser e na Impressão 3D.
+- **8A** — "Gerar Orçamento" explica o que falta preencher.
+- **8B** — Menu com "Orçamentos" e uma guia só para as calculadoras; preço manual conferido e preço por canal.
+- **8C** — Desconto de atacado por quantidade, preço no Pix e no crédito, Instagram sem taxa e trabalho salvo virando
+  produto.
+- **8D-1** — Calculadora de Sublimação com as máquinas e a tabela de temperatura, tempo e pressão.
+- **8D-2** — Custo e preço por peça na sublimação, com histórico de trabalhos.
+- **Preço de Compra** — Você escolhe se o valor digitado é por unidade ou o total pago: acabou o custo errado.
 
-- **9A** aviso de canal sem conferência há mais de 60 dias, com "Conferi hoje" (também é o lembrete mensal).
-- **9C** botão "Verificar taxas com IA" nos canais da Base de Custos: mudanças sugeridas com as fontes, cada uma
-  aprovada ou recusada por você.
-- Você: reabrir o app no site e corrigir pela tela as matérias-primas erradas.
-- Fora do projeto: 9B (Mercado Livre pela API) e os demais itens do Estacionamento; a Etapa 10 fica só registrada.
+## Falta
+
+**Etapa 9 — Monitor de taxas**
+
+- **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (aprovada, a fazer).
+- **9B** — Comissão do Mercado Livre pela API: opcional, no Estacionamento (exige app, login e servidor).
+- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (aprovada, a fazer).
+
+**Estacionamento (todos opcionais)**
+
+- Cartão do produto vindo de trabalho mostrar "Custo da calculadora: [nome]" — opcional.
+- Markup extra por canal (muda preço) — opcional.
+- Abrir um trabalho salvo de volta na calculadora — opcional.
+- Seus próprios produtos na tabela de referência da sublimação — opcional.
+- Ícone do app instalado (arquivos de ícone faltando) — opcional.
+- Publicação automática pelo GitHub — opcional.
+- Testes automáticos dos cálculos que ainda usam scripts avulsos — opcional.
+- Lembrete de orçamento pendente por WhatsApp — opcional.
+- Produtos só com as categorias múltiplas (T7) — opcional.
+- Estoque × Matéria-prima: onde fica o +1/−1 (T9) — opcional.
+- Aviso real (e-mail ou WhatsApp) ao aprovar usuário — opcional.
+- Estatísticas do cliente calculadas no servidor — opcional.
+- Margem padrão das calculadoras menor — opcional.
+- Chave da IA (Gemini) no servidor, por segurança — opcional.
+- Revisar o `npm audit` (vulnerabilidades de dependências) — opcional.
+- Lista de Compras atualizar o estoque com transação — opcional.
+- Janela de exclusão de Clientes com a largura certa — opcional.
+- Unificações de tela que ficaram de fora na 4B — opcional.
+- Matéria-prima aceitar estoque 0 no cadastro — opcional.
+- Mensagem de PDF só depois de o PDF ficar pronto — opcional.
+- Desconto de fornecedor entrando no custo da matéria-prima (muda preço) — opcional.
+- Keeta como canal de venda, quando houver a taxa do contrato — opcional.
+- Impressão 3D pedir para escolher a impressora quando não há nenhuma — opcional.
+
+**Tarefas suas, fora do código**
+
+- Revisar a auditoria das matérias-primas e corrigir pela tela as que estão erradas.
+- Cadastrar as máquinas de sublimação em cada loja.
+- Ajustar a impressora 3D para 150 W.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
