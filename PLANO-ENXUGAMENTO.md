@@ -37,16 +37,13 @@
 
 **Onde paramos (26/10/2026):**
 
-- No ar (26/10/2026, só o site, `index-s3tADGcf.js`): **Etapas 0 a 9 completas** (9B foi para a Etapa 10).
-- Publicado hoje e testado por você no emulador: 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
-  e as 2 correções do item 4 da 8C (custo e sugerido iguais aos da calculadora; preço e custo em centavos).
-- **Falta você agora:** no site, clicar em "Atualizar preço do produto" no trabalho da Caneca Mágica (aprovado em
-  26/10/2026: grava 58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1).
-- Verificação de segurança (26/10/2026, só leitura) reordenou o Estacionamento (seção 7.1). **Regras do Storage
-  feitas, não publicadas** (16 casos ok no emulador). **Chave do Gemini fora do site (opção A): código feito, não
-  publicado** (268 testes, lint e build; nenhuma chave do Gemini no build). Falta você: configurar o console (seção
-  7.1, item 3). Próximo item: produtos do catálogo sem custo público.
-- Código no GitHub. Nenhum item aberto.
+- No ar (26/10/2026, `index-CEo5kbog.js`): Etapas 0 a 9 completas, **regras do Storage por loja** e a **IA pelo
+  Firebase AI Logic + App Check** (nenhuma chave do Gemini no site, conferido no site publicado).
+- **Falta você, no site:** (1) "Atualizar agora"; (2) testar "Verificar taxas com IA"; (3) funcionou → App Check →
+  APIs → Firebase AI Logic → **Exigir** e testar de novo; (4) funcionou → **apagar a chave antiga do Gemini**;
+  (5) enviar uma foto de produto (confere as regras novas do Storage); (6) "Atualizar preço do produto" na Caneca Mágica.
+- Se a foto não subir: o Firebase pede uma permissão para o Storage ler o banco (console → Storage → Regras).
+- Próximo item: produtos do catálogo sem custo público (seção 7.1, item 4). Código no GitHub. Nenhum item aberto.
 
 ## Entregue
 
@@ -82,8 +79,8 @@ O que cada etapa trouxe para quem usa o app:
 **Estacionamento — escolhidos, nesta ordem (ver seção 7.1)**
 
 1. Chave do Gemini: contenção de emergência no Google Cloud (você, hoje).
-2. ✅ Regras do Storage por loja (feito, não publicado).
-3. 🟡 Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): código feito, não publicado.
+2. ✅ Regras do Storage por loja (feito e publicado em 26/10/2026).
+3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; falta você ligar o "Exigir" e apagar a chave antiga.
 4. Produtos do catálogo sem custo público (coleção pública só com nome, foto, descrição e preço).
 5. Regras do Firestore: atualizar só documentos da própria loja.
 6. Revisar o `npm audit`.
@@ -704,11 +701,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 
 1. **Chave do Gemini: contenção de emergência** (segurança, ALTA; você faz no Google Cloud, sem código): restringir a
    chave ao site `saas-1-0-0.web.app` e só à API do Gemini, e pôr limite diário. Só contenção: a solução é o item 3.
-2. ✅ **Regras do Storage por loja** (segurança, ALTA, P) — **feito e não publicado** (26/10/2026): gravar e apagar
+2. ✅ **Regras do Storage por loja** (segurança, ALTA, P) — **feito e publicado** (26/10/2026): gravar e apagar
    fotos só quem tem acesso à loja (admin ou aprovado daquela loja), só imagem, no máximo 5 MB; logos (`logos/`) só o
    admin; o resto fechado; leitura das fotos do catálogo continua pública. 16 casos testados no emulador.
    Publicação: só as regras do Storage (`firebase deploy --only storage`).
-3. 🟡 **Chave do Gemini fora do site — solução definitiva** (segurança, ALTA) — **código feito, não publicado**
+3. ✅ **Chave do Gemini fora do site — solução definitiva** (segurança, ALTA) — **feito e publicado**
    (26/10/2026). Escolhida a **opção A, Firebase AI Logic + App Check** (funciona no plano Spark, sem cartão; a B,
    Cloud Functions + Secret Manager, exige o Blaze). A IA passa por `firebase/ai` (Gemini Developer API, modelo
    `gemini-2.5-flash`), com App Check (reCAPTCHA Enterprise) ligado só na primeira chamada; no emulador a IA fica
