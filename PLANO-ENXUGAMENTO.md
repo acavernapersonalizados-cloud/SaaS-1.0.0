@@ -28,27 +28,22 @@
 | 8 — Central de Calculadoras | Partes 8A, 8B, 8C, 8D-1 e 8D-2, e a correção do Preço de Compra (abaixo). Ver seção 6. | ✅ **Feita e publicada** (24 a 26/10/2026). |
 | 8A — Orçamento e divisão das telas | Aviso do "Gerar Orçamento"; `Products.tsx` e `Pricing.tsx` divididos. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8a-ok`. |
 | 8B — Menu e preço por canal | Nomes no menu, guia única "Calculadoras", preço manual com respaldo, preço sugerido por canal. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8b-ok`. |
-| 8C — Canais e catálogo | Atacado por quantidade, Pix e crédito, Instagram 0%, trabalho salvo vira Produto (item 8 → Estacionamento). | ✅ **Feita e publicada** (item 3 em 25/10/2026; item 4 em 26/10/2026). 🟡 **Correção do item 4 feita e não publicada** (26/10/2026): custo e sugerido iguais aos da calculadora, tempo/embalagem/materiais vindos do trabalho. |
+| 8C — Canais e catálogo | Atacado por quantidade, Pix e crédito, Instagram 0%, trabalho salvo vira Produto (item 8 → Estacionamento). | ✅ **Feita e publicada** (item 3 em 25/10/2026; item 4 em 26/10/2026, com as correções de custo, sugerido e centavos publicadas em 26/10/2026). |
 | 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
 | 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
 | Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
-| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | 🟡 **Em andamento** (aprovada em 26/10/2026, ordem 9A → 9C; 9B no Estacionamento): **9A e 9C feitas e não publicadas** (26/10/2026). |
+| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A e 9C; 9B no Estacionamento. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. |
 
 **Onde paramos (26/10/2026):**
 
-- No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): Etapas 0 a 8 completas, com a correção do Preço de Compra.
-- **Não publicado** (267 testes, lint e build): 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
-  e a **correção do item 4 da 8C**: produto criado de trabalho = custo e sugerido da calculadora, sem somar mão de obra
-  e embalagem de novo; tempo, embalagem e materiais do estoque vêm do trabalho, travados e sem obrigatoriedade.
-- Também não publicado: preço e custo vindos do trabalho em centavos (ao criar, ao atualizar e ao abrir o produto),
-  o que acaba com o "valores válidos mais próximos" ao salvar.
-- Auditoria (backup de 26/10): 1 produto de trabalho (Caneca Mágica, T&N), com o preço manual 58,93222… e o custo
-  29,4661…; **aprovado por você em 26/10/2026**: depois de publicar, clique em "Atualizar preço do produto" no trabalho: grava
-  58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1. O preço do catálogo de 69 produtos tem mais casas, mas é
-  calculado sozinho e não fica em campo de digitação (não trava nada).
-- Falta você: testar no emulador (9A, 9C com a IA de verdade e o item 4) e as tarefas fora do código em "Falta".
-- Código no GitHub. Nenhum item aberto. Publicar = só o site (nenhuma regra do banco mudou), quando você pedir.
+- No ar (26/10/2026, só o site, `index-s3tADGcf.js`): **Etapas 0 a 9 completas** (9B no Estacionamento).
+- Publicado hoje e testado por você no emulador: 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
+  e as 2 correções do item 4 da 8C (custo e sugerido iguais aos da calculadora; preço e custo em centavos).
+- **Falta você agora:** no site, clicar em "Atualizar preço do produto" no trabalho da Caneca Mágica (aprovado em
+  26/10/2026: grava 58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1).
+- Depois: as tarefas fora do código em "Falta". O projeto termina na Etapa 9; o resto é opcional (Estacionamento).
+- Código no GitHub. Nenhum item aberto.
 
 ## Entregue
 
@@ -77,9 +72,9 @@ O que cada etapa trouxe para quem usa o app:
 
 **Etapa 9 — Monitor de taxas**
 
-- **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (feita, não publicada).
+- **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (feita e publicada).
 - **9B** — Comissão do Mercado Livre pela API: opcional, no Estacionamento (exige app, login e servidor).
-- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita, não publicada).
+- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita e publicada).
 
 **Estacionamento (todos opcionais)**
 
@@ -518,7 +513,7 @@ Testes: 155 → 157.
 |---|---|---|
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
-| **8C** — canais (3a, 3b, 3c) ✅ feita e publicada (25/10/2026); item 4 ✅ **feito** (26/10/2026), não publicado; item 8 → Estacionamento | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
+| **8C** — canais (3a, 3b, 3c) ✅ feita e publicada (25/10/2026); item 4 ✅ feito e publicado (26/10/2026, com as correções); item 8 → Estacionamento | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
 | **8D** — 8D-1 ✅ **feita e publicada** (tag `etapa-8d1-ok`); 8D-2 ✅ **feita e publicada** (tag `etapa-8d2-ok`) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
 
 **Resultado da 8C, parte 3a (atacado por quantidade):** o canal Atacado (+5%) saiu da tabela padrão (nenhuma loja tinha
