@@ -31,12 +31,11 @@
 
 **Onde paramos (26/10/2026):**
 
-- No ar (25/10/2026, só o site, `index-9CYzabst.js`): 8A, 8B, 8D, preço de compra, acentos e **8C item 3**.
-- **8C item 4 feito, não publicado e não testado no navegador** (240 testes, lint e build): trabalho salvo das 5
-  calculadoras vira Produto com confirmação, oculto no catálogo, sem duplicados ("Abrir produto" / "Atualizar preço").
-- 8C item 8 (markup extra por canal) foi para o Estacionamento. A 8C fica completa.
-- Falta você: testar o item 4 no emulador, reabrir o app no site e corrigir pela tela as matérias-primas erradas.
-- Código no GitHub. Nenhum item aberto. Publicar = só o site (nenhuma regra do banco mudou), quando você pedir.
+- No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): 8A, 8B, 8D, preço de compra, acentos e **8C completa**
+  (item 3 canais; item 4 trabalho salvo vira Produto, testado por você no emulador: OK).
+- 8C item 8 (markup extra por canal) e o texto do cartão de produto vindo de trabalho estão no Estacionamento.
+- Falta você: reabrir o app no site e corrigir pela tela as matérias-primas erradas.
+- Código no GitHub. Nenhum item aberto.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -628,6 +627,8 @@ Ordem:
 
 ## 7. Estacionamento (não é enxugamento — para depois)
 
+- **Cartão do produto criado a partir de trabalho** (26/10/2026): trocar "0 min · 0 materiais" por "Custo da
+  calculadora: [nome da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
 - **Markup extra opcional por canal** (8C item 8, movido para cá em 26/10/2026): somar um % próprio a cada canal na
   tabela de canais. **Muda preço:** entra com comparação antes/depois.
 - **Abrir um trabalho salvo de volta na calculadora** (26/10/2026): hoje não existe. Os trabalhos antigos de Laser,
