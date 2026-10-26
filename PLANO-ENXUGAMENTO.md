@@ -32,17 +32,18 @@
 | 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
 | 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
 | Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
-| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | 🟡 **Em andamento** (aprovada em 26/10/2026, ordem 9A → 9C; 9B no Estacionamento): **9A feita e não publicada** (26/10/2026); 9C pendente. |
+| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | 🟡 **Em andamento** (aprovada em 26/10/2026, ordem 9A → 9C; 9B no Estacionamento): **9A e 9C feitas e não publicadas** (26/10/2026). |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. |
 
 **Onde paramos (26/10/2026):**
 
 - No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): Etapas 0 a 8 completas, com a correção do Preço de Compra.
-- **9A feita, não publicada e não testada no navegador** (246 testes, lint e build): aviso dos canais sem
-  conferência há mais de 60 dias na Base de Custos e em Orçamentos, e o botão "Conferi hoje" (grava só a data).
+- **9A e 9C feitas, não publicadas e não testadas no navegador** (252 testes, lint e build): aviso de 60 dias com
+  "Conferi hoje", e "Verificar taxas com IA" (sugestões com fonte; cada uma aplicada ou recusada por você).
+- A 9C não foi testada com a IA de verdade (só simulada nos testes): confira no emulador com a chave do Gemini.
 - 9B (Mercado Livre pela API) está no Estacionamento. O projeto termina na Etapa 9; a Etapa 10 fica só registrada.
-- Falta você: as tarefas fora do código listadas em "Falta".
-- Código no GitHub. Nenhum item aberto. Próximo passo: 9C. Publicar = só o site, quando você pedir.
+- Falta você: testar a 9A e a 9C, e as tarefas fora do código listadas em "Falta".
+- Código no GitHub. Nenhum item aberto. Publicar = só o site (nenhuma regra do banco mudou), quando você pedir.
 
 ## Entregue
 
@@ -73,7 +74,7 @@ O que cada etapa trouxe para quem usa o app:
 
 - **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (feita, não publicada).
 - **9B** — Comissão do Mercado Livre pela API: opcional, no Estacionamento (exige app, login e servidor).
-- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (aprovada, a fazer).
+- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita, não publicada).
 
 **Estacionamento (todos opcionais)**
 

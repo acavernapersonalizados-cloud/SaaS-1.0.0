@@ -195,3 +195,33 @@ export async function analyzeCestaPrice(
     tipKind: 'produto',
   });
 }
+
+// ─── Etapa 9C: verificação das taxas dos canais, com pesquisa no Google ───────
+
+export interface FeeCheckResponse {
+  /** Texto da IA (a lista em JSON pedida em lib/feeCheck.ts). */
+  text: string;
+  /** Páginas que a pesquisa usou (título e link). */
+  sources: Array<{ title: string; uri: string }>;
+}
+
+/** Pede à IA a conferência das taxas, pesquisando na web. null sem chave da IA ou em caso de erro. */
+export async function checkChannelFees(prompt: string): Promise<FeeCheckResponse | null> {
+  const client = getGeminiClient();
+  if (!client) return null;
+  try {
+    const response = await client.models.generateContent({
+      model: MODEL,
+      contents: prompt,
+      config: { tools: [{ googleSearch: {} }] },
+    });
+    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
+    const sources = chunks
+      .map(c => ({ title: c.web?.title ?? '', uri: c.web?.uri ?? '' }))
+      .filter(s => /^https?:\/\//.test(s.uri));
+    return { text: response.text ?? '', sources };
+  } catch (err) {
+    console.warn('[Gemini] Erro na verificação de taxas:', err);
+    return null;
+  }
+}

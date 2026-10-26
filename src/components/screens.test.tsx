@@ -25,9 +25,16 @@ vi.mock('../contexts/StoreContext', () => import('../test/contextMocks'));
 vi.mock('../contexts/AuthContext', () => import('../test/contextMocks'));
 vi.mock('../contexts/ToastContext', () => import('../test/contextMocks'));
 // IA nunca é chamada de verdade nos testes (o .env pode ter a chave): toda função responde "sem IA".
+// Etapa 9C: a verificação de taxas com IA é simulada; cada teste escolhe a resposta.
+const geminiMock = vi.hoisted(() => ({
+  checkChannelFees: vi.fn<
+    (prompt: string) => Promise<{ text: string; sources: { title: string; uri: string }[] } | null>
+  >(async () => null),
+}));
 vi.mock('../services/gemini', () => {
   const none = async () => null;
   return {
+    checkChannelFees: geminiMock.checkChannelFees,
     analyzePriceHealth: none,
     suggestIdealMargin: none,
     analyzeManualPrice: none,
@@ -372,6 +379,80 @@ describe('Canais sem conferência (60 dias)', () => {
     await show(<Pricing />);
     expect(text()).toContain('Taxas sem conferência há mais de 60 dias:');
     expect(text()).toContain('Mercado Livre (nunca conferido)');
+  });
+});
+
+// Etapa 9C — "Verificar taxas com IA": sugestões com fonte; cada uma aprovada ou recusada.
+describe('Verificar taxas com IA', () => {
+  const text = () => (document.body.textContent ?? '').replace(/\s/g, ' ');
+  const answer = {
+    text: JSON.stringify([
+      {
+        channelId: 'shopee',
+        field: 'commissionPct',
+        suggested: 22,
+        sourceUrl: 'https://seller.shopee.com.br/taxas',
+        note: 'Comissão de 22% para vendedor comum.',
+      },
+      { channelId: 'ifood', field: 'commissionPct', suggested: 27, sourceUrl: '' },
+      {
+        channelId: 'mercado-livre',
+        field: 'commissionPct',
+        suggested: 19,
+        sourceUrl: 'https://www.mercadolivre.com.br/ajuda/custos',
+      },
+    ]),
+    sources: [{ title: 'Taxas Shopee', uri: 'https://seller.shopee.com.br/taxas' }],
+  };
+  const loadCostBase = async () => {
+    const { CostBaseSettings } = await import('./CostBase');
+    await show(<CostBaseSettings />);
+  };
+  it('mostra as sugestões com a fonte; "Aplicar" grava só aquele campo e "Recusar" não grava nada', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    geminiMock.checkChannelFees.mockResolvedValueOnce(answer);
+    await loadCostBase();
+    writes.length = 0;
+    await click(buttonWithText('Verificar taxas com IA'));
+    expect(geminiMock.checkChannelFees).toHaveBeenCalledWith(expect.stringContaining('id "shopee" — Shopee'));
+    expect(text()).toContain('Shopee · Comissão %: 20 → 22');
+    expect(text()).toContain('Fonte: https://seller.shopee.com.br/taxas');
+    expect(text()).toContain('Mercado Livre · Comissão %: 18 → 19');
+    expect(text()).toContain('1 sugestão(ões) sem fonte ou com valor inválido foram descartadas.');
+    expect(text()).toContain('Páginas pesquisadas:');
+    expect(writes).toHaveLength(0); // nada muda sem aprovação
+    expect(html()).toMatchSnapshot();
+
+    const row = (label: string) =>
+      Array.from(document.querySelectorAll('div')).find(
+        d => d.querySelector('p')?.textContent?.startsWith(label) && d.querySelector('button'),
+      )!;
+    await click(Array.from(row('Mercado Livre').querySelectorAll('button')).find(b => b.textContent === 'Recusar')!);
+    expect(writes).toHaveLength(0);
+    expect(text()).not.toContain('Mercado Livre · Comissão %');
+
+    await click(Array.from(row('Shopee').querySelectorAll('button')).find(b => b.textContent === 'Aplicar')!);
+    expect(writes).toHaveLength(1);
+    expect(writes[0].path).toBe('costBases/loja-teste');
+    const saved = writes[0].data.salesChannels as Array<{ id: string; commissionPct: number }>;
+    expect(saved.map(c => [c.id, c.commissionPct])).toEqual([
+      ['venda-direta', 0],
+      ['instagram', 0],
+      ['shopee', 22],
+      ['mercado-livre', 18],
+      ['ifood', 26.5],
+      ['99food', 13],
+    ]);
+    expect(text()).toContain('Nenhuma mudança pendente nas taxas.');
+  });
+  it('IA indisponível: avisa e não muda nada', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    geminiMock.checkChannelFees.mockResolvedValueOnce(null);
+    await loadCostBase();
+    writes.length = 0;
+    await click(buttonWithText('Verificar taxas com IA'));
+    expect(text()).toContain('IA indisponível agora. Nada foi alterado; tente mais tarde.');
+    expect(writes).toHaveLength(0);
   });
 });
 

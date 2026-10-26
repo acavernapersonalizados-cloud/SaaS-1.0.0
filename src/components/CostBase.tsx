@@ -21,10 +21,18 @@ import {
   wholesaleTiersOf,
 } from '../lib/wholesale';
 import { electricityRateOf } from '../lib/defaults';
+import {
+  FEE_FIELD_LABELS,
+  FeeSuggestion,
+  applyFeeSuggestion,
+  buildFeeCheckPrompt,
+  parseFeeSuggestions,
+} from '../lib/feeCheck';
+import { checkChannelFees } from '../services/gemini';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Save, Info, Calculator, Loader2, AlertCircle, Plus, Trash2 } from 'lucide-react';
+import { Save, Info, Calculator, Loader2, AlertCircle, Plus, Trash2, Sparkles } from 'lucide-react';
 
 export function CostBaseSettings() {
   const { activeStore } = useStore();
@@ -71,6 +79,75 @@ export function CostBaseSettings() {
       setCheckingId(null);
     }
   };
+
+  // Etapa 9C: "Verificar taxas com IA". A IA sugere mudanças com a fonte; cada uma só entra com "Aplicar"
+  // (grava na hora só aquele campo daquele canal) ou sai com "Recusar". Nada muda sem aprovação.
+  const [feeCheck, setFeeCheck] = useState<{
+    loading: boolean;
+    done: boolean;
+    unavailable: boolean;
+    unreadable: boolean;
+    discarded: number;
+    suggestions: FeeSuggestion[];
+    sources: Array<{ title: string; uri: string }>;
+  } | null>(null);
+  const [applyingFee, setApplyingFee] = useState<string | null>(null);
+  const feeKey = (s: FeeSuggestion) => `${s.channelId}:${s.field}`;
+  const runFeeCheck = async () => {
+    setFeeCheck({
+      loading: true,
+      done: false,
+      unavailable: false,
+      unreadable: false,
+      discarded: 0,
+      suggestions: [],
+      sources: [],
+    });
+    const response = await checkChannelFees(buildFeeCheckPrompt(savedChannels));
+    if (!response) {
+      setFeeCheck({
+        loading: false,
+        done: true,
+        unavailable: true,
+        unreadable: false,
+        discarded: 0,
+        suggestions: [],
+        sources: [],
+      });
+      return;
+    }
+    const { suggestions, discarded, unreadable } = parseFeeSuggestions(response.text, savedChannels);
+    setFeeCheck({
+      loading: false,
+      done: true,
+      unavailable: false,
+      unreadable,
+      discarded,
+      suggestions,
+      sources: response.sources,
+    });
+  };
+  const dropFee = (s: FeeSuggestion) =>
+    setFeeCheck(prev =>
+      prev ? { ...prev, suggestions: prev.suggestions.filter(x => feeKey(x) !== feeKey(s)) } : prev,
+    );
+  const approveFee = async (s: FeeSuggestion) => {
+    if (!activeStore) return;
+    const salesChannels = applyFeeSuggestion(savedChannels, s);
+    setApplyingFee(feeKey(s));
+    try {
+      await setDoc(doc(db, 'costBases', activeStore.id), { salesChannels, storeId: activeStore.id }, { merge: true });
+      setCosts(prev => ({ ...prev, salesChannels }));
+      setChannels(prev => applyFeeSuggestion(prev, s));
+      dropFee(s);
+      addToast(`${s.channelName}: ${FEE_FIELD_LABELS[s.field]} atualizada para ${s.suggested}.`, 'success');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `costBases/${activeStore.id}`);
+    } finally {
+      setApplyingFee(null);
+    }
+  };
+
   // Faixas de atacado da loja (Etapa 8C); enquanto não são salvas, mostra as padrão.
   const [tiers, setTiers] = useState<WholesaleTier[]>(wholesaleTiersOf(null));
   const setTier = (i: number, patch: Partial<WholesaleTier>) =>
@@ -433,6 +510,103 @@ export function CostBaseSettings() {
           >
             <Plus className="w-4 h-4" /> Incluir canal
           </button>
+
+          {canEdit && (
+            <div className="space-y-3 p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs text-neutral-500">
+                  A IA pesquisa as páginas oficiais dos canais e sugere mudanças com a fonte. Nada muda sem você
+                  aplicar.
+                </p>
+                <button
+                  type="button"
+                  onClick={runFeeCheck}
+                  disabled={feeCheck?.loading}
+                  className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-white bg-neutral-900 rounded-lg hover:bg-neutral-800 disabled:opacity-50"
+                >
+                  {feeCheck?.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  Verificar taxas com IA
+                </button>
+              </div>
+              {feeCheck?.done && (
+                <div className="space-y-2 text-xs">
+                  {feeCheck.unavailable && (
+                    <p className="text-red-700 font-bold">
+                      IA indisponível agora. Nada foi alterado; tente mais tarde.
+                    </p>
+                  )}
+                  {feeCheck.unreadable && (
+                    <p className="text-red-700 font-bold">
+                      A IA não respondeu no formato esperado. Nada foi alterado; tente de novo.
+                    </p>
+                  )}
+                  {!feeCheck.unavailable && !feeCheck.unreadable && feeCheck.suggestions.length === 0 && (
+                    <p className="text-emerald-700 font-bold">Nenhuma mudança pendente nas taxas.</p>
+                  )}
+                  {feeCheck.discarded > 0 && (
+                    <p className="text-amber-700">
+                      {feeCheck.discarded} sugestão(ões) sem fonte ou com valor inválido foram descartadas.
+                    </p>
+                  )}
+                  {feeCheck.suggestions.length > 0 && (
+                    <p className="text-amber-700 font-bold">A IA pode errar: abra a fonte antes de aplicar.</p>
+                  )}
+                  {feeCheck.suggestions.map(s => (
+                    <div
+                      key={feeKey(s)}
+                      className="flex flex-wrap items-center justify-between gap-2 p-3 bg-white border border-neutral-200 rounded-lg"
+                    >
+                      <div className="space-y-0.5">
+                        <p className="font-bold text-neutral-900">
+                          {s.channelName} · {FEE_FIELD_LABELS[s.field]}: {s.current} → {s.suggested}
+                        </p>
+                        {s.note && <p className="text-neutral-500">{s.note}</p>}
+                        <a
+                          href={s.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-700 underline break-all"
+                        >
+                          Fonte: {s.sourceUrl}
+                        </a>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => approveFee(s)}
+                          disabled={applyingFee === feeKey(s)}
+                          className="px-3 py-1.5 font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                          Aplicar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => dropFee(s)}
+                          className="px-3 py-1.5 font-bold text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200"
+                        >
+                          Recusar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {feeCheck.sources.length > 0 && (
+                    <div className="text-neutral-500">
+                      <p className="font-bold">Páginas pesquisadas:</p>
+                      <ul className="list-disc pl-5">
+                        {feeCheck.sources.map(src => (
+                          <li key={src.uri}>
+                            <a href={src.uri} target="_blank" rel="noopener noreferrer" className="underline break-all">
+                              {src.title || src.uri}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="space-y-3 pt-6 border-t border-neutral-100">
