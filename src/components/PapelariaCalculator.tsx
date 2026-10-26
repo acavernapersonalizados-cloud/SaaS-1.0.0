@@ -17,7 +17,7 @@ import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
-import { analyzePapelariaPrice } from '../services/gemini';
+import { aiUnavailableMessage, analyzePapelariaPrice } from '../services/gemini';
 import {
   FileText,
   Calculator,
@@ -173,7 +173,7 @@ export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (produc
     setAiLoading(true);
     try {
       const analysis = await analyzePapelariaPrice(jobName, result.totalCostUnit, price);
-      setAiAnalysis(analysis || '');
+      setAiAnalysis(analysis || aiUnavailableMessage());
     } catch {
       setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
     }

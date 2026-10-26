@@ -3,6 +3,8 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const sent: string[] = [];
+// Quando preenchido, a IA simulada falha com esta mensagem (para testar o motivo resumido).
+let failWith: string | null = null;
 // Estacionamento item 3: a IA passa pelo Firebase AI Logic (firebase/ai) com App Check.
 vi.mock('firebase/ai', () => ({
   getAI: () => ({}),
@@ -10,6 +12,7 @@ vi.mock('firebase/ai', () => ({
   getGenerativeModel: () => ({
     generateContent: async (prompt: string) => {
       sent.push(prompt);
+      if (failWith) throw new Error(failWith);
       return { response: { text: () => 'resposta simulada' } };
     },
   }),
@@ -60,5 +63,35 @@ describe('Textos enviados à IA (não podem mudar)', () => {
   it('analyzeCestaPrice', async () => {
     await gemini.analyzeCestaPrice('TESTE Café da manhã', 71.5, 127.11);
     expect(lastPrompt()).toMatchSnapshot();
+  });
+});
+
+// 26/10/2026: o modelo fica numa constante única, e a tela mostra o motivo resumido quando a IA falha.
+describe('Modelo único e motivo da falha', () => {
+  it('todas as funções usam o mesmo modelo (constante AI_MODEL)', () => {
+    expect(gemini.AI_MODEL).toBe('gemini-3.8-flash');
+  });
+  it.each([
+    [
+      'models/gemini-2.5-flash is no longer available to new users. Please update your code',
+      'IA indisponível: o modelo de IA (gemini-3.8-flash) não está disponível para este projeto.',
+    ],
+    [
+      'Grounding with Google Search is not available on the free tier',
+      'IA indisponível: a busca com fontes do Google não está liberada no nível gratuito (exige cobrança ativa no projeto).',
+    ],
+    [
+      '[403] PERMISSION_DENIED: App Check token is invalid',
+      'IA indisponível: acesso à IA negado (App Check ou permissão do projeto).',
+    ],
+    ['[429] RESOURCE_EXHAUSTED: quota exceeded', 'IA indisponível: limite de uso da IA atingido; tente mais tarde.'],
+  ])('erro "%s" → mensagem com o motivo', async (error, message) => {
+    failWith = error;
+    try {
+      expect(await gemini.analyzeCestaPrice('TESTE', 10, 20)).toBeNull();
+      expect(gemini.aiUnavailableMessage()).toBe(message);
+    } finally {
+      failWith = null;
+    }
   });
 });

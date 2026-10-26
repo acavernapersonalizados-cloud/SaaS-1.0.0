@@ -15,7 +15,7 @@ import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, creditPrice, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
-import { analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
+import { aiUnavailableMessage, analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
 import { useToast } from '../contexts/ToastContext';
 import {
   Calculator,
@@ -301,7 +301,7 @@ export function Pricing() {
         currentItemResults.unitPrice,
         (currentItemResults.itemProfit / currentItemResults.totalPrice) * 100,
       );
-      setAiAnalysis(analysis || '');
+      setAiAnalysis(analysis || aiUnavailableMessage());
     } catch (e) {
       setAiAnalysis('Erro ao analisar preço.');
     }

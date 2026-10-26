@@ -20,7 +20,7 @@ import { isAppOutdated } from '../lib/appUpdate';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { analyzeManualPrice } from '../services/gemini';
+import { aiUnavailableMessage, analyzeManualPrice } from '../services/gemini';
 import { uploadProductImage, uploadGalleryImage, deleteImageByUrl } from '../services/imageUpload';
 import { ProductCards, ProductChannelTable, ProductTable, SortField } from './ProductList';
 import { channelsOf } from '../lib/channels';
@@ -273,7 +273,7 @@ export function Products({
         newProduct.manualPrice,
         newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', '),
       );
-      setAiAnalysis(analysis || '');
+      setAiAnalysis(analysis || aiUnavailableMessage());
       setNewProduct(p => ({ ...p, aiPriceAnalysis: analysis || '' }));
     } catch {
       setAiAnalysis('Erro ao analisar. Verifique sua conexão.');

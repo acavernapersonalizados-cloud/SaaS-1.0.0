@@ -15,7 +15,7 @@ import { JobHistoryList } from './JobHistoryList';
 import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
-import { analyzeLaserPrice } from '../services/gemini';
+import { aiUnavailableMessage, analyzeLaserPrice } from '../services/gemini';
 import {
   Zap,
   Calculator,
@@ -245,7 +245,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         selectedMachine.label,
         material || 'não especificado',
       );
-      setAiAnalysis(analysis || '');
+      setAiAnalysis(analysis || aiUnavailableMessage());
     } catch {
       setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
     }

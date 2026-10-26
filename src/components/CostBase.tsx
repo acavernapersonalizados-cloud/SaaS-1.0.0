@@ -28,7 +28,7 @@ import {
   buildFeeCheckPrompt,
   parseFeeSuggestions,
 } from '../lib/feeCheck';
-import { checkChannelFees } from '../services/gemini';
+import { aiUnavailableMessage, checkChannelFees } from '../services/gemini';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -535,9 +535,7 @@ export function CostBaseSettings() {
               {feeCheck?.done && (
                 <div className="space-y-2 text-xs">
                   {feeCheck.unavailable && (
-                    <p className="text-red-700 font-bold">
-                      IA indisponível agora. Nada foi alterado; tente mais tarde.
-                    </p>
+                    <p className="text-red-700 font-bold">{aiUnavailableMessage()} Nada foi alterado.</p>
                   )}
                   {feeCheck.unreadable && (
                     <p className="text-red-700 font-bold">

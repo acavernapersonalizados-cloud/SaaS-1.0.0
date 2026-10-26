@@ -14,8 +14,49 @@ import { firebaseApp, USE_EMULATOR } from '../firebase';
 
 let _ai: AI | null = null;
 
+/**
+ * MODELO DA IA — o único lugar para trocar (vale para todas as funções deste arquivo).
+ * 26/10/2026: o Gemini 2.0 Flash foi desligado e o 2.5 Flash não é liberado para projetos novos; o
+ * `gemini-3.8-flash` é estável e grátis no nível gratuito para texto. Atenção: no nível gratuito, a busca
+ * com fontes do Google (usada só pela 9C) NÃO está disponível nos modelos 3.x — exige cobrança ativa
+ * (5.000 buscas grátis por mês, depois US$ 14 a cada 1.000; ver ai.google.dev/gemini-api/docs/pricing).
+ */
+export const AI_MODEL = 'gemini-3.8-flash';
+
+// Motivo resumido da última falha da IA, para a tela mostrar no lugar de um "IA indisponível" genérico.
+let lastFailure = '';
+
+function summarizeAIError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err ?? '');
+  const msg = raw.toLowerCase();
+  if (msg.includes('no longer available') || msg.includes('not found') || msg.includes('404'))
+    return `o modelo de IA (${AI_MODEL}) não está disponível para este projeto`;
+  if (msg.includes('search') || msg.includes('grounding'))
+    return 'a busca com fontes do Google não está liberada no nível gratuito (exige cobrança ativa no projeto)';
+  if (msg.includes('app check') || msg.includes('appcheck') || msg.includes('permission') || msg.includes('403'))
+    return 'acesso à IA negado (App Check ou permissão do projeto)';
+  if (msg.includes('quota') || msg.includes('rate') || msg.includes('429') || msg.includes('resource_exhausted'))
+    return 'limite de uso da IA atingido; tente mais tarde';
+  if (msg.includes('fetch') || msg.includes('network') || msg.includes('offline')) return 'sem conexão com a IA';
+  return raw.slice(0, 140) || 'erro desconhecido';
+}
+
+function fail(context: string, err: unknown): null {
+  lastFailure = summarizeAIError(err);
+  console.warn(`[Gemini] ${context}:`, err);
+  return null;
+}
+
+/** Mensagem para a tela quando a IA não respondeu: "IA indisponível: <motivo resumido>." */
+export function aiUnavailableMessage(): string {
+  return `IA indisponível: ${lastFailure || 'sem resposta da IA'}.`;
+}
+
 function getAIClient(): AI | null {
-  if (USE_EMULATOR) return null;
+  if (USE_EMULATOR) {
+    lastFailure = 'a IA fica desligada no emulador (npm run dev); ela só funciona no site';
+    return null;
+  }
   if (!_ai) {
     const siteKey = import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY as string | undefined;
     if (siteKey) {
@@ -29,19 +70,17 @@ function getAIClient(): AI | null {
   return _ai;
 }
 
-// Gemini 2.5 Flash: a busca com fontes (9C) é grátis até 500 por dia no nível gratuito.
-const MODEL = 'gemini-2.5-flash';
-
-// Helper interno: chama a API ou retorna null sem lançar erro
+// Helper interno: chama a API ou retorna null sem lançar erro (o motivo fica em aiUnavailableMessage)
 async function generate(prompt: string): Promise<string | null> {
   const ai = getAIClient();
   if (!ai) return null;
   try {
-    const result = await getGenerativeModel(ai, { model: MODEL }).generateContent(prompt);
-    return result.response.text() || null;
+    const result = await getGenerativeModel(ai, { model: AI_MODEL }).generateContent(prompt);
+    const text = result.response.text();
+    if (!text) lastFailure = 'a IA respondeu vazio';
+    return text || null;
   } catch (err) {
-    console.warn('[Gemini] Erro na geração:', err);
-    return null;
+    return fail('Erro na geração', err);
   }
 }
 
@@ -227,7 +266,7 @@ export async function checkChannelFees(prompt: string): Promise<FeeCheckResponse
   const ai = getAIClient();
   if (!ai) return null;
   try {
-    const model = getGenerativeModel(ai, { model: MODEL, tools: [{ googleSearch: {} }] });
+    const model = getGenerativeModel(ai, { model: AI_MODEL, tools: [{ googleSearch: {} }] });
     const { response } = await model.generateContent(prompt);
     const grounding = response.candidates?.[0]?.groundingMetadata;
     const sources = (grounding?.groundingChunks ?? [])
@@ -239,7 +278,6 @@ export async function checkChannelFees(prompt: string): Promise<FeeCheckResponse
       searchSuggestionsHtml: grounding?.searchEntryPoint?.renderedContent ?? '',
     };
   } catch (err) {
-    console.warn('[Gemini] Erro na verificação de taxas:', err);
-    return null;
+    return fail('Erro na verificação de taxas', err);
   }
 }

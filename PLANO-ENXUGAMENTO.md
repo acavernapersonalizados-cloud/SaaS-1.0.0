@@ -39,6 +39,10 @@
 
 - No ar (26/10/2026, `index-CEo5kbog.js`): Etapas 0 a 9 completas, **regras do Storage por loja** e a **IA pelo
   Firebase AI Logic + App Check** (nenhuma chave do Gemini no site, conferido no site publicado).
+- **Modelo da IA trocado para `gemini-3.8-flash`** (26/10/2026; o 2.5 Flash não é liberado para projetos novos), numa
+  constante única (`AI_MODEL` em `services/gemini.ts`), e a tela mostra o motivo quando a IA falha. **Atenção:** no
+  nível gratuito, a busca com fontes do Google (usada só pela 9C, "Verificar taxas com IA") não existe nos modelos 3.x;
+  ela exige cobrança ativa (5.000 buscas grátis/mês, depois US$ 14 a cada 1.000). As análises de preço funcionam grátis.
 - **Falta você, no site:** (1) "Atualizar agora"; (2) testar "Verificar taxas com IA"; (3) funcionou → App Check →
   APIs → Firebase AI Logic → **Exigir** e testar de novo; (4) funcionou → **apagar a chave antiga do Gemini**;
   (5) enviar uma foto de produto (confere as regras novas do Storage); (6) "Atualizar preço do produto" na Caneca Mágica.

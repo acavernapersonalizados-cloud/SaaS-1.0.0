@@ -35,6 +35,7 @@ vi.mock('../services/gemini', () => {
   const none = async () => null;
   return {
     checkChannelFees: geminiMock.checkChannelFees,
+    aiUnavailableMessage: () => 'IA indisponível: a busca com fontes do Google não está liberada (teste).',
     analyzePriceHealth: none,
     suggestIdealMargin: none,
     analyzeManualPrice: none,
@@ -463,7 +464,10 @@ describe('Verificar taxas com IA', () => {
     await loadCostBase();
     writes.length = 0;
     await click(buttonWithText('Verificar taxas com IA'));
-    expect(text()).toContain('IA indisponível agora. Nada foi alterado; tente mais tarde.');
+    // Mostra o motivo resumido da falha, não um "IA indisponível" genérico.
+    expect(text()).toContain(
+      'IA indisponível: a busca com fontes do Google não está liberada (teste). Nada foi alterado.',
+    );
     expect(writes).toHaveLength(0);
   });
 });

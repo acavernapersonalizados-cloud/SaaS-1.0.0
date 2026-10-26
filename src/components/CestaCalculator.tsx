@@ -17,7 +17,7 @@ import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
-import { analyzeCestaPrice } from '../services/gemini';
+import { aiUnavailableMessage, analyzeCestaPrice } from '../services/gemini';
 import {
   Gift,
   Calculator,
@@ -180,7 +180,7 @@ export function CestaCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     setAiLoading(true);
     try {
       const analysis = await analyzeCestaPrice(jobName, result.totalCostUnit, price);
-      setAiAnalysis(analysis || '');
+      setAiAnalysis(analysis || aiUnavailableMessage());
     } catch {
       setAiAnalysis('Erro ao analisar. Verifique sua conexão.');
     }
