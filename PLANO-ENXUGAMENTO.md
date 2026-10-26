@@ -42,8 +42,8 @@
   e as 2 correções do item 4 da 8C (custo e sugerido iguais aos da calculadora; preço e custo em centavos).
 - **Falta você agora:** no site, clicar em "Atualizar preço do produto" no trabalho da Caneca Mágica (aprovado em
   26/10/2026: grava 58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1).
-- Estacionamento organizado (26/10/2026): 9 itens escolhidos em ordem (seção 7.1), 4 para decidir depois, 2 para a
-  Etapa 10 e 9 descartados. **Próximo: item 1, Lista de Compras com transação** (lista de riscos e o seu "aprovado").
+- Verificação de segurança (26/10/2026, só leitura) reordenou o Estacionamento (seção 7.1): 2 itens de ALTA
+  gravidade na frente. **Próximo: item 1, chave do Gemini** (passo a passo para você) e depois as regras do Storage.
 - Código no GitHub. Nenhum item aberto.
 
 ## Entregue
@@ -77,17 +77,19 @@ O que cada etapa trouxe para quem usa o app:
 - **9B** — Comissão do Mercado Livre pela API: foi para a Etapa 10 (exige app, login e servidor).
 - **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita e publicada).
 
-**Estacionamento — escolhidos, nesta ordem (ver seção 7.1)**
+**Estacionamento — escolhidos, nesta ordem (ver seção 7.1; reordenado depois da verificação de segurança)**
 
-1. Lista de Compras atualizar o estoque com transação.
-2. Mensagem de PDF só depois de o PDF ficar pronto.
-3. Revisar o `npm audit`.
-4. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
-5. Matéria-prima aceitar estoque 0 no cadastro.
-6. Impressão 3D pedir para escolher a impressora.
-7. Ícone do app instalado.
-8. Laser escolher material do estoque.
-9. Chave do Gemini protegida por site e com limite diário (passo a passo para você; servidor só na Etapa 10).
+1. Chave do Gemini restrita ao site, só à API do Gemini e com limite diário (passo a passo para você, sem código).
+2. Regras do Storage por loja (só imagem e tamanho máximo).
+3. Regras do Firestore: atualizar só documentos da própria loja.
+4. Revisar o `npm audit`.
+5. Lista de Compras atualizar o estoque com transação.
+6. Mensagem de PDF só depois de o PDF ficar pronto.
+7. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
+8. Matéria-prima aceitar estoque 0 no cadastro.
+9. Impressão 3D pedir para escolher a impressora.
+10. Ícone do app instalado.
+11. Laser escolher material do estoque.
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -694,27 +696,33 @@ Ordem:
 Classificado em 26/10/2026 (importantes / úteis / dispensáveis). Cada item: lista de riscos curta, o seu "aprovado"
 e checkpoint completo; publicação só quando você pedir, juntando vários itens.
 
-### 7.1 Escolhidos, nesta ordem (26/10/2026)
+### 7.1 Escolhidos, nesta ordem (26/10/2026; reordenado depois da verificação de segurança)
 
-1. **Lista de Compras com transação** (importante, P): o registro de compra atualiza o estoque sem transação
-   (`PurchaseList.tsx`), diferente do resto do app; duas pessoas ao mesmo tempo podem deixar o estoque errado.
-2. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado —
+1. **Chave do Gemini protegida, sem servidor** (segurança, ALTA; você faz no Google Cloud, sem código): restringir a
+   chave ao site `saas-1-0-0.web.app` e só à API do Gemini, e pôr limite diário. Hoje ela está no arquivo
+   `gemini-*.js` do site e qualquer pessoa pode copiá-la. O definitivo (chamada no servidor) fica na Etapa 10.
+2. **Regras do Storage por loja** (segurança, ALTA, P; NOVO): hoje qualquer conta logada, até um autocadastro ainda
+   pendente, pode trocar ou apagar as fotos de qualquer loja e enviar qualquer arquivo. Passa a exigir acesso à loja,
+   só imagem e tamanho máximo. Publicação: regras do Storage, depois o site.
+3. **Regras do Firestore: atualizar só documentos da própria loja** (segurança, MÉDIA, P; NOVO): hoje a atualização
+   confere só a loja nova do documento, não a antiga; um usuário aprovado de uma loja poderia "puxar" um documento de
+   outra loja sabendo o id (os ids dos produtos do catálogo são públicos). Publicação: regras do banco.
+4. **Revisar o `npm audit`** (importante, P–M): no site só entra o `dompurify` (via jsPDF; o app não usa a função
+   afetada) — `npm audit fix` resolve sem mudança grande; o resto é só do computador de desenvolvimento.
+5. **Lista de Compras com transação** (importante, P): o registro de compra atualiza o estoque sem transação
+   (`PurchaseList.tsx`); duas pessoas ao mesmo tempo podem deixar o estoque errado.
+6. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado —
    falta `await`, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
-3. **Revisar o `npm audit`** (importante, P–M): a instalação limpa no GitHub mostrou 17 vulnerabilidades (4 moderadas,
-   13 altas) na versão antiga; rever na versão atual.
-4. **Cartão do produto criado de trabalho** (útil, P): trocar "0 min · 0 materiais" por "Custo da calculadora: [nome
+7. **Cartão do produto criado de trabalho** (útil, P): trocar "0 min · 0 materiais" por "Custo da calculadora: [nome
    da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
-5. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx` — o campo é obrigatório e mostra 0 como
+8. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx` — o campo é obrigatório e mostra 0 como
    vazio; mesmo problema que o T14 resolveu no estoque mínimo.
-6. **Impressão 3D pedir para escolher a impressora** (útil, P): sem impressora, o Resultado mostra "Preencha os
+9. **Impressão 3D pedir para escolher a impressora** (útil, P): sem impressora, o Resultado mostra "Preencha os
    parâmetros para calcular." mesmo com tudo preenchido (`PrintCalculator.tsx`). Conferir o mesmo no Corte a Laser.
-7. **Ícone do app instalado** (útil, P): o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não
-   existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
-8. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): hoje o material do Laser é digitado em R$,
-   então o produto criado de um trabalho do Laser não tem material vinculado e o estoque não baixa.
-9. **Chave do Gemini protegida, sem servidor** (importante): passo a passo para você restringir a chave por site
-   (`saas-1-0-0.web.app`) e pôr limite diário no Google Cloud. Mover a chamada para o servidor fica na Etapa 10, se
-   você decidir pagar o plano Blaze.
+10. **Ícone do app instalado** (útil, P): o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não
+    existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
+11. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): hoje o material do Laser é digitado em R$,
+    então o produto criado de um trabalho do Laser não tem material vinculado e o estoque não baixa.
 
 ### 7.2 Decidir depois de usar o app
 
@@ -730,6 +738,19 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 
 - **Lembrete de orçamento pendente por WhatsApp** (exige servidor). Ver Etapa 10.
 - **9B — Comissão do Mercado Livre pela API oficial** (exige app no Mercado Livre, login OAuth e servidor). Ver Etapa 10.
+
+### 7.5 Verificação de segurança (26/10/2026, só leitura)
+
+- **Produtos do catálogo são públicos por inteiro** (MÉDIA, decidir): quem lê o banco direto vê também custo do
+  trabalho, materiais, tempo e a análise da IA dos produtos marcados para o catálogo; produto sem o campo
+  `showInCatalog` conta como público. Corrigir exige uma coleção pública só com nome, foto e preço (M–G).
+- **Baixas:** admin reconhecido pelo e-mail sem exigir e-mail verificado; qualquer conta logada (até pendente) lista
+  as lojas (nome, telefone, endereço); qualquer operador apaga trabalhos de Papelaria/Cestas e itens da Lista de
+  Compras.
+- **Sem problema:** nenhum segredo no GitHub (`.env` fora do git, `.env.example` vazio); a chave do Firebase no
+  site é pública por natureza (o acesso é controlado pelas regras). O AgentShield deu D (58/100), mas os 1.248
+  "críticos" são falso alarme (códigos de conferência do `package-lock.json`) e o resto é configuração das
+  ferramentas de IA, não do app.
 
 ### 7.4 Descartados (26/10/2026)
 
