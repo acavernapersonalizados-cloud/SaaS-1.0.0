@@ -492,6 +492,63 @@ describe('Produtos (telas internas)', () => {
   });
   // Correção de 26/10/2026 (caso real da Caneca Mágica): produto criado de trabalho mantém o custo e o sugerido
   // da calculadora ao abrir, editar e salvar; tempo e embalagem vêm preenchidos, travados e não são obrigatórios.
+  // Correção de 26/10/2026: preço do trabalho com muitas casas (ex.: 38,535607…) travava o "Atualizar Produto"
+  // (campo com step 0,01). Criar de trabalho, abrir e salvar sem mexer em nada tem que funcionar nas 5 calculadoras.
+  it.each([
+    ['laser', { cuttingTimeMin: 3, engravingTimeMin: 2, passes: 1 }],
+    ['print3d', { postProcessHours: 0.25, packagingCost: 1.234 }],
+    ['papelaria', { quantity: 3, assemblyTimeMin: 10, materials: [{ materialId: 'mdf', quantity: 1 }] }],
+    ['cestas', { quantity: 3, assemblyTimeMin: 10, packagingCost: 1, items: [{ materialId: 'mdf', quantity: 1 }] }],
+    ['sublimacao', { laborMinPerPiece: 5, packagingCost: 1.5, baseMode: 'stock', baseMaterialId: 'mdf', baseQty: 1 }],
+  ] as const)('%s: produto criado de trabalho abre e salva sem mexer, em centavos', async (kind, extra) => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const { productFromJob } = await import('../lib/jobProduct');
+    const { calcProductPricing } = await import('../lib/pricingEngine');
+    const job = {
+      id: `job-${kind}`,
+      name: `TESTE ${kind}`,
+      totalCostUnit: 19.267803611111113,
+      unitPrice: 38.535607222222225,
+      suggestedUnit: 38.535607222222225,
+      ...extra,
+    };
+    const created = productFromJob(kind, job as never, { storeId: 'loja-teste', name: job.name, now: 'agora' });
+    expect(created.manualPrice).toBe(38.54);
+    expect(created.jobCostUnit).toBe(19.27);
+    const product = { ...created, id: `prod-${kind}` };
+    fixtures.products.push(product);
+    try {
+      const { Products } = await import('./Products');
+      await show(<Products openProductId={product.id} />);
+      const manual = field('Preço de Venda Manual') as HTMLInputElement;
+      expect(manual.value).toBe('38.54');
+      expect((document.getElementById('product-form') as HTMLFormElement).checkValidity()).toBe(true);
+      writes.length = 0;
+      await click(buttonWithText('Atualizar Produto'));
+      const saved = writes.find(w => w.path === `products/${product.id}`)!.data;
+      expect(saved.manualPrice).toBe(38.54);
+      const pricing = calcProductPricing(saved as never, fixtures.materials as never, fixtures.costBases[0] as never);
+      expect(pricing.totalCost).toBe(19.27);
+      expect(pricing.suggestedPrice).toBe(38.54);
+      expect(pricing.effectivePrice).toBe(38.54);
+    } finally {
+      fixtures.products.splice(fixtures.products.indexOf(product), 1);
+    }
+  });
+  it('produto já gravado com preço de muitas casas: o campo abre em centavos e o formulário é válido', async () => {
+    const { fixtures } = await import('../test/fixtures');
+    const product = { ...fixtures.products[0], id: 'prod-casas', name: 'TESTE casas', manualPrice: 38.535607222222225 };
+    fixtures.products.push(product);
+    try {
+      const { Products } = await import('./Products');
+      await show(<Products openProductId="prod-casas" />);
+      expect((field('Preço de Venda Manual') as HTMLInputElement).value).toBe('38.54');
+      expect((document.getElementById('product-form') as HTMLFormElement).checkValidity()).toBe(true);
+    } finally {
+      fixtures.products.splice(fixtures.products.indexOf(product), 1);
+    }
+  });
   it('produto criado de trabalho: mesmo custo e sugerido da calculadora, também depois de editar e salvar', async () => {
     const { writes } = await import('../test/firestoreMock');
     const { fixtures } = await import('../test/fixtures');
@@ -786,7 +843,7 @@ describe('Sublimação', () => {
         path: 'products',
         data: expect.objectContaining({
           name: 'TESTE 10 canecas de porcelana',
-          jobCostUnit: 17.303302,
+          jobCostUnit: 17.3,
           manualPrice: 40,
           catalogPrice: 40,
           showInCatalog: false, // trava 3
@@ -795,7 +852,7 @@ describe('Sublimação', () => {
           // Correção de 26/10/2026: tempo, embalagem e sugerido vêm do trabalho (5 min, R$ 1,50, R$ 43,26).
           productionTime: 5,
           packagingCost: 1.5,
-          jobSuggestedUnit: 43.258256,
+          jobSuggestedUnit: 43.26,
         }),
       },
       // Trava 2: o trabalho guarda o id do produto.
@@ -827,8 +884,8 @@ describe('Sublimação', () => {
             productionTime: 5,
             packagingCost: 1.5,
             materials: [],
-            jobCostUnit: 17.303302,
-            jobSuggestedUnit: 43.258256,
+            jobCostUnit: 17.3,
+            jobSuggestedUnit: 43.26,
             manualPrice: 40,
             catalogPrice: 40,
             updatedAt: expect.any(String),
@@ -852,7 +909,7 @@ describe('Sublimação', () => {
       await click(buttonWithText('Confirmar e criar'));
       const product = writes.find(w => w.path === 'products')!.data;
       expect(product.materials).toEqual([{ materialId: 'mdf', quantity: 2 }]);
-      expect(product.jobCostUnit).toBe(17.303302); // o custo continua o do trabalho
+      expect(product.jobCostUnit).toBe(17.3); // o custo do trabalho, em centavos
     } finally {
       Object.assign(job, before);
     }

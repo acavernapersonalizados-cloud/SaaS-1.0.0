@@ -26,6 +26,9 @@ export function packageSize(material?: { isPackage?: boolean; unit?: string; pac
   return Math.max(Number(material.packageQuantity) || 1, 1);
 }
 
+/** Arredonda para centavos (2 casas). Campos de preço com step 0,01 recusam valores com mais casas. */
+export const roundCents = (value: number) => Math.round((Number(value) || 0) * 100) / 100;
+
 export function formatPercent(value: number) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'percent',

@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
-import { formatCurrency, formatPercent } from '../lib/utils';
+import { formatCurrency, formatPercent, roundCents } from '../lib/utils';
 import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs, markupOf } from '../lib/pricingEngine';
 import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
 import { isAppOutdated } from '../lib/appUpdate';
@@ -240,10 +240,11 @@ export function Products({
       categoryIds: product.categoryIds || [],
       finishingOptions: product.finishingOptions || [],
       accessories: product.accessories || [],
-      manualPrice: product.manualPrice ?? null,
+      // Em centavos: o campo (step 0,01) recusaria preços gravados com mais casas (ex.: 38,535607…).
+      manualPrice: product.manualPrice != null ? roundCents(product.manualPrice) : null,
     });
     setAiAnalysis(product.aiPriceAnalysis || '');
-    setReversePriceInput(product.manualPrice ? String(product.manualPrice) : '');
+    setReversePriceInput(product.manualPrice ? String(roundCents(product.manualPrice)) : '');
     setIsModalOpen(true);
   };
 

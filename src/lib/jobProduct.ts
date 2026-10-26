@@ -6,6 +6,7 @@
  */
 import type { JobKind, JobProductFields, Product, ProductMaterial } from '../types';
 import { laserTotalTimeMin } from './calculators';
+import { roundCents } from './utils';
 
 /** Coleção de cada calculadora. */
 export const JOB_COLLECTIONS: Record<JobKind, string> = {
@@ -154,7 +155,8 @@ export function productFromJob(
     materialUnit?: (materialId: string) => string | undefined;
   },
 ): Omit<Product, 'id'> & { createdAt: string; updatedAt: string } {
-  const price = jobUnitPrice(job);
+  // Preço e custo em centavos: o campo de preço do produto (step 0,01) recusa mais casas.
+  const price = roundCents(jobUnitPrice(job));
   return {
     storeId: opts.storeId,
     name: opts.name.trim() || job.name,
@@ -164,8 +166,8 @@ export function productFromJob(
     ...jobProductDetails(kind, job, opts.materialUnit),
     finishingOptions: [],
     accessories: [],
-    jobCostUnit: jobUnitCost(job),
-    jobSuggestedUnit: jobSuggestedPrice(job),
+    jobCostUnit: roundCents(jobUnitCost(job)),
+    jobSuggestedUnit: roundCents(jobSuggestedPrice(job)),
     sourceJob: { kind, id: job.id },
     manualPrice: price,
     catalogPrice: price,
@@ -187,11 +189,12 @@ export function productPriceUpdate(
   now: string,
   materialUnit?: (materialId: string) => string | undefined,
 ) {
-  const price = jobUnitPrice(job);
+  // Preço e custo em centavos: o campo de preço do produto (step 0,01) recusa mais casas.
+  const price = roundCents(jobUnitPrice(job));
   return {
     ...jobProductDetails(kind, job, materialUnit),
-    jobCostUnit: jobUnitCost(job),
-    jobSuggestedUnit: jobSuggestedPrice(job),
+    jobCostUnit: roundCents(jobUnitCost(job)),
+    jobSuggestedUnit: roundCents(jobSuggestedPrice(job)),
     manualPrice: price,
     catalogPrice: price,
     updatedAt: now,
