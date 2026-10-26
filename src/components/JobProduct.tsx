@@ -75,12 +75,26 @@ export function useJobProduct(kind: JobKind, onOpenProduct?: (productId: string)
     setTarget({ job, mode: 'update', currentPrice });
   };
 
+  /** Impressão 3D: unidade do filamento no estoque (kg ou g), para vincular a quantidade certa ao produto. */
+  const materialUnitOf = async (job: ConvertibleJob) => {
+    const materialId = (job as { materialId?: unknown }).materialId;
+    if (kind !== 'print3d' || typeof materialId !== 'string' || !materialId) return undefined;
+    try {
+      const snap = await getDoc(doc(db, 'materials', materialId));
+      const unit = snap.exists() ? String(snap.data().unit ?? '') : '';
+      return (id: string) => (id === materialId ? unit : undefined);
+    } catch {
+      return undefined;
+    }
+  };
+
   const confirm = async () => {
     if (!target || !activeStore) return;
     const { job, mode } = target;
     const now = new Date().toISOString();
     setSaving(true);
     try {
+      const materialUnit = await materialUnitOf(job);
       if (mode === 'create') {
         const category = categories.find(c => c.id === categoryId);
         const ref = await addDoc(
@@ -91,13 +105,14 @@ export function useJobProduct(kind: JobKind, onOpenProduct?: (productId: string)
             categoryId: category?.id,
             categoryName: category?.name,
             now,
+            materialUnit,
           }),
         );
         // Trava 2: o trabalho guarda o id do produto (sem duplicados).
         await updateDoc(doc(db, JOB_COLLECTIONS[kind], job.id), { productId: ref.id });
         addToast('Produto criado, oculto no catálogo. Marque "mostrar no catálogo" quando quiser.', 'success');
       } else if (job.productId) {
-        await updateDoc(doc(db, 'products', job.productId), productPriceUpdate(job, now));
+        await updateDoc(doc(db, 'products', job.productId), productPriceUpdate(kind, job, now, materialUnit));
         addToast('Preço do produto atualizado.', 'success');
       }
       setTarget(null);

@@ -203,6 +203,7 @@ export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (produc
         // Etapa 8C, item 4: custo e preço que valiam ao salvar (o trabalho vira produto sem recalcular).
         totalCostUnit: result?.totalCostUnit ?? 0,
         unitPrice: manualPrice ?? result?.suggestedUnit ?? 0,
+        suggestedUnit: result?.suggestedUnit ?? 0,
         notes,
         createdAt: new Date().toISOString(),
       };

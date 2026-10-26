@@ -28,7 +28,7 @@
 | 8 — Central de Calculadoras | Partes 8A, 8B, 8C, 8D-1 e 8D-2, e a correção do Preço de Compra (abaixo). Ver seção 6. | ✅ **Feita e publicada** (24 a 26/10/2026). |
 | 8A — Orçamento e divisão das telas | Aviso do "Gerar Orçamento"; `Products.tsx` e `Pricing.tsx` divididos. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8a-ok`. |
 | 8B — Menu e preço por canal | Nomes no menu, guia única "Calculadoras", preço manual com respaldo, preço sugerido por canal. | ✅ **Feita e publicada** (24/10/2026), tag `etapa-8b-ok`. |
-| 8C — Canais e catálogo | Atacado por quantidade, Pix e crédito, Instagram 0%, trabalho salvo vira Produto (item 8 → Estacionamento). | ✅ **Feita e publicada** (item 3 em 25/10/2026; item 4 em 26/10/2026). |
+| 8C — Canais e catálogo | Atacado por quantidade, Pix e crédito, Instagram 0%, trabalho salvo vira Produto (item 8 → Estacionamento). | ✅ **Feita e publicada** (item 3 em 25/10/2026; item 4 em 26/10/2026). 🟡 **Correção do item 4 feita e não publicada** (26/10/2026): custo e sugerido iguais aos da calculadora, tempo/embalagem/materiais vindos do trabalho. |
 | 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
 | 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
 | Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
@@ -38,11 +38,12 @@
 **Onde paramos (26/10/2026):**
 
 - No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): Etapas 0 a 8 completas, com a correção do Preço de Compra.
-- **9A e 9C feitas, não publicadas e não testadas no navegador** (252 testes, lint e build): aviso de 60 dias com
-  "Conferi hoje", e "Verificar taxas com IA" (sugestões com fonte; cada uma aplicada ou recusada por você).
-- A 9C não foi testada com a IA de verdade (só simulada nos testes): confira no emulador com a chave do Gemini.
-- 9B (Mercado Livre pela API) está no Estacionamento. O projeto termina na Etapa 9; a Etapa 10 fica só registrada.
-- Falta você: testar a 9A e a 9C, e as tarefas fora do código listadas em "Falta".
+- **Não publicado** (261 testes, lint e build): 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
+  e a **correção do item 4 da 8C**: produto criado de trabalho = custo e sugerido da calculadora, sem somar mão de obra
+  e embalagem de novo; tempo, embalagem e materiais do estoque vêm do trabalho, travados e sem obrigatoriedade.
+- Auditoria (backup de 26/10): 1 produto de trabalho (Caneca Mágica, T&N) com os números gravados certos; depois de
+  publicar, clique em "Atualizar preço do produto" no trabalho para gravar tempo 30, embalagem 2,50 e a caneca × 1.
+- Falta você: testar no emulador (9A, 9C com a IA de verdade e o item 4) e as tarefas fora do código em "Falta".
 - Código no GitHub. Nenhum item aberto. Publicar = só o site (nenhuma regra do banco mudou), quando você pedir.
 
 ## Entregue
@@ -79,6 +80,7 @@ O que cada etapa trouxe para quem usa o app:
 **Estacionamento (todos opcionais)**
 
 - Cartão do produto vindo de trabalho mostrar "Custo da calculadora: [nome]" — opcional.
+- Laser escolher material do estoque (MDF, acrílico) para vincular ao produto e dar baixa — opcional.
 - Markup extra por canal (muda preço) — opcional.
 - Abrir um trabalho salvo de volta na calculadora — opcional.
 - Seus próprios produtos na tabela de referência da sublimação — opcional.
@@ -699,6 +701,8 @@ Ordem:
 - **9B — Comissão do Mercado Livre pela API oficial** (26/10/2026): testado só leitura, `listing_prices` respondeu
   403 ("PA_UNAUTHORIZED"). Exige app cadastrado no Mercado Livre, login OAuth e servidor para guardar o token; e a
   comissão varia por categoria e tipo de anúncio (a tabela de canais usa um % só).
+- **Laser escolher material do estoque (MDF, acrílico) para vincular ao produto e dar baixa** (26/10/2026): hoje o
+  material do Laser é digitado em R$, então o produto criado de um trabalho do Laser não tem material vinculado.
 - **Cartão do produto criado a partir de trabalho** (26/10/2026): trocar "0 min · 0 materiais" por "Custo da
   calculadora: [nome da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
 - **Markup extra opcional por canal** (8C item 8, movido para cá em 26/10/2026): somar um % próprio a cada canal na

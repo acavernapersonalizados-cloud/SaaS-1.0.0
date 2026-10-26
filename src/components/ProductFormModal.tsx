@@ -56,6 +56,9 @@ export function ProductFormModal({
   pricingSection: React.ReactNode;
   catalogSection: React.ReactNode;
 }) {
+  // Etapa 8C, item 4 (correção de 26/10/2026): produto criado de trabalho de calculadora. Tempo, embalagem e materiais
+  // vêm do trabalho, só como informação e baixa de estoque, e ficam travados: o custo é o do trabalho.
+  const fromJob = (Number(newProduct.jobCostUnit) || 0) > 0;
   return (
     <div className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[92vh] flex flex-col">
@@ -102,6 +105,19 @@ export function ProductFormModal({
               onChange={ids => setNewProduct(p => ({ ...p, categoryIds: ids }))}
             />
 
+            {fromJob && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 space-y-1">
+                <p className="font-bold">
+                  Vem da calculadora: custo {formatCurrency(Number(newProduct.jobCostUnit) || 0)} por unidade, que já
+                  inclui materiais, mão de obra, embalagem e máquina.
+                </p>
+                <p>
+                  Tempo, embalagem e materiais abaixo são só informação (e a baixa de estoque). Para mudar, refaça o
+                  trabalho na calculadora e use "Atualizar preço do produto".
+                </p>
+              </div>
+            )}
+
             {/* Production time + Packaging */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -110,10 +126,15 @@ export function ProductFormModal({
                 </label>
                 <input
                   type="number"
-                  required
-                  value={newProduct.productionTime || ''}
+                  required={!fromJob}
+                  readOnly={fromJob}
+                  value={fromJob ? (newProduct.productionTime ?? 0) : newProduct.productionTime || ''}
                   onChange={e => setNewProduct(p => ({ ...p, productionTime: Number(e.target.value) }))}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                  className={
+                    fromJob
+                      ? 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-neutral-500'
+                      : 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none'
+                  }
                   placeholder="Ex: 30"
                 />
               </div>
@@ -124,10 +145,15 @@ export function ProductFormModal({
                 <input
                   type="number"
                   step="0.01"
-                  required
-                  value={newProduct.packagingCost || ''}
+                  required={!fromJob}
+                  readOnly={fromJob}
+                  value={fromJob ? (newProduct.packagingCost ?? 0) : newProduct.packagingCost || ''}
                   onChange={e => setNewProduct(p => ({ ...p, packagingCost: Number(e.target.value) }))}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                  className={
+                    fromJob
+                      ? 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-neutral-500'
+                      : 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none'
+                  }
                   placeholder="0,00"
                 />
               </div>
@@ -161,40 +187,44 @@ export function ProductFormModal({
             {/* Materials */}
             <div className="space-y-3">
               <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Materiais</label>
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus-within:ring-2 focus-within:ring-neutral-900">
-                <Search className="text-neutral-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Pesquisar material..."
-                  value={materialSearchTerm}
-                  onChange={e => setMaterialSearchTerm(e.target.value)}
-                  className="bg-transparent border-none outline-none flex-1 text-sm"
-                />
-              </div>
-              <div className="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto">
-                {filteredMaterialsSearch.length > 0 ? (
-                  filteredMaterialsSearch.map(m => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => {
-                        addMaterialToProduct(m.id);
-                        setMaterialSearchTerm('');
-                      }}
-                      className="w-full text-left px-4 py-2.5 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0 flex items-center justify-between"
-                    >
-                      <span className="font-medium text-sm text-neutral-900">{m.name}</span>
-                      <span className="text-xs text-neutral-400 font-bold">
-                        {m.unit} · {formatCurrency(m.unitCost)}
-                      </span>
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-sm text-neutral-400 text-center italic">
-                    Nenhum material encontrado.
+              {!fromJob && (
+                <>
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus-within:ring-2 focus-within:ring-neutral-900">
+                    <Search className="text-neutral-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Pesquisar material..."
+                      value={materialSearchTerm}
+                      onChange={e => setMaterialSearchTerm(e.target.value)}
+                      className="bg-transparent border-none outline-none flex-1 text-sm"
+                    />
                   </div>
-                )}
-              </div>
+                  <div className="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto">
+                    {filteredMaterialsSearch.length > 0 ? (
+                      filteredMaterialsSearch.map(m => (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => {
+                            addMaterialToProduct(m.id);
+                            setMaterialSearchTerm('');
+                          }}
+                          className="w-full text-left px-4 py-2.5 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0 flex items-center justify-between"
+                        >
+                          <span className="font-medium text-sm text-neutral-900">{m.name}</span>
+                          <span className="text-xs text-neutral-400 font-bold">
+                            {m.unit} · {formatCurrency(m.unitCost)}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-neutral-400 text-center italic">
+                        Nenhum material encontrado.
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 {newProduct.materials?.map(pm => {
                   const mat = materials.find(m => m.id === pm.materialId);
@@ -214,20 +244,25 @@ export function ProductFormModal({
                         type="number"
                         step="0.01"
                         value={pm.quantity || ''}
+                        readOnly={fromJob}
                         onChange={e => updateMaterialQuantity(pm.materialId, Number(e.target.value))}
                         className="w-24 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm text-center font-bold outline-none focus:ring-2 focus:ring-neutral-900"
                         placeholder="Qtd"
                       />
-                      <span className="text-xs font-bold text-emerald-700 w-16 text-right">
-                        {formatCurrency(lineCost)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeMaterialFromProduct(pm.materialId)}
-                        className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      {!fromJob && (
+                        <>
+                          <span className="text-xs font-bold text-emerald-700 w-16 text-right">
+                            {formatCurrency(lineCost)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeMaterialFromProduct(pm.materialId)}
+                            className="p-1.5 text-neutral-400 hover:text-red-500 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   );
                 })}

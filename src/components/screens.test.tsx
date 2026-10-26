@@ -490,6 +490,53 @@ describe('Produtos (telas internas)', () => {
     expect((field('Nome do Produto') as HTMLInputElement).value).toBe('TESTE Chaveiro');
     expect(opened).toBe(1);
   });
+  // Correção de 26/10/2026 (caso real da Caneca Mágica): produto criado de trabalho mantém o custo e o sugerido
+  // da calculadora ao abrir, editar e salvar; tempo e embalagem vêm preenchidos, travados e não são obrigatórios.
+  it('produto criado de trabalho: mesmo custo e sugerido da calculadora, também depois de editar e salvar', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const { calcProductPricing } = await import('../lib/pricingEngine');
+    const caneca = {
+      id: 'caneca-magica',
+      storeId: 'loja-teste',
+      name: 'TESTE Caneca Mágica',
+      category: '',
+      categoryIds: [],
+      materials: [{ materialId: 'mdf', quantity: 1 }],
+      productionTime: 30,
+      packagingCost: 2.5,
+      finishingOptions: [],
+      accessories: [],
+      jobCostUnit: 29.46611388888889,
+      jobSuggestedUnit: 58.93222777777778,
+      sourceJob: { kind: 'sublimacao', id: 'sub-job-1' },
+      manualPrice: null,
+      catalogPrice: 58.93222777777778,
+      showInCatalog: false,
+    };
+    fixtures.products.push(caneca);
+    try {
+      const { Products } = await import('./Products');
+      await show(<Products openProductId="caneca-magica" />);
+      const text = (document.body.textContent ?? '').replace(/\s/g, ' ');
+      expect(text).toContain('Vem da calculadora: custo R$ 29,47 por unidade');
+      const time = field('Tempo de Produção') as HTMLInputElement;
+      expect(time.readOnly).toBe(true);
+      expect(time.required).toBe(false);
+      expect(time.value).toBe('30');
+      expect((field('Custo de Embalagem') as HTMLInputElement).readOnly).toBe(true);
+      writes.length = 0;
+      await click(buttonWithText('Atualizar Produto'));
+      const saved = writes.find(w => w.path === 'products/caneca-magica')!.data;
+      expect(saved).toMatchObject({ jobCostUnit: 29.46611388888889, productionTime: 30, packagingCost: 2.5 });
+      const pricing = calcProductPricing(saved as never, fixtures.materials as never, fixtures.costBases[0] as never);
+      expect(pricing.totalCost).toBeCloseTo(29.46611388888889, 10);
+      expect(pricing.suggestedPrice).toBeCloseTo(58.93222777777778, 10);
+      expect(Number(saved.catalogPrice)).toBeCloseTo(58.93222777777778, 10);
+    } finally {
+      fixtures.products.splice(fixtures.products.indexOf(caneca), 1);
+    }
+  });
   it('tabela e ordenação por preço', async () => {
     await show(await load());
     await click(buttonWithIcon('table2'));
@@ -745,8 +792,10 @@ describe('Sublimação', () => {
           showInCatalog: false, // trava 3
           sourceJob: { kind: 'sublimacao', id: 'sub-job-1' },
           materials: [],
-          productionTime: 0,
-          packagingCost: 0,
+          // Correção de 26/10/2026: tempo, embalagem e sugerido vêm do trabalho (5 min, R$ 1,50, R$ 43,26).
+          productionTime: 5,
+          packagingCost: 1.5,
+          jobSuggestedUnit: 43.258256,
         }),
       },
       // Trava 2: o trabalho guarda o id do produto.
@@ -774,11 +823,38 @@ describe('Sublimação', () => {
         {
           op: 'update',
           path: 'products/prod-caneca',
-          data: { jobCostUnit: 17.303302, manualPrice: 40, catalogPrice: 40, updatedAt: expect.any(String) },
+          data: {
+            productionTime: 5,
+            packagingCost: 1.5,
+            materials: [],
+            jobCostUnit: 17.303302,
+            jobSuggestedUnit: 43.258256,
+            manualPrice: 40,
+            catalogPrice: 40,
+            updatedAt: expect.any(String),
+          },
         },
       ]);
     } finally {
       delete job.productId;
+    }
+  });
+  it('8C item 4: peça base do estoque fica vinculada ao produto (mesmo item e quantidade, para a baixa)', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const job = fixtures.sublimationJobs[0];
+    const before = { baseMode: job.baseMode, baseMaterialId: job.baseMaterialId, baseQty: job.baseQty };
+    Object.assign(job, { baseMode: 'stock', baseMaterialId: 'mdf', baseQty: 2 });
+    try {
+      await show(await load());
+      writes.length = 0;
+      await click(buttonWithText('Virar produto'));
+      await click(buttonWithText('Confirmar e criar'));
+      const product = writes.find(w => w.path === 'products')!.data;
+      expect(product.materials).toEqual([{ materialId: 'mdf', quantity: 2 }]);
+      expect(product.jobCostUnit).toBe(17.303302); // o custo continua o do trabalho
+    } finally {
+      Object.assign(job, before);
     }
   });
   it('8C item 4: "Salvar e criar produto" grava custo e preço do momento e abre a confirmação', async () => {

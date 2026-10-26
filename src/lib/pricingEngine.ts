@@ -242,6 +242,12 @@ export function calcProductCost(
   materials: Material[],
   costs: CostBase | null,
 ): ProductCostResult {
+  // Etapa 8C, item 4: produto criado de trabalho de calculadora. O custo é só o do trabalho, que já inclui
+  // materiais, mão de obra, embalagem e máquina; tempo, embalagem e materiais do produto são só informação
+  // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
+  const jobCost = Number(product.jobCostUnit) || 0;
+  if (jobCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost, totalCost: jobCost };
+
   const materialCost = (product.materials || []).reduce((acc, pm) => {
     const mat = materials.find(m => m.id === pm.materialId);
     return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
@@ -251,10 +257,7 @@ export function calcProductCost(
 
   const packagingCost = Number(product.packagingCost) || 0;
 
-  // Etapa 8C, item 4: custo fixo do trabalho de calculadora que virou produto (0 nos demais).
-  const jobCost = Number(product.jobCostUnit) || 0;
-
-  const totalCost = materialCost + laborCost + packagingCost + jobCost;
+  const totalCost = materialCost + laborCost + packagingCost;
 
   return { materialCost, laborCost, packagingCost, jobCost, totalCost };
 }
@@ -270,7 +273,14 @@ export function calcProductPricing(
   const { totalCost } = costResult;
 
   // Meta de lucro = markup sobre o custo (Etapa 7). Sem markup gravado, converte a meta antiga.
-  const goalPrice = totalCost > 0 ? priceForMarkup(totalCost, markupOf(costs)) : 0;
+  // Produto criado de trabalho: o sugerido é o mesmo da calculadora (gravado no trabalho), sem recalcular.
+  const jobSuggested = Number(product.jobSuggestedUnit) || 0;
+  const goalPrice =
+    costResult.jobCost > 0 && jobSuggested > 0
+      ? jobSuggested
+      : totalCost > 0
+        ? priceForMarkup(totalCost, markupOf(costs))
+        : 0;
   const invalidProfitGoal = goalPrice === null;
   const suggestedPrice = goalPrice ?? 0;
 

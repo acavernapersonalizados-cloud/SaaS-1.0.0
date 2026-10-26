@@ -4,6 +4,8 @@ import type { CostBase, Product } from '../types';
 import { calcProductCost, calcProductPricing } from './pricingEngine';
 import {
   jobProductBlock,
+  jobProductDetails,
+  jobSuggestedPrice,
   jobUnitCost,
   jobUnitPrice,
   NO_SAVED_COST_MESSAGE,
@@ -49,6 +51,84 @@ describe('Travas', () => {
   });
 });
 
+// Correção de 26/10/2026 — tempo, embalagem e materiais do estoque POR UNIDADE, tirados de cada calculadora.
+describe('Tempo, embalagem e materiais vindos do trabalho', () => {
+  const base = { id: 'j', name: 'j' };
+  it('Laser: tempo de corte + gravação × passadas; material digitado não vincula ao estoque', () => {
+    expect(jobProductDetails('laser', { ...base, cuttingTimeMin: 3, engravingTimeMin: 2, passes: 2 } as never)).toEqual(
+      { productionTime: 10, packagingCost: 0, materials: [] },
+    );
+  });
+  it('Papelaria: tempos ÷ lote; materiais do estoque ÷ lote, somados por item', () => {
+    const job = {
+      ...base,
+      quantity: 10,
+      assemblyTimeMin: 20,
+      finishingTimeMin: 10,
+      packagingTimeMin: 10,
+      materials: [
+        { materialId: 'papel', quantity: 20 },
+        { materialId: null, quantity: 5 },
+        { materialId: 'papel', quantity: 10 },
+      ],
+    };
+    expect(jobProductDetails('papelaria', job as never)).toEqual({
+      productionTime: 4,
+      packagingCost: 0,
+      materials: [{ materialId: 'papel', quantity: 3 }],
+    });
+  });
+  it('Cestas: montagem e embalagem (embalagem + fitas + tag) ÷ lote; itens do estoque ÷ lote', () => {
+    const job = {
+      ...base,
+      quantity: 2,
+      assemblyTimeMin: 30,
+      packagingCost: 4,
+      ribbonCost: 2,
+      tagCost: 1,
+      items: [{ materialId: 'fita', quantity: 3 }, { quantity: 1 }],
+    };
+    expect(jobProductDetails('cestas', job as never)).toEqual({
+      productionTime: 15,
+      packagingCost: 3.5,
+      materials: [{ materialId: 'fita', quantity: 1.5 }],
+    });
+  });
+  it('Impressão 3D: pós-processo em minutos; filamento convertido para a unidade do estoque', () => {
+    const job = { ...base, materialId: 'pla', filamentUsedG: 120, postProcessHours: 0.5, packagingCost: 1 };
+    expect(jobProductDetails('print3d', job as never, () => 'kg')).toEqual({
+      productionTime: 30,
+      packagingCost: 1,
+      materials: [{ materialId: 'pla', quantity: 0.12 }],
+    });
+    expect(jobProductDetails('print3d', job as never, () => 'g').materials).toEqual([
+      { materialId: 'pla', quantity: 120 },
+    ]);
+    expect(jobProductDetails('print3d', job as never, () => 'm').materials).toEqual([]);
+  });
+  it('Sublimação: mão de obra por peça, embalagem e a peça base do estoque', () => {
+    const job = {
+      ...base,
+      laborMinPerPiece: 30,
+      packagingCost: 2.5,
+      baseMode: 'stock',
+      baseMaterialId: 'caneca',
+      baseQty: 1,
+    };
+    expect(jobProductDetails('sublimacao', job as never)).toEqual({
+      productionTime: 30,
+      packagingCost: 2.5,
+      materials: [{ materialId: 'caneca', quantity: 1 }],
+    });
+    expect(jobProductDetails('sublimacao', { ...job, baseMode: 'manual' } as never).materials).toEqual([]);
+  });
+  it('sugerido da calculadora: o gravado no trabalho; sem ele, o preço do trabalho', () => {
+    expect(jobSuggestedPrice({ ...base, suggestedUnit: 43.26, unitPrice: 40 })).toBe(43.26);
+    expect(jobSuggestedPrice({ ...base, suggestedPrice: 22.5 })).toBe(22.5);
+    expect(jobSuggestedPrice({ ...base, unitPrice: 40 })).toBe(40);
+  });
+});
+
 describe('Produto criado a partir do trabalho', () => {
   const p = productFromJob('laser', job, {
     storeId: 'loja',
@@ -89,9 +169,31 @@ describe('Produto criado a partir do trabalho', () => {
       totalCost: 11,
     });
   });
+  // Correção de 26/10/2026 — caso real (Caneca Mágica, Sublimação): custo R$ 29,47 e sugerido R$ 58,93 na calculadora.
+  it('caso real: tempo e embalagem preenchidos NÃO somam de novo; custo e sugerido iguais aos da calculadora', () => {
+    const caneca = {
+      id: 'caneca',
+      jobCostUnit: 29.46611388888889,
+      jobSuggestedUnit: 58.93222777777778,
+      productionTime: 30,
+      packagingCost: 2.5,
+      materials: [{ materialId: 'caneca-base', quantity: 1 }],
+    } as unknown as Product;
+    const costs = { hourlyRate: 15.384615384615385, markupPct: 150 } as CostBase; // markup da loja diferente
+    const materials = [{ id: 'caneca-base', unitCost: 19.2 }] as never;
+    expect(calcProductCost(caneca, materials, costs).totalCost).toBeCloseTo(29.46611388888889, 10);
+    const pricing = calcProductPricing(caneca, materials, costs);
+    expect(pricing.totalCost).toBeCloseTo(29.46611388888889, 10);
+    expect(pricing.suggestedPrice).toBeCloseTo(58.93222777777778, 10);
+    expect(pricing.effectivePrice).toBeCloseTo(58.93222777777778, 10);
+  });
   it('"Atualizar preço do produto" troca só o custo e o preço gravados no trabalho', () => {
-    expect(productPriceUpdate({ ...job, unitPrice: 20, totalCostUnit: 8 }, 'agora')).toEqual({
+    expect(productPriceUpdate('papelaria', { ...job, unitPrice: 20, totalCostUnit: 8 }, 'agora')).toEqual({
+      productionTime: 0,
+      packagingCost: 0,
+      materials: [],
       jobCostUnit: 8,
+      jobSuggestedUnit: 20,
       manualPrice: 20,
       catalogPrice: 20,
       updatedAt: 'agora',

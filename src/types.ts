@@ -138,6 +138,8 @@ export interface Product {
   showPrice?: boolean;
   /** Custo fixo por unidade de um trabalho de calculadora (Etapa 8C, item 4); soma no custo do produto. */
   jobCostUnit?: number;
+  /** Preço sugerido da calculadora no trabalho de origem; é o sugerido do produto (correção de 26/10/2026). */
+  jobSuggestedUnit?: number;
   /** Trabalho de calculadora que originou o produto. */
   sourceJob?: { kind: JobKind; id: string };
 }
@@ -151,6 +153,8 @@ export interface JobProductFields {
   totalCostUnit?: number;
   /** Preço por unidade que valia na calculadora ao salvar (o manual ou, sem ele, o sugerido). */
   unitPrice?: number;
+  /** Preço sugerido por unidade mostrado na calculadora ao salvar (no canal escolhido). */
+  suggestedUnit?: number;
   /** Produto criado a partir deste trabalho. */
   productId?: string | null;
 }
