@@ -25,8 +25,8 @@
 | 7 — Unificar parâmetros de preço | Remover o Elo7 (primeiro item), T4 (tabela única e editável de canais de venda por loja, com iFood e 99Food), T2 e T3, só depois da Etapa 6. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7-ok`, **publicada em 19/10/2026** (só hosting): proteção do catálogo, meta como **markup sobre o custo** (convertida sem mudar preço de produto), tabela única de canais por loja, canal em todas as calculadoras e T2. T3 adiado. |
 | 7.1 — Segurança | Aviso de nova versão (versão antiga não grava), regra do banco contra zerar o preço de catálogo, falhas do catálogo e do estoque visíveis na tela, checklist com markup e canais. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.1-ok`, **publicada** (19/10/2026, hosting + regras do banco). |
 | 7.2 — Tarifa de energia única (T3) | Campo "Tarifa de energia (R$/kWh)" na Base de Custos de cada loja, padrão 0,79 (Enel, com tributos), usado pelo Laser e pela 3D. Ver seção 6. | ✅ **Feita** (19/10/2026), tag `etapa-7.2-ok`, **publicada** junto com a 7.1 (19/10/2026). |
-| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 8C pendente. |
-| 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
+| 8 — Central de Calculadoras | Começa pelo aviso do botão "Gerar Orçamento" (hoje falha sem mensagem) e depois divide `Products.tsx` e `Pricing.tsx` (vindo da Etapa 5). As 4 calculadoras numa única guia do menu, e trabalho salvo virando Produto do Catálogo. Dividida em 8A, 8B e 8C. Ver seção 6. | 🟡 **8A feita** (24/10/2026), tag `etapa-8a-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8B feita** (24/10/2026), tag `etapa-8b-ok`, **publicada** (24/10/2026, só hosting); 🟡 **8D-1 feita** (24/10/2026), tag `etapa-8d1-ok`, **publicada** (24/10/2026: regras do banco e depois o site); 🟡 **8D-2 feita** (24/10/2026), tag `etapa-8d2-ok`, **publicada** (24/10/2026: regras do banco e depois o site); ✅ **8C feita e publicada** (25 e 26/10/2026). Etapa 8 concluída. |
+| 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | 🟡 **Em andamento** (aprovada em 26/10/2026, ordem 9A → 9C); 9B (Mercado Livre) foi para o Estacionamento: a API respondeu 403 e exige app cadastrado, login (OAuth) e servidor. |
 | 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, buscador de tendências, Caixa de Ideias (DM do Instagram), gerador de anúncio com IA, painel de estoque e Mercado Livre (pedidos e anúncios). Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
 
 **Onde paramos (26/10/2026):**
@@ -36,6 +36,22 @@
 - 8C item 8 (markup extra por canal) e o texto do cartão de produto vindo de trabalho estão no Estacionamento.
 - Falta você: reabrir o app no site e corrigir pela tela as matérias-primas erradas.
 - Código no GitHub. Nenhum item aberto.
+
+**Entregue (até 26/10/2026, tudo publicado):**
+
+- Etapas 0 a 7.2: emulador e testes, limpeza, unificações, telas mais leves, tabela de canais por loja, meta como
+  markup, tarifa de energia e proteções do catálogo.
+- Etapa 8: aviso do "Gerar Orçamento", telas divididas, guia Calculadoras, Sublimação (8D), preço de compra por
+  unidade ou total, acentos, atacado por quantidade com piso, Pix e crédito no orçamento e no catálogo, Instagram 0%
+  e trabalho salvo virando Produto.
+
+**Falta (o projeto termina na Etapa 9, decidido em 26/10/2026):**
+
+- **9A** aviso de canal sem conferência há mais de 60 dias, com "Conferi hoje" (também é o lembrete mensal).
+- **9C** botão "Verificar taxas com IA" nos canais da Base de Custos: mudanças sugeridas com as fontes, cada uma
+  aprovada ou recusada por você.
+- Você: reabrir o app no site e corrigir pela tela as matérias-primas erradas.
+- Fora do projeto: 9B (Mercado Livre pela API) e os demais itens do Estacionamento; a Etapa 10 fica só registrada.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -627,6 +643,9 @@ Ordem:
 
 ## 7. Estacionamento (não é enxugamento — para depois)
 
+- **9B — Comissão do Mercado Livre pela API oficial** (26/10/2026): testado só leitura, `listing_prices` respondeu
+  403 ("PA_UNAUTHORIZED"). Exige app cadastrado no Mercado Livre, login OAuth e servidor para guardar o token; e a
+  comissão varia por categoria e tipo de anúncio (a tabela de canais usa um % só).
 - **Cartão do produto criado a partir de trabalho** (26/10/2026): trocar "0 min · 0 materiais" por "Custo da
   calculadora: [nome da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
 - **Markup extra opcional por canal** (8C item 8, movido para cá em 26/10/2026): somar um % próprio a cada canal na
