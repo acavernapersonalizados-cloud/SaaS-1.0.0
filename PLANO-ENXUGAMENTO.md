@@ -44,7 +44,7 @@
 - Também não publicado: preço e custo vindos do trabalho em centavos (ao criar, ao atualizar e ao abrir o produto),
   o que acaba com o "valores válidos mais próximos" ao salvar.
 - Auditoria (backup de 26/10): 1 produto de trabalho (Caneca Mágica, T&N), com o preço manual 58,93222… e o custo
-  29,4661…; depois de publicar e com o seu "aprovado", clique em "Atualizar preço do produto" no trabalho: grava
+  29,4661…; **aprovado por você em 26/10/2026**: depois de publicar, clique em "Atualizar preço do produto" no trabalho: grava
   58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1. O preço do catálogo de 69 produtos tem mais casas, mas é
   calculado sozinho e não fica em campo de digitação (não trava nada).
 - Falta você: testar no emulador (9A, 9C com a IA de verdade e o item 4) e as tarefas fora do código em "Falta".
