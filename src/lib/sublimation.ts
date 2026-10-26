@@ -5,6 +5,8 @@
  * Sem custo nem preço aqui: isso fica no 8D-2.
  */
 
+import type { JobProductFields } from '../types';
+
 export type SublimationEquipment =
   'Prensa de canetas' | 'Prensa plana' | 'Prensa de canecas e copos' | 'Prensa de pratos' | 'Prensa 3D';
 
@@ -166,7 +168,7 @@ export function formatSublimationTime(seconds: number): string {
  * Trabalho salvo da sublimação (Etapa 8D-2): guarda o que foi digitado e, como foto do momento, o custo por peça e o
  * preço sugerido (nada é recalculado depois).
  */
-export interface SublimationJob {
+export interface SublimationJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;

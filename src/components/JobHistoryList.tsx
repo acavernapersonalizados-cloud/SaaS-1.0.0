@@ -23,6 +23,8 @@ interface JobHistoryListProps<T extends SavedJob> {
   canDelete: boolean;
   deletingId: string | null;
   onDelete: (id: string) => void;
+  /** Botões extras na última coluna, antes do excluir (Etapa 8C, item 4: virar produto). */
+  rowActions?: (job: T) => React.ReactNode;
 }
 
 /** Tabela de trabalhos salvos das calculadoras. */
@@ -37,6 +39,7 @@ export function JobHistoryList<T extends SavedJob>({
   canDelete,
   deletingId,
   onDelete,
+  rowActions,
 }: JobHistoryListProps<T>) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
@@ -70,6 +73,7 @@ export function JobHistoryList<T extends SavedJob>({
                     {job.manualPrice ? formatCurrency(job.manualPrice) : noPrice}
                   </td>
                   <td className="py-3 text-right">
+                    {rowActions && <div className="inline-block align-middle mr-1">{rowActions(job)}</div>}
                     {canDelete && (
                       <button
                         onClick={() => onDelete(job.id)}

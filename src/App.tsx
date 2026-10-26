@@ -59,6 +59,12 @@ function AppContent() {
   const { user, loading: authLoading, isAdmin, isGerente } = useAuth();
   const { loading: storeLoading } = useStore();
   const [activeTab, setActiveTab] = useState('dashboard');
+  // Etapa 8C, item 4: "Abrir produto" nas calculadoras leva à tela Produtos com o produto aberto.
+  const [openProductId, setOpenProductId] = useState<string | null>(null);
+  const openProduct = (productId: string) => {
+    setOpenProductId(productId);
+    setActiveTab('products');
+  };
 
   if (authLoading || storeLoading) {
     return (
@@ -93,7 +99,7 @@ function AppContent() {
       case 'inventory':
         return <Inventory />;
       case 'products':
-        return <Products />;
+        return <Products openProductId={openProductId} onProductOpened={() => setOpenProductId(null)} />;
       case 'categories':
         return <Categories />;
       case 'catalog':
@@ -104,19 +110,19 @@ function AppContent() {
         return <History />;
       // Etapa 8B, item 3: as 4 calculadoras ficam na guia Calculadoras, com os mesmos códigos.
       case 'laser':
-        return calculators(<LaserCalculator />);
+        return calculators(<LaserCalculator onOpenProduct={openProduct} />);
       case 'print3d':
-        return calculators(<PrintCalculator />);
+        return calculators(<PrintCalculator onOpenProduct={openProduct} />);
       case 'purchases':
         return <PurchaseList />;
       case 'production':
         return <ProductionPanel />;
       case 'papelaria':
-        return calculators(<PapelariaCalculator />);
+        return calculators(<PapelariaCalculator onOpenProduct={openProduct} />);
       case 'cestas':
-        return calculators(<CestaCalculator />);
+        return calculators(<CestaCalculator onOpenProduct={openProduct} />);
       case 'sublimacao':
-        return calculators(<SublimationCalculator />);
+        return calculators(<SublimationCalculator onOpenProduct={openProduct} />);
       case 'stores':
         return isAdmin ? <Stores /> : <AccessDenied />;
       case 'users':

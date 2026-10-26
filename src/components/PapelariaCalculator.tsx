@@ -13,6 +13,7 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
+import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
@@ -32,7 +33,9 @@ import {
   Search,
 } from 'lucide-react';
 
-export function PapelariaCalculator() {
+export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (productId: string) => void } = {}) {
+  // Etapa 8C, item 4: trabalho salvo vira produto (com confirmação).
+  const jobProduct = useJobProduct('papelaria', onOpenProduct);
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
   const { addToast } = useToast();
@@ -177,14 +180,14 @@ export function PapelariaCalculator() {
     setAiLoading(false);
   };
 
-  const handleSaveJob = async () => {
+  const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !jobName || (totalTimeMin <= 0 && materialsCost <= 0)) {
       addToast('Preencha nome, materiais e/ou tempos de produção.', 'error');
       return;
     }
     setSavingJob(true);
     try {
-      await addDoc(collection(db, 'papelariaJobs'), {
+      const job = {
         storeId: activeStore.id,
         channel: selectedChannel?.name ?? 'Venda Direta',
         name: jobName,
@@ -197,10 +200,15 @@ export function PapelariaCalculator() {
         hourlyRate,
         quantity,
         manualPrice: manualPrice ?? null,
+        // Etapa 8C, item 4: custo e preço que valiam ao salvar (o trabalho vira produto sem recalcular).
+        totalCostUnit: result?.totalCostUnit ?? 0,
+        unitPrice: manualPrice ?? result?.suggestedUnit ?? 0,
         notes,
         createdAt: new Date().toISOString(),
-      });
+      };
+      const ref = await addDoc(collection(db, 'papelariaJobs'), job);
       addToast('Trabalho salvo!', 'success');
+      if (createProduct) jobProduct.createAfterSave({ ...job, id: ref.id });
       setJobName('');
       setMaterials([]);
       setAiAnalysis('');
@@ -545,13 +553,14 @@ export function PapelariaCalculator() {
               )}
               <button
                 type="button"
-                onClick={handleSaveJob}
+                onClick={() => handleSaveJob()}
                 disabled={savingJob || !jobName}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-40"
               >
                 {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Salvar Trabalho
               </button>
+              <SaveAndCreateProductButton onClick={() => handleSaveJob(true)} disabled={savingJob || !jobName} />
             </div>
           )}
         </div>
@@ -624,7 +633,9 @@ export function PapelariaCalculator() {
         canDelete={isAdmin || user?.role === 'GERENTE'}
         deletingId={deletingId}
         onDelete={handleDeleteJob}
+        rowActions={job => jobProduct.actions(job)}
       />
+      {jobProduct.modal}
 
       <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4">
         <div className="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">

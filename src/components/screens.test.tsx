@@ -367,6 +367,15 @@ describe('Base de Custos: faixas de atacado', () => {
 // (tabela, ordenação, janela de cadastro, edição com preço manual e pacote).
 describe('Produtos (telas internas)', () => {
   const load = async () => React.createElement((await import('./Products')).Products);
+  // Etapa 8C, item 4: "Abrir produto" numa calculadora abre a janela do produto aqui.
+  it('abre a janela do produto pedido pela calculadora', async () => {
+    let opened = 0;
+    const { Products } = await import('./Products');
+    await show(<Products openProductId="chaveiro" onProductOpened={() => opened++} />);
+    expect(document.body.textContent).toContain('Editar Produto');
+    expect((field('Nome do Produto') as HTMLInputElement).value).toBe('TESTE Chaveiro');
+    expect(opened).toBe(1);
+  });
   it('tabela e ordenação por preço', async () => {
     await show(await load());
     await click(buttonWithIcon('table2'));
@@ -591,6 +600,91 @@ describe('Sublimação', () => {
     expect((field('Nome do trabalho') as HTMLInputElement).value).toBe('');
     expect((field('Seu preço por peça') as HTMLInputElement).value).toBe('');
     expect(html()).toMatchSnapshot();
+  });
+
+  // Etapa 8C, item 4 — trabalho salvo vira produto (travas de 26/10/2026).
+  const dialogText = () => (document.querySelector('[role="dialog"]')?.textContent ?? '').replace(/\s/g, ' ');
+  it('8C item 4: trabalho salvo vira produto só com confirmação e nasce oculto no catálogo', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(await load());
+    writes.length = 0;
+    await click(buttonWithText('Virar produto'));
+    // Trava 1: a janela mostra nome, custo, preço e categoria antes de criar.
+    expect((field('Nome do produto') as HTMLInputElement).value).toBe('TESTE 10 canecas de porcelana');
+    expect(field('Categoria')).toBeTruthy();
+    expect(dialogText()).toContain('Custo por unidadeR$ 17,30');
+    expect(dialogText()).toContain('Preço por unidadeR$ 40,00');
+    expect(html()).toMatchSnapshot();
+    await click(buttonWithText('Cancelar'));
+    expect(writes).toHaveLength(0);
+    await click(buttonWithText('Virar produto'));
+    await click(buttonWithText('Confirmar e criar'));
+    expect(writes).toEqual([
+      {
+        op: 'add',
+        path: 'products',
+        data: expect.objectContaining({
+          name: 'TESTE 10 canecas de porcelana',
+          jobCostUnit: 17.303302,
+          manualPrice: 40,
+          catalogPrice: 40,
+          showInCatalog: false, // trava 3
+          sourceJob: { kind: 'sublimacao', id: 'sub-job-1' },
+          materials: [],
+          productionTime: 0,
+          packagingCost: 0,
+        }),
+      },
+      // Trava 2: o trabalho guarda o id do produto.
+      { op: 'update', path: 'sublimationJobs/sub-job-1', data: { productId: 'novo-id' } },
+    ]);
+  });
+  it('8C item 4: já é produto → "Abrir produto" e "Atualizar preço do produto" com confirmação', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const job = fixtures.sublimationJobs[0];
+    job.productId = 'prod-caneca';
+    const opened: string[] = [];
+    try {
+      const { SublimationCalculator } = await import('./SublimationCalculator');
+      await show(<SublimationCalculator onOpenProduct={id => opened.push(id)} />);
+      expect(document.body.textContent).not.toContain('Virar produto');
+      await click(buttonWithText('Abrir produto'));
+      expect(opened).toEqual(['prod-caneca']);
+      writes.length = 0;
+      await click(buttonWithText('Atualizar preço do produto'));
+      expect(dialogText()).toContain('Novo preço (do trabalho)R$ 40,00');
+      expect(writes).toHaveLength(0);
+      await click(buttonWithText('Confirmar atualização'));
+      expect(writes).toEqual([
+        {
+          op: 'update',
+          path: 'products/prod-caneca',
+          data: { jobCostUnit: 17.303302, manualPrice: 40, catalogPrice: 40, updatedAt: expect.any(String) },
+        },
+      ]);
+    } finally {
+      delete job.productId;
+    }
+  });
+  it('8C item 4: "Salvar e criar produto" grava custo e preço do momento e abre a confirmação', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(await load());
+    await fillHandExample();
+    await type(field('Nome do trabalho'), 'Canecas da Ana');
+    writes.length = 0;
+    await click(buttonWithText('Salvar e criar produto'));
+    expect(writes).toHaveLength(1);
+    expect(writes[0].path).toBe('sublimationJobs');
+    expect(Number(writes[0].data.totalCostUnit)).toBeCloseTo(17.3033, 4);
+    expect(Number(writes[0].data.unitPrice)).toBeCloseTo(43.26, 2); // sugerido (sem preço manual)
+    expect(dialogText()).toContain('Preço por unidadeR$ 43,26');
+    await click(buttonWithText('Confirmar e criar'));
+    expect(writes.map(w => `${w.op} ${w.path}`)).toEqual([
+      'add sublimationJobs',
+      'add products',
+      'update sublimationJobs/novo-id',
+    ]);
   });
 
   // Item 5: tabela de referência com busca (sem acento).

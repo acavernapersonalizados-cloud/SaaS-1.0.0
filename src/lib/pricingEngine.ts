@@ -33,6 +33,8 @@ export interface ProductCostResult {
   materialCost: number;
   laborCost: number;
   packagingCost: number;
+  /** Custo fixo do trabalho de calculadora que virou produto (Etapa 8C, item 4). */
+  jobCost: number;
   totalCost: number;
 }
 
@@ -249,9 +251,12 @@ export function calcProductCost(
 
   const packagingCost = Number(product.packagingCost) || 0;
 
-  const totalCost = materialCost + laborCost + packagingCost;
+  // Etapa 8C, item 4: custo fixo do trabalho de calculadora que virou produto (0 nos demais).
+  const jobCost = Number(product.jobCostUnit) || 0;
 
-  return { materialCost, laborCost, packagingCost, totalCost };
+  const totalCost = materialCost + laborCost + packagingCost + jobCost;
+
+  return { materialCost, laborCost, packagingCost, jobCost, totalCost };
 }
 
 // ─── Cálculo completo de precificação do produto ──────────────────────────────

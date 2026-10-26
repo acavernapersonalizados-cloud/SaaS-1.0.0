@@ -29,14 +29,14 @@
 | 9 — Monitor de taxas | Aviso de canal sem conferência há mais de 60 dias, comissão do Mercado Livre pela API oficial (se viável) e verificação mensal assistida por IA. Só depois da Etapa 8. Ver seção 6. | ⏳ Pendente (só planejamento) |
 | 10 — Ferramentas de venda | Inspirada no STL Seller (STLFlix): chamada do Gemini no servidor, buscador de tendências, Caixa de Ideias (DM do Instagram), gerador de anúncio com IA, painel de estoque e Mercado Livre (pedidos e anúncios). Só depois da Etapa 9. Ver seção 6. | ⏳ Pendente (só planejamento, registrada em 25/10/2026) |
 
-**Onde paramos (25/10/2026):**
+**Onde paramos (26/10/2026):**
 
-- No ar (25/10/2026, só o site, `index-9CYzabst.js`): 8A, 8B, 8D, preço de compra, acentos de Papelaria e Cestas e
-  **8C item 3** (atacado 10/20/30% com piso; Pix e crédito = Pix ÷ 0,95, Instagram 0%; catálogo Pix/crédito/os dois).
-- Item 3 testado por você no emulador (orçamento com 15 un, Pix/crédito, PDF, catálogo, acentos): OK.
-- Falta você: reabrir o app no site, testar o hook e corrigir pela tela as matérias-primas erradas.
-- Código no GitHub. Nenhum item aberto. Etapa 10 (Ferramentas de venda) registrada, só planejamento.
-- **Próximo passo:** publicar quando você pedir; depois, 8C itens 4 e 8, só com lista de riscos e "aprovado".
+- No ar (25/10/2026, só o site, `index-9CYzabst.js`): 8A, 8B, 8D, preço de compra, acentos e **8C item 3**.
+- **8C item 4 feito, não publicado e não testado no navegador** (240 testes, lint e build): trabalho salvo das 5
+  calculadoras vira Produto com confirmação, oculto no catálogo, sem duplicados ("Abrir produto" / "Atualizar preço").
+- 8C item 8 (markup extra por canal) foi para o Estacionamento. A 8C fica completa.
+- Falta você: testar o item 4 no emulador, reabrir o app no site e corrigir pela tela as matérias-primas erradas.
+- Código no GitHub. Nenhum item aberto. Publicar = só o site (nenhuma regra do banco mudou), quando você pedir.
 
 As etapas 0 e 1 foram concluídas antes da regra 2 existir. Por isso não têm as tags `etapa-0-ok` e `etapa-1-ok`; o ponto de volta delas é a tag `antes-de-enxugar`.
 
@@ -444,7 +444,7 @@ Testes: 155 → 157.
 |---|---|---|
 | **8A** ✅ **feita** (24/10/2026), tag `etapa-8a-ok` | 1. Aviso do "Gerar Orçamento"; 2. Dividir `Products.tsx` e `Pricing.tsx` | Seguro: não muda preço nem dados. Resultado abaixo |
 | **8B** ✅ **feita** (24/10/2026), tag `etapa-8b-ok` | 0. Nomes no menu (24/10/2026, risco baixo, só textos): "Precificação" → "Orçamentos" (título da tela "Novo Orçamento") e "Histórico" → "Histórico de Orçamentos"; endereços e atalhos antigos continuam funcionando; 5. Preço manual com respaldo; 6. Preço sugerido por canal numa tabela; 3. As 4 calculadoras numa única guia | Só exibem, não mudam preço |
-| **8C** — parte de canais (3a, 3b, 3c) ✅ **feita** (25/10/2026), não publicada; itens 4 e 8 pendentes | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
+| **8C** — canais (3a, 3b, 3c) ✅ feita e publicada (25/10/2026); item 4 ✅ **feito** (26/10/2026), não publicado; item 8 → Estacionamento | 4. Trabalho salvo vira Produto do Catálogo; 7. Catálogo com preço no Pix e no crédito; 8. Markup extra opcional por canal. Parte de canais (aprovada em 25/10/2026, ordem 3a → 3b → 3c): 3a atacado por quantidade; 3b Pix/crédito no orçamento e Instagram 0%; 3c opção de preço no catálogo | Mudam dados/preço: só com comparação antes/depois aprovada |
 | **8D** — 8D-1 ✅ **feita e publicada** (tag `etapa-8d1-ok`); 8D-2 ✅ **feita e publicada** (tag `etapa-8d2-ok`) | Calculadora de Sublimação: nova aba "Sublimação" na guia Calculadoras e aba "Tabela de referência". Ver "Bloco 8D" abaixo | Nova calculadora: cria preços novos (não muda os atuais); lista com riscos e "aprovado" antes |
 
 **Resultado da 8C, parte 3a (atacado por quantidade):** o canal Atacado (+5%) saiu da tabela padrão (nenhuma loja tinha
@@ -627,6 +627,12 @@ Ordem:
 ---
 
 ## 7. Estacionamento (não é enxugamento — para depois)
+
+- **Markup extra opcional por canal** (8C item 8, movido para cá em 26/10/2026): somar um % próprio a cada canal na
+  tabela de canais. **Muda preço:** entra com comparação antes/depois.
+- **Abrir um trabalho salvo de volta na calculadora** (26/10/2026): hoje não existe. Os trabalhos antigos de Laser,
+  Papelaria e Cestas sem custo gravado mostram "Abra e salve este trabalho para gravar o custo atual"; para isso valer,
+  é preciso refazer o trabalho na calculadora (nos dados de 25/10 não há nenhum trabalho assim).
 
 - **Meus próprios produtos na tabela de referência da sublimação** (24/10/2026): permitir acrescentar produtos com
   temperatura, tempo e pressão (por loja), além das 40 linhas da tabela sugestiva. Exige gravar no banco (coleção ou

@@ -54,6 +54,12 @@ export function ProductPricingSection({
             <p className="text-[10px] text-neutral-400 font-bold uppercase">Embalagem</p>
             <p className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.packagingCost)}</p>
           </div>
+          {modalPricing.jobCost > 0 && (
+            <div className="col-span-3 pt-2 border-t border-neutral-200 flex items-center justify-between">
+              <span className="text-xs text-neutral-500 font-bold">Custo do trabalho (calculadora, fixo)</span>
+              <span className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.jobCost)}</span>
+            </div>
+          )}
           <div className="col-span-3 pt-2 border-t border-neutral-200 flex items-center justify-between">
             <span className="text-xs text-neutral-500 font-bold">Custo Total</span>
             <span className="text-base font-black text-neutral-900">{formatCurrency(modalPricing.totalCost)}</span>

@@ -14,6 +14,7 @@ import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import { JobHistoryList } from './JobHistoryList';
+import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { calcSublimationJob } from '../lib/calculators';
 import {
   DEFAULT_SUBLIMATION_MACHINES,
@@ -61,7 +62,9 @@ const emptyMachine = (): SublimationMachineData => ({
   heads: [{ id: 'principal', name: 'Principal', powerW: 0, equipment: 'Prensa plana' }],
 });
 
-export function SublimationCalculator() {
+export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (productId: string) => void } = {}) {
+  // Etapa 8C, item 4: trabalho salvo vira produto (com confirmação).
+  const jobProduct = useJobProduct('sublimacao', onOpenProduct);
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
   const { addToast } = useToast();
@@ -239,7 +242,7 @@ export function SublimationCalculator() {
     setPressure(r?.pressure ?? '');
   };
 
-  const handleSaveJob = async () => {
+  const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !selectedMachine || !selectedHead || !result || !jobName.trim()) {
       addToast('Preencha o nome do trabalho e os custos da peça.', 'error');
       return;
@@ -279,11 +282,14 @@ export function SublimationCalculator() {
         manualPrice: manualPrice ?? null,
         totalCostUnit: result.totalCostUnit,
         suggestedUnit: result.suggestedUnit,
+        // Etapa 8C, item 4: preço que valia ao salvar (o trabalho vira produto sem recalcular).
+        unitPrice: manualPrice ?? result.suggestedUnit,
         notes: notes.trim(),
         createdAt: new Date().toISOString(),
       };
-      await addDoc(collection(db, 'sublimationJobs'), job);
+      const ref = await addDoc(collection(db, 'sublimationJobs'), job);
       addToast('Trabalho salvo!', 'success');
+      if (createProduct) jobProduct.createAfterSave({ ...job, id: ref.id });
       setJobName('');
       setNotes('');
       setManualPrice(null);
@@ -1007,13 +1013,14 @@ export function SublimationCalculator() {
                 />
                 <button
                   type="button"
-                  onClick={handleSaveJob}
+                  onClick={() => handleSaveJob()}
                   disabled={savingJob}
                   className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50"
                 >
                   {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Salvar Trabalho
                 </button>
+                <SaveAndCreateProductButton onClick={() => handleSaveJob(true)} disabled={savingJob} />
               </div>
             </div>
           )}
@@ -1037,7 +1044,14 @@ export function SublimationCalculator() {
             canDelete={canManage}
             deletingId={deletingId}
             onDelete={handleDeleteJob}
+            rowActions={(job: SublimationJob) =>
+              jobProduct.actions(
+                job,
+                machines.some(m => m.id === job.machineId),
+              )
+            }
           />
+          {jobProduct.modal}
         </>
       )}
 

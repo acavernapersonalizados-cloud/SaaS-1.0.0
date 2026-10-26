@@ -28,6 +28,7 @@ import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import {
   Box,
@@ -66,7 +67,9 @@ const FILAMENTS = [
   'Personalizado',
 ];
 
-export function PrintCalculator() {
+export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId: string) => void } = {}) {
+  // Etapa 8C, item 4: trabalho salvo vira produto (com confirmação).
+  const jobProduct = useJobProduct('print3d', onOpenProduct);
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
   const { addToast } = useToast();
@@ -300,7 +303,7 @@ export function PrintCalculator() {
     }
   };
 
-  const handleSaveJob = async () => {
+  const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !jobName || !selectedPrinter || printTimeH <= 0) {
       addToast('Preencha nome e tempo de impressão.', 'error');
       return;
@@ -335,6 +338,8 @@ export function PrintCalculator() {
         logisticsCost: fees.logisticsCost,
         suggestedPrice: result?.suggestedUnit ?? 0,
         totalCostUnit: result?.totalCostUnit ?? 0,
+        // Etapa 8C, item 4: preço que valia ao salvar (o trabalho vira produto sem recalcular).
+        unitPrice: manualPrice ?? result?.suggestedUnit ?? 0,
         createdAt: new Date().toISOString(),
       };
       if (deductStock && materialId) {
@@ -364,6 +369,7 @@ export function PrintCalculator() {
         await setDoc(jobRef, payload);
       }
       addToast('Trabalho salvo!', 'success');
+      if (createProduct) jobProduct.createAfterSave(payload);
       setJobName('');
       setAiAnalysis('');
       setManualPrice(null);
@@ -759,13 +765,17 @@ export function PrintCalculator() {
               </div>
               <button
                 type="button"
-                onClick={handleSaveJob}
+                onClick={() => handleSaveJob()}
                 disabled={savingJob || !jobName || printTimeH <= 0}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-40"
               >
                 {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Salvar Trabalho
               </button>
+              <SaveAndCreateProductButton
+                onClick={() => handleSaveJob(true)}
+                disabled={savingJob || !jobName || printTimeH <= 0}
+              />
             </div>
           )}
         </div>
@@ -925,6 +935,12 @@ export function PrintCalculator() {
                       {job.manualPrice ? formatCurrency(job.manualPrice) : '—'}
                     </td>
                     <td className="py-3 text-right">
+                      <div className="inline-block align-middle mr-1">
+                        {jobProduct.actions(
+                          job,
+                          printers.some(p => p.id === job.printerId),
+                        )}
+                      </div>
                       {(isAdmin || user?.role === 'GERENTE') && (
                         <button
                           onClick={() => handleDeleteJob(job.id)}
@@ -946,6 +962,7 @@ export function PrintCalculator() {
           </div>
         )}
       </div>
+      {jobProduct.modal}
 
       <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex gap-4">
         <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">

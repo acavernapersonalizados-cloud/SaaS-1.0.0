@@ -58,7 +58,14 @@ import {
 type ViewMode = 'cards' | 'table' | 'channels';
 type FilterMode = 'all' | 'no_price' | 'loss' | 'risky' | 'low' | 'good' | 'excellent';
 
-export function Products() {
+export function Products({
+  openProductId,
+  onProductOpened,
+}: {
+  /** Produto a abrir assim que a lista carregar (Etapa 8C, item 4: "Abrir produto" nas calculadoras). */
+  openProductId?: string | null;
+  onProductOpened?: () => void;
+} = {}) {
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
   const { addToast } = useToast();
@@ -216,6 +223,15 @@ export function Products() {
       );
     }
   };
+
+  // "Abrir produto" vindo de uma calculadora: abre a janela do produto uma vez, quando ele aparece na lista.
+  useEffect(() => {
+    if (!openProductId) return;
+    const product = products.find(p => p.id === openProductId);
+    if (!product) return;
+    handleEdit(product);
+    onProductOpened?.();
+  }, [openProductId, products]);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);

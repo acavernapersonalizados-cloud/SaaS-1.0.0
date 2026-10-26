@@ -136,6 +136,23 @@ export interface Product {
   /** Preço público pré-calculado (evita expor custos no catálogo público) */
   catalogPrice?: number | null;
   showPrice?: boolean;
+  /** Custo fixo por unidade de um trabalho de calculadora (Etapa 8C, item 4); soma no custo do produto. */
+  jobCostUnit?: number;
+  /** Trabalho de calculadora que originou o produto. */
+  sourceJob?: { kind: JobKind; id: string };
+}
+
+/** Calculadoras cujos trabalhos salvos podem virar produto (Etapa 8C, item 4). */
+export type JobKind = 'laser' | 'print3d' | 'papelaria' | 'cestas' | 'sublimacao';
+
+/** Campos gravados no trabalho salvo para ele virar produto sem recalcular (Etapa 8C, item 4). */
+export interface JobProductFields {
+  /** Custo por unidade mostrado na calculadora ao salvar. */
+  totalCostUnit?: number;
+  /** Preço por unidade que valia na calculadora ao salvar (o manual ou, sem ele, o sugerido). */
+  unitPrice?: number;
+  /** Produto criado a partir deste trabalho. */
+  productId?: string | null;
 }
 
 export interface LaserMachineProfile {
@@ -155,7 +172,7 @@ export interface LaserMachineProfile {
   createdAt: string;
 }
 
-export interface LaserJob {
+export interface LaserJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;
@@ -200,7 +217,7 @@ export interface PrinterProfile {
   createdAt: string;
 }
 
-export interface PrintJob {
+export interface PrintJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;
@@ -405,7 +422,7 @@ export interface PapelariaMaterialItem {
   unit?: string | null;
 }
 
-export interface PapelariaJob {
+export interface PapelariaJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;
@@ -439,7 +456,7 @@ export interface CestaItem {
   unit?: string | null;
 }
 
-export interface CestaJob {
+export interface CestaJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;
