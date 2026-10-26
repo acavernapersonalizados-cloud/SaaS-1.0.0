@@ -14,8 +14,9 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_APP_ID: string;
   readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
 
-  // Gemini AI (optional — system works without it)
-  readonly VITE_GEMINI_API_KEY?: string;
+  // IA (Firebase AI Logic): a chave do Gemini fica só no Firebase. Esta é a chave do site do
+  // reCAPTCHA Enterprise para o App Check (pública por natureza). Sem ela, o App Check não liga.
+  readonly VITE_RECAPTCHA_ENTERPRISE_SITE_KEY?: string;
 
   // Admin config (optional — falls back to hardcoded email)
   readonly VITE_ADMIN_EMAIL?: string;

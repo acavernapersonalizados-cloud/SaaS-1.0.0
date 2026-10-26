@@ -13,7 +13,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google/genai": "^1.52.0",
     "clsx": "^2.1.1",
     "firebase": "^12.11.0",
     "jspdf": "^4.2.1",

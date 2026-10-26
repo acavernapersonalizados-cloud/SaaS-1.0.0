@@ -3,20 +3,23 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const sent: string[] = [];
-vi.mock('@google/genai', () => ({
-  GoogleGenAI: class {
-    models = {
-      generateContent: async ({ contents }: { contents: string }) => {
-        sent.push(contents);
-        return { text: 'resposta simulada' };
-      },
-    };
-  },
+// Estacionamento item 3: a IA passa pelo Firebase AI Logic (firebase/ai) com App Check.
+vi.mock('firebase/ai', () => ({
+  getAI: () => ({}),
+  GoogleAIBackend: class {},
+  getGenerativeModel: () => ({
+    generateContent: async (prompt: string) => {
+      sent.push(prompt);
+      return { response: { text: () => 'resposta simulada' } };
+    },
+  }),
 }));
+vi.mock('firebase/app-check', () => ({ initializeAppCheck: () => ({}), ReCaptchaEnterpriseProvider: class {} }));
+// Fora do emulador (no emulador a IA fica desligada).
+vi.mock('../firebase', () => ({ firebaseApp: {}, USE_EMULATOR: false }));
 
 let gemini: typeof import('./gemini');
 beforeAll(async () => {
-  vi.stubEnv('VITE_GEMINI_API_KEY', 'chave-de-teste');
   gemini = await import('./gemini');
 });
 beforeEach(() => {

@@ -1,29 +1,44 @@
-import { GoogleGenAI } from '@google/genai';
+import { getAI, getGenerativeModel, GoogleAIBackend, type AI } from 'firebase/ai';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
+import { firebaseApp, USE_EMULATOR } from '../firebase';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Lazy singleton — instanciado APENAS na primeira chamada de IA.
-// Se VITE_GEMINI_API_KEY não existir: sistema funciona normalmente,
-// funções de IA retornam null silenciosamente.
+// Estacionamento item 3 (26/10/2026): a IA passa pelo Firebase AI Logic (Gemini Developer API).
+// A chave do Gemini fica só do lado do Firebase — nunca no site nem no .env do front — e o
+// App Check (reCAPTCHA Enterprise) só deixa passar chamadas vindas do site num navegador de verdade.
+//
+// Lazy singleton — o App Check e o AI Logic só são ligados na primeira chamada de IA, para a
+// abertura do app não ficar mais pesada. No emulador (npm run dev) a IA fica desligada: o projeto
+// de teste "demo-*" não fala com o Google. Em qualquer falha, as funções devolvem null sem quebrar.
 // ─────────────────────────────────────────────────────────────────────────────
 
-let _client: GoogleGenAI | null = null;
+let _ai: AI | null = null;
 
-function getGeminiClient(): GoogleGenAI | null {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-  if (!apiKey) return null;
-  if (!_client) _client = new GoogleGenAI({ apiKey });
-  return _client;
+function getAIClient(): AI | null {
+  if (USE_EMULATOR) return null;
+  if (!_ai) {
+    const siteKey = import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY as string | undefined;
+    if (siteKey) {
+      initializeAppCheck(firebaseApp, {
+        provider: new ReCaptchaEnterpriseProvider(siteKey),
+        isTokenAutoRefreshEnabled: true,
+      });
+    }
+    _ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+  }
+  return _ai;
 }
 
-const MODEL = 'gemini-2.0-flash';
+// Gemini 2.5 Flash: a busca com fontes (9C) é grátis até 500 por dia no nível gratuito.
+const MODEL = 'gemini-2.5-flash';
 
 // Helper interno: chama a API ou retorna null sem lançar erro
 async function generate(prompt: string): Promise<string | null> {
-  const client = getGeminiClient();
-  if (!client) return null;
+  const ai = getAIClient();
+  if (!ai) return null;
   try {
-    const response = await client.models.generateContent({ model: MODEL, contents: prompt });
-    return response.text ?? null;
+    const result = await getGenerativeModel(ai, { model: MODEL }).generateContent(prompt);
+    return result.response.text() || null;
   } catch (err) {
     console.warn('[Gemini] Erro na geração:', err);
     return null;
@@ -203,23 +218,26 @@ export interface FeeCheckResponse {
   text: string;
   /** Páginas que a pesquisa usou (título e link). */
   sources: Array<{ title: string; uri: string }>;
+  /** Sugestões de pesquisa do Google (HTML e CSS prontos), que é obrigatório mostrar quando há busca. */
+  searchSuggestionsHtml: string;
 }
 
-/** Pede à IA a conferência das taxas, pesquisando na web. null sem chave da IA ou em caso de erro. */
+/** Pede à IA a conferência das taxas, pesquisando na web. null sem IA ou em caso de erro. */
 export async function checkChannelFees(prompt: string): Promise<FeeCheckResponse | null> {
-  const client = getGeminiClient();
-  if (!client) return null;
+  const ai = getAIClient();
+  if (!ai) return null;
   try {
-    const response = await client.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-      config: { tools: [{ googleSearch: {} }] },
-    });
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
-    const sources = chunks
+    const model = getGenerativeModel(ai, { model: MODEL, tools: [{ googleSearch: {} }] });
+    const { response } = await model.generateContent(prompt);
+    const grounding = response.candidates?.[0]?.groundingMetadata;
+    const sources = (grounding?.groundingChunks ?? [])
       .map(c => ({ title: c.web?.title ?? '', uri: c.web?.uri ?? '' }))
       .filter(s => /^https?:\/\//.test(s.uri));
-    return { text: response.text ?? '', sources };
+    return {
+      text: response.text() ?? '',
+      sources,
+      searchSuggestionsHtml: grounding?.searchEntryPoint?.renderedContent ?? '',
+    };
   } catch (err) {
     console.warn('[Gemini] Erro na verificação de taxas:', err);
     return null;

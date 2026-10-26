@@ -81,6 +81,10 @@ export default defineConfig(({ command, mode }) => {
             // React com pacote próprio: senão ia junto com os gráficos (que dependem dele) e os
             // gráficos baixavam na abertura.
             if (/node_modules\/(react|react-dom|scheduler|clsx)\//.test(id)) return 'vendor-react';
+            // IA (Firebase AI Logic + App Check, Estacionamento item 3): pacote próprio, baixado só quando a
+            // IA é usada; junto do vendor-firebase ele pesava ~60 KB a mais na abertura do app.
+            if (/node_modules\/(@firebase\/(ai|app-check)|firebase\/(ai|app-check))\//.test(id))
+              return 'vendor-firebase-ai';
             if (id.includes('node_modules/firebase')) return 'vendor-firebase';
             if (
               id.includes('node_modules/recharts') ||

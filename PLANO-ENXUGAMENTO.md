@@ -43,7 +43,9 @@
 - **Falta você agora:** no site, clicar em "Atualizar preço do produto" no trabalho da Caneca Mágica (aprovado em
   26/10/2026: grava 58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1).
 - Verificação de segurança (26/10/2026, só leitura) reordenou o Estacionamento (seção 7.1). **Regras do Storage
-  feitas, não publicadas** (16 casos ok no emulador). Próximo: chave do Gemini fora do site (comparar A × B).
+  feitas, não publicadas** (16 casos ok no emulador). **Chave do Gemini fora do site (opção A): código feito, não
+  publicado** (268 testes, lint e build; nenhuma chave do Gemini no build). Falta você: configurar o console (seção
+  7.1, item 3). Próximo item: produtos do catálogo sem custo público.
 - Código no GitHub. Nenhum item aberto.
 
 ## Entregue
@@ -81,7 +83,7 @@ O que cada etapa trouxe para quem usa o app:
 
 1. Chave do Gemini: contenção de emergência no Google Cloud (você, hoje).
 2. ✅ Regras do Storage por loja (feito, não publicado).
-3. Chave do Gemini fora do site — solução definitiva (A: AI Logic + App Check × B: Cloud Functions + Secret Manager).
+3. 🟡 Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): código feito, não publicado.
 4. Produtos do catálogo sem custo público (coleção pública só com nome, foto, descrição e preço).
 5. Regras do Firestore: atualizar só documentos da própria loja.
 6. Revisar o `npm audit`.
@@ -706,10 +708,15 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    fotos só quem tem acesso à loja (admin ou aprovado daquela loja), só imagem, no máximo 5 MB; logos (`logos/`) só o
    admin; o resto fechado; leitura das fotos do catálogo continua pública. 16 casos testados no emulador.
    Publicação: só as regras do Storage (`firebase deploy --only storage`).
-3. **Chave do Gemini fora do site — solução definitiva** (segurança, ALTA; NÃO vai para a Etapa 10, decidido em
-   26/10/2026): comparar (A) Firebase AI Logic com App Check e (B) Cloud Functions + Secret Manager (plano Blaze) e
-   escolher. Termina com: chave nova só no servidor, a chave removida do site e do `.env` do front, e você apaga a
-   antiga.
+3. 🟡 **Chave do Gemini fora do site — solução definitiva** (segurança, ALTA) — **código feito, não publicado**
+   (26/10/2026). Escolhida a **opção A, Firebase AI Logic + App Check** (funciona no plano Spark, sem cartão; a B,
+   Cloud Functions + Secret Manager, exige o Blaze). A IA passa por `firebase/ai` (Gemini Developer API, modelo
+   `gemini-2.5-flash`), com App Check (reCAPTCHA Enterprise) ligado só na primeira chamada; no emulador a IA fica
+   desligada. Saíram o `@google/genai`, a `VITE_GEMINI_API_KEY` do `.env`/`.env.example` e qualquer chave do Gemini do
+   build (conferido no `dist/`). A 9C mostra as sugestões de pesquisa do Google (obrigatório com a busca). O código
+   da IA ficou num pacote próprio (`vendor-firebase-ai`, 59 KB), e a abertura do app continua do mesmo tamanho.
+   **Falta você, no console:** ligar o AI Logic, criar a chave do reCAPTCHA, registrar o App Check e me passar a
+   chave do site do reCAPTCHA (é pública); depois de publicar, ligar o "Exigir" do App Check e apagar a chave antiga.
 4. **Produtos do catálogo sem custo público** (segurança, MÉDIA, M–G): hoje quem lê o banco direto vê custo do
    trabalho, materiais, tempo e a análise da IA dos produtos do catálogo, e produto sem `showInCatalog` conta como
    público. Seus custos não podem ficar visíveis para cliente nem concorrente: coleção pública só com nome, foto,

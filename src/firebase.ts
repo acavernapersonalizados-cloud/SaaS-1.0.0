@@ -91,6 +91,8 @@ if (USE_EMULATOR) {
 }
 
 export { firebaseConfig };
+/** O app do Firebase, para o serviço de IA (Firebase AI Logic + App Check, services/gemini.ts). */
+export const firebaseApp = app;
 
 export { onAuthStateChanged };
 export type { User };

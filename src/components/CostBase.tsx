@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CostBase, SalesChannel, WholesaleTier } from '../types';
@@ -90,6 +90,7 @@ export function CostBaseSettings() {
     discarded: number;
     suggestions: FeeSuggestion[];
     sources: Array<{ title: string; uri: string }>;
+    searchSuggestionsHtml: string;
   } | null>(null);
   const [applyingFee, setApplyingFee] = useState<string | null>(null);
   const feeKey = (s: FeeSuggestion) => `${s.channelId}:${s.field}`;
@@ -102,6 +103,7 @@ export function CostBaseSettings() {
       discarded: 0,
       suggestions: [],
       sources: [],
+      searchSuggestionsHtml: '',
     });
     const response = await checkChannelFees(buildFeeCheckPrompt(savedChannels));
     if (!response) {
@@ -113,6 +115,7 @@ export function CostBaseSettings() {
         discarded: 0,
         suggestions: [],
         sources: [],
+        searchSuggestionsHtml: '',
       });
       return;
     }
@@ -125,6 +128,7 @@ export function CostBaseSettings() {
       discarded,
       suggestions,
       sources: response.sources,
+      searchSuggestionsHtml: response.searchSuggestionsHtml || '',
     });
   };
   const dropFee = (s: FeeSuggestion) =>
@@ -589,6 +593,7 @@ export function CostBaseSettings() {
                       </div>
                     </div>
                   ))}
+                  {feeCheck.searchSuggestionsHtml && <GoogleSearchSuggestions html={feeCheck.searchSuggestionsHtml} />}
                   {feeCheck.sources.length > 0 && (
                     <div className="text-neutral-500">
                       <p className="font-bold">Páginas pesquisadas:</p>
@@ -711,4 +716,19 @@ export function CostBaseSettings() {
       </div>
     </div>
   );
+}
+
+/**
+ * Sugestões de pesquisa do Google (9C). Com a busca do Google, é obrigatório mostrá-las; a documentação do
+ * Firebase AI Logic recomenda colocar o HTML pronto dentro de um shadow DOM, para não misturar com o app.
+ */
+function GoogleSearchSuggestions({ html }: { html: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const host = ref.current;
+    if (!host) return;
+    const root = host.shadowRoot ?? host.attachShadow({ mode: 'open' });
+    root.innerHTML = html;
+  }, [html]);
+  return <div ref={ref} aria-label="Sugestões de pesquisa do Google" />;
 }

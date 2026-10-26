@@ -445,6 +445,18 @@ describe('Verificar taxas com IA', () => {
     ]);
     expect(text()).toContain('Nenhuma mudança pendente nas taxas.');
   });
+  it('mostra as sugestões de pesquisa do Google (obrigatório com a busca), separadas do app', async () => {
+    geminiMock.checkChannelFees.mockResolvedValueOnce({
+      text: '[]',
+      sources: [],
+      searchSuggestionsHtml: '<div class="google-sugestoes">taxas shopee 2026</div>',
+    } as never);
+    await loadCostBase();
+    await click(buttonWithText('Verificar taxas com IA'));
+    const host = document.querySelector('[aria-label="Sugestões de pesquisa do Google"]')!;
+    expect(host.shadowRoot?.innerHTML).toContain('taxas shopee 2026');
+    expect(text()).toContain('Nenhuma mudança pendente nas taxas.');
+  });
   it('IA indisponível: avisa e não muda nada', async () => {
     const { writes } = await import('../test/firestoreMock');
     geminiMock.checkChannelFees.mockResolvedValueOnce(null);
