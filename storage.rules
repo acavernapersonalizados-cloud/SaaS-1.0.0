@@ -2,23 +2,64 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // ── Public product images (catalog — no auth required) ────────────────
-    // Read is public so the PublicCatalog page can show product images
-    // without requiring users to be logged in.
+    // ─────────────────────────────────────────────────────────────────────────
+    // Estacionamento item 2 (26/10/2026): antes, qualquer conta logada (até um
+    // autocadastro pendente, sem loja) podia trocar ou apagar as fotos de qualquer
+    // loja e enviar qualquer arquivo. Agora: gravar e apagar só quem tem acesso à
+    // loja (as mesmas regras do firestore.rules), só imagem e no máximo 5 MB.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function userPath() {
+      return /databases/(default)/documents/users/$(request.auth.uid);
+    }
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.email == "ricoslim@gmail.com" ||
+        (firestore.exists(userPath()) && firestore.get(userPath()).data.get('role', '') == 'ADMIN')
+      );
+    }
+    function hasStoreAccess(storeId) {
+      return signedIn() && (
+        isAdmin() || (
+          firestore.exists(userPath()) &&
+          !(firestore.get(userPath()).data.get('status', 'aprovado') in ['pendente', 'bloqueado']) &&
+          firestore.get(userPath()).data.get('storeIds', []).hasAny([storeId])
+        )
+      );
+    }
+    // Só imagem e no máximo 5 MB (o app já envia WebP comprimido, bem menor que isso).
+    function isImageUpload() {
+      return request.resource.size <= 5 * 1024 * 1024 &&
+             request.resource.contentType.matches('image/.*');
+    }
+
+    // ── Fotos dos produtos (catálogo público: leitura aberta) ─────────────────
     match /stores/{storeId}/products/{productId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update: if hasStoreAccess(storeId) && isImageUpload();
+      allow delete: if hasStoreAccess(storeId);
     }
 
-    // ── Store logos and branding assets ───────────────────────────────────
+    // ── Logo da loja (tela Lojas, só do administrador) ────────────────────────
+    match /logos/{fileName} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isImageUpload();
+      allow delete: if isAdmin();
+    }
+
+    // ── Marca da loja (o app não grava aqui hoje; fica só para o administrador) ─
     match /stores/{storeId}/branding/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update: if isAdmin() && isImageUpload();
+      allow delete: if isAdmin();
     }
 
-    // ── Everything else requires authentication ────────────────────────────
+    // ── Todo o resto: fechado ─────────────────────────────────────────────────
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }
