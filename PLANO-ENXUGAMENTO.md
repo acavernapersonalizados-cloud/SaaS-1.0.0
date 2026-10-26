@@ -38,7 +38,7 @@
 **Onde paramos (26/10/2026):**
 
 - No ar (26/10/2026, só o site, `index-W7YxavHQ.js`): Etapas 0 a 8 completas, com a correção do Preço de Compra.
-- **Não publicado** (261 testes, lint e build): 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
+- **Não publicado** (267 testes, lint e build): 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
   e a **correção do item 4 da 8C**: produto criado de trabalho = custo e sugerido da calculadora, sem somar mão de obra
   e embalagem de novo; tempo, embalagem e materiais do estoque vêm do trabalho, travados e sem obrigatoriedade.
 - Também não publicado: preço e custo vindos do trabalho em centavos (ao criar, ao atualizar e ao abrir o produto),
