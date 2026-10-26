@@ -7,6 +7,12 @@ import {
   findChannel,
   manualPriceByChannel,
   suggestedPriceByChannel,
+  CHANNEL_CHECK_DAYS,
+  daysSinceCheck,
+  markChannelChecked,
+  staleChannelLabel,
+  staleChannels,
+  todayISODate,
 } from './channels';
 import type { Material, Product } from '../types';
 import { calcProductCost, calcQuoteItem, markupOf } from './pricingEngine';
@@ -203,5 +209,47 @@ describe('Preço sugerido em cada canal (suggestedPriceByChannel)', () => {
     expect(suggestedPriceByChannel(0, DEFAULT_SALES_CHANNELS, 150).every(r => r.price === null)).toBe(true);
     const caro = { id: 'x', name: 'X', commissionPct: 95, fixedFee: 0, paymentPct: 0 };
     expect(suggestedPriceByChannel(10, [caro], 150)[0].price).toBeNull();
+  });
+});
+
+// Etapa 9A — aviso de canal sem conferência há mais de 60 dias (ou nunca conferido).
+describe('Canais sem conferência (60 dias)', () => {
+  const now = new Date(2026, 9, 26, 15, 0); // 26/10/2026, horário local
+  it('data de hoje e dias desde a conferência', () => {
+    expect(todayISODate(now)).toBe('2026-10-26');
+    expect(daysSinceCheck('2026-10-26', now)).toBe(0);
+    expect(daysSinceCheck('2026-08-27', now)).toBe(60);
+    expect(daysSinceCheck('2026-08-26', now)).toBe(61);
+    expect(daysSinceCheck('', now)).toBeNull();
+    expect(daysSinceCheck(undefined, now)).toBeNull();
+    expect(daysSinceCheck('26/10/2026', now)).toBeNull();
+  });
+  it('avisa só com mais de 60 dias ou nunca conferido', () => {
+    const ch = (id: string, checkedAt?: string) => ({
+      id,
+      name: id,
+      commissionPct: 0,
+      fixedFee: 0,
+      paymentPct: 0,
+      checkedAt,
+    });
+    const stale = staleChannels(
+      [ch('hoje', '2026-10-26'), ch('60', '2026-08-27'), ch('61', '2026-08-26'), ch('nunca')],
+      now,
+    );
+    expect(CHANNEL_CHECK_DAYS).toBe(60);
+    expect(stale.map(s => [s.channel.id, staleChannelLabel(s)])).toEqual([
+      ['61', '61 dias sem conferir'],
+      ['nunca', 'nunca conferido'],
+    ]);
+  });
+  it('tabela padrão (nenhuma loja salvou a sua): todos aparecem como nunca conferidos', () => {
+    expect(staleChannels(DEFAULT_SALES_CHANNELS, now)).toHaveLength(DEFAULT_SALES_CHANNELS.length);
+  });
+  it('"Conferi hoje" troca só a data do canal escolhido', () => {
+    const out = markChannelChecked(DEFAULT_SALES_CHANNELS, 'shopee', '2026-10-26');
+    expect(out.find(c => c.id === 'shopee')!.checkedAt).toBe('2026-10-26');
+    expect(out.filter(c => c.checkedAt).length).toBe(1);
+    expect(out.map(c => c.commissionPct)).toEqual(DEFAULT_SALES_CHANNELS.map(c => c.commissionPct));
   });
 });

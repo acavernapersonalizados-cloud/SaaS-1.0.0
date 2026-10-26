@@ -31,6 +31,49 @@ export function findChannel(channels: SalesChannel[], idOrName: string | null | 
   return channels.find(c => c.id === idOrName) ?? channels.find(c => c.name === idOrName);
 }
 
+// ─── Etapa 9A: aviso de canal sem conferência ────────────────────────────────
+
+/** Prazo para conferir as taxas de um canal: passou disso, o app avisa. */
+export const CHANNEL_CHECK_DAYS = 60;
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Data de hoje no fuso do aparelho, como AAAA-MM-DD (o formato de checkedAt). */
+export function todayISODate(now = new Date()): string {
+  return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+}
+
+/** Dias desde a última conferência; null quando o canal nunca foi conferido (ou a data é inválida). */
+export function daysSinceCheck(checkedAt: string | null | undefined, now = new Date()): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(checkedAt ?? '');
+  if (!m) return null;
+  const then = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor((today - then) / 86_400_000);
+}
+
+export interface StaleChannel {
+  channel: SalesChannel;
+  /** Dias sem conferir; null = nunca conferido. */
+  days: number | null;
+}
+
+/** Canais com mais de 60 dias sem conferência, ou nunca conferidos. */
+export function staleChannels(channels: SalesChannel[], now = new Date()): StaleChannel[] {
+  return channels
+    .map(channel => ({ channel, days: daysSinceCheck(channel.checkedAt, now) }))
+    .filter(s => s.days === null || s.days > CHANNEL_CHECK_DAYS);
+}
+
+/** "nunca conferido" ou "75 dias sem conferir". */
+export const staleChannelLabel = (s: StaleChannel) =>
+  s.days === null ? 'nunca conferido' : `${s.days} dias sem conferir`;
+
+/** A tabela com a data de conferência de um canal trocada (botão "Conferi hoje"). */
+export function markChannelChecked(channels: SalesChannel[], channelId: string, date: string): SalesChannel[] {
+  return channels.map(c => (c.id === channelId ? { ...c, checkedAt: date } : c));
+}
+
 /** Taxas do canal para a conta do preço: % (comissão + pagamento, até 95%) e taxa fixa por unidade. */
 export function channelFees(channel: Pick<SalesChannel, 'commissionPct' | 'paymentPct' | 'fixedFee'> | undefined): {
   feePct: number;

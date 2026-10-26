@@ -4,7 +4,15 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { CostBase, SalesChannel, WholesaleTier } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, priceForMarkup, realMargin } from '../lib/pricingEngine';
-import { channelFees, channelsOf } from '../lib/channels';
+import {
+  CHANNEL_CHECK_DAYS,
+  channelFees,
+  channelsOf,
+  markChannelChecked,
+  staleChannelLabel,
+  staleChannels,
+  todayISODate,
+} from '../lib/channels';
 import {
   MAX_WHOLESALE_DISCOUNT_PCT,
   WHOLESALE_FLOOR_MARKUP_PCT,
@@ -40,6 +48,29 @@ export function CostBaseSettings() {
   const [channels, setChannels] = useState<SalesChannel[]>(channelsOf(null));
   const setChannel = (i: number, patch: Partial<SalesChannel>) =>
     setChannels(prev => prev.map((c, j) => (j === i ? { ...c, ...patch } : c)));
+
+  // Etapa 9A: canais sem conferência há mais de 60 dias, e o botão "Conferi hoje", que grava na hora só a data
+  // daquele canal (na tabela salva da loja; o resto do formulário continua esperando "Salvar Configurações").
+  const canEdit = !(!isAdmin && user?.role === 'OPERADOR');
+  const savedChannels = channelsOf(costs);
+  const stale = staleChannels(savedChannels);
+  const [checkingId, setCheckingId] = useState<string | null>(null);
+  const markChecked = async (channelId: string) => {
+    if (!activeStore) return;
+    const date = todayISODate();
+    const salesChannels = markChannelChecked(savedChannels, channelId, date);
+    setCheckingId(channelId);
+    try {
+      await setDoc(doc(db, 'costBases', activeStore.id), { salesChannels, storeId: activeStore.id }, { merge: true });
+      setCosts(prev => ({ ...prev, salesChannels }));
+      setChannels(prev => markChannelChecked(prev, channelId, date));
+      addToast('Conferência do canal registrada.', 'success');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `costBases/${activeStore.id}`);
+    } finally {
+      setCheckingId(null);
+    }
+  };
   // Faixas de atacado da loja (Etapa 8C); enquanto não são salvas, mostra as padrão.
   const [tiers, setTiers] = useState<WholesaleTier[]>(wholesaleTiersOf(null));
   const setTier = (i: number, patch: Partial<WholesaleTier>) =>
@@ -276,6 +307,17 @@ export function CostBaseSettings() {
               {!costs.salesChannels?.length && ' Valores padrão: confira e salve para gravar a tabela desta loja.'}
             </p>
           </div>
+          {stale.length > 0 && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 space-y-1">
+              <p className="font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" /> {stale.length}{' '}
+                {stale.length === 1 ? 'canal sem conferência' : 'canais sem conferência'} há mais de{' '}
+                {CHANNEL_CHECK_DAYS} dias
+              </p>
+              <p>{stale.map(s => `${s.channel.name} (${staleChannelLabel(s)})`).join(' · ')}</p>
+              <p>Confira as taxas no site de cada canal e clique em "Conferi hoje" na linha dele.</p>
+            </div>
+          )}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -349,6 +391,16 @@ export function CostBaseSettings() {
                           value={c.checkedAt ?? ''}
                           onChange={e => setChannel(i, { checkedAt: e.target.value })}
                         />
+                        {canEdit && savedChannels.some(s => s.id === c.id) && (
+                          <button
+                            type="button"
+                            onClick={() => markChecked(c.id)}
+                            disabled={checkingId === c.id}
+                            className="mt-1 w-full px-2 py-1 text-[11px] font-bold text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200 disabled:opacity-50"
+                          >
+                            Conferi hoje
+                          </button>
+                        )}
                       </td>
                       <td className="py-1 pr-2 whitespace-nowrap text-xs font-bold text-emerald-700">
                         {price ? formatPercent(realMargin(price, 10, feePct, fixedFee)) : '—'}
@@ -388,7 +440,8 @@ export function CostBaseSettings() {
             <h2 className="text-sm font-bold text-neutral-700">Desconto de atacado (por quantidade)</h2>
             <p className="text-[10px] text-neutral-400">
               Desconto sobre o preço de varejo de cada item do orçamento, pela quantidade, em qualquer canal. O preço
-              nunca fica abaixo do piso: custo × {1 + WHOLESALE_FLOOR_MARKUP_PCT / 100} + taxas do canal.
+              nunca fica abaixo do piso: custo × {(1 + WHOLESALE_FLOOR_MARKUP_PCT / 100).toFixed(2).replace('.', ',')} +
+              taxas do canal.
               {!costs.wholesaleTiers?.length && ' Valores padrão: confira e salve para gravar as faixas desta loja.'}
             </p>
           </div>

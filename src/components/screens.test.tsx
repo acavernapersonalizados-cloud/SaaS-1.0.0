@@ -342,6 +342,39 @@ describe('Precificação', () => {
   });
 });
 
+// Etapa 9A — aviso de canal sem conferência há mais de 60 dias e botão "Conferi hoje".
+describe('Canais sem conferência (60 dias)', () => {
+  const text = () => (document.body.textContent ?? '').replace(/\s/g, ' ');
+  it('Base de Custos: aviso com os canais e "Conferi hoje" grava só a data daquele canal', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { CostBaseSettings } = await import('./CostBase');
+    await show(<CostBaseSettings />);
+    expect(text()).toContain('6 canais sem conferência há mais de 60 dias');
+    expect(text()).toContain('Shopee (nunca conferido)');
+    writes.length = 0;
+    const shopeeRow = Array.from(document.querySelectorAll('tbody tr')).find(
+      tr => (tr.querySelector('input') as HTMLInputElement | null)?.value === 'Shopee',
+    )!;
+    await click(Array.from(shopeeRow.querySelectorAll('button')).find(b => b.textContent === 'Conferi hoje')!);
+    expect(writes).toHaveLength(1);
+    expect(writes[0].op).toBe('set');
+    expect(writes[0].path).toBe('costBases/loja-teste');
+    expect(Object.keys(writes[0].data).sort()).toEqual(['salesChannels', 'storeId']);
+    const saved = writes[0].data.salesChannels as Array<{ id: string; checkedAt?: string }>;
+    expect(saved.filter(c => c.checkedAt).map(c => [c.id, c.checkedAt])).toEqual([['shopee', '2026-10-17']]);
+    expect(text()).toContain('5 canais sem conferência há mais de 60 dias');
+    expect(text()).not.toContain('Shopee (nunca conferido)');
+    // Texto do piso de atacado com vírgula (corrigido na 9A).
+    expect(text()).toContain('custo × 1,30 + taxas do canal');
+  });
+  it('Orçamentos: aviso das taxas sem conferência', async () => {
+    const { Pricing } = await import('./Pricing');
+    await show(<Pricing />);
+    expect(text()).toContain('Taxas sem conferência há mais de 60 dias:');
+    expect(text()).toContain('Mercado Livre (nunca conferido)');
+  });
+});
+
 describe('Base de Custos: faixas de atacado', () => {
   const load = async () => React.createElement((await import('./CostBase')).CostBaseSettings);
   it('mostra as faixas padrão e grava as editadas', async () => {

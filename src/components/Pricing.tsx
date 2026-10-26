@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, CostBase, Quote, Client, QuoteItem } from '../types';
-import { channelFees, channelsOf, findChannel } from '../lib/channels';
+import {
+  CHANNEL_CHECK_DAYS,
+  channelFees,
+  channelsOf,
+  findChannel,
+  staleChannelLabel,
+  staleChannels,
+} from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, creditPrice, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
@@ -539,6 +546,20 @@ export function Pricing() {
           </select>
         </div>
       </div>
+
+      {/* Etapa 9A: canais com taxas sem conferência há mais de 60 dias. */}
+      {costs && staleChannels(channels).length > 0 && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <p>
+            <span className="font-bold">Taxas sem conferência há mais de {CHANNEL_CHECK_DAYS} dias:</span>{' '}
+            {staleChannels(channels)
+              .map(s => `${s.channel.name} (${staleChannelLabel(s)})`)
+              .join(' · ')}
+            . Confira na Base de Custos.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Form Column */}
