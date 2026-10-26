@@ -32,17 +32,18 @@
 | 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
 | 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
 | Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
-| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A e 9C; 9B no Estacionamento. |
-| 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. |
+| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A e 9C; 9B foi para a Etapa 10. |
+| 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
 **Onde paramos (26/10/2026):**
 
-- No ar (26/10/2026, só o site, `index-s3tADGcf.js`): **Etapas 0 a 9 completas** (9B no Estacionamento).
+- No ar (26/10/2026, só o site, `index-s3tADGcf.js`): **Etapas 0 a 9 completas** (9B foi para a Etapa 10).
 - Publicado hoje e testado por você no emulador: 9A (aviso de 60 dias, "Conferi hoje"), 9C ("Verificar taxas com IA")
   e as 2 correções do item 4 da 8C (custo e sugerido iguais aos da calculadora; preço e custo em centavos).
 - **Falta você agora:** no site, clicar em "Atualizar preço do produto" no trabalho da Caneca Mágica (aprovado em
   26/10/2026: grava 58,93 / 29,47, tempo 30, embalagem 2,50 e a caneca × 1).
-- Depois: as tarefas fora do código em "Falta". O projeto termina na Etapa 9; o resto é opcional (Estacionamento).
+- Estacionamento organizado (26/10/2026): 9 itens escolhidos em ordem (seção 7.1), 4 para decidir depois, 2 para a
+  Etapa 10 e 9 descartados. **Próximo: item 1, Lista de Compras com transação** (lista de riscos e o seu "aprovado").
 - Código no GitHub. Nenhum item aberto.
 
 ## Entregue
@@ -73,34 +74,23 @@ O que cada etapa trouxe para quem usa o app:
 **Etapa 9 — Monitor de taxas**
 
 - **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (feita e publicada).
-- **9B** — Comissão do Mercado Livre pela API: opcional, no Estacionamento (exige app, login e servidor).
+- **9B** — Comissão do Mercado Livre pela API: foi para a Etapa 10 (exige app, login e servidor).
 - **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita e publicada).
 
-**Estacionamento (todos opcionais)**
+**Estacionamento — escolhidos, nesta ordem (ver seção 7.1)**
 
-- Cartão do produto vindo de trabalho mostrar "Custo da calculadora: [nome]" — opcional.
-- Laser escolher material do estoque (MDF, acrílico) para vincular ao produto e dar baixa — opcional.
-- Markup extra por canal (muda preço) — opcional.
-- Abrir um trabalho salvo de volta na calculadora — opcional.
-- Seus próprios produtos na tabela de referência da sublimação — opcional.
-- Ícone do app instalado (arquivos de ícone faltando) — opcional.
-- Publicação automática pelo GitHub — opcional.
-- Testes automáticos dos cálculos que ainda usam scripts avulsos — opcional.
-- Lembrete de orçamento pendente por WhatsApp — opcional.
-- Produtos só com as categorias múltiplas (T7) — opcional.
-- Estoque × Matéria-prima: onde fica o +1/−1 (T9) — opcional.
-- Aviso real (e-mail ou WhatsApp) ao aprovar usuário — opcional.
-- Estatísticas do cliente calculadas no servidor — opcional.
-- Margem padrão das calculadoras menor — opcional.
-- Chave da IA (Gemini) no servidor, por segurança — opcional.
-- Revisar o `npm audit` (vulnerabilidades de dependências) — opcional.
-- Lista de Compras atualizar o estoque com transação — opcional.
-- Janela de exclusão de Clientes com a largura certa — opcional.
-- Unificações de tela que ficaram de fora na 4B — opcional.
-- Matéria-prima aceitar estoque 0 no cadastro — opcional.
-- Mensagem de PDF só depois de o PDF ficar pronto — opcional.
-- Desconto de fornecedor entrando no custo da matéria-prima (muda preço) — opcional.
-- Impressão 3D pedir para escolher a impressora quando não há nenhuma — opcional.
+1. Lista de Compras atualizar o estoque com transação.
+2. Mensagem de PDF só depois de o PDF ficar pronto.
+3. Revisar o `npm audit`.
+4. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
+5. Matéria-prima aceitar estoque 0 no cadastro.
+6. Impressão 3D pedir para escolher a impressora.
+7. Ícone do app instalado.
+8. Laser escolher material do estoque.
+9. Chave do Gemini protegida por site e com limite diário (passo a passo para você; servidor só na Etapa 10).
+
+**Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
+na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
 
 **Tarefas suas, fora do código**
 
@@ -658,6 +648,10 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 **Registrada em 25/10/2026. Só começa depois da Etapa 9. Por enquanto é só planejamento:** cada item terá a lista
 de riscos e o "aprovado" antes de começar.
 
+**Vieram do Estacionamento (26/10/2026):** 9B — comissão do Mercado Livre pela API oficial (a API respondeu 403 e
+exige app cadastrado, login OAuth e servidor; reaproveita o item 6 abaixo) e lembrete de orçamento pendente por WhatsApp
+(rotina no servidor que acha orçamentos pendentes há X dias e envia a mensagem, com tela para ligar/desligar).
+
 Inspirada no STL Seller do STLFlix (R$ 99,90/mês), que tem 5 módulos: Finder, My Ads, Calculadora, Pedidos e
 Estoque. A Calculadora já existe aqui, mais completa (3D com G-code, Laser, Papelaria, Cestas, Sublimação, tarifa de
 energia e tabela de canais). O objetivo é ter o resto dentro do app, sem pagar ferramenta de fora.
@@ -697,38 +691,54 @@ Ordem:
 
 ## 7. Estacionamento (não é enxugamento — para depois)
 
-- **9B — Comissão do Mercado Livre pela API oficial** (26/10/2026): testado só leitura, `listing_prices` respondeu
-  403 ("PA_UNAUTHORIZED"). Exige app cadastrado no Mercado Livre, login OAuth e servidor para guardar o token; e a
-  comissão varia por categoria e tipo de anúncio (a tabela de canais usa um % só).
-- **Laser escolher material do estoque (MDF, acrílico) para vincular ao produto e dar baixa** (26/10/2026): hoje o
-  material do Laser é digitado em R$, então o produto criado de um trabalho do Laser não tem material vinculado.
-- **Cartão do produto criado a partir de trabalho** (26/10/2026): trocar "0 min · 0 materiais" por "Custo da
-  calculadora: [nome da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
-- **Markup extra opcional por canal** (8C item 8, movido para cá em 26/10/2026): somar um % próprio a cada canal na
-  tabela de canais. **Muda preço:** entra com comparação antes/depois.
-- **Abrir um trabalho salvo de volta na calculadora** (26/10/2026): hoje não existe. Os trabalhos antigos de Laser,
-  Papelaria e Cestas sem custo gravado mostram "Abra e salve este trabalho para gravar o custo atual"; para isso valer,
-  é preciso refazer o trabalho na calculadora (nos dados de 25/10 não há nenhum trabalho assim).
+Classificado em 26/10/2026 (importantes / úteis / dispensáveis). Cada item: lista de riscos curta, o seu "aprovado"
+e checkpoint completo; publicação só quando você pedir, juntando vários itens.
 
-- **Meus próprios produtos na tabela de referência da sublimação** (24/10/2026): permitir acrescentar produtos com
-  temperatura, tempo e pressão (por loja), além das 40 linhas da tabela sugestiva. Exige gravar no banco (coleção ou
-  campo novo, com regra) e mostrar na busca e na escolha de produto.
+### 7.1 Escolhidos, nesta ordem (26/10/2026)
 
-- **Ícone do app instalado quebrado:** o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
-- **Deploy automático:** cadastrar os secrets `VITE_FIREBASE_*` no GitHub para o merge na `main` voltar a publicar.
-- **Testes automáticos** dos cálculos (motor de preços, 3D, G-code), que hoje são feitos com scripts avulsos.
-- **Follow-up de orçamentos por WhatsApp:** lembrar o cliente de um orçamento pendente ("Seu orçamento ainda está disponível…"). O código antigo era só um esboço sem uso — `checkFollowUps()` vazio em `automations.ts` e `generateFollowUpMessage()` em `whatsapp.ts` — e foi **removido na Etapa 3** (itens 2 e 3). Para fazer de verdade: rotina no servidor (Cloud Functions) que acha orçamentos pendentes há X dias e envia a mensagem, e uma tela para ligar/desligar. O campo `followUpStatus` dos orçamentos antigos ficou no banco e no tipo (opcional).
-- **T7 — Categoria principal em Produtos:** ficar só com as categorias múltiplas (exige reclassificar produtos que só têm a categoria em texto).
-- **T9 — Estoque × Matéria-prima:** levar o ajuste rápido +1/−1 para Matéria-prima ou manter Estoque como atalho.
-- **Notificação real ao aprovar usuário** (e-mail ou WhatsApp). O T11 só remove a notificação falsa.
-- **Estatísticas do cliente** calculadas no servidor: o T1 calcula na tela, a partir dos orçamentos; levar para o servidor se ficar lento com muitos orçamentos.
-- **Margem padrão das calculadoras (60%):** avaliar um valor menor, agora que é margem sobre o preço.
-- **Segurança:** a chave do Gemini vai no código do navegador (`VITE_GEMINI_API_KEY`); mover a chamada para o servidor. **Virou o item 1 da Etapa 10** (25/10/2026).
-- **`npm audit`:** a instalação limpa no GitHub mostrou 17 vulnerabilidades em dependências (4 moderadas, 13 altas) na versão antiga; rever na versão atual.
-- **Lista de Compras:** o registro de compra atualiza o estoque sem transação (`PurchaseList.tsx`), diferente do resto do app.
-- **Janela de exclusão de Clientes com largura `max-md`** (`Clients.tsx`): provável erro de digitação de `max-w-md`. Mantido igual na Etapa 4B, porque corrigir muda o visual.
-- **Unificações de tela que ficaram de fora na Etapa 4B:** janela de exclusão de Usuários; buscas de Catálogo, Produtos, Catálogo público e Lista de Compras; histórico e cartão de resultado da Impressão 3D; `useStoreJobs`. Todas exigem aceitar uma pequena mudança visual ou ter teste da exclusão primeiro.
-- **Estoque Atual não aceita 0 no cadastro de Matéria-prima** (`Materials.tsx`): o campo é obrigatório e mostra 0 como vazio, então não dá para cadastrar um insumo com estoque zero. Mesmo problema que o T14 resolveu no estoque mínimo (encontrado em 18/10/2026).
-- **Precificação: mensagem de PDF gerado antes de o PDF ficar pronto** (`Pricing.tsx`, botões do Orçamento Gerado): falta `await` na geração, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
-- **Desconto de fornecedor aplicado de verdade no custo da matéria-prima** (campo que reduz o custo unitário). O campo antigo, que não entrava em conta nenhuma, foi removido no T12 (Etapa 5); fornecedores antigos ainda guardam o valor `discount` no banco. **Muda preço:** entra com comparação antes/depois, como na Etapa 7.
-- **Impressão 3D: sem impressora selecionada, a mensagem deveria pedir para cadastrar/selecionar uma impressora.** Hoje o Resultado mostra "Preencha os parâmetros para calcular." mesmo com todos os campos preenchidos, porque a conta exige uma impressora (`PrintCalculator.tsx:172`). Comportamento igual na tag `antes-de-enxugar` (conferido em 17/10/2026): não foi causado pelo enxugamento. Vale conferir o mesmo no Corte a Laser, que também exige máquina.
+1. **Lista de Compras com transação** (importante, P): o registro de compra atualiza o estoque sem transação
+   (`PurchaseList.tsx`), diferente do resto do app; duas pessoas ao mesmo tempo podem deixar o estoque errado.
+2. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado —
+   falta `await`, então "gerado com sucesso" aparece mesmo se der erro. No Histórico já está certo.
+3. **Revisar o `npm audit`** (importante, P–M): a instalação limpa no GitHub mostrou 17 vulnerabilidades (4 moderadas,
+   13 altas) na versão antiga; rever na versão atual.
+4. **Cartão do produto criado de trabalho** (útil, P): trocar "0 min · 0 materiais" por "Custo da calculadora: [nome
+   da calculadora]" (o produto guarda `sourceJob.kind`). Só texto na tela Produtos.
+5. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx` — o campo é obrigatório e mostra 0 como
+   vazio; mesmo problema que o T14 resolveu no estoque mínimo.
+6. **Impressão 3D pedir para escolher a impressora** (útil, P): sem impressora, o Resultado mostra "Preencha os
+   parâmetros para calcular." mesmo com tudo preenchido (`PrintCalculator.tsx`). Conferir o mesmo no Corte a Laser.
+7. **Ícone do app instalado** (útil, P): o manifesto aponta para `pwa-192x192.png` e `pwa-512x512.png`, que não
+   existem, e o `includeAssets: ['favicon.ico']` também não existe. Criar os ícones.
+8. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): hoje o material do Laser é digitado em R$,
+   então o produto criado de um trabalho do Laser não tem material vinculado e o estoque não baixa.
+9. **Chave do Gemini protegida, sem servidor** (importante): passo a passo para você restringir a chave por site
+   (`saas-1-0-0.web.app`) e pôr limite diário no Google Cloud. Mover a chamada para o servidor fica na Etapa 10, se
+   você decidir pagar o plano Blaze.
+
+### 7.2 Decidir depois de usar o app
+
+- **Abrir um trabalho salvo de volta na calculadora** (útil, M): hoje não existe; os trabalhos antigos de Laser,
+  Papelaria e Cestas sem custo gravado mostram "Abra e salve este trabalho para gravar o custo atual".
+- **Seus próprios produtos na tabela de referência da sublimação** (útil, M): temperatura, tempo e pressão por loja,
+  além das 40 linhas; exige gravar no banco (coleção ou campo novo, com regra).
+- **Desconto de fornecedor aplicado de verdade no custo da matéria-prima** (útil, M): fornecedores antigos ainda
+  guardam `discount` no banco. **Muda preço:** comparação antes/depois.
+- **Markup extra opcional por canal** (útil, M; 8C item 8): somar um % próprio a cada canal. **Muda preço.**
+
+### 7.3 Foram para a Etapa 10 (26/10/2026)
+
+- **Lembrete de orçamento pendente por WhatsApp** (exige servidor). Ver Etapa 10.
+- **9B — Comissão do Mercado Livre pela API oficial** (exige app no Mercado Livre, login OAuth e servidor). Ver Etapa 10.
+
+### 7.4 Descartados (26/10/2026)
+
+- Publicação automática pelo GitHub — você publica quando pede; automática tiraria esse controle.
+- Testes automáticos dos cálculos "com scripts avulsos" — já cobertos pelos testes automáticos (267 em 26/10/2026).
+- Margem padrão das calculadoras menor — desatualizado: as calculadoras usam markup, não margem.
+- Janela de exclusão de Clientes com a largura certa — só visual, quase imperceptível.
+- T9 — Estoque × Matéria-prima (+1/−1) — os dois caminhos já funcionam.
+- T7 — Produtos só com categorias múltiplas — exigiria reclassificar produtos para um ganho pequeno.
+- Unificações de tela que ficaram de fora na 4B — só organização de código, nada muda para quem usa.
+- Aviso real ao aprovar usuário (e-mail ou WhatsApp) — com 2 usuários, avisar à mão resolve.
+- Estatísticas do cliente no servidor — só faria diferença com muitos orçamentos.
