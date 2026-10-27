@@ -42,7 +42,7 @@
 - Lote 6 a 12 testado por você no emulador e publicado (só hosting). Chave antiga do Gemini: apagada por você.
 - **Falta você, no site:** "Atualizar agora"; enviar uma foto de produto (se não subir: console → Storage → Regras,
   permissão para ler o banco); "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
-- Próximo: item 13 (Laser com material do estoque, risco médio: lista de riscos e seu "aprovado"); depois 14 e 15;
+- **Item 13 feito (opção A), NÃO publicado** (só hosting). Próximo: 14 (categorias) e 15 (catálogo com cara de loja);
   **por último, 16: IA**.
 
 ## Entregue
@@ -90,7 +90,7 @@ O que cada etapa trouxe para quem usa o app:
 10. ✅ Matéria-prima aceitar estoque 0 no cadastro (publicado em 27/10/2026).
 11. ✅ Impressão 3D pedir para escolher a impressora (publicado em 27/10/2026).
 12. ✅ Ícone do app instalado (publicado em 27/10/2026).
-13. Laser escolher material do estoque.
+13. ✅ Laser escolher material do estoque (feito em 27/10/2026, opção A; NÃO publicado).
 14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
@@ -775,6 +775,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    do iPhone (`pwa-192x192.png`) e a cor do tema; `includeAssets` troca o `favicon.ico` inexistente pelo `icon.svg`.
    O ícone do app instalado só aparece no site publicado (no modo de testes o manifesto não é gerado).
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
+   ✅ **Feito em 27/10/2026 (opção A), NÃO publicado:** campo opcional "Material do estoque" no Laser, com "Quanto o
+   trabalho usa" na unidade do material; o custo do material passa a ser quantidade × custo da unidade (em centavos);
+   sem escolher, continua o custo digitado, como antes. O trabalho grava materialId e materialQty, e o produto criado
+   dele baixa a parte de uma peça (quantidade ÷ peças). Sem material digitado, vale o nome do material do estoque.
+   Nada salvo foi recalculado. Testes novos (conta, produto e tela); fotos da tela do Laser só ganharam o campo novo;
+   302 testes, lint e build ok. Emulador: Argola 8 un × R$ 0,25 = R$ 2,00; produto com 2 Argolas por peça.
 14. **Categorias organizadas** (útil, M; pedido em 27/10/2026): no cadastro de Produtos, a categoria vem só da lista
     oficial (sem texto livre). Antes, uma auditoria **só leitura** das grafias duplicadas (cesta/Cesta,
     presente/Presente/Presentes/Presenta, VESTUARIO/Vestuário…) com uma proposta de unificação; **grava só com o seu

@@ -9246,6 +9246,63 @@ exports[`Corte a Laser > inicial, com máquina e histórico 1`] = `
                 <label
                   class="text-xs font-bold text-neutral-600"
                 >
+                  Material do estoque (opcional)
+                </label>
+                <select
+                  class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                >
+                  <option
+                    value=""
+                  >
+                    Sem vínculo com estoque (custo digitado)
+                  </option>
+                  <option
+                    value="argola"
+                  >
+                    TESTE Argola
+                     · 
+                    R$ 0,25
+                    /
+                    pct
+                     · saldo 
+                    100
+                     
+                    pct
+                  </option>
+                  <option
+                    value="fita"
+                  >
+                    TESTE Fita cetim
+                     · 
+                    R$ 1,20
+                    /
+                    m
+                     · saldo 
+                    2
+                     
+                    m
+                  </option>
+                  <option
+                    value="mdf"
+                  >
+                    TESTE MDF 3mm
+                     · 
+                    R$ 15,00
+                    /
+                    un
+                     · saldo 
+                    10
+                     
+                    un
+                  </option>
+                </select>
+              </div>
+              <div
+                class="space-y-1"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-600"
+                >
                   Custo do Material (R$ total)
                 </label>
                 <input
@@ -9980,6 +10037,63 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                   type="number"
                   value="2"
                 />
+              </div>
+              <div
+                class="space-y-1"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Material do estoque (opcional)
+                </label>
+                <select
+                  class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                >
+                  <option
+                    value=""
+                  >
+                    Sem vínculo com estoque (custo digitado)
+                  </option>
+                  <option
+                    value="argola"
+                  >
+                    TESTE Argola
+                     · 
+                    R$ 0,25
+                    /
+                    pct
+                     · saldo 
+                    100
+                     
+                    pct
+                  </option>
+                  <option
+                    value="fita"
+                  >
+                    TESTE Fita cetim
+                     · 
+                    R$ 1,20
+                    /
+                    m
+                     · saldo 
+                    2
+                     
+                    m
+                  </option>
+                  <option
+                    value="mdf"
+                  >
+                    TESTE MDF 3mm
+                     · 
+                    R$ 15,00
+                    /
+                    un
+                     · saldo 
+                    10
+                     
+                    un
+                  </option>
+                </select>
               </div>
               <div
                 class="space-y-1"
@@ -11001,6 +11115,63 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                   type="number"
                   value="2"
                 />
+              </div>
+              <div
+                class="space-y-1"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Material do estoque (opcional)
+                </label>
+                <select
+                  class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                >
+                  <option
+                    value=""
+                  >
+                    Sem vínculo com estoque (custo digitado)
+                  </option>
+                  <option
+                    value="argola"
+                  >
+                    TESTE Argola
+                     · 
+                    R$ 0,25
+                    /
+                    pct
+                     · saldo 
+                    100
+                     
+                    pct
+                  </option>
+                  <option
+                    value="fita"
+                  >
+                    TESTE Fita cetim
+                     · 
+                    R$ 1,20
+                    /
+                    m
+                     · saldo 
+                    2
+                     
+                    m
+                  </option>
+                  <option
+                    value="mdf"
+                  >
+                    TESTE MDF 3mm
+                     · 
+                    R$ 15,00
+                    /
+                    un
+                     · saldo 
+                    10
+                     
+                    un
+                  </option>
+                </select>
               </div>
               <div
                 class="space-y-1"

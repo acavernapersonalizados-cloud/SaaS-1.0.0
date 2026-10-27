@@ -59,6 +59,10 @@ describe('Tempo, embalagem e materiais vindos do trabalho', () => {
       { productionTime: 10, packagingCost: 0, materials: [] },
     );
   });
+  it('item 13 — Laser com material do estoque: o produto baixa a parte de uma peça (2 chapas ÷ 4 peças)', () => {
+    const job = { ...base, cuttingTimeMin: 3, quantity: 4, materialId: 'mdf', materialQty: 2 };
+    expect(jobProductDetails('laser', job as never).materials).toEqual([{ materialId: 'mdf', quantity: 0.5 }]);
+  });
   it('Papelaria: tempos ÷ lote; materiais do estoque ÷ lote, somados por item', () => {
     const job = {
       ...base,

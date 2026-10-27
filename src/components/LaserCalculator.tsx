@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { LaserJob, LaserMachineProfile } from '../types';
+import { LaserJob, LaserMachineProfile, Material } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
-import { calcLaserJob, laserTotalTimeMin, machineToKeep } from '../lib/calculators';
+import { calcLaserJob, laserStockMaterialCost, laserTotalTimeMin, machineToKeep } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -85,6 +85,10 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [engravingTimeMin, setEngravingTimeMin] = useState(0);
   const [passes, setPasses] = useState(1);
   const [materialCost, setMaterialCost] = useState(0);
+  // Estacionamento item 13 (opção A): material do estoque e quanto o trabalho usa (na unidade do material).
+  const [stockMaterials, setStockMaterials] = useState<Material[]>([]);
+  const [stockMaterialId, setStockMaterialId] = useState('');
+  const [stockMaterialQty, setStockMaterialQty] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.laser.hourlyRate);
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.laser.markupPct);
@@ -139,6 +143,12 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       },
     );
 
+    const unsubMat = onSnapshot(
+      query(collection(db, 'materials'), where('storeId', '==', activeStore.id), orderBy('name', 'asc')),
+      snap => setStockMaterials(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Material)),
+      err => handleFirestoreError(err, OperationType.LIST, 'materials'),
+    );
+
     const unsubJ = onSnapshot(
       query(collection(db, 'laserJobs'), where('storeId', '==', activeStore.id), orderBy('createdAt', 'desc')),
       snap => {
@@ -153,12 +163,20 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
 
     return () => {
       unsubM();
+      unsubMat();
       unsubJ();
     };
   }, [activeStore]);
 
   const selectedMachine = machines.find(m => m.id === selectedMachineId) ?? null;
   const totalTimeMin = laserTotalTimeMin(cuttingTimeMin, engravingTimeMin, passes);
+  // Item 13: com material do estoque, o custo do material vem dele; sem, é o digitado (como antes).
+  const stockMaterial = stockMaterials.find(m => m.id === stockMaterialId) ?? null;
+  // Sem material digitado/escolhido na máquina, vale o nome do material do estoque (trocar de máquina limpa o campo).
+  const usedMaterialName = material || stockMaterial?.name || '';
+  const usedMaterialCost = stockMaterial
+    ? laserStockMaterialCost(stockMaterial.unitCost, stockMaterialQty)
+    : materialCost;
 
   // ── Calculation ──────────────────────────────────────────────────────────────
   const result = selectedMachine
@@ -171,7 +189,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         passes,
         electricityRate,
         hourlyRate,
-        materialCost,
+        materialCost: usedMaterialCost,
         quantity,
         markupPct,
         channelFeePct,
@@ -252,7 +270,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         result.totalCostUnit,
         price,
         selectedMachine.label,
-        material || 'não especificado',
+        usedMaterialName || 'não especificado',
       );
       setAiAnalysis(analysis || aiUnavailableMessage());
     } catch {
@@ -262,7 +280,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   };
 
   const handleSaveJob = async (createProduct = false) => {
-    if (!activeStore || !jobName || !material || !selectedMachine || totalTimeMin <= 0) {
+    if (!activeStore || !jobName || !usedMaterialName || !selectedMachine || totalTimeMin <= 0) {
       addToast('Preencha nome, material e tempo de corte/gravação.', 'error');
       return;
     }
@@ -274,11 +292,14 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         name: jobName,
         machineId: selectedMachine.id,
         machineName: selectedMachine.label,
-        material,
+        material: usedMaterialName,
         cuttingTimeMin,
         engravingTimeMin,
         passes,
-        materialCost,
+        materialCost: usedMaterialCost,
+        // Item 13: o produto criado deste trabalho baixa este material do estoque.
+        materialId: stockMaterial ? stockMaterial.id : null,
+        materialQty: stockMaterial ? stockMaterialQty : 0,
         quantity,
         manualPrice: manualPrice ?? null,
         // Etapa 8C, item 4: custo e preço que valiam ao salvar (o trabalho vira produto sem recalcular).
@@ -537,17 +558,55 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Custo do Material (R$ total)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={materialCost}
-                  onChange={e => setMaterialCost(Number(e.target.value))}
+                <label className="text-xs font-bold text-neutral-600">Material do estoque (opcional)</label>
+                <select
+                  value={stockMaterialId}
+                  onChange={e => {
+                    setStockMaterialId(e.target.value);
+                  }}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                  placeholder="0,00"
-                />
+                >
+                  <option value="">Sem vínculo com estoque (custo digitado)</option>
+                  {stockMaterials.map(m => (
+                    <option key={m.id} value={m.id}>
+                      {m.name} · {formatCurrency(m.unitCost)}/{m.unit} · saldo {m.stockQuantity} {m.unit}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {stockMaterial ? (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-600">
+                    Quanto o trabalho usa ({stockMaterial.unit}, total das {quantity} peças)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={stockMaterialQty}
+                    onChange={e => setStockMaterialQty(Math.max(0, Number(e.target.value)))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                  />
+                  <p className="text-xs text-neutral-500">
+                    Custo do material: {formatCurrency(usedMaterialCost)} ({stockMaterialQty} {stockMaterial.unit} ×{' '}
+                    {formatCurrency(stockMaterial.unitCost)})
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-600">Custo do Material (R$ total)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={materialCost}
+                    onChange={e => setMaterialCost(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                    placeholder="0,00"
+                  />
+                </div>
+              )}
             </div>
 
             {totalTimeMin > 0 && (
@@ -685,7 +744,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <button
                 type="button"
                 onClick={() => handleSaveJob()}
-                disabled={savingJob || !jobName || !material || totalTimeMin <= 0}
+                disabled={savingJob || !jobName || !usedMaterialName || totalTimeMin <= 0}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-40"
               >
                 {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -693,7 +752,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </button>
               <SaveAndCreateProductButton
                 onClick={() => handleSaveJob(true)}
-                disabled={savingJob || !jobName || !material || totalTimeMin <= 0}
+                disabled={savingJob || !jobName || !usedMaterialName || totalTimeMin <= 0}
               />
             </div>
           )}

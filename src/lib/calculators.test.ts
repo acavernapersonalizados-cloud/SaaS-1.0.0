@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   machineToKeep,
+  laserStockMaterialCost,
   calcCestaJob,
   calcLaserJob,
   calcPapelariaJob,
@@ -250,4 +251,14 @@ describe('machineToKeep', () => {
   it('a escolhida foi excluída e sobraram duas: não escolhe nenhuma', () =>
     expect(machineToKeep([a, b], 'x')).toBe(''));
   it('sem máquinas: nenhuma', () => expect(machineToKeep([], 'a')).toBe(''));
+});
+
+// Estacionamento item 13: custo do material do estoque no Laser = quantidade × custo da unidade, em centavos.
+describe('laserStockMaterialCost', () => {
+  it('1,5 chapa de MDF a R$ 12,90 = R$ 19,35', () => expect(laserStockMaterialCost(12.9, 1.5)).toBe(19.35));
+  it('arredonda para centavos', () => expect(laserStockMaterialCost(0.333, 3)).toBe(1));
+  it('sem quantidade ou sem custo: zero', () => {
+    expect(laserStockMaterialCost(12.9, 0)).toBe(0);
+    expect(laserStockMaterialCost(0, 2)).toBe(0);
+  });
 });

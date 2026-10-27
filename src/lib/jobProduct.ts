@@ -86,11 +86,11 @@ export function jobProductDetails(
   const list = (v: unknown) => (Array.isArray(v) ? (v as Array<Record<string, unknown>>) : []);
   switch (kind) {
     case 'laser':
-      // Material digitado em R$, sem vínculo com o estoque (ver Estacionamento).
+      // Estacionamento item 13: com material do estoque, o produto baixa a parte de uma peça; sem, nada (como antes).
       return {
         productionTime: round2(laserTotalTimeMin(num(j.cuttingTimeMin), num(j.engravingTimeMin), num(j.passes) || 1)),
         packagingCost: 0,
-        materials: [],
+        materials: stockMaterials([{ materialId: j.materialId, quantity: num(j.materialQty) / qty }]),
       };
     case 'papelaria':
       return {

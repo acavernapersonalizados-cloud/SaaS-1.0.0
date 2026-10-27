@@ -194,6 +194,42 @@ describe('Corte a Laser', () => {
     await type(field('Seu preço por peça'), '15');
     expect(html()).toMatchSnapshot();
   });
+  // Estacionamento item 13 (opção A): com material do estoque, o custo vem dele e o trabalho grava qual e quanto.
+  it('item 13: material do estoque calcula o custo e é gravado no trabalho', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await type(field('Nome do Trabalho'), 'TESTE Porta-chaves');
+    await type(field('Tempo de Corte'), '10');
+    await type(field('Quantidade de peças'), '4');
+    await type(field('Material do estoque'), 'mdf');
+    await type(field('Quanto o trabalho usa'), '1.5');
+    expect(document.body.textContent?.replace(/\s/g, ' ')).toContain('Custo do material: R$ 22,50');
+    await click(buttonWithText('Salvar Trabalho'));
+    const job = writes.find(w => w.path === 'laserJobs')!.data;
+    expect({
+      material: job.material,
+      materialCost: job.materialCost,
+      materialId: job.materialId,
+      materialQty: job.materialQty,
+    }).toEqual({ material: 'TESTE MDF 3mm', materialCost: 22.5, materialId: 'mdf', materialQty: 1.5 });
+  });
+  it('item 13: sem material do estoque, grava como antes (custo digitado, sem vínculo)', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await type(field('Nome do Trabalho'), 'TESTE Porta-chaves');
+    await type(field('Material'), 'MDF 3mm');
+    await type(field('Tempo de Corte'), '10');
+    await type(field('Custo do Material'), '20');
+    await click(buttonWithText('Salvar Trabalho'));
+    const job = writes.find(w => w.path === 'laserJobs')!.data;
+    expect({ materialCost: job.materialCost, materialId: job.materialId, materialQty: job.materialQty }).toEqual({
+      materialCost: 20,
+      materialId: null,
+      materialQty: 0,
+    });
+  });
 });
 
 describe('Impressão 3D', () => {

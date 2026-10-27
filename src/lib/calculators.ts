@@ -21,7 +21,6 @@ export const sumItemsCost = (items: Array<{ unitCost: number; quantity: number }
 
 // ─── Corte a Laser ───────────────────────────────────────────────────────────
 
-/** Tempo de máquina por peça, em minutos: (corte + gravação) × passadas. */
 /**
  * Máquina (impressora 3D, máquina do Laser) que fica escolhida quando a lista muda (Estacionamento item 11): a atual,
  * se ainda existe; se não, a única da lista; com duas ou mais, nenhuma — a pessoa escolhe (nunca a primeira por acaso).
@@ -29,6 +28,14 @@ export const sumItemsCost = (items: Array<{ unitCost: number; quantity: number }
 export const machineToKeep = (list: Array<{ id: string }>, current: string) =>
   list.some(m => m.id === current) ? current : list.length === 1 ? list[0].id : '';
 
+/**
+ * Custo do material do estoque usado no trabalho do Laser (Estacionamento item 13, opção A): quantidade usada no
+ * trabalho, na unidade do material, × custo da unidade, em centavos (como se fosse digitado em "Custo do Material").
+ */
+export const laserStockMaterialCost = (unitCost: number, quantityUsed: number) =>
+  Math.round((Number(unitCost) || 0) * (Number(quantityUsed) || 0) * 100) / 100;
+
+/** Tempo de máquina por peça, em minutos: (corte + gravação) × passadas. */
 export const laserTotalTimeMin = (cuttingTimeMin: number, engravingTimeMin: number, passes: number) =>
   (cuttingTimeMin + engravingTimeMin) * passes;
 

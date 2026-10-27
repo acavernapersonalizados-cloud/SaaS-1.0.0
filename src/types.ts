@@ -192,6 +192,9 @@ export interface LaserJob extends JobProductFields {
   engravingTimeMin: number;
   passes: number;
   materialCost: number;
+  /** Estacionamento item 13: material do estoque usado (o custo vem dele) e quanto, no trabalho todo. */
+  materialId?: string | null;
+  materialQty?: number;
   quantity: number;
   manualPrice?: number | null;
   notes?: string;
