@@ -37,12 +37,12 @@
 
 **Onde paramos (27/10/2026):**
 
-- No ar (`index-1jtxD34V.js`): Etapas 0 a 9 e Estacionamento 2 a 5 (Storage por loja, IA sem chave no site, catálogo
-  sem custo público, regras por loja e admin só com e-mail confirmado). 9C desligada até a Etapa 10 (Blaze).
-- **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
-- **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
-  (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- **Itens 6 a 12 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 13 a 15;
+- No ar (`index-DxTxBs_J.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 12 (segurança 2 a 6; Lista de Compras
+  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones). 9C desligada (Etapa 10).
+- Lote 6 a 12 testado por você no emulador e publicado (só hosting). Chave antiga do Gemini: apagada por você.
+- **Falta você, no site:** "Atualizar agora"; enviar uma foto de produto (se não subir: console → Storage → Regras,
+  permissão para ler o banco); "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
+- Próximo: item 13 (Laser com material do estoque, risco médio: lista de riscos e seu "aprovado"); depois 14 e 15;
   **por último, 16: IA**.
 
 ## Entregue
@@ -83,13 +83,13 @@ O que cada etapa trouxe para quem usa o app:
 3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; o teste da IA e o "Exigir" foram para o item 16 (último).
 4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
 5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
-6. ✅ Revisar o `npm audit` (feito em 27/10/2026; o hosting publica junto com o próximo lote).
-7. ✅ Lista de Compras atualizar o estoque com transação (feito em 27/10/2026; publica com o lote).
-8. ✅ Mensagem de PDF só depois de o PDF ficar pronto (feito em 27/10/2026; publica com o lote).
-9. ✅ Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]" (feito em 27/10/2026; publica com o lote).
-10. ✅ Matéria-prima aceitar estoque 0 no cadastro (feito em 27/10/2026; publica com o lote).
-11. ✅ Impressão 3D pedir para escolher a impressora (feito em 27/10/2026; publica com o lote).
-12. ✅ Ícone do app instalado (feito em 27/10/2026; publica com o lote).
+6. ✅ Revisar o `npm audit` (publicado em 27/10/2026).
+7. ✅ Lista de Compras atualizar o estoque com transação (publicado em 27/10/2026).
+8. ✅ Mensagem de PDF só depois de o PDF ficar pronto (publicado em 27/10/2026).
+9. ✅ Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]" (publicado em 27/10/2026).
+10. ✅ Matéria-prima aceitar estoque 0 no cadastro (publicado em 27/10/2026).
+11. ✅ Impressão 3D pedir para escolher a impressora (publicado em 27/10/2026).
+12. ✅ Ícone do app instalado (publicado em 27/10/2026).
 13. Laser escolher material do estoque.
 14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
@@ -730,7 +730,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    só a loja nova do documento; exigir acesso à loja atual e loja sem mudar; junto, admin só com e-mail verificado.
 6. **Revisar o `npm audit`** (importante, P–M): no site só entra o `dompurify` (via jsPDF; o app não usa a função
    afetada) — `npm audit fix` resolve sem mudança grande; o resto é só do computador de desenvolvimento.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** `npm audit fix` sem --force; só o `package-lock.json` mudou
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** `npm audit fix` sem --force; só o `package-lock.json` mudou
    (DOMPurify 3.4.12 → 3.4.17, Firebase 12.16 → 12.19, Vite 6.4.5, PostCSS 8.5.32). De 22 para 12 alertas. Ficaram,
    de propósito: `@grpc/grpc-js` dentro do Firebase (só roda em servidor Node; não está no `dist/`, conferido) — o
    "conserto" do npm é voltar para o Firebase 9, recusado; `vitest`/`tinypool` (só testes, exige o Vitest 5);
@@ -738,26 +738,26 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    emulador ok; o build ficou com os mesmos 74 arquivos, nenhum mudou mais de 2 KB.
 7. **Lista de Compras com transação** (importante, P): o registro de compra atualiza o estoque sem transação
    (`PurchaseList.tsx`); duas pessoas ao mesmo tempo podem deixar o estoque errado.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** "Comprado → Confirmar" grava a compra e o estoque numa transação só; soma
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** "Comprado → Confirmar" grava a compra e o estoque numa transação só; soma
    ao estoque lido do banco (não ao da tela) e, se a compra já estava registrada (clique duplo ou outra pessoa), não soma
    de novo e avisa. Campos gravados iguais. Teste novo (falha no código antigo: 10 em vez de 18); 283 testes, lint e
    build ok; no emulador, estoque mudado por "outra pessoa" para 5 + 1 pacote de 100 = 105, certo.
 8. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** os botões "Baixar PDF Cliente" e "Relatório Interno" do Orçamento Gerado
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** os botões "Baixar PDF Cliente" e "Relatório Interno" do Orçamento Gerado
    agora esperam o PDF ficar pronto (faltava o await): o "gerado com sucesso" só aparece depois, e se o PDF falhar
    aparece só a mensagem de erro. Teste novo (QuoteModals.test.tsx, falha no código antigo); 285 testes, lint e build
    ok. Risco baixo.
 9. **Cartão do produto criado de trabalho** (útil, P): "Custo da calculadora: [nome]" no lugar de "0 min · 0 materiais".
-   ✅ **Feito em 27/10/2026, NÃO publicado:** em Produtos, o cartão do produto que veio de trabalho de calculadora
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** em Produtos, o cartão do produto que veio de trabalho de calculadora
    (sourceJob) mostra "Custo da calculadora: Corte a Laser" (ou Impressão 3D, Papelaria, Cestas, Sublimação) no lugar
    de "0 min · 0 materiais". Os outros produtos não mudam. Só tela; nada é gravado. Teste novo; 286 testes, lint e
    build ok. Risco baixo.
 10. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx`.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** o campo "Estoque Atual" da Matéria-prima aceita 0 (antes o 0 virava campo
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** o campo "Estoque Atual" da Matéria-prima aceita 0 (antes o 0 virava campo
    vazio e o formulário não salvava) e não aceita negativo (min 0); grava stockQuantity 0 como antes. Teste novo
    (falha no código antigo); só o atributo min="0" mudou na foto da tela; 287 testes, lint e build ok. Risco baixo.
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** Impressão 3D e Corte a Laser não escolhem mais a primeira máquina por
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** Impressão 3D e Corte a Laser não escolhem mais a primeira máquina por
    acaso: com uma só, ela vem escolhida; com duas ou mais, nenhuma vem marcada e aparece "Escolha a impressora/máquina
    para calcular" (o resultado só aparece depois). Ao excluir a escolhida, a mesma regra. Função machineToKeep
    (lib/calculators.ts) com 5 testes; nenhum preço muda; 292 testes, lint e build ok. A Sublimação tem o mesmo jeito
@@ -766,7 +766,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    continuava marcada. Agora só o seu clique conta como escolha: a marcação automática vale só com uma máquina.
    Conferido no emulador (cadastrar a 2ª → nenhuma marcada + aviso; clicar → marca e o aviso some).
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
-   ✅ **Feito em 27/10/2026, NÃO publicado:** criados public/pwa-192x192.png e public/pwa-512x512.png a partir do
+   ✅ **Feito e publicado em 27/10/2026 (lote 6 a 12):** criados public/pwa-192x192.png e public/pwa-512x512.png a partir do
    icon.svg que já existia (o "P" branco no quadrado preto, cantos transparentes), com o Chrome do computador em modo
    invisível; o desenho não mudou. O build leva os dois e o manifesto aponta para eles. Teste novo (pwaIcons.test.ts:
    arquivo, tamanho e manifesto); 295 testes, lint e build ok. O favicon.ico citado em includeAssets também não
