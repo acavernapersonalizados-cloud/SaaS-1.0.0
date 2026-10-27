@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, doc, deleteDoc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
 import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
@@ -279,29 +279,45 @@ export function PurchaseList() {
         purchasedUnits,
       );
 
-      await updateDoc(doc(db, 'purchaseList', purchasingItem.id), {
-        storeId: activeStore.id,
-        status: 'purchased',
-        purchasedAt: new Date().toISOString(),
-        purchasedQty: purchasedUnits,
-        purchasedPrice: totalPrice,
-        supplierId: purchaseForm.supplierId || purchasingItem.supplierId || null,
-        supplierName: supplier?.name || purchasingItem.supplierName || null,
-      });
+      // Estacionamento item 7: compra e estoque numa transação só. Lê o estoque do banco (não o da tela), e um item
+      // já registrado (clique duplo ou outra pessoa ao mesmo tempo) não soma de novo.
+      const itemRef = doc(db, 'purchaseList', purchasingItem.id);
+      const matRef =
+        purchasedUnits > 0 && purchasingItem.materialId && mat ? doc(db, 'materials', purchasingItem.materialId) : null;
+      const registered = await runTransaction(db, async tx => {
+        const itemSnap = await tx.get(itemRef);
+        if (itemSnap.exists() && itemSnap.data().status === 'purchased') return false;
+        const matSnap = matRef ? await tx.get(matRef) : null;
 
-      if (purchasedUnits > 0 && purchasingItem.materialId) {
-        if (mat) {
+        tx.update(itemRef, {
+          storeId: activeStore.id,
+          status: 'purchased',
+          purchasedAt: new Date().toISOString(),
+          purchasedQty: purchasedUnits,
+          purchasedPrice: totalPrice,
+          supplierId: purchaseForm.supplierId || purchasingItem.supplierId || null,
+          supplierName: supplier?.name || purchasingItem.supplierName || null,
+        });
+
+        if (matRef && matSnap?.exists()) {
           const updateData: Record<string, any> = {
-            stockQuantity: (Number(mat.stockQuantity) || 0) + purchasedUnits,
+            stockQuantity: (Number(matSnap.data().stockQuantity) || 0) + purchasedUnits,
             updatedAt: new Date().toISOString(),
           };
           if (purchaseForm.price > 0) {
             updateData.unitCost = unitCost;
           }
-          await updateDoc(doc(db, 'materials', purchasingItem.materialId), updateData);
+          tx.update(matRef, updateData);
         }
-      }
+        return true;
+      });
 
+      if (!registered) {
+        addToast('Esta compra já tinha sido registrada; o estoque não foi somado de novo.', 'info');
+        setPurchasingItem(null);
+        setSaving(false);
+        return;
+      }
       addToast('Compra registrada e estoque atualizado!', 'success');
       setPurchasingItem(null);
     } catch (err) {

@@ -104,6 +104,7 @@ export const increment = (n: number) => n;
 export const arrayUnion = (...v: unknown[]) => v;
 export const arrayRemove = (...v: unknown[]) => v;
 export const runTransaction = async (_db: unknown, fn: (tx: any) => unknown) =>
-  fn({ get: getDoc, set: () => {}, update: () => {}, delete: () => {} });
+  // A transação anota as gravações como o updateDoc/setDoc, para o teste conferir o que seria gravado.
+  fn({ get: getDoc, set: setDoc, update: updateDoc, delete: () => {} });
 export const writeBatch = () => ({ set: () => {}, update: () => {}, delete: () => {}, commit: async () => {} });
 export const getFirestore = () => ({});

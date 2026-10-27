@@ -1141,6 +1141,37 @@ describe('Lista de Compras: preço por unidade ou valor total pago', () => {
     expect(porUnidade.shown).toBe('= R$ 5,00 por unidade · total R$ 40,00');
     expect(porUnidade.saved).toEqual(porTotal.saved);
   });
+
+  // Estacionamento item 7: a transação soma ao estoque do banco (não ao que a tela carregou) e não soma duas vezes.
+  it('item 7: soma ao estoque atual do banco e não registra de novo uma compra já registrada', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const fita = fixtures.materials.find(m => m.id === 'fita')!;
+    const compra = fixtures.purchaseList.find(p => p.id === 'compra-1')!;
+    const before = { stock: fita.stockQuantity, status: compra.status };
+    const confirm = async () => {
+      writes.length = 0;
+      await show(await load());
+      await click(buttonWithText('Comprado'));
+      await click(radio('total'));
+      await type(priceInput(), '40');
+    };
+    try {
+      await confirm();
+      fita.stockQuantity = 10; // outra pessoa mudou o estoque depois que a tela abriu (a tela ainda mostra 2)
+      await click(buttonWithText('Confirmar'));
+      expect(writes.find(w => w.path === 'materials/fita')!.data.stockQuantity).toBe(18);
+      cleanup();
+      fita.stockQuantity = before.stock;
+      await confirm();
+      compra.status = 'purchased'; // registrada por outra pessoa (ou clique duplo) antes deste clique
+      await click(buttonWithText('Confirmar'));
+      expect(writes).toHaveLength(0);
+    } finally {
+      fita.stockQuantity = before.stock;
+      compra.status = before.status;
+    }
+  });
 });
 
 // Etapa 8C, item 3c — o catálogo mostra o preço no Pix, no crédito (Pix ÷ 0,95) ou os dois.
