@@ -51,10 +51,11 @@
 - **Item 4 (catálogo sem custo público) completo e publicado (26/10/2026):** passo 1 (regras + hosting) e, depois de
   você conferir o catálogo das duas lojas, passo 2 (só regras): `products` agora só a própria loja lê. Conferido no
   site sem login: `products` 403, `catalogProducts` 200.
-- **Item 5 feito, regras NÃO publicadas:** atualizar exige a loja atual do documento e a loja não muda; o e-mail fixo
+- **Item 5 publicado (26/10/2026, regras do banco e do Storage):** atualizar exige a loja atual do documento e a loja não muda; o e-mail fixo
   de admin só vale confirmado (banco e Storage). Emulador: 96 casos (18 coleções + admin) e catálogo 12, todos OK.
-  Em 26/10/2026 as duas contas (admin e ten.personalizados) estavam SEM e-mail confirmado. **Publicar as regras só
-  depois de eu conferir (só leitura) as DUAS confirmadas** pelo botão "Confirmar meu e-mail".
+  Publicado só depois de conferir (só leitura) as DUAS contas com e-mail confirmado pelo botão "Confirmar meu
+  e-mail". **Falta você:** salvar algo numa tela (ex.: editar um produto) e abrir Usuários/Lojas como admin.
+  Próximo: item 6 (npm audit).
 
 ## Entregue
 
@@ -93,7 +94,7 @@ O que cada etapa trouxe para quem usa o app:
 2. ✅ Regras do Storage por loja (feito e publicado em 26/10/2026).
 3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; falta você ligar o "Exigir" e apagar a chave antiga.
 4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
-5. ✅ Regras do Firestore: atualizar só documentos da própria loja (feito em 26/10/2026; publicar só com as duas contas confirmadas).
+5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
 6. Revisar o `npm audit`.
 7. Lista de Compras atualizar o estoque com transação.
 8. Mensagem de PDF só depois de o PDF ficar pronto.
