@@ -43,7 +43,8 @@
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
 - **Item 6 feito, NÃO publicado:** `npm audit fix` sem --force (22 → 12 alertas; DOMPurify 3.4.17, Firebase 12.19);
-  o que sobrou é do computador ou de servidor (não entra no site). Próximo: 7 a 13; **por último, 14: IA**.
+  o que sobrou é do computador ou de servidor (não entra no site); publica junto com o próximo lote. Próximo: 7 a 15;
+  **por último, 16: IA**.
 
 ## Entregue
 
@@ -80,10 +81,10 @@ O que cada etapa trouxe para quem usa o app:
 
 1. ✅ Chave do Gemini: não precisa mais de contenção; a chave antiga é apagada por você em 26/10/2026 (o site não a usa).
 2. ✅ Regras do Storage por loja (feito e publicado em 26/10/2026).
-3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; o teste da IA e o "Exigir" foram para o item 14 (último).
+3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; o teste da IA e o "Exigir" foram para o item 16 (último).
 4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
 5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
-6. ✅ Revisar o `npm audit` (feito em 27/10/2026; falta publicar o hosting).
+6. ✅ Revisar o `npm audit` (feito em 27/10/2026; o hosting publica junto com o próximo lote).
 7. Lista de Compras atualizar o estoque com transação.
 8. Mensagem de PDF só depois de o PDF ficar pronto.
 9. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
@@ -91,7 +92,9 @@ O que cada etapa trouxe para quem usa o app:
 11. Impressão 3D pedir para escolher a impressora.
 12. Ícone do app instalado.
 13. Laser escolher material do estoque.
-14. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
+14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
+15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
+16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -719,7 +722,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    build (conferido no `dist/`). A 9C mostra as sugestões de pesquisa do Google (obrigatório com a busca). O código
    da IA ficou num pacote próprio (`vendor-firebase-ai`, 59 KB), e a abertura do app continua do mesmo tamanho.
    **Falta você, no console:** ligar o AI Logic, criar a chave do reCAPTCHA, registrar o App Check e me passar a
-   chave do site do reCAPTCHA (é pública) — feito. O teste da IA e o "Exigir" do App Check foram para o item 14.
+   chave do site do reCAPTCHA (é pública) — feito. O teste da IA e o "Exigir" do App Check foram para o item 16.
 4. ✅ **Produtos do catálogo sem custo público** — publicado em 26/10/2026 (2 passos) (segurança, MÉDIA, M–G): hoje quem lê o banco direto vê custo do
    trabalho, materiais, tempo e a análise da IA dos produtos do catálogo, e produto sem `showInCatalog` conta como
    público. Seus custos não podem ficar visíveis para cliente nem concorrente: coleção pública só com nome, foto,
@@ -742,7 +745,14 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
-14. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
+14. **Categorias organizadas** (útil, M; pedido em 27/10/2026): no cadastro de Produtos, a categoria vem só da lista
+    oficial (sem texto livre). Antes, uma auditoria **só leitura** das grafias duplicadas (cesta/Cesta,
+    presente/Presente/Presentes/Presenta, VESTUARIO/Vestuário…) com uma proposta de unificação; **grava só com o seu
+    aprovado**. O catálogo público mostra só as categorias oficiais que têm produtos visíveis.
+15. **Catálogo público com cara de loja** (útil, M–G; pedido em 27/10/2026): redesenho bonito no celular, com botão de
+    WhatsApp em cada produto e o preço no Pix e no crédito. **Antes de codificar, mostrar 2 ou 3 propostas de layout**
+    para você escolher.
+16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
 
