@@ -1171,6 +1171,40 @@ describe('Matéria-prima: preço por unidade ou valor total pago', () => {
 
 // Lista de Compras → Registrar Compra: o mesmo seletor. Seção 16.7 do checklist: 8 m de fita por R$ 40 = R$ 5,00/m,
 // informado dos dois jeitos, grava o mesmo (purchasedPrice = total pago; unitCost = custo por metro).
+// Estacionamento item 14: "Organizar categorias" mostra as grafias do texto livre e só grava com "Confirmar e gravar".
+describe('Categorias: organizar as grafias do texto livre', () => {
+  it('escolher a oficial e confirmar grava a categoria oficial no produto; antes disso, nada', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(React.createElement((await import('./Categories')).Categories));
+    await click(buttonWithText('Produtos'));
+    await click(buttonWithText('Organizar categorias'));
+    const status = () => document.querySelector('[role="status"]')?.textContent?.trim();
+    expect(document.body.textContent).toContain('"Presentes" ×1');
+    expect(status()).toBe('0 produto(s) vão mudar');
+    expect(buttonWithText('Confirmar e gravar').hasAttribute('disabled')).toBe(true);
+    await type(document.querySelector('select[aria-label="Categoria para Presentes"]')!, 'cat-presentes');
+    expect(status()).toBe('1 produto(s) vão mudar');
+    expect(writes).toHaveLength(0);
+    await click(buttonWithText('Confirmar e gravar'));
+    const update = writes.find(w => w.path === 'products/chaveiro')!;
+    expect(update.data).toMatchObject({ categoryIds: ['cat-presentes'], category: 'TESTE Presentes' });
+    expect(writes.filter(w => w.path === 'categories')).toHaveLength(0);
+  });
+  it('"+ Nova categoria" cria a categoria e põe nos produtos', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(React.createElement((await import('./Categories')).Categories));
+    await click(buttonWithText('Produtos'));
+    await click(buttonWithText('Organizar categorias'));
+    await type(document.querySelector('select[aria-label="Categoria para Presentes"]')!, '__nova__');
+    expect(document.querySelector('[role="status"]')?.textContent).toContain('1 categoria(s) nova(s): Presentes');
+    await click(buttonWithText('Confirmar e gravar'));
+    expect(writes.find(w => w.path === 'categories')!.data).toMatchObject({ name: 'Presentes', scope: 'product' });
+    expect(writes.find(w => w.path === 'products/chaveiro')!.data.categoryIds).toEqual(['cat-presentes', 'novo-id']);
+  });
+});
+
 describe('Lista de Compras: preço por unidade ou valor total pago', () => {
   const load = async () => React.createElement((await import('./PurchaseList')).PurchaseList);
   const radio = (mode: string) => document.querySelector(`input[name="purchasePriceMode"][value="${mode}"]`)!;

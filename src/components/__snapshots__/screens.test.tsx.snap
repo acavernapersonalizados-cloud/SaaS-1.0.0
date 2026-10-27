@@ -3030,11 +3030,6 @@ exports[`Catálogo público > busca 1`] = `
             <button
               class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
             >
-              Presentes
-            </button>
-            <button
-              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
-            >
               TESTE Presentes
             </button>
           </div>
@@ -3086,7 +3081,7 @@ exports[`Catálogo público > busca 1`] = `
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
               >
-                TESTE Presentes · Presentes
+                TESTE Presentes
               </span>
               <p
                 class="font-bold text-neutral-900 text-sm leading-tight line-clamp-2"
@@ -3335,11 +3330,6 @@ exports[`Catálogo público > lista 1`] = `
             <button
               class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
             >
-              Presentes
-            </button>
-            <button
-              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
-            >
               TESTE Presentes
             </button>
           </div>
@@ -3391,7 +3381,7 @@ exports[`Catálogo público > lista 1`] = `
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
               >
-                TESTE Presentes · Presentes
+                TESTE Presentes
               </span>
               <p
                 class="font-bold text-neutral-900 text-sm leading-tight line-clamp-2"
@@ -3640,11 +3630,6 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
             <button
               class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
             >
-              Presentes
-            </button>
-            <button
-              class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors border text-neutral-600 border-neutral-200 bg-white hover:bg-neutral-50"
-            >
               TESTE Presentes
             </button>
           </div>
@@ -3696,7 +3681,7 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
               >
-                TESTE Presentes · Presentes
+                TESTE Presentes
               </span>
               <p
                 class="font-bold text-neutral-900 text-sm leading-tight line-clamp-2"
@@ -38295,21 +38280,6 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     value="TESTE Chaveiro"
                   />
                 </div>
-                <div
-                  class="space-y-1.5"
-                >
-                  <label
-                    class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
-                  >
-                    Categoria principal (opcional)
-                  </label>
-                  <input
-                    class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="Ex: Presentes"
-                    type="text"
-                    value="Presentes"
-                  />
-                </div>
               </div>
               <div
                 class="space-y-2"
@@ -39876,21 +39846,6 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     required=""
                     type="text"
                     value="TESTE Chaveiro"
-                  />
-                </div>
-                <div
-                  class="space-y-1.5"
-                >
-                  <label
-                    class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
-                  >
-                    Categoria principal (opcional)
-                  </label>
-                  <input
-                    class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="Ex: Presentes"
-                    type="text"
-                    value="Presentes"
                   />
                 </div>
               </div>
@@ -41874,21 +41829,6 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     required=""
                     type="text"
                     value="TESTE Chaveiro"
-                  />
-                </div>
-                <div
-                  class="space-y-1.5"
-                >
-                  <label
-                    class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
-                  >
-                    Categoria principal (opcional)
-                  </label>
-                  <input
-                    class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="Ex: Presentes"
-                    type="text"
-                    value="Presentes"
                   />
                 </div>
               </div>
@@ -43980,21 +43920,6 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: Caneca Personalizada"
                     required=""
-                    type="text"
-                    value=""
-                  />
-                </div>
-                <div
-                  class="space-y-1.5"
-                >
-                  <label
-                    class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
-                  >
-                    Categoria principal (opcional)
-                  </label>
-                  <input
-                    class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="Ex: Presentes"
                     type="text"
                     value=""
                   />

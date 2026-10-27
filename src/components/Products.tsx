@@ -204,8 +204,9 @@ export function Products({
       const productData = {
         ...newProduct,
         categoryIds: newProduct.categoryIds || [],
-        // Mantém o campo antigo preenchido para telas/dados legados
-        category: newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', ') || '',
+        // Mantém o campo antigo preenchido para telas/dados legados. Item 14: vale o nome das categorias oficiais;
+        // o texto antigo só fica enquanto o produto não tem nenhuma oficial.
+        category: categoryNames(newProduct.categoryIds, categories).join(', ') || newProduct.category || '',
         storeId: activeStore.id,
         // Preço público pré-calculado: o catálogo não precisa mais ler custos.
         // Preço inválido (R$ 0) não apaga o preço que já estava gravado.
@@ -278,7 +279,7 @@ export function Products({
         newProduct.name,
         pricing.totalCost,
         newProduct.manualPrice,
-        newProduct.category || categoryNames(newProduct.categoryIds, categories).join(', '),
+        categoryNames(newProduct.categoryIds, categories).join(', ') || newProduct.category || '',
       );
       setAiAnalysis(analysis || aiUnavailableMessage());
       setNewProduct(p => ({ ...p, aiPriceAnalysis: analysis || '' }));

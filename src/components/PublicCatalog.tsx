@@ -90,12 +90,13 @@ export function PublicCatalog({ storeId }: CatalogProps) {
   // Only show products marked for catalog (showInCatalog defaults to true)
   const catalogProducts = products.filter(p => p.showInCatalog !== false);
 
-  // Nomes de categoria de um produto: novas (múltiplas) + campo antigo
+  // Nomes de categoria de um produto. Estacionamento item 14: só as categorias oficiais (o antigo texto livre não
+  // aparece mais, nem no filtro); o filtro mostra só as oficiais que têm produto visível.
   const productCategoryNames = (p: Product): string[] => {
     const fromIds = (p.categoryIds || [])
       .map(id => catCatalog.find(c => c.id === id)?.name)
       .filter(Boolean) as string[];
-    return Array.from(new Set([...fromIds, ...(p.category ? [p.category] : [])]));
+    return Array.from(new Set(fromIds));
   };
 
   const categories = Array.from(new Set(catalogProducts.flatMap(p => productCategoryNames(p)))).sort((a, b) =>

@@ -85,18 +85,16 @@ export function ProductFormModal({
                   placeholder="Ex: Caneca Personalizada"
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
-                  Categoria principal (opcional)
-                </label>
-                <input
-                  type="text"
-                  value={newProduct.category || ''}
-                  onChange={e => setNewProduct(p => ({ ...p, category: e.target.value }))}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                  placeholder="Ex: Presentes"
-                />
-              </div>
+              {/* Estacionamento item 14: categoria só da lista oficial (abaixo); o texto livre saiu. */}
+              {!(newProduct.categoryIds || []).length && newProduct.category && (
+                <div className="space-y-1.5">
+                  <span className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Categoria antiga</span>
+                  <p className="px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-900">
+                    "{newProduct.category}" — escolha abaixo uma categoria da lista (ou use "Organizar categorias" na
+                    tela Categorias).
+                  </p>
+                </div>
+              )}
             </div>
 
             <CategoryPicker

@@ -4,7 +4,9 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Category, CategoryScope, Material, Product } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
-import { Tag, Plus, Trash2, Edit2, Check, X, Loader2, Package, Box } from 'lucide-react';
+import { Tag, Plus, Trash2, Edit2, Check, X, Loader2, Package, Box, Wand2 } from 'lucide-react';
+import { OrganizeCategories } from './OrganizeCategories';
+import { pendingCategoryGroups } from '../lib/categoryAudit';
 
 const SCOPES: Array<{ id: CategoryScope; label: string; hint: string }> = [
   { id: 'material', label: 'Matéria-prima / Estoque', hint: 'Ex: Tecidos, Papéis, Ferragens, Tintas' },
@@ -27,6 +29,8 @@ export function Categories() {
   const [editingName, setEditingName] = useState('');
   const [toDelete, setToDelete] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // Estacionamento item 14: janela "Organizar categorias" (grafias do antigo texto livre dos produtos).
+  const [organizing, setOrganizing] = useState(false);
 
   useEffect(() => {
     if (!activeStore) {
@@ -193,6 +197,22 @@ export function Categories() {
           </button>
         </form>
 
+        {scope === 'product' && pendingCategoryGroups(products, visible).length > 0 && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+            <p className="flex-1 text-sm text-amber-900">
+              Há produtos com categoria digitada à mão ({pendingCategoryGroups(products, visible).length} grafia(s)
+              diferentes). Organize para usarem só as categorias desta lista.
+            </p>
+            <button
+              type="button"
+              onClick={() => setOrganizing(true)}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-600 text-white rounded-xl font-bold text-sm"
+            >
+              <Wand2 className="w-4 h-4" /> Organizar categorias
+            </button>
+          </div>
+        )}
+
         {visible.length === 0 ? (
           <p className="py-14 text-center text-neutral-400 italic text-sm">Nenhuma categoria criada ainda.</p>
         ) : (
@@ -286,6 +306,16 @@ export function Categories() {
             </div>
           </div>
         </div>
+      )}
+
+      {organizing && activeStore && (
+        <OrganizeCategories
+          storeId={activeStore.id}
+          products={products}
+          officials={categories.filter(c => c.scope === 'product')}
+          onClose={() => setOrganizing(false)}
+          addToast={addToast}
+        />
       )}
     </div>
   );
