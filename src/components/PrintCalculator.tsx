@@ -24,6 +24,7 @@ import {
   printFeesFromChannel,
 } from '../lib/printPricing';
 import { channelsOf, findChannel } from '../lib/channels';
+import { machineToKeep } from '../lib/calculators';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -154,7 +155,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       snap => {
         const list = snap.docs.map(d => ({ id: d.id, ...d.data() }) as PrinterProfile);
         setPrinters(list);
-        setSelectedPrinterId(current => (list.some(printer => printer.id === current) ? current : (list[0]?.id ?? '')));
+        // Estacionamento item 11: com duas ou mais impressoras, a pessoa escolhe (não vem a primeira por acaso).
+        setSelectedPrinterId(current => machineToKeep(list, current));
         setPrintersLoading(false);
       },
       err => {
@@ -295,7 +297,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     try {
       await deleteDoc(doc(db, 'printers', printer.id));
       if (selectedPrinterId === printer.id) {
-        setSelectedPrinterId(printers.find(item => item.id !== printer.id)?.id ?? '');
+        setSelectedPrinterId(
+          machineToKeep(
+            printers.filter(item => item.id !== printer.id),
+            '',
+          ),
+        );
       }
       addToast('Impressora excluída.', 'success');
     } catch (err) {
@@ -440,6 +447,9 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
           <Settings className="w-3.5 h-3.5" /> Impressora
         </h2>
+        {!printersLoading && printers.length > 1 && !selectedPrinterId && (
+          <p className="text-sm font-semibold text-amber-700">Escolha a impressora para calcular.</p>
+        )}
         {printersLoading ? (
           <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
         ) : (

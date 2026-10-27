@@ -7,7 +7,7 @@ import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
-import { calcLaserJob, laserTotalTimeMin } from '../lib/calculators';
+import { calcLaserJob, laserTotalTimeMin, machineToKeep } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -127,7 +127,8 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       snap => {
         const list = snap.docs.map(d => ({ id: d.id, ...d.data() }) as LaserMachineProfile);
         setMachines(list);
-        setSelectedMachineId(current => (list.some(machine => machine.id === current) ? current : (list[0]?.id ?? '')));
+        // Estacionamento item 11: com duas ou mais máquinas, a pessoa escolhe (não vem a primeira por acaso).
+        setSelectedMachineId(current => machineToKeep(list, current));
         setMachinesLoading(false);
       },
       err => {
@@ -224,7 +225,12 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     try {
       await deleteDoc(doc(db, 'laserMachines', machine.id));
       if (selectedMachineId === machine.id) {
-        setSelectedMachineId(machines.find(item => item.id !== machine.id)?.id ?? '');
+        setSelectedMachineId(
+          machineToKeep(
+            machines.filter(item => item.id !== machine.id),
+            '',
+          ),
+        );
         setMaterial('');
       }
       addToast('Máquina excluída.', 'success');
@@ -354,6 +360,9 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
           <Settings className="w-3.5 h-3.5" /> Máquina
         </h2>
+        {!machinesLoading && machines.length > 1 && !selectedMachineId && (
+          <p className="text-sm font-semibold text-amber-700">Escolha a máquina para calcular.</p>
+        )}
         {machinesLoading ? (
           <div className="animate-pulse h-24 bg-neutral-100 rounded-xl" />
         ) : (

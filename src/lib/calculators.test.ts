@@ -1,6 +1,7 @@
 // Corte a Laser, Papelaria e Cestas — valores do CHECKLIST-TESTES.md (seções 12, 14 e 15).
 import { describe, expect, it } from 'vitest';
 import {
+  machineToKeep,
   calcCestaJob,
   calcLaserJob,
   calcPapelariaJob,
@@ -237,4 +238,16 @@ describe('Sublimação (Etapa 8D-2) — caneca de porcelana na Sun Special, conf
     };
     expect(calcSublimationJob(zero)).toBeNull();
   });
+});
+
+// Estacionamento item 11: com duas ou mais máquinas, nenhuma é escolhida por acaso.
+describe('machineToKeep', () => {
+  const a = { id: 'a' };
+  const b = { id: 'b' };
+  it('mantém a escolhida enquanto ela existir', () => expect(machineToKeep([a, b], 'b')).toBe('b'));
+  it('com uma máquina só, escolhe ela', () => expect(machineToKeep([a], '')).toBe('a'));
+  it('com duas ou mais e nenhuma escolhida, não escolhe nenhuma', () => expect(machineToKeep([a, b], '')).toBe(''));
+  it('a escolhida foi excluída e sobraram duas: não escolhe nenhuma', () =>
+    expect(machineToKeep([a, b], 'x')).toBe(''));
+  it('sem máquinas: nenhuma', () => expect(machineToKeep([], 'a')).toBe(''));
 });

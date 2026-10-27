@@ -42,7 +42,7 @@
 - **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- **Itens 6 a 10 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 11 a 15;
+- **Itens 6 a 11 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 12 a 15;
   **por último, 16: IA**.
 
 ## Entregue
@@ -88,7 +88,7 @@ O que cada etapa trouxe para quem usa o app:
 8. ✅ Mensagem de PDF só depois de o PDF ficar pronto (feito em 27/10/2026; publica com o lote).
 9. ✅ Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]" (feito em 27/10/2026; publica com o lote).
 10. ✅ Matéria-prima aceitar estoque 0 no cadastro (feito em 27/10/2026; publica com o lote).
-11. Impressão 3D pedir para escolher a impressora.
+11. ✅ Impressão 3D pedir para escolher a impressora (feito em 27/10/2026; publica com o lote).
 12. Ícone do app instalado.
 13. Laser escolher material do estoque.
 14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
@@ -757,6 +757,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    vazio e o formulário não salvava) e não aceita negativo (min 0); grava stockQuantity 0 como antes. Teste novo
    (falha no código antigo); só o atributo min="0" mudou na foto da tela; 287 testes, lint e build ok. Risco baixo.
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
+   ✅ **Feito em 27/10/2026, NÃO publicado:** Impressão 3D e Corte a Laser não escolhem mais a primeira máquina por
+   acaso: com uma só, ela vem escolhida; com duas ou mais, nenhuma vem marcada e aparece "Escolha a impressora/máquina
+   para calcular" (o resultado só aparece depois). Ao excluir a escolhida, a mesma regra. Função machineToKeep
+   (lib/calculators.ts) com 5 testes; nenhum preço muda; 292 testes, lint e build ok. A Sublimação tem o mesmo jeito
+   (escolhe a primeira) e ficou como está; dá para igualar depois. Risco baixo.
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
 14. **Categorias organizadas** (útil, M; pedido em 27/10/2026): no cadastro de Produtos, a categoria vem só da lista
