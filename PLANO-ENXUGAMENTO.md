@@ -42,7 +42,7 @@
 - **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- **Itens 6 a 11 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 12 a 15;
+- **Itens 6 a 12 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 13 a 15;
   **por último, 16: IA**.
 
 ## Entregue
@@ -89,7 +89,7 @@ O que cada etapa trouxe para quem usa o app:
 9. ✅ Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]" (feito em 27/10/2026; publica com o lote).
 10. ✅ Matéria-prima aceitar estoque 0 no cadastro (feito em 27/10/2026; publica com o lote).
 11. ✅ Impressão 3D pedir para escolher a impressora (feito em 27/10/2026; publica com o lote).
-12. Ícone do app instalado.
+12. ✅ Ícone do app instalado (feito em 27/10/2026; publica com o lote).
 13. Laser escolher material do estoque.
 14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
@@ -763,6 +763,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    (lib/calculators.ts) com 5 testes; nenhum preço muda; 292 testes, lint e build ok. A Sublimação tem o mesmo jeito
    (escolhe a primeira) e ficou como está; dá para igualar depois. Risco baixo.
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
+   ✅ **Feito em 27/10/2026, NÃO publicado:** criados public/pwa-192x192.png e public/pwa-512x512.png a partir do
+   icon.svg que já existia (o "P" branco no quadrado preto, cantos transparentes), com o Chrome do computador em modo
+   invisível; o desenho não mudou. O build leva os dois e o manifesto aponta para eles. Teste novo (pwaIcons.test.ts:
+   arquivo, tamanho e manifesto); 295 testes, lint e build ok. O favicon.ico citado em includeAssets também não
+   existe; o navegador usa o icon.svg. Risco baixo.
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
 14. **Categorias organizadas** (útil, M; pedido em 27/10/2026): no cadastro de Produtos, a categoria vem só da lista
     oficial (sem texto livre). Antes, uma auditoria **só leitura** das grafias duplicadas (cesta/Cesta,
