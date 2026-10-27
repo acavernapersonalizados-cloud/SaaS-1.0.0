@@ -358,7 +358,8 @@ export function GeneratedQuoteModal({
               <button
                 onClick={async () => {
                   try {
-                    (await loadPdf()).generateClientPDF(generatedQuote, activeStore);
+                    // Estacionamento item 8: a mensagem só aparece depois de o PDF ficar pronto (ou falhar).
+                    await (await loadPdf()).generateClientPDF(generatedQuote, activeStore);
                     addToast('PDF do Cliente gerado com sucesso!', 'success');
                   } catch (error) {
                     addToast('Erro ao gerar PDF do Cliente', 'error');
@@ -372,7 +373,7 @@ export function GeneratedQuoteModal({
               <button
                 onClick={async () => {
                   try {
-                    (await loadPdf()).generateInternalPDF(generatedQuote, activeStore);
+                    await (await loadPdf()).generateInternalPDF(generatedQuote, activeStore);
                     addToast('PDF Interno gerado com sucesso!', 'success');
                   } catch (error) {
                     addToast('Erro ao gerar PDF Interno', 'error');

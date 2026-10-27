@@ -42,8 +42,8 @@
 - **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- **Itens 6 e 7 feitos, NÃO publicados (lote pronto: só hosting):** 6 = `npm audit fix` sem --force (22 → 12; nenhum
-  no site); 7 = compra e estoque numa transação, sem somar duas vezes. Próximo: 8 a 15; **por último, 16: IA**.
+- **Itens 6 a 8 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 9 a 15;
+  **por último, 16: IA**.
 
 ## Entregue
 
@@ -85,7 +85,7 @@ O que cada etapa trouxe para quem usa o app:
 5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
 6. ✅ Revisar o `npm audit` (feito em 27/10/2026; o hosting publica junto com o próximo lote).
 7. ✅ Lista de Compras atualizar o estoque com transação (feito em 27/10/2026; publica com o lote).
-8. Mensagem de PDF só depois de o PDF ficar pronto.
+8. ✅ Mensagem de PDF só depois de o PDF ficar pronto (feito em 27/10/2026; publica com o lote).
 9. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
 10. Matéria-prima aceitar estoque 0 no cadastro.
 11. Impressão 3D pedir para escolher a impressora.
@@ -743,6 +743,10 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    de novo e avisa. Campos gravados iguais. Teste novo (falha no código antigo: 10 em vez de 18); 283 testes, lint e
    build ok; no emulador, estoque mudado por "outra pessoa" para 5 + 1 pacote de 100 = 105, certo.
 8. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado.
+   ✅ **Feito em 27/10/2026, NÃO publicado:** os botões "Baixar PDF Cliente" e "Relatório Interno" do Orçamento Gerado
+   agora esperam o PDF ficar pronto (faltava o await): o "gerado com sucesso" só aparece depois, e se o PDF falhar
+   aparece só a mensagem de erro. Teste novo (QuoteModals.test.tsx, falha no código antigo); 285 testes, lint e build
+   ok. Risco baixo.
 9. **Cartão do produto criado de trabalho** (útil, P): "Custo da calculadora: [nome]" no lugar de "0 min · 0 materiais".
 10. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx`.
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
