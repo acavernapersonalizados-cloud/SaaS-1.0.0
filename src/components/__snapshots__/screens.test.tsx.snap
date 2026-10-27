@@ -22996,6 +22996,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 </label>
                 <input
                   class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                  min="0"
                   placeholder="Ex: 50"
                   required=""
                   type="number"
@@ -23977,6 +23978,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 </label>
                 <input
                   class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                  min="0"
                   placeholder="Ex: 50"
                   required=""
                   type="number"

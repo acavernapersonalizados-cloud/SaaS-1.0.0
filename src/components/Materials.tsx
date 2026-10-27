@@ -632,8 +632,15 @@ export function Materials() {
                   <input
                     type="number"
                     required
-                    value={newMaterial.stockQuantity || ''}
-                    onChange={e => setNewMaterial({ ...newMaterial, stockQuantity: Number(e.target.value) })}
+                    min="0"
+                    // Estacionamento item 10: estoque 0 é um valor válido (antes o 0 virava campo vazio e não salvava).
+                    value={newMaterial.stockQuantity ?? ''}
+                    onChange={e =>
+                      setNewMaterial({
+                        ...newMaterial,
+                        stockQuantity: e.target.value === '' ? undefined : Number(e.target.value),
+                      })
+                    }
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 50"
                   />

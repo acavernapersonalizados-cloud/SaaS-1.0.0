@@ -1058,6 +1058,19 @@ describe('Matéria-prima: preço por unidade ou valor total pago', () => {
     unitCost: data.unitCost,
   });
 
+  // Estacionamento item 10: estoque 0 fica no campo (antes virava vazio) e é gravado como 0.
+  it('item 10: aceita estoque atual 0 no cadastro', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await fillNew('90');
+    await type(field('Estoque Atual'), '0');
+    expect((field('Estoque Atual') as HTMLInputElement).value).toBe('0');
+    await click(radio('total'));
+    await submit();
+    expect(writes.find(w => w.path === 'materials')!.data.stockQuantity).toBe(0);
+  });
+
   it('novo: sem escolha não grava; "por unidade" R$ 9 × 10 grava o mesmo que "total pago" R$ 90', async () => {
     const { writes } = await import('../test/firestoreMock');
     writes.length = 0;
