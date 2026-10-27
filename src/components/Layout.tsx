@@ -28,6 +28,7 @@ import { cn } from '../lib/utils';
 import { CALCULATORS_MENU_ID, CALCULATOR_TABS, isCalculatorTab, MOBILE_NAV } from '../lib/navigation';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
+import { EmailVerifyBanner } from './EmailVerifyBanner';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -358,6 +359,7 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-10 max-w-7xl mx-auto w-full overflow-y-auto pb-20 md:pb-10">
+        <EmailVerifyBanner />
         {!activeStore && activeTab !== 'users' && activeTab !== 'stores' && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 p-8 bg-white rounded-[2.5rem] border border-neutral-100 shadow-sm">
             <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-600">
