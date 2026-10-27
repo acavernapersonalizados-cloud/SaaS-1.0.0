@@ -87,11 +87,8 @@ service cloud.firestore {
 
     // ── Produtos ─────────────────────────────────────────────────────────────
     match /products/{productId} {
-      // Catálogo público: apenas produtos marcados para o catálogo.
-      // Estacionamento item 4: o passo 2 fecha esta leitura (só a própria loja) depois que o catálogo público
-      // estiver lendo catalogProducts no site; testado no emulador em 26/10/2026.
-      allow read: if resource.data.get('showInCatalog', true) == true
-                  || canRead(resource.data.storeId);
+      // Estacionamento item 4 (passo 2): só a própria loja lê. O catálogo público lê catalogProducts (sem custos).
+      allow read: if canRead(resource.data.storeId);
       allow create: if canWrite(request.resource.data.storeId);
       // Etapa 7.1: nenhuma versão do app (nem uma antiga ainda aberta) pode trocar um preço de
       // catálogo maior que zero por R$ 0. Ocultar do catálogo (showInCatalog/showPrice) continua livre.

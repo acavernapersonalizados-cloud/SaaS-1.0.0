@@ -48,9 +48,9 @@
   APIs → Firebase AI Logic → **Exigir** e testar de novo; (4) funcionou → **apagar a chave antiga do Gemini**;
   (5) enviar uma foto de produto (confere as regras novas do Storage); (6) "Atualizar preço do produto" na Caneca Mágica.
 - Se a foto não subir: o Firebase pede uma permissão para o Storage ler o banco (console → Storage → Regras).
-- **Item 4, passo 1 publicado (26/10/2026, `index-XrvnkmTM.js`):** regras do banco e depois o hosting. **Falta você:**
-  "Atualizar agora", abrir Produtos (cria as cópias sem custo) e conferir o catálogo público. Depois, passo 2: trocar a
-  leitura de `products` para `allow read: if canRead(resource.data.storeId);` e publicar só as regras. Próximo: item 5.
+- **Item 4 (catálogo sem custo público) completo e publicado (26/10/2026):** passo 1 (regras + hosting) e, depois de
+  você conferir o catálogo das duas lojas, passo 2 (só regras): `products` agora só a própria loja lê. Conferido no
+  site sem login: `products` 403, `catalogProducts` 200. Próximo: item 5 (regras: atualizar só a própria loja).
 
 ## Entregue
 
@@ -88,7 +88,7 @@ O que cada etapa trouxe para quem usa o app:
 1. Chave do Gemini: contenção de emergência no Google Cloud (você, hoje).
 2. ✅ Regras do Storage por loja (feito e publicado em 26/10/2026).
 3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; falta você ligar o "Exigir" e apagar a chave antiga.
-4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): passo 1 publicado em 26/10/2026; falta o passo 2 (fechar a leitura de `products`).
+4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
 5. Regras do Firestore: atualizar só documentos da própria loja.
 6. Revisar o `npm audit`.
 7. Lista de Compras atualizar o estoque com transação.
