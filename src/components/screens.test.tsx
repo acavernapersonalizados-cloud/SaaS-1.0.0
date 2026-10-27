@@ -210,6 +210,24 @@ describe('Impressão 3D', () => {
     await type(manual, '20');
     expect(html()).toMatchSnapshot();
   });
+  // Estacionamento item 11: com duas impressoras, nenhuma vem marcada e a tela pede para escolher.
+  it('item 11: com duas impressoras, abre sem nenhuma marcada e pede para escolher', async () => {
+    const { fixtures } = await import('../test/fixtures');
+    const extra = { ...fixtures.printers[0], id: 'impressora-2', label: 'TESTE 3D 2' };
+    fixtures.printers.push(extra);
+    try {
+      await show(await load());
+      expect(document.body.textContent).toContain('Escolha a impressora para calcular.');
+      expect(document.querySelectorAll('.border-neutral-900.bg-neutral-50')).toHaveLength(0);
+      const card = [...document.querySelectorAll('div.cursor-pointer')].find(d =>
+        d.textContent?.includes('TESTE 3D 2'),
+      );
+      await click(card!);
+      expect(document.body.textContent).not.toContain('Escolha a impressora para calcular.');
+    } finally {
+      fixtures.printers.splice(fixtures.printers.indexOf(extra), 1);
+    }
+  });
 });
 
 for (const [name, file, component] of [

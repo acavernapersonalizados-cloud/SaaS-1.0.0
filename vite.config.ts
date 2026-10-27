@@ -49,7 +49,7 @@ export default defineConfig(({ command, mode }) => {
       VitePWA({
         // Etapa 7.1: a versão nova espera a pessoa clicar em "Atualizar agora" (UpdateGate).
         registerType: 'prompt',
-        includeAssets: ['favicon.ico'],
+        includeAssets: ['icon.svg'],
         manifest: {
           name: 'PrecificaAteliê',
           short_name: 'Precifica',

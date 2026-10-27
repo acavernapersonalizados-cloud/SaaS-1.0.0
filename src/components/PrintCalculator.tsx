@@ -100,6 +100,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [savingPrinter, setSavingPrinter] = useState(false);
 
   const [selectedPrinterId, setSelectedPrinterId] = useState('');
+  // Item 11: só conta como escolha o clique da pessoa; a marcação automática (uma impressora só) não.
+  const printerChosen = useRef(false);
   const [jobName, setJobName] = useState('');
   const [filamentType, setFilamentType] = useState('PLA');
   const [filamentCostPerKg, setFilamentCostPerKg] = useState(80);
@@ -156,7 +158,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         const list = snap.docs.map(d => ({ id: d.id, ...d.data() }) as PrinterProfile);
         setPrinters(list);
         // Estacionamento item 11: com duas ou mais impressoras, a pessoa escolhe (não vem a primeira por acaso).
-        setSelectedPrinterId(current => machineToKeep(list, current));
+        setSelectedPrinterId(current => machineToKeep(list, printerChosen.current ? current : ''));
         setPrintersLoading(false);
       },
       err => {
@@ -297,6 +299,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     try {
       await deleteDoc(doc(db, 'printers', printer.id));
       if (selectedPrinterId === printer.id) {
+        printerChosen.current = false;
         setSelectedPrinterId(
           machineToKeep(
             printers.filter(item => item.id !== printer.id),
@@ -463,7 +466,10 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <div
                 key={p.id}
                 className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedPrinterId === p.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}
-                onClick={() => setSelectedPrinterId(p.id)}
+                onClick={() => {
+                  printerChosen.current = true;
+                  setSelectedPrinterId(p.id);
+                }}
               >
                 <div className="flex items-start justify-between gap-3 mb-1">
                   <p className="font-bold text-sm text-neutral-900 leading-tight">{p.label}</p>

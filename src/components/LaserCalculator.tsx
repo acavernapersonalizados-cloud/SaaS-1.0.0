@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile } from '../types';
@@ -77,6 +77,8 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
 
   // ── Job state ────────────────────────────────────────────────────────────────
   const [selectedMachineId, setSelectedMachineId] = useState('');
+  // Item 11: só conta como escolha o clique da pessoa; a marcação automática (uma máquina só) não.
+  const machineChosen = useRef(false);
   const [jobName, setJobName] = useState('');
   const [material, setMaterial] = useState('');
   const [cuttingTimeMin, setCuttingTimeMin] = useState(0);
@@ -128,7 +130,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         const list = snap.docs.map(d => ({ id: d.id, ...d.data() }) as LaserMachineProfile);
         setMachines(list);
         // Estacionamento item 11: com duas ou mais máquinas, a pessoa escolhe (não vem a primeira por acaso).
-        setSelectedMachineId(current => machineToKeep(list, current));
+        setSelectedMachineId(current => machineToKeep(list, machineChosen.current ? current : ''));
         setMachinesLoading(false);
       },
       err => {
@@ -225,6 +227,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     try {
       await deleteDoc(doc(db, 'laserMachines', machine.id));
       if (selectedMachineId === machine.id) {
+        machineChosen.current = false;
         setSelectedMachineId(
           machineToKeep(
             machines.filter(item => item.id !== machine.id),
@@ -377,6 +380,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 key={m.id}
                 className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedMachineId === m.id ? 'border-neutral-900 bg-neutral-50' : 'border-neutral-100 hover:border-neutral-300'}`}
                 onClick={() => {
+                  machineChosen.current = true;
                   setSelectedMachineId(m.id);
                   setMaterial('');
                 }}
