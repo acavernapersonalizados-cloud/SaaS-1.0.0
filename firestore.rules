@@ -23,7 +23,8 @@ service cloud.firestore {
     function isAdmin() {
       let adminEmail = "ricoslim@gmail.com";
       return isAuthenticated() && (
-        request.auth.token.email == adminEmail ||
+        // Estacionamento item 5: o e-mail fixo só vale confirmado (email_verified).
+        (request.auth.token.email == adminEmail && request.auth.token.get('email_verified', false) == true) ||
         (exists(getUserPath()) && userData().get('role', '') == 'ADMIN')
       );
     }
@@ -48,6 +49,10 @@ service cloud.firestore {
     // Leitura/escrita padrão de documento de loja
     function canRead(storeId)  { return hasStoreAccess(storeId); }
     function canWrite(storeId) { return hasStoreAccess(storeId); }
+    // Estacionamento item 5: atualizar exige acesso à loja atual do documento, e a loja não pode mudar.
+    function canUpdate() {
+      return canWrite(resource.data.storeId) && request.resource.data.storeId == resource.data.storeId;
+    }
     function canDelete(storeId) { return isAdmin() || (hasStoreAccess(storeId) && isGerente()); }
 
     // ── Lojas ────────────────────────────────────────────────────────────────
@@ -92,7 +97,7 @@ service cloud.firestore {
       allow create: if canWrite(request.resource.data.storeId);
       // Etapa 7.1: nenhuma versão do app (nem uma antiga ainda aberta) pode trocar um preço de
       // catálogo maior que zero por R$ 0. Ocultar do catálogo (showInCatalog/showPrice) continua livre.
-      allow update: if canWrite(request.resource.data.storeId)
+      allow update: if canUpdate()
                     && !(resource.data.get('catalogPrice', 0) > 0
                          && request.resource.data.get('catalogPrice', 0) <= 0);
       allow delete: if canDelete(resource.data.storeId);
@@ -126,14 +131,16 @@ service cloud.firestore {
     match /categories/{categoryId} {
       allow read: if resource.data.get('scope', '') == 'product'
                   || canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     // ── Demais coleções por loja ─────────────────────────────────────────────
     match /materials/{materialId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
@@ -142,7 +149,7 @@ service cloud.firestore {
       allow create: if canWrite(request.resource.data.storeId);
       // Finalizar é permitido somente ao autor do orçamento, ADMIN ou GERENTE.
       // Orçamentos antigos sem createdBy continuam administráveis pelos gestores.
-      allow update: if canWrite(request.resource.data.storeId) && (
+      allow update: if canUpdate() && (
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) ||
         request.resource.data.status != 'Finalizado' ||
         isAdmin() ||
@@ -154,69 +161,80 @@ service cloud.firestore {
 
     match /clients/{clientId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /suppliers/{supplierId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /laserJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /laserMachines/{machineId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /printers/{printerId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     // Etapa 8D-1: máquinas de sublimação (mesmas regras das máquinas do Laser e da 3D).
     match /sublimationMachines/{machineId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     // Etapa 8D-2: trabalhos salvos da sublimação (iguais aos do Laser: excluir só ADMIN/GERENTE, como na tela).
     match /sublimationJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /printJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if canDelete(resource.data.storeId);
     }
 
     match /papelariaJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if hasStoreAccess(resource.data.storeId);
     }
 
     match /cestaJobs/{jobId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if hasStoreAccess(resource.data.storeId);
     }
 
     match /purchaseList/{itemId} {
       allow read: if canRead(resource.data.storeId);
-      allow create, update: if canWrite(request.resource.data.storeId);
+      allow create: if canWrite(request.resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if hasStoreAccess(resource.data.storeId);
     }
 
@@ -230,7 +248,7 @@ service cloud.firestore {
     match /stockReservations/{resId} {
       allow read: if canRead(resource.data.storeId);
       allow create: if canWrite(request.resource.data.storeId);
-      allow update: if canWrite(resource.data.storeId);
+      allow update: if canUpdate();
       allow delete: if isAdmin();
     }
 

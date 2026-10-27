@@ -17,7 +17,8 @@ service firebase.storage {
     }
     function isAdmin() {
       return signedIn() && (
-        request.auth.token.email == "ricoslim@gmail.com" ||
+        // Estacionamento item 5: o e-mail fixo só vale confirmado (email_verified).
+        (request.auth.token.email == "ricoslim@gmail.com" && request.auth.token.get('email_verified', false) == true) ||
         (firestore.exists(userPath()) && firestore.get(userPath()).data.get('role', '') == 'ADMIN')
       );
     }
