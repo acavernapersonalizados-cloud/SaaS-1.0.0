@@ -58,7 +58,8 @@ export function PublicCatalog({ storeId }: CatalogProps) {
     loadStore();
 
     const unsubP = onSnapshot(
-      query(collection(db, 'products'), where('storeId', '==', storeId)),
+      // Estacionamento item 4: a cópia pública, sem custos (lib/catalogPublic.ts), nunca a coleção products.
+      query(collection(db, 'catalogProducts'), where('storeId', '==', storeId)),
       snap => {
         setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product));
         setLoading(false);

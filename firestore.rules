@@ -87,7 +87,9 @@ service cloud.firestore {
 
     // ── Produtos ─────────────────────────────────────────────────────────────
     match /products/{productId} {
-      // Catálogo público: apenas produtos marcados para o catálogo
+      // Catálogo público: apenas produtos marcados para o catálogo.
+      // Estacionamento item 4: o passo 2 fecha esta leitura (só a própria loja) depois que o catálogo público
+      // estiver lendo catalogProducts no site; testado no emulador em 26/10/2026.
       allow read: if resource.data.get('showInCatalog', true) == true
                   || canRead(resource.data.storeId);
       allow create: if canWrite(request.resource.data.storeId);
@@ -97,6 +99,28 @@ service cloud.firestore {
                     && !(resource.data.get('catalogPrice', 0) > 0
                          && request.resource.data.get('catalogPrice', 0) <= 0);
       allow delete: if canDelete(resource.data.storeId);
+    }
+
+    // ── Catálogo público: cópia dos produtos SEM custos (Estacionamento item 4) ─
+    // O catálogo público lê só esta coleção. Ela aceita apenas os campos que o cliente vê
+    // (lib/catalogPublic.ts), então nenhum custo entra aqui nem por engano. Grava só a loja
+    // do produto, e a cópia precisa ser de um produto daquela mesma loja.
+    function publicProductOk(productId) {
+      return request.resource.data.keys().hasOnly([
+               'storeId', 'name', 'description', 'category', 'categoryIds', 'imageUrl',
+               'thumbnailUrl', 'galleryImages', 'catalogPrice', 'showPrice', 'leadTimeDays',
+               'isPackage', 'packageQuantity', 'showInCatalog'
+             ]) &&
+             exists(/databases/$(database)/documents/products/$(productId)) &&
+             get(/databases/$(database)/documents/products/$(productId)).data.storeId == request.resource.data.storeId;
+    }
+    match /catalogProducts/{productId} {
+      allow read: if true;
+      allow create: if canWrite(request.resource.data.storeId) && publicProductOk(productId);
+      allow update: if canWrite(resource.data.storeId) &&
+                       request.resource.data.storeId == resource.data.storeId &&
+                       publicProductOk(productId);
+      allow delete: if canWrite(resource.data.storeId);
     }
 
     // ── Categorias (matéria-prima/estoque e produtos) ───────────────────────

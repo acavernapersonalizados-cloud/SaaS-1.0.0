@@ -517,6 +517,40 @@ describe('Base de Custos: faixas de atacado', () => {
 describe('Produtos (telas internas)', () => {
   const load = async () => React.createElement((await import('./Products')).Products);
   // Etapa 8C, item 4: "Abrir produto" numa calculadora abre a janela do produto aqui.
+  // Estacionamento item 4: abrir Produtos cria a cópia pública que falta, sem nenhum custo.
+  it('cria a cópia pública do catálogo que falta, sem custos', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const saved = fixtures.catalogProducts;
+    fixtures.catalogProducts = [];
+    try {
+      writes.length = 0;
+      const { Products } = await import('./Products');
+      await show(<Products />);
+      await act(() => new Promise(r => setTimeout(r, 1700)));
+      const copias = writes.filter(w => w.path.startsWith('catalogProducts/'));
+      expect(copias.length).toBeGreaterThan(0);
+      for (const c of copias) {
+        expect(c.op).toBe('set');
+        for (const custo of [
+          'materials',
+          'productionTime',
+          'packagingCost',
+          'manualPrice',
+          'jobCostUnit',
+          'aiPriceAnalysis',
+        ])
+          expect(c.data).not.toHaveProperty(custo);
+      }
+      expect(copias.find(c => c.path === 'catalogProducts/chaveiro')!.data).toMatchObject({
+        name: 'TESTE Chaveiro',
+        storeId: 'loja-teste',
+        showInCatalog: true,
+      });
+    } finally {
+      fixtures.catalogProducts = saved;
+    }
+  });
   it('abre a janela do produto pedido pela calculadora', async () => {
     let opened = 0;
     const { Products } = await import('./Products');

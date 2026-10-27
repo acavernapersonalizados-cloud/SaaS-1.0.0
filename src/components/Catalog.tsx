@@ -5,6 +5,7 @@ import { CatalogPriceDisplay, Product } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { catalogPriceDisplayOf, catalogPriceLines } from '../lib/catalog';
 import { useStore } from '../contexts/StoreContext';
+import { usePublicCatalogSync } from '../hooks/usePublicCatalogSync';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useCategories, categoryNames } from '../hooks/useCategories';
@@ -36,6 +37,10 @@ export function Catalog() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  // Estacionamento item 4: a cópia pública do catálogo só sincroniza depois de os produtos carregarem com sucesso
+  // (com a lista vazia por erro de leitura, ela apagaria as cópias).
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  usePublicCatalogSync(activeStore?.id, products, productsLoaded);
   const [search, setSearch] = useState('');
   const [filterCats, setFilterCats] = useState<string[]>([]);
   const [onlyVisible, setOnlyVisible] = useState(false);
@@ -45,10 +50,12 @@ export function Catalog() {
       setLoading(false);
       return;
     }
+    setProductsLoaded(false);
     const unsub = onSnapshot(
       query(collection(db, 'products'), where('storeId', '==', activeStore.id)),
       snap => {
         setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product));
+        setProductsLoaded(true);
         setLoading(false);
       },
       err => {

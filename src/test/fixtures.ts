@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { toPublicProduct } from '../lib/catalogPublic';
 // Dados de exemplo dos testes de tela, com os valores do CHECKLIST-TESTES.md.
 // Datas fixas, para o HTML gravado não depender do dia em que o teste roda.
 const S = 'loja-teste';
@@ -400,3 +401,9 @@ export const fixtures: Record<string, any[]> = {
     },
   ],
 };
+
+// Estacionamento item 4: cópia pública do catálogo (sem custos), gerada dos produtos como o app faz.
+fixtures.catalogProducts = fixtures.products.flatMap(p => {
+  const pub = toPublicProduct(p);
+  return pub ? [{ id: p.id, ...pub }] : [];
+});

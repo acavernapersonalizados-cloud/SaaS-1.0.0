@@ -18,6 +18,7 @@ import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs,
 import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
 import { isAppOutdated } from '../lib/appUpdate';
 import { useStore } from '../contexts/StoreContext';
+import { usePublicCatalogSync } from '../hooks/usePublicCatalogSync';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { aiUnavailableMessage, analyzeManualPrice } from '../services/gemini';
@@ -73,6 +74,10 @@ export function Products({
   const [materials, setMaterials] = useState<Material[]>([]);
   const [costs, setCosts] = useState<CostBase | null>(null);
   const [loading, setLoading] = useState(true);
+  // Estacionamento item 4: a cópia pública do catálogo só sincroniza depois de os produtos carregarem com sucesso
+  // (com a lista vazia por erro de leitura, ela apagaria as cópias).
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  usePublicCatalogSync(activeStore?.id, products, productsLoaded);
 
   // UI state
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
@@ -120,11 +125,13 @@ export function Products({
       return;
     }
 
+    setProductsLoaded(false);
     const qP = query(collection(db, 'products'), where('storeId', '==', activeStore.id), orderBy('name', 'asc'));
     const unsubP = onSnapshot(
       qP,
       snap => {
         setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product));
+        setProductsLoaded(true);
         setLoading(false);
       },
       err => {
