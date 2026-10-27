@@ -6,7 +6,8 @@ import { suggestedPriceByChannel } from '../lib/channels';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { markupOf, ProductPricingResult } from '../lib/pricingEngine';
 import { categoryNames } from '../hooks/useCategories';
-import { AlertCircle, ArrowUpDown, Box, CheckCircle2, Clock, Edit2, Layers, Trash2 } from 'lucide-react';
+import { CALCULATOR_TABS } from '../lib/navigation';
+import { AlertCircle, ArrowUpDown, Box, Calculator, CheckCircle2, Clock, Edit2, Layers, Trash2 } from 'lucide-react';
 
 export type SortField = 'name' | 'cost' | 'price' | 'margin' | 'profit';
 export type ProductRow = { product: Product; pricing: ProductPricingResult };
@@ -194,16 +195,26 @@ export function ProductCards({
           </div>
 
           {/* Meta */}
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <div className="flex items-center gap-1.5 text-neutral-500">
-              <Clock className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">{p.productionTime} min</span>
+          {p.sourceJob ? (
+            // Estacionamento item 9: produto de trabalho de calculadora — o custo é o do trabalho, não tempo/materiais.
+            <div className="flex items-center gap-1.5 text-neutral-500 mb-4">
+              <Calculator className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">
+                Custo da calculadora: {CALCULATOR_TABS.find(t => t.id === p.sourceJob?.kind)?.label ?? p.sourceJob.kind}
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 text-neutral-500">
-              <Layers className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">{p.materials?.length || 0} materiais</span>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="flex items-center gap-1.5 text-neutral-500">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{p.productionTime} min</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-neutral-500">
+                <Layers className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{p.materials?.length || 0} materiais</span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Financial data */}
           <div className="mt-auto pt-4 border-t border-neutral-100 space-y-2">

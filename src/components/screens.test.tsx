@@ -516,6 +516,20 @@ describe('Base de Custos: faixas de atacado', () => {
 // (tabela, ordenação, janela de cadastro, edição com preço manual e pacote).
 describe('Produtos (telas internas)', () => {
   const load = async () => React.createElement((await import('./Products')).Products);
+  // Estacionamento item 9: produto vindo de trabalho mostra de qual calculadora é o custo, não "0 min · 0 materiais".
+  it('item 9: cartão de produto de trabalho mostra "Custo da calculadora: [nome]"', async () => {
+    const { fixtures } = await import('../test/fixtures');
+    const p = fixtures.products[0];
+    const saved = p.sourceJob;
+    p.sourceJob = { kind: 'laser', id: 'job-1' };
+    try {
+      await show(await load());
+      expect(document.body.textContent).toContain('Custo da calculadora: Corte a Laser');
+    } finally {
+      if (saved === undefined) delete p.sourceJob;
+      else p.sourceJob = saved;
+    }
+  });
   // Etapa 8C, item 4: "Abrir produto" numa calculadora abre a janela do produto aqui.
   // Estacionamento item 4: abrir Produtos cria a cópia pública que falta, sem nenhum custo.
   it('cria a cópia pública do catálogo que falta, sem custos', async () => {

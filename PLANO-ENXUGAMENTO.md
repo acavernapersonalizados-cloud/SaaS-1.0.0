@@ -42,7 +42,7 @@
 - **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- **Itens 6 a 8 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 9 a 15;
+- **Itens 6 a 9 feitos, NÃO publicados (lote pronto: só hosting).** Detalhes na seção 7.1. Próximo: 10 a 15;
   **por último, 16: IA**.
 
 ## Entregue
@@ -86,7 +86,7 @@ O que cada etapa trouxe para quem usa o app:
 6. ✅ Revisar o `npm audit` (feito em 27/10/2026; o hosting publica junto com o próximo lote).
 7. ✅ Lista de Compras atualizar o estoque com transação (feito em 27/10/2026; publica com o lote).
 8. ✅ Mensagem de PDF só depois de o PDF ficar pronto (feito em 27/10/2026; publica com o lote).
-9. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
+9. ✅ Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]" (feito em 27/10/2026; publica com o lote).
 10. Matéria-prima aceitar estoque 0 no cadastro.
 11. Impressão 3D pedir para escolher a impressora.
 12. Ícone do app instalado.
@@ -748,6 +748,10 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    aparece só a mensagem de erro. Teste novo (QuoteModals.test.tsx, falha no código antigo); 285 testes, lint e build
    ok. Risco baixo.
 9. **Cartão do produto criado de trabalho** (útil, P): "Custo da calculadora: [nome]" no lugar de "0 min · 0 materiais".
+   ✅ **Feito em 27/10/2026, NÃO publicado:** em Produtos, o cartão do produto que veio de trabalho de calculadora
+   (sourceJob) mostra "Custo da calculadora: Corte a Laser" (ou Impressão 3D, Papelaria, Cestas, Sublimação) no lugar
+   de "0 min · 0 materiais". Os outros produtos não mudam. Só tela; nada é gravado. Teste novo; 286 testes, lint e
+   build ok. Risco baixo.
 10. **Matéria-prima aceitar estoque 0 no cadastro** (útil, P): `Materials.tsx`.
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
