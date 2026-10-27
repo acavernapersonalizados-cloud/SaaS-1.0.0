@@ -37,12 +37,12 @@
 
 **Onde paramos (27/10/2026):**
 
-- No ar (`index-DxTxBs_J.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 12 (segurança 2 a 6; Lista de Compras
-  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones). 9C desligada (Etapa 10).
+- No ar (`index-DxjilKSP.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 13 (segurança 2 a 6; Lista de Compras
+  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones; Laser com material do estoque). 9C desligada (Etapa 10).
 - Lote 6 a 12 testado por você no emulador e publicado (só hosting). Chave antiga do Gemini: apagada por você.
 - **Falta você, no site:** "Atualizar agora"; enviar uma foto de produto (se não subir: console → Storage → Regras,
   permissão para ler o banco); "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
-- **Item 13 feito (opção A), NÃO publicado** (só hosting). Próximo: 14 (categorias) e 15 (catálogo com cara de loja);
+- Item 13 (opção A) testado por você e publicado (só hosting). Próximo: 14 (categorias) e 15 (catálogo com cara de loja);
   **por último, 16: IA**.
 
 ## Entregue
@@ -90,7 +90,7 @@ O que cada etapa trouxe para quem usa o app:
 10. ✅ Matéria-prima aceitar estoque 0 no cadastro (publicado em 27/10/2026).
 11. ✅ Impressão 3D pedir para escolher a impressora (publicado em 27/10/2026).
 12. ✅ Ícone do app instalado (publicado em 27/10/2026).
-13. ✅ Laser escolher material do estoque (feito em 27/10/2026, opção A; NÃO publicado).
+13. ✅ Laser escolher material do estoque (opção A; publicado em 27/10/2026).
 14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
@@ -775,7 +775,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    do iPhone (`pwa-192x192.png`) e a cor do tema; `includeAssets` troca o `favicon.ico` inexistente pelo `icon.svg`.
    O ícone do app instalado só aparece no site publicado (no modo de testes o manifesto não é gerado).
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
-   ✅ **Feito em 27/10/2026 (opção A), NÃO publicado:** campo opcional "Material do estoque" no Laser, com "Quanto o
+   ✅ **Feito e publicado em 27/10/2026 (opção A):** campo opcional "Material do estoque" no Laser, com "Quanto o
    trabalho usa" na unidade do material; o custo do material passa a ser quantidade × custo da unidade (em centavos);
    sem escolher, continua o custo digitado, como antes. O trabalho grava materialId e materialQty, e o produto criado
    dele baixa a parte de uma peça (quantidade ÷ peças). Sem material digitado, vale o nome do material do estoque.
