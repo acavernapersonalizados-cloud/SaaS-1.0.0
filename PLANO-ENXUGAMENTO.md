@@ -37,13 +37,14 @@
 
 **Onde paramos (27/10/2026):**
 
-- No ar (`index-DxjilKSP.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 13 (segurança 2 a 6; Lista de Compras
-  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones; Laser com material do estoque). 9C desligada (Etapa 10).
+- No ar (`index-De9RKv5Q.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 14 (segurança 2 a 6; Lista de Compras
+  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones; Laser com material do estoque; categorias). 9C desligada.
 - Lote 6 a 12 testado por você no emulador e publicado (só hosting). Chave antiga do Gemini: apagada por você.
 - **Falta você, no site:** "Atualizar agora"; enviar uma foto de produto (se não subir: console → Storage → Regras,
   permissão para ler o banco); "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
-- Item 13 (opção A) testado por você e publicado (só hosting). Próximo: 14 (categorias) e 15 (catálogo com cara de loja);
-  **por último, 16: IA**.
+- **Falta você (item 14):** backup pelo site; renomear "PRESENTES ELEGANTES" → "Presentes Elegantes" e "cesta" → "Cesta";
+  em Categorias → Produtos → "Organizar categorias" (Papelaria Personalizada → Papelaria; Serviços nova; ver o "60").
+  Próximo: 15 (catálogo com cara de loja: 2 ou 3 propostas de layout); **por último, 16: IA**.
 
 ## Entregue
 
@@ -91,7 +92,7 @@ O que cada etapa trouxe para quem usa o app:
 11. ✅ Impressão 3D pedir para escolher a impressora (publicado em 27/10/2026).
 12. ✅ Ícone do app instalado (publicado em 27/10/2026).
 13. ✅ Laser escolher material do estoque (opção A; publicado em 27/10/2026).
-14. Categorias organizadas: só categorias da lista oficial nos Produtos; unificar as grafias duplicadas com seu aprovado.
+14. ✅ Categorias organizadas (publicado em 27/10/2026; a organização dos dados reais é você, pela ferramenta).
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
@@ -785,6 +786,13 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     oficial (sem texto livre). Antes, uma auditoria **só leitura** das grafias duplicadas (cesta/Cesta,
     presente/Presente/Presentes/Presenta, VESTUARIO/Vestuário…) com uma proposta de unificação; **grava só com o seu
     aprovado**. O catálogo público mostra só as categorias oficiais que têm produtos visíveis.
+    ✅ **Feito e publicado em 27/10/2026:** auditoria só leitura do que é público (71 produtos visíveis, 2 lojas); o
+    cadastro de Produtos não tem mais texto livre (só a lista oficial; produto antigo mostra "Categoria antiga");
+    "Organizar categorias" (Categorias → Produtos) lista as grafias de TODOS os produtos, sugere a oficial (igual sem
+    maiúscula/acento/plural, começando com ela ou com 1 letra de diferença), permite criar categoria nova, mostra
+    quantos produtos mudam e só grava com "Confirmar e gravar"; o catálogo público mostra só as oficiais. Suas decisões:
+    Papelaria Personalizada → Papelaria; Serviços nova (A Caverna); "60" você vê na ferramenta; renomear PRESENTES
+    ELEGANTES e cesta. 314 testes, lint, build e emulador ok (2 categorias criadas e 2 produtos organizados lá).
 15. **Catálogo público com cara de loja** (útil, M–G; pedido em 27/10/2026): redesenho bonito no celular, com botão de
     WhatsApp em cada produto e o preço no Pix e no crédito. **Antes de codificar, mostrar 2 ou 3 propostas de layout**
     para você escolher.
