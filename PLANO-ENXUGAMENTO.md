@@ -35,14 +35,15 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (26/10/2026):**
+**Onde paramos (27/10/2026):**
 
 - No ar (`index-1jtxD34V.js`): Etapas 0 a 9 e Estacionamento 2 a 5 (Storage por loja, IA sem chave no site, catálogo
   sem custo público, regras por loja e admin só com e-mail confirmado). 9C desligada até a Etapa 10 (Blaze).
 - **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
 - **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
   (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
-- Próximo: item 6 (`npm audit`), depois 7 a 13. **Por último, item 14: IA** (testar no AI Studio + "Exigir" no App Check).
+- **Item 6 feito, NÃO publicado:** `npm audit fix` sem --force (22 → 12 alertas; DOMPurify 3.4.17, Firebase 12.19);
+  o que sobrou é do computador ou de servidor (não entra no site). Próximo: 7 a 13; **por último, 14: IA**.
 
 ## Entregue
 
@@ -82,7 +83,7 @@ O que cada etapa trouxe para quem usa o app:
 3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; o teste da IA e o "Exigir" foram para o item 14 (último).
 4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
 5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
-6. Revisar o `npm audit`.
+6. ✅ Revisar o `npm audit` (feito em 27/10/2026; falta publicar o hosting).
 7. Lista de Compras atualizar o estoque com transação.
 8. Mensagem de PDF só depois de o PDF ficar pronto.
 9. Cartão do produto vindo de trabalho: "Custo da calculadora: [nome]".
@@ -727,6 +728,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
    só a loja nova do documento; exigir acesso à loja atual e loja sem mudar; junto, admin só com e-mail verificado.
 6. **Revisar o `npm audit`** (importante, P–M): no site só entra o `dompurify` (via jsPDF; o app não usa a função
    afetada) — `npm audit fix` resolve sem mudança grande; o resto é só do computador de desenvolvimento.
+   ✅ **Feito em 27/10/2026, NÃO publicado:** `npm audit fix` sem --force; só o `package-lock.json` mudou
+   (DOMPurify 3.4.12 → 3.4.17, Firebase 12.16 → 12.19, Vite 6.4.5, PostCSS 8.5.32). De 22 para 12 alertas. Ficaram,
+   de propósito: `@grpc/grpc-js` dentro do Firebase (só roda em servidor Node; não está no `dist/`, conferido) — o
+   "conserto" do npm é voltar para o Firebase 9, recusado; `vitest`/`tinypool` (só testes, exige o Vitest 5);
+   `firebase-tools` (só a linha de comando; o "conserto" é voltar para a 14). 282 testes, lint, build e o app no
+   emulador ok; o build ficou com os mesmos 74 arquivos, nenhum mudou mais de 2 KB.
 7. **Lista de Compras com transação** (importante, P): o registro de compra atualiza o estoque sem transação
    (`PurchaseList.tsx`); duas pessoas ao mesmo tempo podem deixar o estoque errado.
 8. **Mensagem de PDF só depois de o PDF ficar pronto** (importante, P): `Pricing.tsx`, botões do Orçamento Gerado.
