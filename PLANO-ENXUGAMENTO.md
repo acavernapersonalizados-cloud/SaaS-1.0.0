@@ -37,25 +37,12 @@
 
 **Onde paramos (26/10/2026):**
 
-- No ar (26/10/2026, `index-1jtxD34V.js`, com o botão "Confirmar meu e-mail"): Etapas 0 a 9 completas, **regras do Storage por loja** e a **IA pelo
-  Firebase AI Logic + App Check** (nenhuma chave do Gemini no site, conferido no site publicado).
-- **Modelo da IA trocado para `gemini-3.8-flash`** (26/10/2026; o 2.5 Flash não é liberado para projetos novos), numa
-  constante única (`AI_MODEL` em `services/gemini.ts`), e a tela mostra o motivo quando a IA falha. **Atenção:** no
-  nível gratuito, a busca com fontes do Google (usada só pela 9C, "Verificar taxas com IA") não existe nos modelos 3.x;
-  ela exige cobrança ativa (5.000 buscas grátis/mês, depois US$ 14 a cada 1.000). As análises de preço funcionam grátis.
-  Por isso a **9C está desligada** ("Disponível com o plano pago do Firebase (Etapa 10)"); o aviso de 60 dias continua.
-- **Falta você, no site:** (1) "Atualizar agora"; (2) testar uma "Análise IA" de preço (calculadora ou Produtos); (3) funcionou → App Check →
-  APIs → Firebase AI Logic → **Exigir** e testar de novo; (4) funcionou → **apagar a chave antiga do Gemini**;
-  (5) enviar uma foto de produto (confere as regras novas do Storage); (6) "Atualizar preço do produto" na Caneca Mágica.
-- Se a foto não subir: o Firebase pede uma permissão para o Storage ler o banco (console → Storage → Regras).
-- **Item 4 (catálogo sem custo público) completo e publicado (26/10/2026):** passo 1 (regras + hosting) e, depois de
-  você conferir o catálogo das duas lojas, passo 2 (só regras): `products` agora só a própria loja lê. Conferido no
-  site sem login: `products` 403, `catalogProducts` 200.
-- **Item 5 publicado (26/10/2026, regras do banco e do Storage):** atualizar exige a loja atual do documento e a loja não muda; o e-mail fixo
-  de admin só vale confirmado (banco e Storage). Emulador: 96 casos (18 coleções + admin) e catálogo 12, todos OK.
-  Publicado só depois de conferir (só leitura) as DUAS contas com e-mail confirmado pelo botão "Confirmar meu
-  e-mail". **Falta você:** salvar algo numa tela (ex.: editar um produto) e abrir Usuários/Lojas como admin.
-  Próximo: item 6 (npm audit).
+- No ar (`index-1jtxD34V.js`): Etapas 0 a 9 e Estacionamento 2 a 5 (Storage por loja, IA sem chave no site, catálogo
+  sem custo público, regras por loja e admin só com e-mail confirmado). 9C desligada até a Etapa 10 (Blaze).
+- **Chave antiga do Gemini: você apaga agora (26/10/2026)**; o site não a usa mais.
+- **Falta você, no site:** "Atualizar agora"; salvar algo numa tela e abrir Usuários/Lojas; enviar uma foto de produto
+  (se não subir: console → Storage → Regras, permissão para ler o banco); "Atualizar preço" na Caneca Mágica.
+- Próximo: item 6 (`npm audit`), depois 7 a 13. **Por último, item 14: IA** (testar no AI Studio + "Exigir" no App Check).
 
 ## Entregue
 
@@ -90,9 +77,9 @@ O que cada etapa trouxe para quem usa o app:
 
 **Estacionamento — escolhidos, nesta ordem (ver seção 7.1)**
 
-1. Chave do Gemini: contenção de emergência no Google Cloud (você, hoje).
+1. ✅ Chave do Gemini: não precisa mais de contenção; a chave antiga é apagada por você em 26/10/2026 (o site não a usa).
 2. ✅ Regras do Storage por loja (feito e publicado em 26/10/2026).
-3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; falta você ligar o "Exigir" e apagar a chave antiga.
+3. ✅ Chave do Gemini fora do site — opção A (Firebase AI Logic + App Check): publicado em 26/10/2026; o teste da IA e o "Exigir" foram para o item 14 (último).
 4. ✅ Produtos do catálogo sem custo público (coleção `catalogProducts`, só campos públicos): publicado em 26/10/2026 (passos 1 e 2).
 5. ✅ Regras do Firestore: atualizar só documentos da própria loja (publicado em 26/10/2026).
 6. Revisar o `npm audit`.
@@ -103,6 +90,7 @@ O que cada etapa trouxe para quem usa o app:
 11. Impressão 3D pedir para escolher a impressora.
 12. Ícone do app instalado.
 13. Laser escolher material do estoque.
+14. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -717,6 +705,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 
 1. **Chave do Gemini: contenção de emergência** (segurança, ALTA; você faz no Google Cloud, sem código): restringir a
    chave ao site `saas-1-0-0.web.app` e só à API do Gemini, e pôr limite diário. Só contenção: a solução é o item 3.
+   ✅ **Resolvido (26/10/2026):** o site não usa mais a chave (item 3); você apaga a chave antiga agora.
 2. ✅ **Regras do Storage por loja** (segurança, ALTA, P) — **feito e publicado** (26/10/2026): gravar e apagar
    fotos só quem tem acesso à loja (admin ou aprovado daquela loja), só imagem, no máximo 5 MB; logos (`logos/`) só o
    admin; o resto fechado; leitura das fotos do catálogo continua pública. 16 casos testados no emulador.
@@ -724,17 +713,17 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 3. ✅ **Chave do Gemini fora do site — solução definitiva** (segurança, ALTA) — **feito e publicado**
    (26/10/2026). Escolhida a **opção A, Firebase AI Logic + App Check** (funciona no plano Spark, sem cartão; a B,
    Cloud Functions + Secret Manager, exige o Blaze). A IA passa por `firebase/ai` (Gemini Developer API, modelo
-   `gemini-2.5-flash`), com App Check (reCAPTCHA Enterprise) ligado só na primeira chamada; no emulador a IA fica
+   `gemini-3.8-flash`), com App Check (reCAPTCHA Enterprise) ligado só na primeira chamada; no emulador a IA fica
    desligada. Saíram o `@google/genai`, a `VITE_GEMINI_API_KEY` do `.env`/`.env.example` e qualquer chave do Gemini do
    build (conferido no `dist/`). A 9C mostra as sugestões de pesquisa do Google (obrigatório com a busca). O código
    da IA ficou num pacote próprio (`vendor-firebase-ai`, 59 KB), e a abertura do app continua do mesmo tamanho.
    **Falta você, no console:** ligar o AI Logic, criar a chave do reCAPTCHA, registrar o App Check e me passar a
-   chave do site do reCAPTCHA (é pública); depois de publicar, ligar o "Exigir" do App Check e apagar a chave antiga.
-4. **Produtos do catálogo sem custo público** (segurança, MÉDIA, M–G): hoje quem lê o banco direto vê custo do
+   chave do site do reCAPTCHA (é pública) — feito. O teste da IA e o "Exigir" do App Check foram para o item 14.
+4. ✅ **Produtos do catálogo sem custo público** — publicado em 26/10/2026 (2 passos) (segurança, MÉDIA, M–G): hoje quem lê o banco direto vê custo do
    trabalho, materiais, tempo e a análise da IA dos produtos do catálogo, e produto sem `showInCatalog` conta como
    público. Seus custos não podem ficar visíveis para cliente nem concorrente: coleção pública só com nome, foto,
    descrição e preço.
-5. **Regras do Firestore: atualizar só documentos da própria loja** (segurança, MÉDIA, P): hoje a atualização confere
+5. ✅ **Regras do Firestore: atualizar só documentos da própria loja** — publicado em 26/10/2026 (segurança, MÉDIA, P): hoje a atualização confere
    só a loja nova do documento; exigir acesso à loja atual e loja sem mudar; junto, admin só com e-mail verificado.
 6. **Revisar o `npm audit`** (importante, P–M): no site só entra o `dompurify` (via jsPDF; o app não usa a função
    afetada) — `npm audit fix` resolve sem mudança grande; o resto é só do computador de desenvolvimento.
@@ -746,6 +735,9 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 11. **Impressão 3D pedir para escolher a impressora** (útil, P): `PrintCalculator.tsx`; conferir o mesmo no Laser.
 12. **Ícone do app instalado** (útil, P): `pwa-192x192.png` e `pwa-512x512.png` não existem.
 13. **Laser escolher material do estoque (MDF, acrílico)** (importante, M): para o produto do Laser baixar estoque.
+14. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
+    testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
+    testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
 
 ### 7.2 Decidir depois de usar o app
 
