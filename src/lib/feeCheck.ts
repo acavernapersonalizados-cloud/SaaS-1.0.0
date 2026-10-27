@@ -8,6 +8,15 @@ import { MAX_CHANNEL_FEE_PERCENT } from './pricingEngine';
 
 export type FeeField = 'commissionPct' | 'fixedFee' | 'paymentPct';
 
+/**
+ * 9C ligada ou não (26/10/2026: DESLIGADA). No nível gratuito do Gemini, a busca com fontes do Google não existe nos
+ * modelos 3.x, e sem fonte a IA não pode sugerir taxas. Volta junto com a Etapa 10, se o plano Blaze for ativado:
+ * basta trocar para `true`. O aviso de 60 dias (9A) continua valendo.
+ */
+export const FEE_CHECK = { available: false };
+
+export const FEE_CHECK_UNAVAILABLE_MESSAGE = 'Disponível com o plano pago do Firebase (Etapa 10)';
+
 export const FEE_FIELD_LABELS: Record<FeeField, string> = {
   commissionPct: 'Comissão %',
   fixedFee: 'Taxa fixa R$',

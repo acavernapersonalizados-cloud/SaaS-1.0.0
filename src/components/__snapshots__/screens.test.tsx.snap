@@ -1192,6 +1192,8 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
               </p>
               <button
                 class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-white bg-neutral-900 rounded-lg hover:bg-neutral-800 disabled:opacity-50"
+                disabled=""
+                title="Disponível com o plano pago do Firebase (Etapa 10)"
                 type="button"
               >
                 <svg
@@ -1225,6 +1227,11 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
                 Verificar taxas com IA
               </button>
             </div>
+            <p
+              class="text-xs font-bold text-amber-700"
+            >
+              Disponível com o plano pago do Firebase (Etapa 10)
+            </p>
           </div>
         </div>
         <div

@@ -2,7 +2,7 @@
 // Caracterização das telas (Etapa 4B): guarda o HTML de cada tela afetada por B1–B4, em vários estados.
 // Firebase, login, loja e avisos são simulados (src/test). Se o HTML mudar, o snapshot quebra.
 import React from 'react';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 
 vi.mock('firebase/firestore', () => import('../test/firestoreMock'));
@@ -386,6 +386,25 @@ describe('Canais sem conferência (60 dias)', () => {
 // Etapa 9C — "Verificar taxas com IA": sugestões com fonte; cada uma aprovada ou recusada.
 describe('Verificar taxas com IA', () => {
   const text = () => (document.body.textContent ?? '').replace(/\s/g, ' ');
+  // 26/10/2026: a 9C está desligada no app (sem a busca paga). Aqui ela é ligada só para testar o fluxo,
+  // que volta junto com a Etapa 10.
+  beforeEach(async () => {
+    (await import('../lib/feeCheck')).FEE_CHECK.available = true;
+  });
+  afterEach(async () => {
+    (await import('../lib/feeCheck')).FEE_CHECK.available = false;
+  });
+  it('desligada (sem a busca paga): botão desativado com o aviso, e o aviso de 60 dias continua', async () => {
+    (await import('../lib/feeCheck')).FEE_CHECK.available = false;
+    await loadCostBase();
+    const button = buttonWithText('Verificar taxas com IA');
+    expect(button.disabled).toBe(true);
+    expect(text()).toContain('Disponível com o plano pago do Firebase (Etapa 10)');
+    expect(text()).toContain('canais sem conferência há mais de 60 dias');
+    geminiMock.checkChannelFees.mockClear();
+    await click(button);
+    expect(geminiMock.checkChannelFees).not.toHaveBeenCalled();
+  });
   const answer = {
     text: JSON.stringify([
       {

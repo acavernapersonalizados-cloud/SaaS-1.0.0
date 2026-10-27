@@ -32,7 +32,7 @@
 | 8D-1 — Sublimação: máquinas e tabela | Aba "Sublimação" com máquinas e tabela de referência (40 linhas). | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d1-ok`. |
 | 8D-2 — Sublimação: custo e preço | Custo por peça, preço sugerido, preço manual e histórico de trabalhos. | ✅ **Feita e publicada** (24/10/2026, regras do banco + site), tag `etapa-8d2-ok`. |
 | Correção do Preço de Compra | Matéria-prima e Lista de Compras: escolher "por unidade" ou "valor total pago". | ✅ **Feita e publicada** (24/10/2026), tag `preco-compra-ok`. |
-| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A e 9C; 9B foi para a Etapa 10. |
+| 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
 **Onde paramos (26/10/2026):**
@@ -43,7 +43,8 @@
   constante única (`AI_MODEL` em `services/gemini.ts`), e a tela mostra o motivo quando a IA falha. **Atenção:** no
   nível gratuito, a busca com fontes do Google (usada só pela 9C, "Verificar taxas com IA") não existe nos modelos 3.x;
   ela exige cobrança ativa (5.000 buscas grátis/mês, depois US$ 14 a cada 1.000). As análises de preço funcionam grátis.
-- **Falta você, no site:** (1) "Atualizar agora"; (2) testar "Verificar taxas com IA"; (3) funcionou → App Check →
+  Por isso a **9C está desligada** ("Disponível com o plano pago do Firebase (Etapa 10)"); o aviso de 60 dias continua.
+- **Falta você, no site:** (1) "Atualizar agora"; (2) testar uma "Análise IA" de preço (calculadora ou Produtos); (3) funcionou → App Check →
   APIs → Firebase AI Logic → **Exigir** e testar de novo; (4) funcionou → **apagar a chave antiga do Gemini**;
   (5) enviar uma foto de produto (confere as regras novas do Storage); (6) "Atualizar preço do produto" na Caneca Mágica.
 - Se a foto não subir: o Firebase pede uma permissão para o Storage ler o banco (console → Storage → Regras).
@@ -78,7 +79,7 @@ O que cada etapa trouxe para quem usa o app:
 
 - **9A** — Aviso de canal sem conferência há mais de 60 dias, com o botão "Conferi hoje" (feita e publicada).
 - **9B** — Comissão do Mercado Livre pela API: foi para a Etapa 10 (exige app, login e servidor).
-- **9C** — Botão "Verificar taxas com IA": mudanças sugeridas com as fontes, cada uma aprovada por você (feita e publicada).
+- **9C** — Botão "Verificar taxas com IA": feito, mas **desligado** desde 26/10/2026 ("Disponível com o plano pago do Firebase (Etapa 10)"). Volta junto com a Etapa 10, se você ativar o Blaze; basta `FEE_CHECK.available = true` em `lib/feeCheck.ts`.
 
 **Estacionamento — escolhidos, nesta ordem (ver seção 7.1)**
 
@@ -654,6 +655,10 @@ Depende da tabela de canais do T4 (Etapa 7), que guarda a data da última confer
 
 **Registrada em 25/10/2026. Só começa depois da Etapa 9. Por enquanto é só planejamento:** cada item terá a lista
 de riscos e o "aprovado" antes de começar.
+
+**9C volta aqui (26/10/2026), se você ativar o Blaze:** "Verificar taxas com IA" precisa da busca com fontes do
+Google, que no nível gratuito não existe nos modelos 3.x (no pago: 5.000 buscas grátis por mês, depois US$ 14 a cada
+1.000). O código está pronto e desligado (`FEE_CHECK.available` em `lib/feeCheck.ts`).
 
 **Vieram do Estacionamento (26/10/2026):** 9B — comissão do Mercado Livre pela API oficial (a API respondeu 403 e
 exige app cadastrado, login OAuth e servidor; reaproveita o item 6 abaixo) e lembrete de orçamento pendente por WhatsApp

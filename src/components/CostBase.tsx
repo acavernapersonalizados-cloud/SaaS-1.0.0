@@ -22,6 +22,8 @@ import {
 } from '../lib/wholesale';
 import { electricityRateOf } from '../lib/defaults';
 import {
+  FEE_CHECK,
+  FEE_CHECK_UNAVAILABLE_MESSAGE,
   FEE_FIELD_LABELS,
   FeeSuggestion,
   applyFeeSuggestion,
@@ -525,13 +527,17 @@ export function CostBaseSettings() {
                 <button
                   type="button"
                   onClick={runFeeCheck}
-                  disabled={feeCheck?.loading}
+                  disabled={!FEE_CHECK.available || feeCheck?.loading}
+                  title={FEE_CHECK.available ? undefined : FEE_CHECK_UNAVAILABLE_MESSAGE}
                   className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-white bg-neutral-900 rounded-lg hover:bg-neutral-800 disabled:opacity-50"
                 >
                   {feeCheck?.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                   Verificar taxas com IA
                 </button>
               </div>
+              {!FEE_CHECK.available && (
+                <p className="text-xs font-bold text-amber-700">{FEE_CHECK_UNAVAILABLE_MESSAGE}</p>
+              )}
               {feeCheck?.done && (
                 <div className="space-y-2 text-xs">
                   {feeCheck.unavailable && (
