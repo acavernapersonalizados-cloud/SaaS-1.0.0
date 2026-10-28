@@ -7,7 +7,7 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { updateQuoteStatus } from '../services/automations';
-import { generateQuoteMessage } from '../services/whatsapp';
+import { generateQuoteMessage, generateStatusMessage, whatsappLink } from '../services/whatsapp';
 import {
   Trash2,
   FileText,
@@ -18,6 +18,7 @@ import {
   ExternalLink,
   X,
   MessageSquare,
+  MessageCircle,
   CheckCircle2,
   Clock,
   Play,
@@ -102,9 +103,8 @@ export function History() {
     }
 
     try {
-      const client = clients.find(c => c.id === quote.clientId);
-      const mainProduct = quote.items?.[0]?.productName || 'Vários itens';
-      await updateQuoteStatus(quote.id, newStatus, client?.phone, mainProduct);
+      // Item 17: só muda o status; o aviso ao cliente é o botão "Enviar no WhatsApp" (abre só com o clique).
+      await updateQuoteStatus(quote.id, newStatus);
       if (selectedQuote?.id === quote.id) {
         setSelectedQuote({ ...quote, status: newStatus });
       }
@@ -120,8 +120,14 @@ export function History() {
       addToast('Este cliente não possui telefone cadastrado.', 'error');
       return;
     }
-    const message = generateQuoteMessage(quote);
-    window.open(`https://wa.me/55${client.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(whatsappLink(client.phone, generateQuoteMessage(quote)), '_blank');
+  };
+
+  // Item 17: mensagem do status atual para o cliente (aprovado, em produção, pronto); vazio nos outros status.
+  const statusWhatsApp = (quote: Quote) => {
+    const phone = clients.find(c => c.id === quote.clientId)?.phone || '';
+    const message = generateStatusMessage(quote.status || '', quote.items?.[0]?.productName || 'Vários itens');
+    return { phone, message };
   };
 
   const filteredQuotes = quotes.filter(
@@ -363,6 +369,25 @@ export function History() {
                       Pendente
                     </button>
                   </div>
+                  {(() => {
+                    const { phone, message } = statusWhatsApp(selectedQuote);
+                    if (!message) return null;
+                    return phone ? (
+                      <a
+                        href={whatsappLink(phone, message)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-green-600 text-white hover:bg-green-700"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        Enviar no WhatsApp
+                      </a>
+                    ) : (
+                      <p className="text-xs text-neutral-400">
+                        Cliente sem telefone: não dá para avisar pelo WhatsApp.
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
 

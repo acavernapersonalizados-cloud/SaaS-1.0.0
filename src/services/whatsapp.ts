@@ -1,15 +1,16 @@
 /**
- * Envia uma mensagem via WhatsApp usando o link da API do WhatsApp.
- * @param phone O número de telefone no formato internacional (ex: 5511999999999)
- * @param message A mensagem a ser enviada
+ * Número para o WhatsApp (Estacionamento item 17, regra aprovada em 28/10/2026): só os dígitos, com o 55 do Brasil
+ * na frente, a menos que o número já comece com 55 e tenha 12 ou 13 dígitos (aí já está com o país).
  */
-export function sendWhatsAppMessage(phone: string, message: string) {
-  // Remove caracteres não numéricos
-  const cleanPhone = phone.replace(/\D/g, '');
-  const encodedMessage = encodeURIComponent(message);
-  const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
-  window.open(url, '_blank');
+export function whatsappNumber(phone: string): string {
+  const digits = (phone || '').replace(/\D/g, '');
+  if (!digits) return '';
+  return digits.startsWith('55') && (digits.length === 12 || digits.length === 13) ? digits : `55${digits}`;
 }
+
+/** Link do WhatsApp com a mensagem pronta (abre só quando a pessoa clica). */
+export const whatsappLink = (phone: string, message: string) =>
+  `https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(message)}`;
 
 export function generateQuoteMessage(quote: any) {
   return `Olá ${quote.clientName}! Segue o orçamento para *${quote.productName}* (${quote.quantity} un).

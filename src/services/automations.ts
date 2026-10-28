@@ -1,7 +1,6 @@
 import { doc, updateDoc, getDoc, collection, addDoc, query, where, getDocs, runTransaction } from 'firebase/firestore';
 import { db, notifyError } from '../firebase';
 import { QuoteStatus, Quote, StockReservation } from '../types';
-import { sendWhatsAppMessage, generateStatusMessage } from './whatsapp';
 
 // Statuses that trigger a stock reservation
 const RESERVE_STATUSES: QuoteStatus[] = ['Aprovado', 'Em produção'];
@@ -80,7 +79,9 @@ async function buildReservations(
   }));
 }
 
-export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus, phone?: string, productName?: string) {
+// Estacionamento item 17 (28/10/2026): mudar o status não abre mais o WhatsApp; o Histórico mostra o botão
+// "Enviar no WhatsApp", que só abre com o clique.
+export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus) {
   const quoteRef = doc(db, 'quotes', quoteId);
   const quoteSnap = await getDoc(quoteRef);
   if (!quoteSnap.exists()) throw new Error(`Quote ${quoteId} not found`);
@@ -190,10 +191,6 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
             createdAt: new Date().toISOString(),
           }).catch(err => notifyError('Registro do movimento de estoque (baixa) não foi gravado', err, 'warning'));
 
-          if (phone && productName) {
-            const msg = generateStatusMessage(newStatus, productName);
-            if (msg) sendWhatsAppMessage(phone, msg);
-          }
           return; // transaction already updated status — exit early
         }
         // Nada foi baixado (já processado): segue para a atualização simples de status.
@@ -231,9 +228,4 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus,
 
   // ── 4. SIMPLE STATUS UPDATE (fallback / non-stock-affecting transitions) ──
   await updateDoc(quoteRef, { status: newStatus });
-
-  if (phone && productName) {
-    const msg = generateStatusMessage(newStatus, productName);
-    if (msg) sendWhatsAppMessage(phone, msg);
-  }
 }

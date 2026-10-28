@@ -165,6 +165,26 @@ crudScreen('Clientes', async () => (await import('./Clients')).Clients, {
 });
 crudScreen('Fornecedores', async () => (await import('./Suppliers')).Suppliers, { search: 'TESTE', remove: true });
 crudScreen('Histórico', async () => (await import('./History')).History, { search: 'Chaveiro', remove: true });
+
+// Estacionamento item 17: mudar o status não abre o WhatsApp; o botão "Enviar no WhatsApp" é que abre (com o clique).
+describe('Histórico: WhatsApp só no clique', () => {
+  it('aprovar não abre o WhatsApp e mostra o botão com a mensagem do status', async () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+    try {
+      await show(React.createElement((await import('./History')).History));
+      await click(buttonWithIcon('external-link'));
+      expect(document.body.textContent).not.toContain('Enviar no WhatsApp');
+      await click(buttonWithText('Aprovar'));
+      await act(() => new Promise(r => setTimeout(r, 50)));
+      expect(open).not.toHaveBeenCalled();
+      const link = [...document.querySelectorAll('a')].find(a => a.textContent?.includes('Enviar no WhatsApp'))!;
+      expect(link.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/5511999999999\?text=/);
+      expect(decodeURIComponent(link.getAttribute('href')!)).toContain('foi aprovado');
+    } finally {
+      open.mockRestore();
+    }
+  });
+});
 crudScreen('Lojas', async () => (await import('./Stores')).Stores, { remove: true });
 crudScreen('Usuários', async () => (await import('./Users')).Users, { remove: true });
 crudScreen('Estoque', async () => (await import('./Inventory')).Inventory, { search: 'Fita' });
