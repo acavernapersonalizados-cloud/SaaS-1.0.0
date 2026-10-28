@@ -17,8 +17,15 @@ describe('ícones do app instalado', () => {
     });
   }
 
-  it('o manifesto aponta para esses arquivos', () => {
-    const config = readFileSync(resolve(__dirname, '../../vite.config.ts'), 'utf8');
-    for (const { file, size } of ICONS) expect(config).toContain(`src: '${file}', sizes: '${size}x${size}'`);
+  it('o manifesto (public/manifest.webmanifest) aponta para esses arquivos', () => {
+    const manifest = JSON.parse(readFileSync(resolve(__dirname, '../../public/manifest.webmanifest'), 'utf8'));
+    for (const { file, size } of ICONS)
+      expect(manifest.icons).toContainEqual({ src: file, sizes: `${size}x${size}`, type: 'image/png' });
+  });
+  // Correção de 28/10/2026: o index.html serve todas as páginas, inclusive o catálogo público; o manifesto é posto
+  // só pelo main.tsx, fora do catálogo.
+  it('o index.html não traz o link do manifesto', () => {
+    const html = readFileSync(resolve(__dirname, '../../index.html'), 'utf8');
+    expect(html).not.toContain('rel="manifest"');
   });
 });

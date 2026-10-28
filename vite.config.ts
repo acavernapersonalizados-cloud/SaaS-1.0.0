@@ -50,17 +50,14 @@ export default defineConfig(({ command, mode }) => {
         // Etapa 7.1: a versão nova espera a pessoa clicar em "Atualizar agora" (UpdateGate).
         registerType: 'prompt',
         includeAssets: ['icon.svg'],
-        manifest: {
-          name: 'PrecificaAteliê',
-          short_name: 'Precifica',
-          start_url: './',
-          display: 'standalone',
-          background_color: '#ffffff',
-          theme_color: '#000000',
-          icons: [
-            { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-            { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-          ],
+        // Correção de 28/10/2026: o catálogo público não pode oferecer "instalar o sistema" ao cliente. O manifesto
+        // fica em public/manifest.webmanifest e o main.tsx só o carrega (e só registra o service worker) fora do
+        // catálogo; o plugin não injeta nada no index.html, que é o mesmo para todas as páginas.
+        manifest: false,
+        injectRegister: false,
+        workbox: {
+          // O service worker nunca responde pelas páginas do catálogo: elas vêm sempre do servidor.
+          navigateFallbackDenylist: [/^\/catalogo\//],
         },
       }),
     ],

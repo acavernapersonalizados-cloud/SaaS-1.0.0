@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { StoreProvider, useStore } from './contexts/StoreContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { catalogStoreIdOf } from './lib/publicCatalogRoute';
 import { Layout } from './components/Layout';
 import { Login } from './components/Login';
 import { Loader2, AlertCircle } from 'lucide-react';
@@ -39,13 +40,8 @@ const Catalog = lazy(() => import('./components/Catalog').then(m => ({ default: 
 const PublicCatalog = lazy(() => import('./components/PublicCatalog').then(m => ({ default: m.PublicCatalog })));
 
 // ── Public catalog: no auth needed ──────────────────────────────────────────
-function getCatalogRoute(): string | null {
-  const path = window.location.pathname;
-  const match = path.match(/^\/catalogo\/([^/?]+)/);
-  if (match) return match[1];
-  const params = new URLSearchParams(window.location.search);
-  return params.get('catalog');
-}
+// A mesma regra do main.tsx (lá o catálogo não carrega manifesto nem service worker).
+const getCatalogRoute = () => catalogStoreIdOf(window.location);
 
 function ScreenLoader() {
   return (
