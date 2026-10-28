@@ -43,8 +43,7 @@
 - **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
   subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
 - **Item 17 publicado:** mudar o status não abre o WhatsApp; botão "Enviar no WhatsApp" (regra do 55).
-  Próximo: 18 → 19 → 20 → 15 → 16, cada um com riscos e seu aprovado. Item 14: os dados são com você.
-- Itens novos no plano: 17 (WhatsApp só no clique), 18 (preço manual por item), 19 (Kit), 20 (lembrete de produção).
+  Próximo: 18 (preço manual) → 19 (Kit) → 20 (lembrete de produção) → 15 → 16, cada um com riscos e seu aprovado.
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
