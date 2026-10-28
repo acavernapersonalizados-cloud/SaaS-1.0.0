@@ -37,7 +37,9 @@
 
 **Onde paramos (28/10/2026, pausa até segunda 2/11):**
 
-- No ar: `index-DQ6rob-q.js` (28/10/2026), commit `444e3ad`. Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 20. 9C desligada.
+- No ar: `index-CLHt8dnq.js` (28/10/2026), commit `4592c5c`. Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 20. 9C desligada.
+- **Correção urgente (28/10):** o catálogo público não oferece mais "instalar o sistema" ao cliente (sem manifesto e
+  sem service worker lá); o painel continua instalável. Conferido no site, nos dois.
 - **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
   úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
   (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
