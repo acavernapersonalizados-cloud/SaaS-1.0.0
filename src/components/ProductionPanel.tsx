@@ -3,6 +3,7 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, StockReservation } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { ProductionDeadline } from './ProductionDeadline';
 import { useStore } from '../contexts/StoreContext';
 import { BarChart3, Package, Clock, CheckCircle2, XCircle, AlertCircle, TrendingUp } from 'lucide-react';
 
@@ -204,6 +205,7 @@ export function ProductionPanel() {
                       >
                         {q.status}
                       </span>
+                      <ProductionDeadline quote={q} />
                     </div>
                     <p className="text-xs text-neutral-400 mt-0.5">
                       {(q.items || []).map(i => i.productName).join(', ')} ·{' '}

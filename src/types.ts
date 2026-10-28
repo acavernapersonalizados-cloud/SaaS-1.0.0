@@ -344,6 +344,9 @@ export interface Quote {
   /** Taxa fixa do canal por unidade (R$), da tabela de canais (Etapa 7). */
   channelFixedFee?: number;
   status: QuoteStatus;
+  /** Estacionamento item 20: quando entrou "Em produção" (ISO) e o prazo estimado (AAAA-MM-DD, dia útil). */
+  productionStartedAt?: string;
+  productionDueAt?: string;
   /** Legado: não é mais gravado nem lido; orçamentos antigos podem ter o valor. */
   followUpStatus?: FollowUpStatus;
   description?: string;

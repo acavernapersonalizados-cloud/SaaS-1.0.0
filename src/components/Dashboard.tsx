@@ -4,6 +4,8 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, Product, CostBase } from '../types';
 import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
+import { deadlineStatus } from '../lib/productionDeadline';
+import { ProductionDeadline } from './ProductionDeadline';
 import { useStore } from '../contexts/StoreContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
@@ -213,6 +215,41 @@ export function Dashboard() {
           )}
         </div>
       )}
+
+      {/* ── Produção: prazos (Estacionamento item 20) ───────────────────────── */}
+      {(() => {
+        const inProduction = quotes.filter(q => q.status === 'Em produção');
+        if (inProduction.length === 0) return null;
+        const today = new Date();
+        const kinds = inProduction.map(q => ({ q, s: deadlineStatus(q.productionDueAt, today) }));
+        const late = kinds.filter(k => k.s.kind === 'late');
+        const dueToday = kinds.filter(k => k.s.kind === 'today');
+        const shown = [...late, ...dueToday, ...kinds.filter(k => k.s.kind === 'none')].slice(0, 5);
+        return (
+          <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="text-base font-bold text-neutral-900">Produção</h2>
+              <span className="text-sm text-neutral-500">
+                {inProduction.length} em produção ·{' '}
+                <span className={late.length ? 'font-bold text-red-700' : ''}>{late.length} atrasado(s)</span> ·{' '}
+                <span className={dueToday.length ? 'font-bold text-amber-700' : ''}>
+                  {dueToday.length} vence(m) hoje
+                </span>
+              </span>
+            </div>
+            {shown.length > 0 && (
+              <ul className="divide-y divide-neutral-100">
+                {shown.map(({ q }) => (
+                  <li key={q.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
+                    <span className="font-semibold text-neutral-800 truncate">{q.clientName}</span>
+                    <ProductionDeadline quote={q} today={today} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Gráficos ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

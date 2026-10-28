@@ -11,7 +11,42 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, notifyError } from '../firebase';
-import { QuoteStatus, Quote, StockReservation } from '../types';
+import { QuoteStatus, Quote, StockReservation, Product, CostBase } from '../types';
+import { productionDeadline } from '../lib/productionDeadline';
+
+/**
+ * Estacionamento item 20: início e prazo de produção do orçamento a partir de "start", com os produtos e a Base de
+ * Custos da loja. Se não der para ler, devolve vazio (o status muda mesmo assim, sem prazo).
+ */
+async function deadlineFields(
+  quote: Pick<Quote, 'items'>,
+  storeId: string,
+  start: Date,
+): Promise<{ productionStartedAt?: string; productionDueAt?: string }> {
+  try {
+    const snaps = await Promise.all(
+      // Item sem produto (orçamento antigo) fica de fora: ler um produto sem código dá erro na hora.
+      (quote.items || [])
+        .filter(i => !!i.productId)
+        .map(i => getDoc(doc(db, 'products', i.productId)).catch(() => null)),
+    );
+    const products = snaps.flatMap(s => (s?.exists() ? [{ id: s.id, ...s.data() } as Product] : []));
+    const costSnap = await getDoc(doc(db, 'costBases', storeId)).catch(() => null);
+    const costs = costSnap?.exists() ? (costSnap.data() as CostBase) : null;
+    const { productionStartedAt, productionDueAt } = productionDeadline(quote, products, costs, start);
+    return { productionStartedAt, productionDueAt };
+  } catch (err) {
+    notifyError('O prazo de produção não foi calculado', err, 'warning');
+    return {};
+  }
+}
+
+/** Botão "Calcular prazo a partir de hoje" (pedidos que já estavam em produção antes do item 20). */
+export async function setProductionDeadlineFromToday(quote: Quote) {
+  const fields = await deadlineFields(quote, quote.storeId, new Date());
+  if (fields.productionDueAt) await updateDoc(doc(db, 'quotes', quote.id), fields);
+  return fields;
+}
 
 // Statuses that trigger a stock reservation
 const RESERVE_STATUSES: QuoteStatus[] = ['Aprovado', 'Em produção'];
@@ -233,5 +268,10 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
   }
 
   // ── 4. SIMPLE STATUS UPDATE (fallback / non-stock-affecting transitions) ──
-  await updateDoc(quoteRef, { status: newStatus });
+  // Item 20: ao entrar "Em produção" pela primeira vez, grava o início e o prazo estimado (dias úteis).
+  const deadline =
+    newStatus === 'Em produção' && !quoteData.productionDueAt
+      ? await deadlineFields(quoteData, quoteData.storeId, new Date())
+      : {};
+  await updateDoc(quoteRef, { status: newStatus, ...deadline });
 }

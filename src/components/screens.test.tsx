@@ -167,6 +167,48 @@ crudScreen('Fornecedores', async () => (await import('./Suppliers')).Suppliers, 
 crudScreen('Histórico', async () => (await import('./History')).History, { search: 'Chaveiro', remove: true });
 
 // Correção de 28/10/2026: aprovar cria a reserva de estoque (antes a regra negava ler a reserva que não existia).
+// Estacionamento item 20: prazo de produção ao entrar "Em produção"; atrasado / vence hoje; botão para os antigos.
+describe('Produção: prazo estimado', () => {
+  it('mudar para "Em produção" grava o início e o prazo (dia útil)', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(React.createElement((await import('./History')).History));
+    await click(buttonWithIcon('external-link'));
+    await click(buttonWithText('Produção'));
+    await act(() => new Promise(r => setTimeout(r, 50)));
+    const upd = writes.filter(w => w.op === 'update' && w.path === 'quotes/orc-1').at(-1)!;
+    expect(upd.data.status).toBe('Em produção');
+    expect(String(upd.data.productionDueAt)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(new Date(String(upd.data.productionDueAt) + 'T12:00').getDay()).not.toBe(0);
+    expect(new Date(String(upd.data.productionDueAt) + 'T12:00').getDay()).not.toBe(6);
+  });
+  it('painel de Produção: atrasado em vermelho; sem prazo mostra o botão, que grava o prazo', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    const { fixtures } = await import('../test/fixtures');
+    const q = fixtures.quotes[0];
+    const before = { status: q.status, due: q.productionDueAt };
+    try {
+      q.status = 'Em produção';
+      q.productionDueAt = '2020-01-06';
+      await show(React.createElement((await import('./ProductionPanel')).ProductionPanel));
+      expect(document.body.textContent).toMatch(/Atrasado \d+ dias \(prazo 06\/01\)/);
+      expect(document.querySelector('.bg-red-100')).not.toBeNull();
+      cleanup();
+      delete q.productionDueAt;
+      writes.length = 0;
+      await show(React.createElement((await import('./ProductionPanel')).ProductionPanel));
+      await click(buttonWithText('Calcular prazo a partir de hoje'));
+      await act(() => new Promise(r => setTimeout(r, 50)));
+      const upd = writes.find(w => w.op === 'update' && w.path === 'quotes/orc-1')!;
+      expect(String(upd.data.productionDueAt)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    } finally {
+      q.status = before.status;
+      if (before.due === undefined) delete q.productionDueAt;
+      else q.productionDueAt = before.due;
+    }
+  });
+});
+
 describe('Histórico: reserva de estoque ao aprovar', () => {
   it('aprovar grava a reserva com o ID fixo do orçamento e os materiais dos produtos', async () => {
     const { writes } = await import('../test/firestoreMock');
