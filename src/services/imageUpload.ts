@@ -7,7 +7,10 @@
  */
 
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '../firebase';
+import { auth, storage } from '../firebase';
+
+/** Renova o login (token) antes de tentar de novo um envio negado por permissão (lib/uploadErrors). */
+export const refreshLogin = () => auth.currentUser?.getIdToken(true) ?? Promise.resolve(undefined);
 
 const MAX_WIDTH = 1200;
 const THUMB_WIDTH = 400;

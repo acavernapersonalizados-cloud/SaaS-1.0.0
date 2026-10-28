@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { collection, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage, handleFirestoreError, OperationType } from '../firebase';
+import { logoFileProblem, uploadErrorMessage, withFreshLoginRetry } from '../lib/uploadErrors';
+import { refreshLogin } from '../services/imageUpload';
 import { Store } from '../types';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
@@ -54,15 +56,21 @@ export function Stores() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Mensagens em português (28/10/2026): o logo vai sem comprimir, então confere tipo e 5 MB antes de enviar.
+    const problem = logoFileProblem(file);
+    if (problem) {
+      addToast(problem, 'error');
+      return;
+    }
     setIsUploading(true);
     try {
       const storageRef = ref(storage, `logos/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(storageRef, file);
+      const snapshot = await withFreshLoginRetry(() => uploadBytes(storageRef, file), refreshLogin);
       const downloadURL = await getDownloadURL(snapshot.ref);
       setFormData(prev => ({ ...prev, logo: downloadURL }));
     } catch (error) {
       console.error('Erro ao fazer upload do logo:', error);
-      addToast('Erro ao fazer upload do logo. Tente novamente.', 'error');
+      addToast(uploadErrorMessage(error, 'logo'), 'error');
     } finally {
       setIsUploading(false);
     }

@@ -40,8 +40,9 @@
 - No ar (`index-De9RKv5Q.js`): Etapas 0 a 9 e Estacionamento 2 a 14. 9C desligada. Nada pela metade.
 - **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
   A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
-- **Ordem de trabalho (28/10/2026):** 1º diagnosticar o erro ao subir foto (`storage/unauthorized`), só leitura, e
-  proposta com seu aprovado; 2º terminar o item 14; depois 17 → 18 → 19 → 20 → 15 → 16. Cada item com riscos e aprovado.
+- **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
+  subiu). Feito, NÃO publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
+- Ordem: terminar o 14 (dados são com você); depois 17 → 18 → 19 → 20 → 15 → 16, cada um com riscos e seu aprovado.
 - Itens novos no plano: 17 (WhatsApp só no clique), 18 (preço manual por item), 19 (Kit), 20 (lembrete de produção).
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 

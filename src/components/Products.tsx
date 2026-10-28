@@ -22,7 +22,8 @@ import { usePublicCatalogSync } from '../hooks/usePublicCatalogSync';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { aiUnavailableMessage, analyzeManualPrice } from '../services/gemini';
-import { uploadProductImage, uploadGalleryImage, deleteImageByUrl } from '../services/imageUpload';
+import { uploadProductImage, uploadGalleryImage, deleteImageByUrl, refreshLogin } from '../services/imageUpload';
+import { uploadErrorMessage, withFreshLoginRetry } from '../lib/uploadErrors';
 import { ProductCards, ProductChannelTable, ProductTable, SortField } from './ProductList';
 import { channelsOf } from '../lib/channels';
 import { ProductFormModal } from './ProductFormModal';
@@ -296,7 +297,10 @@ export function Products({
     }
     setImageUploading(true);
     try {
-      const { imageUrl, thumbnailUrl } = await uploadProductImage(activeStore.id, editingProduct.id, file);
+      const { imageUrl, thumbnailUrl } = await withFreshLoginRetry(
+        () => uploadProductImage(activeStore.id, editingProduct.id, file),
+        refreshLogin,
+      );
       await updateDoc(doc(db, 'products', editingProduct.id), {
         imageUrl,
         thumbnailUrl,
@@ -305,7 +309,7 @@ export function Products({
       setNewProduct(p => ({ ...p, imageUrl, thumbnailUrl }));
       addToast('Imagem atualizada!', 'success');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Erro ao enviar imagem.', 'error');
+      addToast(uploadErrorMessage(err, 'product'), 'error');
     }
     setImageUploading(false);
   };
@@ -339,13 +343,16 @@ export function Products({
     }
     setImageUploading(true);
     try {
-      const url = await uploadGalleryImage(activeStore.id, editingProduct.id, file, currentGallery.length);
+      const url = await withFreshLoginRetry(
+        () => uploadGalleryImage(activeStore.id, editingProduct.id, file, currentGallery.length),
+        refreshLogin,
+      );
       const galleryImages = [...currentGallery, url];
       await updateDoc(doc(db, 'products', editingProduct.id), { galleryImages, updatedAt: new Date().toISOString() });
       setNewProduct(p => ({ ...p, galleryImages }));
       addToast('Imagem adicionada à galeria!', 'success');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Erro ao enviar imagem.', 'error');
+      addToast(uploadErrorMessage(err, 'product'), 'error');
     }
     setImageUploading(false);
   };
