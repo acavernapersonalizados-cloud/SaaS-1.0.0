@@ -28,6 +28,7 @@ import { ProductCards, ProductChannelTable, ProductTable, SortField } from './Pr
 import { channelsOf } from '../lib/channels';
 import { ProductFormModal } from './ProductFormModal';
 import { ProductCatalogSection, ProductPricingSection } from './ProductFormSections';
+import { ProductKitSection } from './ProductKitSection';
 import { CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
 import {
@@ -632,6 +633,16 @@ export function Products({
           setNewAccessory={setNewAccessory}
           addAccessory={addAccessory}
           removeAccessory={removeAccessory}
+          kitSection={
+            <ProductKitSection
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              editingId={editingProduct?.id ?? null}
+              products={products}
+              materials={materials}
+              costs={costs}
+            />
+          }
           pricingSection={
             <ProductPricingSection
               costs={costs}

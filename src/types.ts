@@ -142,6 +142,19 @@ export interface Product {
   jobSuggestedUnit?: number;
   /** Trabalho de calculadora que originou o produto. */
   sourceJob?: { kind: JobKind; id: string };
+  // ── Estacionamento item 19 (28/10/2026): Kit montado com produtos já cadastrados ──
+  isKit?: boolean;
+  /** Produtos do kit e quantas unidades de cada (um kit não entra em outro kit). */
+  kitItems?: Array<{ productId: string; quantity: number }>;
+  /** Desconto opcional do kit (%) sobre a soma dos preços dos produtos. */
+  kitDiscountPct?: number;
+  /** Custos extras do kit em R$ (caixa, laço, cartão…). */
+  kitExtraCost?: number;
+  /** Tempo de montagem do kit (min), cobrado pelo valor da hora da loja. */
+  kitAssemblyMin?: number;
+  /** Gravados: custo do kit (produtos + extras + montagem) e soma dos preços dos produtos. Mudam só pelo botão. */
+  kitCostUnit?: number;
+  kitPriceUnit?: number;
 }
 
 /** Calculadoras cujos trabalhos salvos podem virar produto (Etapa 8C, item 4). */

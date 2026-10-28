@@ -798,6 +798,42 @@ describe('Produtos (telas internas)', () => {
     await click(buttonWithText('Novo Produto'));
     expect(html()).toMatchSnapshot();
   });
+  // Estacionamento item 19: Kit com produtos já cadastrados, custos extras e montagem; grava custo, preço e materiais.
+  it('item 19: monta um kit e grava custo, preço, desconto e materiais dos produtos', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(await load());
+    await click(buttonWithText('Novo Produto'));
+    await type(field('Nome do Produto'), 'TESTE Kit presente');
+    const kitBox = Array.from(document.querySelectorAll('label')).find(l => l.textContent?.includes('é um Kit'))!;
+    await click(kitBox.querySelector('input')!);
+    await type(document.querySelector('select[aria-label="Produto do kit"]')!, 'chaveiro');
+    await type(document.querySelector('input[aria-label="Quantidade no kit"]')!, '3');
+    await click(buttonWithText('Adicionar'));
+    await type(field('Custos extras do kit'), '6');
+    await type(field('Tempo de montagem'), '10');
+    await type(field('Desconto do kit'), '10');
+    const status = () => document.querySelector('[role="status"]')?.textContent?.replace(/\s/g, ' ') ?? '';
+    expect(status()).toContain('Custo do kit');
+    expect(status()).toContain('Preço do kit');
+    fireEvent.submit(document.querySelector('form#product-form')!);
+    await act(() => new Promise(r => setTimeout(r, 0)));
+    const saved = writes.find(w => w.op === 'add' && w.path === 'products')!.data;
+    expect(saved).toMatchObject({
+      isKit: true,
+      kitItems: [{ productId: 'chaveiro', quantity: 3 }],
+      kitDiscountPct: 10,
+    });
+    expect(saved.kitExtraCost).toBe(6);
+    expect(saved.kitAssemblyMin).toBe(10);
+    expect(Number(saved.kitCostUnit)).toBeGreaterThan(6);
+    expect(Number(saved.kitPriceUnit)).toBeGreaterThan(0);
+    // Materiais do chaveiro × 3 (para a baixa de estoque).
+    expect(saved.materials).toEqual([
+      { materialId: 'mdf', quantity: 0.30000000000000004 },
+      { materialId: 'argola', quantity: 3 },
+    ]);
+  });
   it('edição: preço manual (reversa), pacote, material, acabamento e acessório', async () => {
     await show(await load());
     await click(buttonWithIcon('pen'));
@@ -805,7 +841,7 @@ describe('Produtos (telas internas)', () => {
     await type(field('Preço de Venda Manual'), '4');
     expect(html()).toMatchSnapshot();
     await type(field('Preço de Venda Manual'), '30');
-    const pacote = Array.from(document.querySelectorAll('label')).find(l => l.textContent?.includes('pacote/kit'));
+    const pacote = Array.from(document.querySelectorAll('label')).find(l => l.textContent?.includes('é um pacote ('));
     await click(pacote!.querySelector('input')!);
     await type(document.querySelector('input[placeholder="Pesquisar material..."]')!, 'Fita');
     const fita = Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Fita'));

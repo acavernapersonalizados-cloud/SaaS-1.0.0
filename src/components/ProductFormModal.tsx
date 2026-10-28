@@ -31,6 +31,7 @@ export function ProductFormModal({
   addAccessory,
   removeAccessory,
   pricingSection,
+  kitSection,
   catalogSection,
 }: {
   editingProduct: Product | null;
@@ -55,10 +56,13 @@ export function ProductFormModal({
   removeAccessory: (id: string) => void;
   pricingSection: React.ReactNode;
   catalogSection: React.ReactNode;
+  kitSection: React.ReactNode;
 }) {
   // Etapa 8C, item 4 (correção de 26/10/2026): produto criado de trabalho de calculadora. Tempo, embalagem e materiais
   // vêm do trabalho, só como informação e baixa de estoque, e ficam travados: o custo é o do trabalho.
   const fromJob = (Number(newProduct.jobCostUnit) || 0) > 0;
+  // Estacionamento item 19: no kit, tempo, embalagem e materiais vêm dos produtos do kit (travados como no trabalho).
+  const locked = fromJob || !!newProduct.isKit;
   return (
     <div className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[92vh] flex flex-col">
@@ -124,12 +128,12 @@ export function ProductFormModal({
                 </label>
                 <input
                   type="number"
-                  required={!fromJob}
-                  readOnly={fromJob}
-                  value={fromJob ? (newProduct.productionTime ?? 0) : newProduct.productionTime || ''}
+                  required={!locked}
+                  readOnly={locked}
+                  value={locked ? (newProduct.productionTime ?? 0) : newProduct.productionTime || ''}
                   onChange={e => setNewProduct(p => ({ ...p, productionTime: Number(e.target.value) }))}
                   className={
-                    fromJob
+                    locked
                       ? 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-neutral-500'
                       : 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none'
                   }
@@ -143,12 +147,12 @@ export function ProductFormModal({
                 <input
                   type="number"
                   step="0.01"
-                  required={!fromJob}
-                  readOnly={fromJob}
-                  value={fromJob ? (newProduct.packagingCost ?? 0) : newProduct.packagingCost || ''}
+                  required={!locked}
+                  readOnly={locked}
+                  value={locked ? (newProduct.packagingCost ?? 0) : newProduct.packagingCost || ''}
                   onChange={e => setNewProduct(p => ({ ...p, packagingCost: Number(e.target.value) }))}
                   className={
-                    fromJob
+                    locked
                       ? 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-neutral-500'
                       : 'w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none'
                   }
@@ -158,34 +162,41 @@ export function ProductFormModal({
             </div>
 
             {/* Package */}
-            <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={newProduct.isPackage || false}
-                  onChange={e => setNewProduct(p => ({ ...p, isPackage: e.target.checked }))}
-                  className="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                />
-                <span className="text-sm font-bold text-neutral-700">Este produto é um pacote/kit?</span>
-              </label>
-              {newProduct.isPackage && (
-                <div className="space-y-1.5 border-t border-neutral-200 pt-3">
-                  <label className="text-xs font-bold text-neutral-600">Quantidade de itens no pacote</label>
+            {!newProduct.isKit && (
+              <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
-                    type="number"
-                    min="2"
-                    value={newProduct.packageQuantity || ''}
-                    onChange={e => setNewProduct(p => ({ ...p, packageQuantity: Number(e.target.value) }))}
-                    className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                    type="checkbox"
+                    checked={newProduct.isPackage || false}
+                    onChange={e => setNewProduct(p => ({ ...p, isPackage: e.target.checked }))}
+                    className="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
                   />
-                </div>
-              )}
-            </div>
+                  <span className="text-sm font-bold text-neutral-700">
+                    Este produto é um pacote (várias unidades do mesmo produto)?
+                  </span>
+                </label>
+                {newProduct.isPackage && (
+                  <div className="space-y-1.5 border-t border-neutral-200 pt-3">
+                    <label className="text-xs font-bold text-neutral-600">Quantidade de itens no pacote</label>
+                    <input
+                      type="number"
+                      min="2"
+                      value={newProduct.packageQuantity || ''}
+                      onChange={e => setNewProduct(p => ({ ...p, packageQuantity: Number(e.target.value) }))}
+                      className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Kit (Estacionamento item 19) */}
+            {kitSection}
 
             {/* Materials */}
             <div className="space-y-3">
               <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Materiais</label>
-              {!fromJob && (
+              {!locked && (
                 <>
                   <div className="flex items-center gap-2 px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus-within:ring-2 focus-within:ring-neutral-900">
                     <Search className="text-neutral-400 w-4 h-4" />
@@ -242,12 +253,12 @@ export function ProductFormModal({
                         type="number"
                         step="0.01"
                         value={pm.quantity || ''}
-                        readOnly={fromJob}
+                        readOnly={locked}
                         onChange={e => updateMaterialQuantity(pm.materialId, Number(e.target.value))}
                         className="w-24 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm text-center font-bold outline-none focus:ring-2 focus:ring-neutral-900"
                         placeholder="Qtd"
                       />
-                      {!fromJob && (
+                      {!locked && (
                         <>
                           <span className="text-xs font-bold text-emerald-700 w-16 text-right">
                             {formatCurrency(lineCost)}

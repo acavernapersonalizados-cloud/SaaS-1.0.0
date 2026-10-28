@@ -35,6 +35,8 @@ export interface ProductCostResult {
   packagingCost: number;
   /** Custo fixo do trabalho de calculadora que virou produto (Etapa 8C, item 4). */
   jobCost: number;
+  /** Estacionamento item 19: custo gravado do kit (produtos + extras + montagem); só nos kits. */
+  kitCost?: number;
   totalCost: number;
 }
 
@@ -255,6 +257,10 @@ export function calcProductCost(
   // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
   const jobCost = Number(product.jobCostUnit) || 0;
   if (jobCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost, totalCost: jobCost };
+  // Estacionamento item 19: kit usa o custo gravado (produtos + extras + montagem); os materiais do kit são só a
+  // baixa de estoque, nunca somados de novo.
+  const kitCost = product.isKit ? Number(product.kitCostUnit) || 0 : 0;
+  if (kitCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost: 0, kitCost, totalCost: kitCost };
 
   const materialCost = (product.materials || []).reduce((acc, pm) => {
     const mat = materials.find(m => m.id === pm.materialId);
@@ -283,12 +289,19 @@ export function calcProductPricing(
   // Meta de lucro = markup sobre o custo (Etapa 7). Sem markup gravado, converte a meta antiga.
   // Produto criado de trabalho: o sugerido é o mesmo da calculadora (gravado no trabalho), sem recalcular.
   const jobSuggested = Number(product.jobSuggestedUnit) || 0;
+  // Item 19: kit sugere a soma gravada dos preços dos produtos, menos o desconto do kit.
+  const kitSuggested =
+    (costResult.kitCost ?? 0) > 0 && (Number(product.kitPriceUnit) || 0) > 0
+      ? Number(product.kitPriceUnit) * (1 - Math.min(Math.max(Number(product.kitDiscountPct) || 0, 0), 100) / 100)
+      : 0;
   const goalPrice =
-    costResult.jobCost > 0 && jobSuggested > 0
-      ? jobSuggested
-      : totalCost > 0
-        ? priceForMarkup(totalCost, markupOf(costs))
-        : 0;
+    kitSuggested > 0
+      ? kitSuggested
+      : costResult.jobCost > 0 && jobSuggested > 0
+        ? jobSuggested
+        : totalCost > 0
+          ? priceForMarkup(totalCost, markupOf(costs))
+          : 0;
   const invalidProfitGoal = goalPrice === null;
   const suggestedPrice = goalPrice ?? 0;
 
@@ -338,8 +351,18 @@ export function calcQuoteItem(
   const { materialCost, laborCost, totalCost: totalProductionCost } = calcProductCost(product, materials, costs);
 
   // Markup: o personalizado do item ou o da Base de Custos (Etapa 7).
+  // Item 19: kit usa o markup que o preço gravado do kit dá (preço ÷ custo), para o orçamento sair pelo preço do kit
+  // na venda direta (com taxa de canal, o lucro em R$ fica o mesmo). Kit abaixo do custo entra pelo custo (markup 0).
+  const kitPrice =
+    product.isKit && (Number(product.kitCostUnit) || 0) > 0
+      ? calcProductPricing(product, materials, costs).suggestedPrice
+      : 0;
+  const kitMarkup =
+    kitPrice > 0 && totalProductionCost > 0 ? Math.max(0, (kitPrice / totalProductionCost - 1) * 100) : null;
   const markup =
-    item.customMarkup !== undefined && item.customMarkup !== null ? Number(item.customMarkup) : markupOf(costs);
+    item.customMarkup !== undefined && item.customMarkup !== null
+      ? Number(item.customMarkup)
+      : (kitMarkup ?? markupOf(costs));
 
   // Taxa de canal: limitada a 0–95%. Acima disso o preço tenderia ao infinito
   // e o cálculo antigo ignorava a taxa silenciosamente (prejuízo escondido).

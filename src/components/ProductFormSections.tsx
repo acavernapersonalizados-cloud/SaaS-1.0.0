@@ -60,6 +60,14 @@ export function ProductPricingSection({
               <span className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.jobCost)}</span>
             </div>
           )}
+          {(modalPricing.kitCost ?? 0) > 0 && (
+            <div className="col-span-3 pt-2 border-t border-neutral-200 flex items-center justify-between">
+              <span className="text-xs text-neutral-500 font-bold">
+                Custo do kit (produtos + extras + montagem, gravado)
+              </span>
+              <span className="text-sm font-black text-neutral-800">{formatCurrency(modalPricing.kitCost ?? 0)}</span>
+            </div>
+          )}
           <div className="col-span-3 pt-2 border-t border-neutral-200 flex items-center justify-between">
             <span className="text-xs text-neutral-500 font-bold">Custo Total</span>
             <span className="text-base font-black text-neutral-900">{formatCurrency(modalPricing.totalCost)}</span>
