@@ -37,13 +37,13 @@
 
 **Onde paramos (28/10/2026):**
 
-- No ar (`index-jWjNU9e4.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14 e 17, e as mensagens de foto. 9C desligada.
+- No ar (`index-Cib04mRA.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14, 17 e 18, e as mensagens de foto. 9C desligada.
 - **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
   A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
 - **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
   subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
-- **Item 17 publicado:** mudar o status não abre o WhatsApp; botão "Enviar no WhatsApp" (regra do 55).
-  Próximo: 18 (preço manual) → 19 (Kit) → 20 (lembrete de produção) → 15 → 16, cada um com riscos e seu aprovado.
+- **17 e 18 publicados:** WhatsApp só no clique (regra do 55); preço manual por item no orçamento (Pix; crédito ÷ 0,95).
+  Próximo: 19 (Kit) → 20 (lembrete de produção) → 15 → 16, cada um com riscos e seu aprovado.
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
@@ -94,7 +94,7 @@ O que cada etapa trouxe para quem usa o app:
 13. ✅ Laser escolher material do estoque (opção A; publicado em 27/10/2026).
 14. ✅ Categorias organizadas (publicado em 27/10/2026; a organização dos dados reais é você, pela ferramenta).
 17. ✅ Histórico de Orçamentos: mudar o status não abre o WhatsApp sozinho; botão "Enviar no WhatsApp" (publicado em 28/10/2026).
-18. Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta.
+18. ✅ Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta (publicado em 28/10/2026).
 19. Produtos Kit: montar com produtos já cadastrados (com quantidade); custo e preço = soma; desconto opcional.
 20. Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
@@ -805,6 +805,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     também para "Enviar orçamento"). 328 testes, lint, build e emulador ok.
 18. **Preço manual por item no orçamento** (pedido em 28/10/2026): opcional, mostrando o lucro real e um aviso se ficar
     abaixo do custo ou da meta. Orçamentos antigos não mudam.
+    ✅ **Feito e publicado em 28/10/2026:** campo "Preço manual por unidade — no Pix (opcional)" na janela do item; é o
+    preço final (sem atacado e já com acabamentos e acessórios); o "No crédito" continua Pix ÷ 0,95 no resumo, no
+    orçamento gerado e nos PDFs (sai do total). Lucro e margem reais com a taxa do canal; vermelho "Abaixo do custo",
+    amarelo "Abaixo da meta: o sugerido é R$ X". Grava manualUnitPrice no item; sem ele, igual a antes. 336 testes,
+    lint, build e emulador ok (R$ 9.990,00 no Pix → R$ 10.515,79 no crédito).
 19. **Produtos Kit** (pedido em 28/10/2026): montar o kit escolhendo produtos já cadastrados, com quantidade; custo e
     preço do kit = soma dos produtos escolhidos, sem refazer cálculos; desconto opcional do kit; baixa de estoque dos
     materiais dos produtos do kit.
