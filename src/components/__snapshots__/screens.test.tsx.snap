@@ -3011,8 +3011,9 @@ exports[`Catálogo público > busca 1`] = `
               />
             </svg>
             <input
+              aria-label="Buscar pelo nome"
               class="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 outline-none text-sm"
-              placeholder="Buscar produtos..."
+              placeholder="Buscar pelo nome…"
               style="--tw-ring-color: #3366cc;"
               type="text"
               value="Chaveiro"
@@ -3042,7 +3043,7 @@ exports[`Catálogo público > busca 1`] = `
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
         >
           <div
-            class="bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
+            class="flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
           >
             <div
               class="aspect-square bg-neutral-100 relative overflow-hidden"
@@ -3050,33 +3051,16 @@ exports[`Catálogo público > busca 1`] = `
               <div
                 class="w-full h-full flex items-center justify-center"
               >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-shopping-bag w-10 h-10 text-neutral-300"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white opacity-70"
+                  style="background-color: rgb(51, 102, 204);"
                 >
-                  <path
-                    d="M16 10a4 4 0 0 1-8 0"
-                  />
-                  <path
-                    d="M3.103 6.034h17.794"
-                  />
-                  <path
-                    d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"
-                  />
-                </svg>
+                  L
+                </span>
               </div>
             </div>
             <div
-              class="p-3 space-y-1"
+              class="p-3 space-y-1 flex-1 flex flex-col"
             >
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
@@ -3131,6 +3115,37 @@ exports[`Catálogo público > busca 1`] = `
                   no Pix
                 </span>
               </p>
+              <div
+                class="pt-2"
+                style="margin-top: auto;"
+              >
+                <a
+                  aria-label="Pedir TESTE Chaveiro pelo WhatsApp"
+                  class="flex items-center justify-center gap-1.5 w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-colors"
+                  href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Tenho%20interesse%20no%20produto%20%22TESTE%20Chaveiro%22%20do%20seu%20cat%C3%A1logo.%20Poderia%20me%20passar%20mais%20informa%C3%A7%C3%B5es%3F"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-message-circle w-3.5 h-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"
+                    />
+                  </svg>
+                   Pedir
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -3311,8 +3326,9 @@ exports[`Catálogo público > lista 1`] = `
               />
             </svg>
             <input
+              aria-label="Buscar pelo nome"
               class="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 outline-none text-sm"
-              placeholder="Buscar produtos..."
+              placeholder="Buscar pelo nome…"
               style="--tw-ring-color: #3366cc;"
               type="text"
               value=""
@@ -3342,7 +3358,7 @@ exports[`Catálogo público > lista 1`] = `
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
         >
           <div
-            class="bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
+            class="flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
           >
             <div
               class="aspect-square bg-neutral-100 relative overflow-hidden"
@@ -3350,33 +3366,16 @@ exports[`Catálogo público > lista 1`] = `
               <div
                 class="w-full h-full flex items-center justify-center"
               >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-shopping-bag w-10 h-10 text-neutral-300"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white opacity-70"
+                  style="background-color: rgb(51, 102, 204);"
                 >
-                  <path
-                    d="M16 10a4 4 0 0 1-8 0"
-                  />
-                  <path
-                    d="M3.103 6.034h17.794"
-                  />
-                  <path
-                    d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"
-                  />
-                </svg>
+                  L
+                </span>
               </div>
             </div>
             <div
-              class="p-3 space-y-1"
+              class="p-3 space-y-1 flex-1 flex flex-col"
             >
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
@@ -3431,6 +3430,37 @@ exports[`Catálogo público > lista 1`] = `
                   no Pix
                 </span>
               </p>
+              <div
+                class="pt-2"
+                style="margin-top: auto;"
+              >
+                <a
+                  aria-label="Pedir TESTE Chaveiro pelo WhatsApp"
+                  class="flex items-center justify-center gap-1.5 w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-colors"
+                  href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Tenho%20interesse%20no%20produto%20%22TESTE%20Chaveiro%22%20do%20seu%20cat%C3%A1logo.%20Poderia%20me%20passar%20mais%20informa%C3%A7%C3%B5es%3F"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-message-circle w-3.5 h-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"
+                    />
+                  </svg>
+                   Pedir
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -3611,8 +3641,9 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
               />
             </svg>
             <input
+              aria-label="Buscar pelo nome"
               class="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 outline-none text-sm"
-              placeholder="Buscar produtos..."
+              placeholder="Buscar pelo nome…"
               style="--tw-ring-color: #3366cc;"
               type="text"
               value=""
@@ -3642,7 +3673,7 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
         >
           <div
-            class="bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
+            class="flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
           >
             <div
               class="aspect-square bg-neutral-100 relative overflow-hidden"
@@ -3650,33 +3681,16 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
               <div
                 class="w-full h-full flex items-center justify-center"
               >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-shopping-bag w-10 h-10 text-neutral-300"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white opacity-70"
+                  style="background-color: rgb(51, 102, 204);"
                 >
-                  <path
-                    d="M16 10a4 4 0 0 1-8 0"
-                  />
-                  <path
-                    d="M3.103 6.034h17.794"
-                  />
-                  <path
-                    d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"
-                  />
-                </svg>
+                  L
+                </span>
               </div>
             </div>
             <div
-              class="p-3 space-y-1"
+              class="p-3 space-y-1 flex-1 flex flex-col"
             >
               <span
                 class="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
@@ -3739,6 +3753,37 @@ exports[`Catálogo: preço no Pix, no crédito ou os dois > o catálogo público
                  
                 no crédito
               </p>
+              <div
+                class="pt-2"
+                style="margin-top: auto;"
+              >
+                <a
+                  aria-label="Pedir TESTE Chaveiro pelo WhatsApp"
+                  class="flex items-center justify-center gap-1.5 w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-colors"
+                  href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Tenho%20interesse%20no%20produto%20%22TESTE%20Chaveiro%22%20do%20seu%20cat%C3%A1logo.%20Poderia%20me%20passar%20mais%20informa%C3%A7%C3%B5es%3F"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-message-circle w-3.5 h-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"
+                    />
+                  </svg>
+                   Pedir
+                </a>
+              </div>
             </div>
           </div>
         </div>

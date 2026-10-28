@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { Product, Store, Category } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { catalogPriceDisplayOf, catalogPriceLines } from '../lib/catalog';
+import { whatsappLink } from '../services/whatsapp';
 import {
   MessageCircle,
   Share2,
@@ -105,22 +106,20 @@ export function PublicCatalog({ storeId }: CatalogProps) {
 
   const filtered = catalogProducts.filter(p => {
     const names = productCategoryNames(p);
-    const matchSearch =
-      !search ||
-      (p.name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (p.description || '').toLowerCase().includes(search.toLowerCase()) ||
-      names.some(n => n.toLowerCase().includes(search.toLowerCase()));
+    // Estacionamento item 15: a busca é pelo nome do produto.
+    const matchSearch = !search || (p.name || '').toLowerCase().includes(search.toLowerCase());
     const matchCat = !selectedCategory || names.includes(selectedCategory);
     return matchSearch && matchCat;
   });
 
   const getWhatsAppUrl = (product?: Product) => {
-    const phone = (store?.phone || '').replace(/\D/g, '');
-    if (!phone) return '#';
+    const phone = store?.phone || '';
+    if (!phone.replace(/\D/g, '')) return '#';
     const msg = product
       ? `Olá! Tenho interesse no produto "${product.name}" do seu catálogo. Poderia me passar mais informações?`
       : `Olá! Gostaria de solicitar um orçamento.`;
-    return `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`;
+    // Regra do 55 (item 17): não duplica o país quando o telefone já vem com ele.
+    return whatsappLink(phone, msg);
   };
 
   const handleShare = (product?: Product) => {
@@ -216,7 +215,8 @@ export function PublicCatalog({ storeId }: CatalogProps) {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input
               type="text"
-              placeholder="Buscar produtos..."
+              placeholder="Buscar pelo nome…"
+              aria-label="Buscar pelo nome"
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-11 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 outline-none text-sm"
@@ -264,7 +264,7 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                 <div
                   key={p.id}
                   onClick={() => openProduct(p)}
-                  className="bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
+                  className="flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer group"
                 >
                   {/* Image */}
                   <div className="aspect-square bg-neutral-100 relative overflow-hidden">
@@ -275,8 +275,18 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
+                      // Estacionamento item 15: sem foto, o ícone da loja (logo ou a inicial, na cor da loja).
                       <div className="w-full h-full flex items-center justify-center">
-                        <ShoppingBag className="w-10 h-10 text-neutral-300" />
+                        {store?.logo ? (
+                          <img src={store.logo} alt="" className="w-16 h-16 rounded-2xl object-cover opacity-60" />
+                        ) : (
+                          <span
+                            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white opacity-70"
+                            style={{ backgroundColor: primaryColor }}
+                          >
+                            {(store?.fantasyName || store?.name || '?').trim().charAt(0).toUpperCase()}
+                          </span>
+                        )}
                       </div>
                     )}
                     {imgs.length > 1 && (
@@ -286,7 +296,7 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                     )}
                   </div>
                   {/* Info */}
-                  <div className="p-3 space-y-1">
+                  <div className="p-3 space-y-1 flex-1 flex flex-col">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       {productCategoryNames(p).join(' · ')}
                     </span>
@@ -306,7 +316,7 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                             <span className="text-[10px] font-bold text-neutral-400 ml-1">{line.label}</span>
                             {p.isPackage && p.packageQuantity && (
                               <span className="text-xs font-normal text-neutral-400 ml-1">
-                                kit {p.packageQuantity}un
+                                pacote com {p.packageQuantity} un
                               </span>
                             )}
                           </p>
@@ -317,6 +327,21 @@ export function PublicCatalog({ storeId }: CatalogProps) {
                         ),
                       )}
                     {!showPrice && <p className="text-xs text-neutral-400 italic">Consulte o preço</p>}
+                    {store?.phone && (
+                      // Botão sempre no rodapé do cartão (mesma altura em todos).
+                      <div style={{ marginTop: 'auto' }} className="pt-2">
+                        <a
+                          href={getWhatsAppUrl(p)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          aria-label={`Pedir ${p.name} pelo WhatsApp`}
+                          className="flex items-center justify-center gap-1.5 w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-colors"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" /> Pedir
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

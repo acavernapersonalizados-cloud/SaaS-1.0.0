@@ -254,6 +254,22 @@ crudScreen('Catálogo público', async () => (await import('./PublicCatalog')).P
   props: { storeId: 'loja-teste' },
   search: 'Chaveiro',
 });
+// Estacionamento item 15: vitrine em grade — busca pelo nome, "Pedir" no WhatsApp por produto, ícone da loja sem foto.
+describe('Catálogo público: vitrine em grade', () => {
+  const load = async () =>
+    React.createElement((await import('./PublicCatalog')).PublicCatalog, { storeId: 'loja-teste' });
+  it('busca só pelo nome; cada produto tem "Pedir" no WhatsApp (regra do 55); sem foto, a inicial da loja', async () => {
+    await show(await load());
+    const pedir = document.querySelector('a[aria-label="Pedir TESTE Chaveiro pelo WhatsApp"]')!;
+    expect(pedir.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/5511999999999\?text=/);
+    expect(document.querySelector('.aspect-square span')?.textContent).toBe('L');
+    const busca = document.querySelector('input[aria-label="Buscar pelo nome"]')!;
+    await type(busca, 'MDF personalizado'); // está só na descrição
+    expect(document.body.textContent).toContain('Nenhum produto encontrado');
+    await type(busca, 'chaveiro');
+    expect(document.body.textContent).toContain('TESTE Chaveiro');
+  });
+});
 crudScreen('Lista de Compras', async () => (await import('./PurchaseList')).PurchaseList, {});
 
 // B2–B4 — calculadoras (histórico de trabalhos, escolha de material e cartão de resultado)
