@@ -35,16 +35,15 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (28/10/2026):**
+**Onde paramos (28/10/2026, pausa até segunda 2/11):**
 
-- No ar (`index-fohTK-UT.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14 e 17 a 20, foto e reserva de estoque. 9C desligada.
-- **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
-  A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
-- **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
-  subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
-- **17 a 20 publicados** (WhatsApp no clique; preço manual; Kit só com a soma dos produtos; prazo de produção) e a reserva
-  de estoque corrigida (desde 17/10 aprovar não reservava). Próximo: 15 (catálogo, layouts) → 16 (IA).
-- Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
+- No ar: `index-DQ6rob-q.js` (28/10/2026), commit `444e3ad`. Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 20. 9C desligada.
+- **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
+  úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
+  (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
+- Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
+- **Próximo: item 16 (IA), o último, com prazo 2/11:** testar a análise no AI Studio e no app e ligar o "Exigir" do
+  App Check. Emulador desligado com os dados exportados.
 
 ## Entregue
 
@@ -97,7 +96,7 @@ O que cada etapa trouxe para quem usa o app:
 18. ✅ Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta (publicado em 28/10/2026).
 19. ✅ Produtos Kit: produtos já cadastrados e desconto opcional (publicado em 28/10/2026; corrigido em 28/10/2026).
 20. ✅ Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard (publicado em 28/10/2026).
-15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
+15. ✅ Catálogo público com cara de loja: vitrine em grade, busca pelo nome, WhatsApp por produto e Pix/crédito (publicado em 28/10/2026).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
@@ -835,6 +834,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 15. **Catálogo público com cara de loja** (útil, M–G; pedido em 27/10/2026): redesenho bonito no celular, com botão de
     WhatsApp em cada produto e o preço no Pix e no crédito. **Antes de codificar, mostrar 2 ou 3 propostas de layout**
     para você escolher.
+    ✅ **Feito e publicado em 28/10/2026 (proposta A):** vitrine em grade (2 por linha no celular, 4 no computador);
+    busca pelo nome no topo, junto das categorias oficiais; quadro de foto do mesmo tamanho, com o logo ou a inicial da
+    loja quando falta foto; preço no Pix/crédito como a loja escolheu; botão "Pedir" no WhatsApp em cada produto, sempre
+    no rodapé do cartão (regra do 55); "pacote com N un" no lugar de "kit N un". 355 testes, lint, build; conferido em
+    390 px e no computador.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
