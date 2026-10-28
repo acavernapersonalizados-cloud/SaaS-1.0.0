@@ -35,16 +35,15 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (27/10/2026):**
+**Onde paramos (27/10/2026, pausa até 28/10 às 10h):**
 
-- No ar (`index-De9RKv5Q.js`, 27/10/2026): Etapas 0 a 9 e Estacionamento 2 a 14 (segurança 2 a 6; Lista de Compras
-  com transação; PDF; cartão "Custo da calculadora"; estoque 0; escolher a máquina; ícones; Laser com material do estoque; categorias). 9C desligada.
-- Lote 6 a 12 testado por você no emulador e publicado (só hosting). Chave antiga do Gemini: apagada por você.
-- **Falta você, no site:** "Atualizar agora"; enviar uma foto de produto (se não subir: console → Storage → Regras,
-  permissão para ler o banco); "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
-- **Falta você (item 14):** backup pelo site; renomear "PRESENTES ELEGANTES" → "Presentes Elegantes" e "cesta" → "Cesta";
-  em Categorias → Produtos → "Organizar categorias" (Papelaria Personalizada → Papelaria; Serviços nova; ver o "60").
-  Próximo: 15 (catálogo com cara de loja: 2 ou 3 propostas de layout); **por último, 16: IA**.
+- No ar (`index-De9RKv5Q.js`): Etapas 0 a 9 e Estacionamento 2 a 14. 9C desligada. Nada pela metade; item 15 não começou.
+- **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
+  A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES → Presentes Elegantes e cesta → Cesta.
+  Falta você: backup; os 2 renomes; "Organizar categorias" nas duas lojas.
+- **Pendente de diagnóstico:** erro ao subir foto de produto (`storage/unauthorized`). Nada foi mexido ainda.
+- Falta você também: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
+- Próximo: diagnosticar o `storage/unauthorized` (só leitura primeiro); depois item 15 (você escolhe A, B ou C).
 
 ## Entregue
 
