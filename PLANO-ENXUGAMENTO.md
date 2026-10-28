@@ -37,13 +37,13 @@
 
 **Onde paramos (28/10/2026):**
 
-- No ar (`index-oHmxlse3.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14 e 17 a 19, e as mensagens de foto. 9C desligada.
+- No ar (`index-fohTK-UT.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14 e 17 a 20, foto e reserva de estoque. 9C desligada.
 - **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
   A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
 - **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
   subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
-- **17 a 19 publicados** (WhatsApp no clique; preço manual; Kit). **Reserva de estoque corrigida (NÃO publicada):** desde
-  17/10 aprovar não reservava; agora procura e grava com o ID fixo, sem mexer nas regras. Próximo: 20 → 15 → 16.
+- **17 a 20 publicados** (WhatsApp no clique; preço manual; Kit só com a soma dos produtos; prazo de produção) e a reserva
+  de estoque corrigida (desde 17/10 aprovar não reservava). Próximo: 15 (catálogo, layouts) → 16 (IA).
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
@@ -96,7 +96,7 @@ O que cada etapa trouxe para quem usa o app:
 17. ✅ Histórico de Orçamentos: mudar o status não abre o WhatsApp sozinho; botão "Enviar no WhatsApp" (publicado em 28/10/2026).
 18. ✅ Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta (publicado em 28/10/2026).
 19. ✅ Produtos Kit: produtos já cadastrados e desconto opcional (publicado em 28/10/2026; corrigido em 28/10/2026).
-20. Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard.
+20. ✅ Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard (publicado em 28/10/2026).
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
@@ -827,6 +827,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 20. **Lembrete de produção** (pedido em 28/10/2026): quando o orçamento entra "Em produção", calcular o prazo pelo tempo
     de produção de cada produto e mostrar no painel de Produção e no Dashboard (prazo, "atrasado" em vermelho, "vence
     hoje" em amarelo). Notificação push com o app fechado fica para a Etapa 10 (precisa de servidor).
+    ✅ **Feito e publicado em 28/10/2026:** ao entrar "Em produção" pela primeira vez grava productionStartedAt e
+    productionDueAt (lib/productionDeadline.ts): tempo de cada produto × quantidade ÷ (horas produtivas ÷ 22) em dias
+    úteis (seg–sex), mínimo 1, vale o maior com o prazo do catálogo; selo no painel de Produção e quadro no Dashboard
+    (atrasado em vermelho, vence hoje em amarelo); "Calcular prazo a partir de hoje" para os pedidos antigos (item sem
+    produto fica de fora da conta). 354 testes, lint, build e emulador ok. Reserva de estoque corrigida junto.
 15. **Catálogo público com cara de loja** (útil, M–G; pedido em 27/10/2026): redesenho bonito no celular, com botão de
     WhatsApp em cada produto e o preço no Pix e no crédito. **Antes de codificar, mostrar 2 ou 3 propostas de layout**
     para você escolher.
