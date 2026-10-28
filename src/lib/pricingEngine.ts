@@ -91,6 +91,14 @@ export interface QuoteItemCalcResult {
   wholesaleFloorApplied: boolean;
   /** Piso do canal (custo × 1,30 + taxas) por unidade; null quando não há preço possível. */
   wholesaleFloorPrice: number | null;
+  /** Item 18: preço manual por unidade (Pix) usado no item, ou null quando o preço é o calculado. */
+  manualUnitPrice: number | null;
+  /** Item 18: o preço que a conta daria (markup, atacado, acabamentos), para comparar com o manual. */
+  suggestedUnitPrice: number;
+  /** Item 18: o preço não cobre o custo e as taxas (prejuízo). */
+  belowCost: boolean;
+  /** Item 18: preço manual abaixo do sugerido pela meta (markup da Base de Custos ou do item). */
+  belowGoal: boolean;
 }
 
 // ─── Classificação de rentabilidade ──────────────────────────────────────────
@@ -365,10 +373,14 @@ export function calcQuoteItem(
     .filter(a => item.selectedAccessoryIds?.includes(a.id))
     .reduce((acc, a) => acc + (Number(a.additionalValue) || 0), 0);
 
-  const unitPrice =
+  const suggestedUnitPrice =
     (isFinite(baseUnitPrice) ? baseUnitPrice : 0) +
     (isFinite(finishingValue) ? finishingValue : 0) +
     (isFinite(accessoriesValue) ? accessoriesValue : 0);
+  // Item 18: com preço manual, ele é o preço final da unidade (Pix): sem atacado e sem somar acabamentos/acessórios.
+  const manual = Number(item.manualUnitPrice) || 0;
+  const useManual = manual > 0;
+  const unitPrice = useManual ? manual : suggestedUnitPrice;
 
   const quantity = Number(item.quantity) || 1;
   const totalPrice = unitPrice * quantity;
@@ -395,9 +407,10 @@ export function calcQuoteItem(
     quantity,
     unitPrice: isFinite(unitPrice) ? unitPrice : 0,
     totalPrice: isFinite(totalPrice) ? totalPrice : 0,
-    basePrice: isFinite(baseUnitPrice) ? baseUnitPrice : 0,
-    finishingValue: isFinite(finishingValue) ? finishingValue : 0,
-    accessoriesValue: isFinite(accessoriesValue) ? accessoriesValue : 0,
+    // Com preço manual, o preço base é o manual e acabamentos/acessórios não somam (já estão nele).
+    basePrice: useManual ? manual : isFinite(baseUnitPrice) ? baseUnitPrice : 0,
+    finishingValue: useManual ? 0 : isFinite(finishingValue) ? finishingValue : 0,
+    accessoriesValue: useManual ? 0 : isFinite(accessoriesValue) ? accessoriesValue : 0,
     selectedFinishingIds: item.selectedFinishingIds || [],
     selectedAccessoryIds: item.selectedAccessoryIds || [],
     finishingNames,
@@ -418,9 +431,14 @@ export function calcQuoteItem(
     margin: totalPrice > 0 && isFinite(itemProfit) ? (itemProfit / totalPrice) * 100 : 0,
     platformFee: platformFeePercent,
     retailBasePrice: isFinite(retailBasePrice) ? retailBasePrice : 0,
-    wholesaleDiscountPct: wholesale.discountPct,
-    wholesaleFloorApplied: wholesale.floorApplied,
+    // Com preço manual não há desconto de atacado.
+    wholesaleDiscountPct: useManual ? 0 : wholesale.discountPct,
+    wholesaleFloorApplied: useManual ? false : wholesale.floorApplied,
     wholesaleFloorPrice: wholesale.floorPrice,
+    manualUnitPrice: useManual ? manual : null,
+    suggestedUnitPrice: isFinite(suggestedUnitPrice) ? suggestedUnitPrice : 0,
+    belowCost: isFinite(itemProfit) && itemProfit < -0.004,
+    belowGoal: useManual && !invalidMargin && manual < suggestedUnitPrice - 0.004,
   };
 }
 

@@ -305,6 +305,11 @@ export interface QuoteItem {
   wholesaleDiscountPct?: number;
   /** O desconto passaria do piso (custo × 1,30 + taxas) e o preço ficou no piso. */
   wholesaleFloorApplied?: boolean;
+  /**
+   * Estacionamento item 18 (28/10/2026): preço manual por unidade, no Pix (o crédito continua Pix ÷ 0,95). É o preço
+   * final: sem desconto de atacado e sem somar acabamentos e acessórios. Sem ele, o preço é o calculado.
+   */
+  manualUnitPrice?: number | null;
 }
 
 export interface Quote {

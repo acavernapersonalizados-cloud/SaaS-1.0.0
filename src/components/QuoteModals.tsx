@@ -16,6 +16,8 @@ type ItemDraft = {
   selectedFinishingIds: string[];
   selectedAccessoryIds: string[];
   customMarkup?: number;
+  /** Estacionamento item 18: preço manual por unidade (Pix). */
+  manualUnitPrice?: number | null;
 };
 
 export function AddItemModal({
@@ -29,6 +31,8 @@ export function AddItemModal({
   setQuantity,
   customMarkup,
   setCustomMarkup,
+  manualUnitPrice,
+  setManualUnitPrice,
   selectedFinishes,
   setSelectedFinishes,
   selectedAccessories,
@@ -47,6 +51,8 @@ export function AddItemModal({
   setQuantity: (value: number) => void;
   customMarkup: number | null;
   setCustomMarkup: (value: number | null) => void;
+  manualUnitPrice: number | null;
+  setManualUnitPrice: (value: number | null) => void;
   selectedFinishes: string[];
   setSelectedFinishes: React.Dispatch<React.SetStateAction<string[]>>;
   selectedAccessories: string[];
@@ -114,6 +120,31 @@ export function AddItemModal({
                 placeholder="Padrão"
                 className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
               />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                Preço manual {selectedProduct?.isPackage ? 'por pacote' : 'por unidade'} — no Pix (opcional)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={manualUnitPrice ?? ''}
+                onChange={e =>
+                  setManualUnitPrice(
+                    e.target.value === '' || Number(e.target.value) <= 0 ? null : Number(e.target.value),
+                  )
+                }
+                placeholder={
+                  currentItemResults
+                    ? `Calculado: ${formatCurrency(currentItemResults.suggestedUnitPrice)}`
+                    : 'Calculado'
+                }
+                className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+              />
+              <p className="text-[11px] text-neutral-400 ml-1">
+                É o preço final: sem desconto de atacado e já com acabamentos e acessórios. No crédito = Pix ÷ 0,95.
+              </p>
             </div>
           </div>
 
@@ -210,6 +241,7 @@ export function AddItemModal({
                   selectedFinishingIds: selectedFinishes,
                   selectedAccessoryIds: selectedAccessories,
                   customMarkup: customMarkup !== null ? customMarkup : undefined,
+                  manualUnitPrice,
                 })?.totalPrice || 0,
               )}
             </p>
@@ -219,6 +251,19 @@ export function AddItemModal({
                 {formatPercent(currentItemResults.margin)} · lucro {formatCurrency(currentItemResults.itemProfit)}
               </p>
             )}
+            {currentItemResults?.manualUnitPrice != null && currentItemResults.belowCost && (
+              <p role="alert" className="text-xs font-bold text-red-700">
+                Abaixo do custo: prejuízo de{' '}
+                {formatCurrency(-currentItemResults.itemProfit / currentItemResults.quantity)} por unidade.
+              </p>
+            )}
+            {currentItemResults?.manualUnitPrice != null &&
+              !currentItemResults.belowCost &&
+              currentItemResults.belowGoal && (
+                <p role="alert" className="text-xs font-bold text-amber-700">
+                  Abaixo da meta: o sugerido é {formatCurrency(currentItemResults.suggestedUnitPrice)}.
+                </p>
+              )}
             {currentItemResults && currentItemResults.wholesaleDiscountPct > 0 && (
               <p className="text-xs font-bold text-blue-700">
                 Atacado: −{formatPercent(currentItemResults.wholesaleDiscountPct)} pela quantidade (varejo{' '}

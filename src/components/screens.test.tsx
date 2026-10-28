@@ -422,6 +422,34 @@ describe('Precificação', () => {
     expect(document.body.textContent).toContain('O desconto passaria do piso (custo × 1,30 + taxas)');
     expect(html()).toMatchSnapshot();
   });
+  // Estacionamento item 18: preço manual por unidade (Pix) com avisos; o crédito do orçamento é o total ÷ 0,95.
+  it('item 18: preço manual avisa abaixo da meta e do custo e é gravado como preço no Pix', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    await show(await load());
+    await click(buttonWithText('Adicionar Item'));
+    await type(field('Produto'), 'chaveiro');
+    await type(quantityInput(), '10');
+    const text = () => document.body.textContent?.replace(/\s/g, ' ') ?? '';
+    await type(field('Preço manual'), '12');
+    expect(text()).toContain('Abaixo da meta: o sugerido é');
+    await type(field('Preço manual'), '1');
+    expect(text()).toContain('Abaixo do custo: prejuízo de');
+    await type(field('Preço manual'), '20');
+    expect(text()).not.toContain('Abaixo da meta');
+    expect(text()).toContain('R$ 200,00');
+    await click(buttonWithText('Confirmar Item'));
+    await type(clientInput(), 'Maria Teste');
+    writes.length = 0;
+    await click(generate());
+    const quote = writes.find(w => w.path === 'quotes')!.data as {
+      items: Array<Record<string, unknown>>;
+      totalAmount: number;
+      creditTotal: number;
+    };
+    expect(quote.items[0]).toMatchObject({ manualUnitPrice: 20, unitPrice: 20, totalPrice: 200 });
+    expect(quote.totalAmount).toBe(200);
+    expect(quote.creditTotal).toBeCloseTo(200 / 0.95, 10);
+  });
 });
 
 // Etapa 9A — aviso de canal sem conferência há mais de 60 dias e botão "Conferi hoje".

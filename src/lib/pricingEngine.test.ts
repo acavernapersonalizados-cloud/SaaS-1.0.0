@@ -267,6 +267,49 @@ describe('Estoque (seção 16)', () => {
 });
 
 // Etapa 8C, item 3b — preço no crédito: Pix ÷ 0,95, para os 5% do cartão não reduzirem o que entra.
+// Estacionamento item 18 (28/10/2026): preço manual por unidade (Pix) no item do orçamento.
+describe('Orçamento com preço manual por item (10 chaveiros, custo R$ 7,50, sugerido R$ 15,00)', () => {
+  const item = (manual: number | null, fee = 0, extra: Record<string, unknown> = {}) =>
+    calcQuoteItem({ quantity: 10, manualUnitPrice: manual, ...extra }, chaveiro, materials, costs, fee)!;
+
+  it('sem preço manual: igual a antes', () => {
+    const r = item(null);
+    expect(r.unitPrice).toBeCloseTo(15, 10);
+    expect(r.manualUnitPrice).toBeNull();
+    expect(r.belowGoal).toBe(false);
+    expect(r.belowCost).toBe(false);
+  });
+  it('R$ 20,00 manual: lucro real R$ 125,00, margem 62,5%, acima da meta', () => {
+    const r = item(20);
+    expect(r.unitPrice).toBe(20);
+    expect(r.totalPrice).toBe(200);
+    expect(r.itemProfit).toBeCloseTo(125, 10);
+    expect(r.margin).toBeCloseTo(62.5, 10);
+    expect(r.suggestedUnitPrice).toBeCloseTo(15, 10);
+    expect([r.belowGoal, r.belowCost]).toEqual([false, false]);
+  });
+  it('R$ 12,00: abaixo da meta, mas com lucro', () => {
+    const r = item(12);
+    expect(r.itemProfit).toBeCloseTo(45, 10);
+    expect([r.belowGoal, r.belowCost]).toEqual([true, false]);
+  });
+  it('R$ 7,00: abaixo do custo (prejuízo de R$ 5,00 no item)', () => {
+    const r = item(7);
+    expect(r.itemProfit).toBeCloseTo(-5, 10);
+    expect(r.belowCost).toBe(true);
+  });
+  it('a taxa do canal sai do preço manual (Shopee 20%: R$ 20 → lucro R$ 85,00)', () => {
+    expect(item(20, 20).itemProfit).toBeCloseTo(85, 10);
+  });
+  it('o preço manual é o do Pix: no crédito = total ÷ 0,95', () => {
+    expect(creditPrice(item(20).totalPrice)).toBeCloseTo(200 / 0.95, 10);
+  });
+  it('sem atacado e sem somar acabamentos: o manual é o preço final', () => {
+    const r = item(20, 0, { selectedFinishingIds: ['qualquer'] });
+    expect([r.unitPrice, r.basePrice, r.finishingValue, r.wholesaleDiscountPct]).toEqual([20, 20, 0, 0]);
+  });
+});
+
 describe('Preço no crédito (creditPrice)', () => {
   it('Pix ÷ 0,95 e, depois dos 5% do cartão, entra o mesmo que no Pix', () => {
     expect(creditPrice(9.5)).toBeCloseTo(10, 10);

@@ -28664,6 +28664,30 @@ exports[`Precificação > atacado: 30 unidades com 20% sobre o varejo, gravado n
                   value=""
                 />
               </div>
+              <div
+                class="space-y-2 sm:col-span-2"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1"
+                >
+                  Preço manual 
+                  por unidade
+                   — no Pix (opcional)
+                </label>
+                <input
+                  class="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+                  min="0"
+                  placeholder="Calculado: R$ 12,00"
+                  step="0.01"
+                  type="number"
+                  value=""
+                />
+                <p
+                  class="text-[11px] text-neutral-400 ml-1"
+                >
+                  É o preço final: sem desconto de atacado e já com acabamentos e acessórios. No crédito = Pix ÷ 0,95.
+                </p>
+              </div>
             </div>
             <div
               class="space-y-3"
@@ -29464,6 +29488,30 @@ exports[`Precificação > atacado: markup personalizado baixo para no piso e avi
                   type="number"
                   value="40"
                 />
+              </div>
+              <div
+                class="space-y-2 sm:col-span-2"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1"
+                >
+                  Preço manual 
+                  por unidade
+                   — no Pix (opcional)
+                </label>
+                <input
+                  class="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+                  min="0"
+                  placeholder="Calculado: R$ 9,75"
+                  step="0.01"
+                  type="number"
+                  value=""
+                />
+                <p
+                  class="text-[11px] text-neutral-400 ml-1"
+                >
+                  É o preço final: sem desconto de atacado e já com acabamentos e acessórios. No crédito = Pix ÷ 0,95.
+                </p>
               </div>
             </div>
             <div
@@ -34147,6 +34195,30 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                   value="200"
                 />
               </div>
+              <div
+                class="space-y-2 sm:col-span-2"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1"
+                >
+                  Preço manual 
+                  por unidade
+                   — no Pix (opcional)
+                </label>
+                <input
+                  class="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+                  min="0"
+                  placeholder="Calculado: R$ 27,50"
+                  step="0.01"
+                  type="number"
+                  value=""
+                />
+                <p
+                  class="text-[11px] text-neutral-400 ml-1"
+                >
+                  É o preço final: sem desconto de atacado e já com acabamentos e acessórios. No crédito = Pix ÷ 0,95.
+                </p>
+              </div>
             </div>
             <div
               class="space-y-3"
@@ -35977,6 +36049,30 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                   type="number"
                   value="200"
                 />
+              </div>
+              <div
+                class="space-y-2 sm:col-span-2"
+              >
+                <label
+                  class="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1"
+                >
+                  Preço manual 
+                  por unidade
+                   — no Pix (opcional)
+                </label>
+                <input
+                  class="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+                  min="0"
+                  placeholder="Calculado: R$ 27,50"
+                  step="0.01"
+                  type="number"
+                  value=""
+                />
+                <p
+                  class="text-[11px] text-neutral-400 ml-1"
+                >
+                  É o preço final: sem desconto de atacado e já com acabamentos e acessórios. No crédito = Pix ÷ 0,95.
+                </p>
               </div>
             </div>
             <div

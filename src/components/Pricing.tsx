@@ -60,6 +60,8 @@ export function Pricing() {
   const [cnpj, setCnpj] = useState('');
   const [channel, setChannel] = useState('Venda Direta');
   const [customMarkup, setCustomMarkup] = useState<number | null>(null);
+  // Estacionamento item 18: preço manual por unidade (Pix) do item; null = preço calculado.
+  const [manualUnitPrice, setManualUnitPrice] = useState<number | null>(null);
   const [clientSearch, setClientSearch] = useState('');
   const [showClientList, setShowClientList] = useState(false);
 
@@ -80,6 +82,7 @@ export function Pricing() {
     selectedFinishingIds: selectedFinishes,
     selectedAccessoryIds: selectedAccessories,
     customMarkup: customMarkup !== null ? customMarkup : undefined,
+    manualUnitPrice,
   };
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
@@ -202,6 +205,7 @@ export function Pricing() {
                 finishingNames: currentItemResults.finishingNames,
                 accessoryNames: currentItemResults.accessoryNames,
                 customMarkup: customMarkup,
+                manualUnitPrice: currentItemResults.manualUnitPrice,
                 markup: currentItemResults.markup,
                 materialCost: currentItemResults.materialCost,
                 laborCost: currentItemResults.laborCost,
@@ -231,6 +235,7 @@ export function Pricing() {
         finishingNames: currentItemResults.finishingNames,
         accessoryNames: currentItemResults.accessoryNames,
         customMarkup: customMarkup,
+        manualUnitPrice: currentItemResults.manualUnitPrice,
         markup: currentItemResults.markup,
         materialCost: currentItemResults.materialCost,
         laborCost: currentItemResults.laborCost,
@@ -250,6 +255,7 @@ export function Pricing() {
     setSelectedFinishes([]);
     setSelectedAccessories([]);
     setCustomMarkup(null);
+    setManualUnitPrice(null);
     setEditingItemId(null);
     setIsAddingItem(false);
   };
@@ -260,6 +266,7 @@ export function Pricing() {
     setSelectedFinishes(item.selectedFinishingIds);
     setSelectedAccessories(item.selectedAccessoryIds);
     setCustomMarkup(item.customMarkup ?? null);
+    setManualUnitPrice(item.manualUnitPrice ?? null);
     setEditingItemId(item.id);
     setIsAddingItem(true);
   };
@@ -393,6 +400,7 @@ export function Pricing() {
           finishingNames: r.finishingNames,
           accessoryNames: r.accessoryNames,
           customMarkup: r.customMarkup,
+          manualUnitPrice: r.manualUnitPrice,
           markup: r.markup,
           materialCost: r.materialCost,
           laborCost: r.laborCost,
@@ -483,6 +491,7 @@ export function Pricing() {
     setSelectedFinishes([]);
     setSelectedAccessories([]);
     setCustomMarkup(null);
+    setManualUnitPrice(null);
     setIsAddingItem(true);
   };
 
@@ -617,6 +626,8 @@ export function Pricing() {
           setQuantity={setQuantity}
           customMarkup={customMarkup}
           setCustomMarkup={setCustomMarkup}
+          manualUnitPrice={manualUnitPrice}
+          setManualUnitPrice={setManualUnitPrice}
           selectedFinishes={selectedFinishes}
           setSelectedFinishes={setSelectedFinishes}
           selectedAccessories={selectedAccessories}
