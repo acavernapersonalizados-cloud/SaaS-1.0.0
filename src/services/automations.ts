@@ -1,4 +1,15 @@
-import { doc, updateDoc, getDoc, collection, addDoc, query, where, getDocs, runTransaction } from 'firebase/firestore';
+import {
+  doc,
+  updateDoc,
+  getDoc,
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  runTransaction,
+} from 'firebase/firestore';
 import { db, notifyError } from '../firebase';
 import { QuoteStatus, Quote, StockReservation } from '../types';
 
@@ -89,29 +100,24 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
   const quoteData = quoteSnap.data() as Quote & { stockProcessed?: boolean };
   const previousStatus = quoteData.status as QuoteStatus;
 
-  // ── 1. CREATE RESERVATION (atomic via transaction to prevent duplicates) ──
+  // ── 1. CREATE RESERVATION (ID fixo por orçamento: no máximo uma reserva) ──
   if (RESERVE_STATUSES.includes(newStatus) && !RESERVE_STATUSES.includes(previousStatus)) {
     try {
       const reservations = await buildReservations(quoteData);
 
-      if (reservations.length > 0) {
-        // Use runTransaction to guarantee idempotency — only one reservation per quote
-        // ID determinístico por orçamento: garante no máximo UMA reserva ativa,
-        // mesmo com dois cliques simultâneos (getDocs dentro de transação não
-        // participa do controle de concorrência do Firestore).
-        await runTransaction(db, async tx => {
-          const newResRef = doc(db, 'stockReservations', `res_${quoteId}`);
-          const existing = await tx.get(newResRef);
-          if (existing.exists() && existing.data()?.status === 'active') return;
-
-          tx.set(newResRef, {
-            storeId: quoteData.storeId,
-            quoteId,
-            clientName: quoteData.clientName || '',
-            reservations,
-            status: 'active',
-            createdAt: new Date().toISOString(),
-          });
+      // Correção de 28/10/2026: a transação lia res_<orçamento> antes de existir, e a regra nega ler um documento
+      // que não existe (resource nulo) — a reserva nunca era criada desde 17/10/2026. Agora procura a reserva ativa
+      // (ID fixo ou busca pela loja, que a regra permite) e grava com o mesmo ID fixo: continua no máximo UMA
+      // reserva por orçamento, mesmo com dois cliques (os dois gravam o mesmo documento).
+      const active = reservations.length > 0 ? await getActiveReservation(quoteId, quoteData.storeId) : null;
+      if (reservations.length > 0 && !active) {
+        await setDoc(doc(db, 'stockReservations', `res_${quoteId}`), {
+          storeId: quoteData.storeId,
+          quoteId,
+          clientName: quoteData.clientName || '',
+          reservations,
+          status: 'active',
+          createdAt: new Date().toISOString(),
         });
 
         // Log movement (non-critical — fire and forget)

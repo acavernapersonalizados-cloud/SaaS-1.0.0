@@ -166,6 +166,24 @@ crudScreen('Clientes', async () => (await import('./Clients')).Clients, {
 crudScreen('Fornecedores', async () => (await import('./Suppliers')).Suppliers, { search: 'TESTE', remove: true });
 crudScreen('Histórico', async () => (await import('./History')).History, { search: 'Chaveiro', remove: true });
 
+// Correção de 28/10/2026: aprovar cria a reserva de estoque (antes a regra negava ler a reserva que não existia).
+describe('Histórico: reserva de estoque ao aprovar', () => {
+  it('aprovar grava a reserva com o ID fixo do orçamento e os materiais dos produtos', async () => {
+    const { writes } = await import('../test/firestoreMock');
+    writes.length = 0;
+    await show(React.createElement((await import('./History')).History));
+    await click(buttonWithIcon('external-link'));
+    await click(buttonWithText('Aprovar'));
+    await act(() => new Promise(r => setTimeout(r, 50)));
+    const res = writes.find(w => w.op === 'set' && w.path === 'stockReservations/res_orc-1');
+    expect(res?.data).toMatchObject({ quoteId: 'orc-1', status: 'active' });
+    expect((res!.data.reservations as Array<{ materialId: string }>).map(r => r.materialId).sort()).toEqual([
+      'argola',
+      'mdf',
+    ]);
+  });
+});
+
 // Estacionamento item 17: mudar o status não abre o WhatsApp; o botão "Enviar no WhatsApp" é que abre (com o clique).
 describe('Histórico: WhatsApp só no clique', () => {
   it('aprovar não abre o WhatsApp e mostra o botão com a mensagem do status', async () => {

@@ -42,8 +42,8 @@
   A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
 - **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
   subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
-- **17 a 19 publicados** (WhatsApp no clique; preço manual por item; Kit). **Achado:** aprovar orçamento não cria a reserva
-  de estoque desde 17/10 (regra nega ler a reserva que ainda não existe); a baixa ao finalizar funciona. Próximo: 20 → 15 → 16.
+- **17 a 19 publicados** (WhatsApp no clique; preço manual; Kit). **Reserva de estoque corrigida (NÃO publicada):** desde
+  17/10 aprovar não reservava; agora procura e grava com o ID fixo, sem mexer nas regras. Próximo: 20 → 15 → 16.
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
