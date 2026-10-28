@@ -35,15 +35,15 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (27/10/2026, pausa até 28/10 às 10h):**
+**Onde paramos (28/10/2026):**
 
-- No ar (`index-De9RKv5Q.js`): Etapas 0 a 9 e Estacionamento 2 a 14. 9C desligada. Nada pela metade; item 15 não começou.
+- No ar (`index-De9RKv5Q.js`): Etapas 0 a 9 e Estacionamento 2 a 14. 9C desligada. Nada pela metade.
 - **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
-  A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES → Presentes Elegantes e cesta → Cesta.
-  Falta você: backup; os 2 renomes; "Organizar categorias" nas duas lojas.
-- **Pendente de diagnóstico:** erro ao subir foto de produto (`storage/unauthorized`). Nada foi mexido ainda.
-- Falta você também: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
-- Próximo: diagnosticar o `storage/unauthorized` (só leitura primeiro); depois item 15 (você escolhe A, B ou C).
+  A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
+- **Ordem de trabalho (28/10/2026):** 1º diagnosticar o erro ao subir foto (`storage/unauthorized`), só leitura, e
+  proposta com seu aprovado; 2º terminar o item 14; depois 17 → 18 → 19 → 20 → 15 → 16. Cada item com riscos e aprovado.
+- Itens novos no plano: 17 (WhatsApp só no clique), 18 (preço manual por item), 19 (Kit), 20 (lembrete de produção).
+- Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
 
@@ -92,6 +92,10 @@ O que cada etapa trouxe para quem usa o app:
 12. ✅ Ícone do app instalado (publicado em 27/10/2026).
 13. ✅ Laser escolher material do estoque (opção A; publicado em 27/10/2026).
 14. ✅ Categorias organizadas (publicado em 27/10/2026; a organização dos dados reais é você, pela ferramenta).
+17. Histórico de Orçamentos: mudar o status não abre o WhatsApp sozinho; botão "Enviar no WhatsApp".
+18. Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta.
+19. Produtos Kit: montar com produtos já cadastrados (com quantidade); custo e preço = soma; desconto opcional.
+20. Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
 
@@ -792,6 +796,16 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     quantos produtos mudam e só grava com "Confirmar e gravar"; o catálogo público mostra só as oficiais. Suas decisões:
     Papelaria Personalizada → Papelaria; Serviços nova (A Caverna); "60" você vê na ferramenta; renomear PRESENTES
     ELEGANTES e cesta. 314 testes, lint, build e emulador ok (2 categorias criadas e 2 produtos organizados lá).
+17. **Histórico de Orçamentos sem abrir o WhatsApp sozinho** (pedido em 28/10/2026): ao mudar o status, NÃO abrir o
+    WhatsApp automaticamente; mostrar um botão "Enviar no WhatsApp" que só abre se você clicar.
+18. **Preço manual por item no orçamento** (pedido em 28/10/2026): opcional, mostrando o lucro real e um aviso se ficar
+    abaixo do custo ou da meta. Orçamentos antigos não mudam.
+19. **Produtos Kit** (pedido em 28/10/2026): montar o kit escolhendo produtos já cadastrados, com quantidade; custo e
+    preço do kit = soma dos produtos escolhidos, sem refazer cálculos; desconto opcional do kit; baixa de estoque dos
+    materiais dos produtos do kit.
+20. **Lembrete de produção** (pedido em 28/10/2026): quando o orçamento entra "Em produção", calcular o prazo pelo tempo
+    de produção de cada produto e mostrar no painel de Produção e no Dashboard (prazo, "atrasado" em vermelho, "vence
+    hoje" em amarelo). Notificação push com o app fechado fica para a Etapa 10 (precisa de servidor).
 15. **Catálogo público com cara de loja** (útil, M–G; pedido em 27/10/2026): redesenho bonito no celular, com botão de
     WhatsApp em cada produto e o preço no Pix e no crédito. **Antes de codificar, mostrar 2 ou 3 propostas de layout**
     para você escolher.
