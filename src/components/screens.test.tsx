@@ -798,7 +798,8 @@ describe('Produtos (telas internas)', () => {
     await click(buttonWithText('Novo Produto'));
     expect(html()).toMatchSnapshot();
   });
-  // Estacionamento item 19: Kit com produtos já cadastrados, custos extras e montagem; grava custo, preço e materiais.
+  // Estacionamento item 19 (corrigido em 28/10/2026): Kit = soma dos produtos (sem custos extras nem montagem);
+  // grava custo, preço, desconto, materiais e tempo dos produtos.
   it('item 19: monta um kit e grava custo, preço, desconto e materiais dos produtos', async () => {
     const { writes } = await import('../test/firestoreMock');
     writes.length = 0;
@@ -810,12 +811,17 @@ describe('Produtos (telas internas)', () => {
     await type(document.querySelector('select[aria-label="Produto do kit"]')!, 'chaveiro');
     await type(document.querySelector('input[aria-label="Quantidade no kit"]')!, '3');
     await click(buttonWithText('Adicionar'));
-    await type(field('Custos extras do kit'), '6');
-    await type(field('Tempo de montagem'), '10');
+    expect(document.body.textContent).not.toContain('Custos extras do kit');
+    expect(document.body.textContent).not.toContain('Tempo de montagem');
+    expect(document.body.textContent).toContain('Custo e preço do kit = soma dos produtos escolhidos.');
     await type(field('Desconto do kit'), '10');
     const status = () => document.querySelector('[role="status"]')?.textContent?.replace(/\s/g, ' ') ?? '';
     expect(status()).toContain('Custo do kit');
     expect(status()).toContain('Preço do kit');
+    // O custo do kit é só o dos produtos: 3 chaveiros.
+    const { calcProductCost } = await import('../lib/pricingEngine');
+    const { fixtures } = await import('../test/fixtures');
+    const chaveiroCost = calcProductCost(fixtures.products[0], fixtures.materials, fixtures.costBases[0]).totalCost;
     fireEvent.submit(document.querySelector('form#product-form')!);
     await act(() => new Promise(r => setTimeout(r, 0)));
     const saved = writes.find(w => w.op === 'add' && w.path === 'products')!.data;
@@ -824,9 +830,9 @@ describe('Produtos (telas internas)', () => {
       kitItems: [{ productId: 'chaveiro', quantity: 3 }],
       kitDiscountPct: 10,
     });
-    expect(saved.kitExtraCost).toBe(6);
-    expect(saved.kitAssemblyMin).toBe(10);
-    expect(Number(saved.kitCostUnit)).toBeGreaterThan(6);
+    expect(saved.kitExtraCost).toBeUndefined();
+    expect(saved.kitAssemblyMin).toBeUndefined();
+    expect(Number(saved.kitCostUnit)).toBeCloseTo(Math.round(chaveiroCost * 3 * 100) / 100, 10);
     expect(Number(saved.kitPriceUnit)).toBeGreaterThan(0);
     // Materiais do chaveiro × 3 (para a baixa de estoque).
     expect(saved.materials).toEqual([

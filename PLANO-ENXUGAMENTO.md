@@ -95,7 +95,7 @@ O que cada etapa trouxe para quem usa o app:
 14. ✅ Categorias organizadas (publicado em 27/10/2026; a organização dos dados reais é você, pela ferramenta).
 17. ✅ Histórico de Orçamentos: mudar o status não abre o WhatsApp sozinho; botão "Enviar no WhatsApp" (publicado em 28/10/2026).
 18. ✅ Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta (publicado em 28/10/2026).
-19. ✅ Produtos Kit: produtos já cadastrados, custos extras e montagem, desconto (publicado em 28/10/2026).
+19. ✅ Produtos Kit: produtos já cadastrados e desconto opcional (publicado em 28/10/2026; corrigido em 28/10/2026).
 20. Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
@@ -819,6 +819,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     custo, preço, materiais (para a baixa) e tempo; produto mudado depois → aviso e "Atualizar pela soma atual". Kit
     não entra em kit. No orçamento o kit sai pelo preço do kit (markup = preço ÷ custo; com taxa, mesmo lucro em R$).
     346 testes, lint, build e emulador ok (baixa ao finalizar: Caneca −2, Argola −10).
+    **Correção (28/10/2026, seu pedido):** saíram "Custos extras do kit" e "Tempo de montagem"; custo = soma dos custos
+    dos produtos × qtd; preço = soma dos preços × qtd; tempo = soma dos tempos × qtd; fica só o desconto (%). Texto:
+    "Custo e preço do kit = soma dos produtos escolhidos." Lista: nome numa linha com "…", custo e preço embaixo,
+    quantidade de 70 px com a lixeira ao lado (a quantidade tinha w-full e empurrava tudo); conferido em 390 px e no
+    computador. As 10 Argolas do teste vieram dos materiais da própria Caneta Teste (Argola × 10).
 20. **Lembrete de produção** (pedido em 28/10/2026): quando o orçamento entra "Em produção", calcular o prazo pelo tempo
     de produção de cada produto e mostrar no painel de Produção e no Dashboard (prazo, "atrasado" em vermelho, "vence
     hoje" em amarelo). Notificação push com o app fechado fica para a Etapa 10 (precisa de servidor).

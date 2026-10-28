@@ -1,6 +1,6 @@
 /**
  * ProductKitSection — "Este produto é um Kit" no cadastro de Produtos (Estacionamento item 19, aprovado em 28/10/2026).
- * Monta o kit com produtos já cadastrados (com quantidade), custos extras (R$) e montagem (min × valor da hora).
+ * Monta o kit com produtos já cadastrados (com quantidade) e desconto opcional (sem custos extras nem montagem).
  * Mexer no kit aqui grava a soma na hora; se um produto do kit mudar depois, o kit só muda com
  * "Atualizar pela soma atual".
  */
@@ -66,10 +66,7 @@ export function ProductKitSection({
 
       {newProduct.isKit && (
         <div className="space-y-4 border-t border-neutral-200 pt-3">
-          <p className="text-xs text-neutral-500">
-            Custo e preço do kit = soma dos produtos escolhidos. Os materiais do kit são os dos produtos (para a baixa
-            de estoque) e o tempo de produção é a montagem mais o tempo dos produtos.
-          </p>
+          <p className="text-xs text-neutral-500">Custo e preço do kit = soma dos produtos escolhidos.</p>
 
           {changedOutside && (
             <div
@@ -136,9 +133,11 @@ export function ProductKitSection({
           {live.lines.length > 0 && (
             <ul className="divide-y divide-neutral-200 bg-white rounded-xl border border-neutral-200">
               {live.lines.map(l => (
-                <li key={l.productId} className="flex items-center gap-3 px-3 py-2 text-sm">
+                <li key={l.productId} className="flex items-center gap-2 px-3 py-2 text-sm">
                   <span className="flex-1 min-w-0">
-                    <span className="font-semibold">{l.name}</span>
+                    <span className="block truncate font-semibold" title={l.name}>
+                      {l.name}
+                    </span>
                     {l.missing && (
                       <span className="block text-xs text-red-600">Produto apagado: fica fora da soma.</span>
                     )}
@@ -163,13 +162,13 @@ export function ProductKitSection({
                         ),
                       })
                     }
-                    className={`${inputClass} w-20`}
+                    className="w-[70px] shrink-0 px-2 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-center focus:ring-2 focus:ring-neutral-900 outline-none"
                   />
                   <button
                     type="button"
                     aria-label={`Tirar ${l.name} do kit`}
                     onClick={() => update({ kitItems: items.filter(i => i.productId !== l.productId) })}
-                    className="p-1.5 text-neutral-400 hover:text-red-600"
+                    className="shrink-0 p-1.5 text-neutral-400 hover:text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -179,29 +178,6 @@ export function ProductKitSection({
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-600">Custos extras do kit (R$)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={newProduct.kitExtraCost ?? ''}
-                onChange={e => update({ kitExtraCost: Math.max(0, Number(e.target.value) || 0) })}
-                placeholder="Caixa, laço, cartão…"
-                className={inputClass}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-neutral-600">Tempo de montagem (min)</label>
-              <input
-                type="number"
-                min="0"
-                value={newProduct.kitAssemblyMin ?? ''}
-                onChange={e => update({ kitAssemblyMin: Math.max(0, Number(e.target.value) || 0) })}
-                placeholder={`× ${formatCurrency(Number(costs?.hourlyRate) || 0)}/h`}
-                className={inputClass}
-              />
-            </div>
             <div className="space-y-1">
               <label className="text-xs font-bold text-neutral-600">Desconto do kit (%)</label>
               <input
@@ -217,14 +193,6 @@ export function ProductKitSection({
           </div>
 
           <div role="status" className="p-3 bg-white rounded-xl border border-neutral-200 text-xs space-y-1">
-            <p className="flex justify-between">
-              <span>Custo dos produtos</span>
-              <span>{formatCurrency(live.componentsCost)}</span>
-            </p>
-            <p className="flex justify-between">
-              <span>Custos extras + montagem</span>
-              <span>{formatCurrency(live.extrasCost + live.assemblyCost)}</span>
-            </p>
             <p className="flex justify-between font-bold">
               <span>Custo do kit</span>
               <span>{formatCurrency(live.totalCost)}</span>

@@ -26,30 +26,23 @@ const kit = (extra: Partial<Product> = {}): Partial<Product> => ({
 describe('kitTotals', () => {
   it('custo = produtos × quantidades; preço = soma dos preços', () => {
     const t = kitTotals(kit(), products, [], costs);
-    expect(t.componentsCost).toBeCloseTo(10 + 3 * 4, 10); // R$ 22,00
+    expect(t.totalCost).toBeCloseTo(10 + 3 * 4, 10); // R$ 22,00 (só os produtos: sem extras nem montagem)
     expect(t.grossPrice).toBeCloseTo(30 + 3 * 9, 10); // R$ 57,00
     expect(t.price).toBeCloseTo(57, 10);
     expect(t.profit).toBeCloseTo(35, 10);
-  });
-  it('custos extras (R$) e montagem (min × valor da hora) entram no custo e no lucro', () => {
-    const t = kitTotals(kit({ kitExtraCost: 6.5, kitAssemblyMin: 10 }), products, [], costs);
-    expect(t.extrasCost).toBe(6.5);
-    expect(t.assemblyCost).toBeCloseTo(5, 10); // 10 min × R$ 0,50
-    expect(t.totalCost).toBeCloseTo(22 + 6.5 + 5, 10);
-    expect(t.profit).toBeCloseTo(57 - 33.5, 10);
-    expect(t.margin).toBeCloseTo((23.5 / 57) * 100, 10);
+    expect(t.margin).toBeCloseTo((35 / 57) * 100, 10);
   });
   it('desconto do kit sobre a soma dos preços; abaixo do custo avisa', () => {
     expect(kitTotals(kit({ kitDiscountPct: 10 }), products, [], costs).price).toBeCloseTo(51.3, 10);
     expect(kitTotals(kit({ kitDiscountPct: 70 }), products, [], costs).belowCost).toBe(true);
   });
-  it('materiais dos produtos × quantidades, para a baixa de estoque; tempo = montagem + produtos', () => {
-    const t = kitTotals(kit({ kitAssemblyMin: 5 }), products, [], costs);
+  it('materiais dos produtos × quantidades, para a baixa de estoque; tempo = soma dos tempos × quantidades', () => {
+    const t = kitTotals(kit(), products, [], costs);
     expect(t.materials).toEqual([
       { materialId: 'caneca-branca', quantity: 1 },
       { materialId: 'barra', quantity: 6 },
     ]);
-    expect(t.productionTime).toBe(20);
+    expect(t.productionTime).toBe(15); // caneca 15 min × 1 + chocolate 0 min × 3
   });
   it('kit dentro de kit e produto apagado ficam fora das somas (e marcados)', () => {
     const outro = prod('outro-kit', 50, 90, { isKit: true });
@@ -75,11 +68,8 @@ describe('kitTotals', () => {
 
 describe('kit gravado (o botão "Atualizar pela soma atual")', () => {
   it('grava custo, preço, materiais e tempo; percebe quando a soma atual mudou', () => {
-    const saved = {
-      ...kit({ kitExtraCost: 2 }),
-      ...kitSnapshot(kitTotals(kit({ kitExtraCost: 2 }), products, [], costs)),
-    };
-    expect([saved.kitCostUnit, saved.kitPriceUnit]).toEqual([24, 57]);
+    const saved = { ...kit(), ...kitSnapshot(kitTotals(kit(), products, [], costs)) };
+    expect([saved.kitCostUnit, saved.kitPriceUnit, saved.productionTime]).toEqual([22, 57, 15]);
     expect(kitSnapshotDiffers(saved, kitTotals(saved, products, [], costs))).toBe(false);
     const caneca2 = { ...caneca, manualPrice: 35 };
     expect(kitSnapshotDiffers(saved, kitTotals(saved, [caneca2, chocolate], [], costs))).toBe(true);

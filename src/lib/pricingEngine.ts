@@ -35,7 +35,7 @@ export interface ProductCostResult {
   packagingCost: number;
   /** Custo fixo do trabalho de calculadora que virou produto (Etapa 8C, item 4). */
   jobCost: number;
-  /** Estacionamento item 19: custo gravado do kit (produtos + extras + montagem); só nos kits. */
+  /** Estacionamento item 19: custo gravado do kit (soma dos custos dos produtos); só nos kits. */
   kitCost?: number;
   totalCost: number;
 }
@@ -257,7 +257,7 @@ export function calcProductCost(
   // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
   const jobCost = Number(product.jobCostUnit) || 0;
   if (jobCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost, totalCost: jobCost };
-  // Estacionamento item 19: kit usa o custo gravado (produtos + extras + montagem); os materiais do kit são só a
+  // Estacionamento item 19: kit usa o custo gravado (soma dos custos dos produtos); os materiais do kit são só a
   // baixa de estoque, nunca somados de novo.
   const kitCost = product.isKit ? Number(product.kitCostUnit) || 0 : 0;
   if (kitCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost: 0, kitCost, totalCost: kitCost };

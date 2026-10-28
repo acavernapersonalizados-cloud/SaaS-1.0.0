@@ -1,11 +1,11 @@
 /**
  * kit.ts — Kit montado com produtos já cadastrados (Estacionamento item 19, aprovado em 28/10/2026).
- * Custo do kit = soma dos custos dos produtos × quantidades + custos extras (R$) + montagem (min × valor da hora).
+ * Custo do kit = soma dos custos dos produtos × quantidades (correção de 28/10/2026: sem custos extras e montagem).
  * Preço do kit = soma dos preços de venda dos produtos × quantidades, menos o desconto (%).
  * O kit grava custo, preço e materiais; se um produto mudar depois, o kit só muda com "Atualizar pela soma atual".
  */
 import type { CostBase, Material, Product, ProductMaterial } from '../types';
-import { calcProductCost, calcProductPricing, laborCostFromMinutes } from './pricingEngine';
+import { calcProductCost, calcProductPricing } from './pricingEngine';
 import { roundCents } from './utils';
 
 export interface KitLine {
@@ -22,9 +22,6 @@ export interface KitLine {
 
 export interface KitTotals {
   lines: KitLine[];
-  componentsCost: number;
-  extrasCost: number;
-  assemblyCost: number;
   totalCost: number;
   /** Soma dos preços dos produtos × quantidades, antes do desconto. */
   grossPrice: number;
@@ -36,7 +33,7 @@ export interface KitTotals {
   belowCost: boolean;
   /** Materiais dos produtos × quantidades, somados por item (para a baixa de estoque). */
   materials: ProductMaterial[];
-  /** Montagem + tempo de produção dos produtos × quantidades (min). */
+  /** Tempo de produção dos produtos × quantidades (min). */
   productionTime: number;
 }
 
@@ -75,18 +72,14 @@ export function kitTotals(
     };
   });
   const valid = lines.filter(l => !l.missing && !l.nestedKit);
-  const componentsCost = valid.reduce((acc, l) => acc + l.unitCost * l.quantity, 0);
-  const extrasCost = Math.max(0, num(kit.kitExtraCost));
-  const assemblyMin = Math.max(0, num(kit.kitAssemblyMin));
-  const assemblyCost = laborCostFromMinutes(num(costs?.hourlyRate), assemblyMin);
-  const totalCost = componentsCost + extrasCost + assemblyCost;
+  const totalCost = valid.reduce((acc, l) => acc + l.unitCost * l.quantity, 0);
   const grossPrice = valid.reduce((acc, l) => acc + l.unitPrice * l.quantity, 0);
   const discountPct = Math.min(Math.max(num(kit.kitDiscountPct), 0), 100);
   const price = grossPrice * (1 - discountPct / 100);
   const profit = price - totalCost;
 
   const byMaterial = new Map<string, number>();
-  let productionTime = assemblyMin;
+  let productionTime = 0;
   for (const l of valid) {
     const p = products.find(x => x.id === l.productId)!;
     productionTime += num(p.productionTime) * l.quantity;
@@ -98,9 +91,6 @@ export function kitTotals(
 
   return {
     lines,
-    componentsCost,
-    extrasCost,
-    assemblyCost,
     totalCost,
     grossPrice,
     discountPct,

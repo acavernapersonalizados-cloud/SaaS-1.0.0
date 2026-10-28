@@ -148,11 +148,7 @@ export interface Product {
   kitItems?: Array<{ productId: string; quantity: number }>;
   /** Desconto opcional do kit (%) sobre a soma dos preços dos produtos. */
   kitDiscountPct?: number;
-  /** Custos extras do kit em R$ (caixa, laço, cartão…). */
-  kitExtraCost?: number;
-  /** Tempo de montagem do kit (min), cobrado pelo valor da hora da loja. */
-  kitAssemblyMin?: number;
-  /** Gravados: custo do kit (produtos + extras + montagem) e soma dos preços dos produtos. Mudam só pelo botão. */
+  /** Gravados: custo do kit (soma dos custos dos produtos) e soma dos preços dos produtos. Mudam só pelo botão. */
   kitCostUnit?: number;
   kitPriceUnit?: number;
 }
