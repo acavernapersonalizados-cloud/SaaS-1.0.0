@@ -37,13 +37,13 @@
 
 **Onde paramos (28/10/2026):**
 
-- No ar (`index-Cib04mRA.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14, 17 e 18, e as mensagens de foto. 9C desligada.
+- No ar (`index-oHmxlse3.js`, 28/10): Etapas 0 a 9, Estacionamento 2 a 14 e 17 a 19, e as mensagens de foto. 9C desligada.
 - **Item 14 aprovado e publicado, com suas decisões:** Papelaria Personalizada → Papelaria; "Serviços" vira oficial na
   A Caverna; o "60" você resolve na ferramenta; renomear PRESENTES ELEGANTES e cesta. Falta: backup e organizar os dados.
 - **Foto (`storage/unauthorized`) diagnosticada:** falha passageira da conta da sua esposa (T&N, 27/10 ~20h50; às 20h53
   subiu). Publicado: mensagens em português (foto, galeria, logo) e nova tentativa com o login renovado.
-- **17 e 18 publicados:** WhatsApp só no clique (regra do 55); preço manual por item no orçamento (Pix; crédito ÷ 0,95).
-  Próximo: 19 (Kit) → 20 (lembrete de produção) → 15 → 16, cada um com riscos e seu aprovado.
+- **17 a 19 publicados** (WhatsApp no clique; preço manual por item; Kit). **Achado:** aprovar orçamento não cria a reserva
+  de estoque desde 17/10 (regra nega ler a reserva que ainda não existe); a baixa ao finalizar funciona. Próximo: 20 → 15 → 16.
 - Falta você: "Atualizar agora"; "Atualizar preço" na Caneca Mágica; instalar o app e ver o ícone "P".
 
 ## Entregue
@@ -95,7 +95,7 @@ O que cada etapa trouxe para quem usa o app:
 14. ✅ Categorias organizadas (publicado em 27/10/2026; a organização dos dados reais é você, pela ferramenta).
 17. ✅ Histórico de Orçamentos: mudar o status não abre o WhatsApp sozinho; botão "Enviar no WhatsApp" (publicado em 28/10/2026).
 18. ✅ Orçamento: preço manual por item (opcional), com lucro real e aviso abaixo do custo ou da meta (publicado em 28/10/2026).
-19. Produtos Kit: montar com produtos já cadastrados (com quantidade); custo e preço = soma; desconto opcional.
+19. ✅ Produtos Kit: produtos já cadastrados, custos extras e montagem, desconto (publicado em 28/10/2026).
 20. Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard.
 15. Catálogo público com cara de loja: bonito no celular, WhatsApp por produto e preço Pix/crédito (antes, 2 ou 3 propostas).
 16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
@@ -813,6 +813,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 19. **Produtos Kit** (pedido em 28/10/2026): montar o kit escolhendo produtos já cadastrados, com quantidade; custo e
     preço do kit = soma dos produtos escolhidos, sem refazer cálculos; desconto opcional do kit; baixa de estoque dos
     materiais dos produtos do kit.
+    ✅ **Feito e publicado em 28/10/2026:** "Este produto é um Kit" no cadastro (lib/kit.ts, ProductKitSection.tsx):
+    produtos com quantidade, custos extras do kit (R$), tempo de montagem (min × valor da hora) e desconto (%); custo
+    = produtos + extras + montagem; preço = soma dos preços − desconto; lucro, margem e aviso abaixo do custo. Grava
+    custo, preço, materiais (para a baixa) e tempo; produto mudado depois → aviso e "Atualizar pela soma atual". Kit
+    não entra em kit. No orçamento o kit sai pelo preço do kit (markup = preço ÷ custo; com taxa, mesmo lucro em R$).
+    346 testes, lint, build e emulador ok (baixa ao finalizar: Caneca −2, Argola −10).
 20. **Lembrete de produção** (pedido em 28/10/2026): quando o orçamento entra "Em produção", calcular o prazo pelo tempo
     de produção de cada produto e mostrar no painel de Produção e no Dashboard (prazo, "atrasado" em vermelho, "vence
     hoje" em amarelo). Notificação push com o app fechado fica para a Etapa 10 (precisa de servidor).
