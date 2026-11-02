@@ -44,7 +44,11 @@ export function periodStart(period: RankingPeriod, now = new Date()): string | n
  */
 export function salesRanking(
   quotes: QuoteFields[],
-  { since = null, sort = 'quantity', currentNames = {} }: {
+  {
+    since = null,
+    sort = 'quantity',
+    currentNames = {},
+  }: {
     since?: string | null;
     sort?: RankingSort;
     currentNames?: Record<string, string>;

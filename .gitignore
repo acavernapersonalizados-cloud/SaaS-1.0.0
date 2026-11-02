@@ -43,3 +43,6 @@ npm-debug.log*
 
 # Hash das mensagens enviadas ao Claude (hook que bloqueia mensagem repetida)
 .claude/prompt-history.json
+
+# Configuração local de servidores MCP do Claude Code (ex.: 21st); nunca vai para o GitHub
+.mcp.json
