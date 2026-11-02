@@ -49,9 +49,12 @@
 - Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
 - **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
   29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
-- **2/11:** 21A (lotes: entradas, baixa e reserva) feito, não publicado.
-- **Próximo: 21B (avisos e "Descartar lote") → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16
-  era só nosso.
+- **2/11:** 21A (lotes: entradas, baixa, reserva e "Alterar validade") fechado, não publicado.
+- **Próximo: 24 (tempo da Calculadora 3D em minutos) → 21B (avisos e "Descartar lote") → 22 (lista de separação) →
+  16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
+  h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
+  do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
 
 ## Entregue
 
@@ -872,6 +875,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     não conta) e baixa do orçamento finalizado (o movimento registra os lotes). A reserva guarda o "lote a pegar",
     descontando o que outros orçamentos já reservaram. Sem mudança nas regras do banco. 371 testes, lint, build;
     emulador: entradas, "−", duas reservas, baixa e compra conferidas no banco; 390 px e computador.
+    **Ajuste do 21A (2/11/2026, seu pedido):** "Alterar validade" em cada lote do Estoque (inteiro ou parte; mesma
+    data junta; vazio = sem validade; data passada avisa e o lote fica vencido, em vermelho). O lote "sem validade" do
+    estoque antigo tem código fixo. 9 casos conferidos no emulador em 390 px: dividir, inteiro, juntar, data passada,
+    voltar a sem validade, quantidade 0/negativa/maior bloqueada, baixa pela ordem, lote reservado com data alterada
+    (a baixa segue a ordem do dia) e outra loja sem acesso (403 para ler, listar e alterar). 373 testes, lint, build.
     **Falta (21B):** avisos amarelo/vermelho no Estoque e no Dashboard, prazo do aviso por loja, "Descartar lote".
 22. **Lista de separação por pedido** (pedido em 2/11/2026): insumos de todos os itens somados × quantidade, kits
     abertos nos seus produtos, agrupados, com caixa para marcar, lote a pegar (do 21) e opção de imprimir/PDF. Também
