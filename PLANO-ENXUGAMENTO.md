@@ -9,6 +9,9 @@
 5. **REGRA FIXA (24/10/2026): o trabalho "founder" é um projeto SEPARADO** (fica em `C:\caverna-founder\`) e
    **nunca se mistura com o PrecificaAteliê**. Aqui não se lê, não se cita e não se usa nada da pasta `founder/` nem
    das sessões "founder".
+6. **REGRA FIXA (2/11/2026): esta pasta é só do PrecificaAteliê. Outros projetos (founder, Beleza em Dia, testes de
+   design/21st.dev etc.) ficam em pastas próprias e nunca instalam pacotes nem MCP aqui.** (O `.mcp.json` do 21st,
+   criado aqui em 29/10, foi para `C:\outros-projetos\21st-mcp\`.)
 
 ## Rota
 
