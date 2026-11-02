@@ -40,8 +40,8 @@
 
 **Onde paramos (2/11/2026):**
 
-- No ar: `index-aDmjRhxd.js` (2/11/2026: itens 23, 21A, 24 e 21B). Etapas 0 a 9 e Estacionamento 2 a 15, 17 a 21, 23 e
-  24. 9C desligada.
+- No ar: `index-Bij0dF8U.js` (2/11/2026: itens 23, 21A, 24, 21B e 25). Etapas 0 a 9 e Estacionamento 2 a 15, 17 a 21
+  e 23 a 25. 9C desligada.
 - **Correção urgente (28/10):** o catálogo público não oferece mais "instalar o sistema" ao cliente (sem manifesto e
   sem service worker lá); o painel continua instalável. Conferido no site, nos dois.
 - **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
@@ -52,8 +52,9 @@
   29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
 - **2/11:** 21A (lotes: entradas, baixa, reserva e "Alterar validade") fechado, não publicado.
 - **2/11:** 21A + 24 + 21B publicados (só hosting, `index-aDmjRhxd.js`).
-- **Próximo: 22 (lista de separação) → 16 (IA, por último).** Pendente de você: backup do site real para eu listar os
-  trabalhos 3D que podem ter o erro antigo do G-code. O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 25 (quantidade fracionada) publicado (`index-Bij0dF8U.js`). Lista dos trabalhos 3D: reimportar
+  "Presépio Simples" e "Brinquedo sensorial" (A Caverna).
+- **Próximo: 22 (lista de separação, opção B: caixas gravadas no orçamento) → 16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
