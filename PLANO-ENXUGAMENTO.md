@@ -40,8 +40,8 @@
 
 **Onde paramos (2/11/2026):**
 
-- No ar: `index-Bij0dF8U.js` (2/11/2026: itens 23, 21A, 24, 21B e 25). Etapas 0 a 9 e Estacionamento 2 a 15, 17 a 21
-  e 23 a 25. 9C desligada.
+- No ar: `index-CaCGiIl5.js` (2/11/2026: itens 23, 21, 24, 25 e 22). Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 25.
+  9C desligada. Falta só o 16 (IA).
 - **Correção urgente (28/10):** o catálogo público não oferece mais "instalar o sistema" ao cliente (sem manifesto e
   sem service worker lá); o painel continua instalável. Conferido no site, nos dois.
 - **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
