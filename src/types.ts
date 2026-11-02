@@ -248,6 +248,10 @@ export interface PrintJob extends JobProductFields {
   filamentCostPerKg: number; // BRL
   filamentUsedG: number;
   printTimeH: number;
+  /** Item 24: tempo de impressão em minutos (com fração). Trabalho antigo não tem: vale printTimeH × 60. */
+  printTimeMin?: number;
+  /** Item 24: pós-processamento em minutos. Trabalho antigo não tem: vale postProcessHours × 60. */
+  postProcessMin?: number;
   failureRatePct: number; // 0-100: extra material/time buffer
   quantity: number;
   manualPrice?: number | null;

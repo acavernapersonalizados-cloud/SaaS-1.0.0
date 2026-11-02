@@ -50,11 +50,18 @@
 - **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
   29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
 - **2/11:** 21A (lotes: entradas, baixa, reserva e "Alterar validade") fechado, não publicado.
-- **Próximo: 24 (tempo da Calculadora 3D em minutos) → 21B (avisos e "Descartar lote") → 22 (lista de separação) →
-  16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 24 (tempo da 3D em minutos) feito, não publicado.
+- **Próximo: 21B (avisos e "Descartar lote") → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
+  ✅ **Feito em 2/11/2026 (aprovado com o pós-processamento; não publicado):** tempo de impressão e pós-processamento
+  em "h" + "min" (teclado numérico no celular, "= 5 h 37 min 12 s" embaixo); gravados em minutos (`printTimeMin`,
+  `postProcessMin`) e também em horas (= minutos ÷ 60); trabalho antigo é lido como horas × 60. G-code: segundos
+  exatos, sem o mínimo de 1 h do `;TIME:` (Cura) e lendo decimais ("1.5h" virava 5 h); sem o arredondamento de
+  0,01 h. Conta: minutos ÷ 60, sem arredondar antes do preço. 377 testes, lint, build; emulador em 390 px: 1 h 18 min,
+  G-code 5h37m12s → 5 h 37,2 min, trabalho salvo (78 min / 1,3 h) com o mesmo custo R$ 8,23872 e sugerido
+  R$ 16,47744 nas duas contas; pós 15 min = R$ 5,25.
 
 ## Entregue
 

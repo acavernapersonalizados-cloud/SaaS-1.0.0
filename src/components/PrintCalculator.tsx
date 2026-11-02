@@ -23,6 +23,8 @@ import {
   NO_PRINT_FEES,
   parsePrintGcode,
   printFeesFromChannel,
+  formatMinutes,
+  splitMinutes,
 } from '../lib/printPricing';
 import { channelsOf, findChannel } from '../lib/channels';
 import { machineToKeep } from '../lib/calculators';
@@ -69,6 +71,57 @@ const FILAMENTS = [
   'Personalizado',
 ];
 
+/**
+ * Item 24 (2/11/2026): tempo em "h" e "min" lado a lado (teclado numérico no celular). Guarda minutos; o "min" aceita
+ * fração (os segundos do G-code: 37,2 min = 37 min 12 s).
+ */
+function DurationFields({
+  label,
+  minutes,
+  onChange,
+}: {
+  label: string;
+  minutes: number;
+  onChange: (minutes: number) => void;
+}) {
+  const { h, min } = splitMinutes(minutes);
+  const id = label.toLowerCase().replace(/[^a-z]+/g, '-');
+  const input =
+    'w-full px-3 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm';
+  return (
+    <fieldset className="space-y-1">
+      <legend className="text-xs font-bold text-neutral-600">{label}</legend>
+      <div className="flex items-center gap-2">
+        <input
+          id={`${id}-h`}
+          aria-label={`${label}: horas`}
+          type="number"
+          inputMode="numeric"
+          min="0"
+          step="1"
+          value={h}
+          onChange={e => onChange(Math.max(0, Math.floor(Number(e.target.value) || 0)) * 60 + min)}
+          className={input}
+        />
+        <span className="text-xs font-bold text-neutral-500">h</span>
+        <input
+          id={`${id}-min`}
+          aria-label={`${label}: minutos`}
+          type="number"
+          inputMode="decimal"
+          min="0"
+          step="any"
+          value={min}
+          onChange={e => onChange(h * 60 + Math.max(0, Number(e.target.value) || 0))}
+          className={input}
+        />
+        <span className="text-xs font-bold text-neutral-500">min</span>
+      </div>
+      <p className="text-[10px] text-neutral-400">= {formatMinutes(minutes)}</p>
+    </fieldset>
+  );
+}
+
 export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId: string) => void } = {}) {
   // Etapa 8C, item 4: trabalho salvo vira produto (com confirmação).
   const jobProduct = useJobProduct('print3d', onOpenProduct);
@@ -107,14 +160,15 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [filamentType, setFilamentType] = useState('PLA');
   const [filamentCostPerKg, setFilamentCostPerKg] = useState(80);
   const [filamentUsedG, setFilamentUsedG] = useState(50);
-  const [printTimeH, setPrintTimeH] = useState(2);
+  // Item 24: tempo em minutos (com fração para os segundos do G-code).
+  const [printTimeMin, setPrintTimeMin] = useState(120);
   const [failureRatePct, setFailureRatePct] = useState(5);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.print3d.hourlyRate);
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.print3d.markupPct);
   const [electricityRate, setElectricityRate] = useState(CALCULATOR_DEFAULTS.print3d.electricityRate);
   const [manualPrice, setManualPrice] = useState<number | null>(null);
-  const [postProcessHours, setPostProcessHours] = useState(0);
+  const [postProcessMin, setPostProcessMin] = useState(0);
   const [packagingCost, setPackagingCost] = useState(0);
   const [extrasCost, setExtrasCost] = useState(0);
   // Canais da tabela da loja (Base de Custos) + "Personalizado".
@@ -196,11 +250,11 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const selectedPrinter = printers.find(p => p.id === selectedPrinterId) ?? null;
 
   const calc = () => {
-    if (!selectedPrinter || printTimeH <= 0) return null;
+    if (!selectedPrinter || printTimeMin <= 0) return null;
     return calculatePrintPrice({
       filamentUsedG,
       filamentCostPerKg,
-      printTimeH,
+      printTimeMin,
       powerConsumptionW: selectedPrinter.powerConsumptionW,
       electricityRate,
       acquisitionCost: selectedPrinter.acquisitionCost,
@@ -211,7 +265,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       bedLifeH: selectedPrinter.bedLifeH,
       maintenanceCostPerH: selectedPrinter.maintenanceCostPerH,
       hourlyRate,
-      postProcessHours,
+      postProcessMin,
       failureRatePct,
       packagingCost,
       extrasCost,
@@ -230,11 +284,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
 
   const handleGcode = async (file: File) => {
     const parsed = parsePrintGcode(await file.text());
-    if (parsed.printTimeH === null && parsed.filamentUsedG === null) {
+    if (parsed.printTimeMin === null && parsed.filamentUsedG === null) {
       addToast('Não encontrei tempo nem peso neste arquivo.', 'error');
       return;
     }
-    if (parsed.printTimeH !== null) setPrintTimeH(Number(parsed.printTimeH.toFixed(2)));
+    // Item 24: tempo exato do arquivo (sem arredondar); fica editável em h e min.
+    if (parsed.printTimeMin !== null) setPrintTimeMin(parsed.printTimeMin);
     if (parsed.filamentUsedG !== null) setFilamentUsedG(Number(parsed.filamentUsedG.toFixed(2)));
     if (!jobName) setJobName(file.name.replace(/\.(gcode|gco|g|3mf)$/i, ''));
     setGcodeFileName(file.name);
@@ -315,7 +370,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   };
 
   const handleSaveJob = async (createProduct = false) => {
-    if (!activeStore || !jobName || !selectedPrinter || printTimeH <= 0) {
+    if (!activeStore || !jobName || !selectedPrinter || printTimeMin <= 0) {
       addToast('Preencha nome e tempo de impressão.', 'error');
       return;
     }
@@ -331,13 +386,16 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         filamentType,
         filamentCostPerKg,
         filamentUsedG,
-        printTimeH,
+        // Item 24: minutos; as horas continuam gravadas (= minutos ÷ 60) para quem lê horas.
+        printTimeMin,
+        printTimeH: printTimeMin / 60,
         failureRatePct,
         quantity,
         manualPrice: manualPrice ?? null,
         notes,
         materialId: materialId || null,
-        postProcessHours,
+        postProcessMin,
+        postProcessHours: postProcessMin / 60,
         packagingCost,
         extrasCost,
         gcodeFileName: gcodeFileName || null,
@@ -638,17 +696,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 <p className="text-[10px] text-neutral-400">Valor do slicer (Cura, PrusaSlicer, etc.)</p>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Tempo de Impressão (horas)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={printTimeH}
-                  onChange={e => setPrintTimeH(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                />
-              </div>
+              <DurationFields label="Tempo de Impressão" minutes={printTimeMin} onChange={setPrintTimeMin} />
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Taxa de Falha / Buffer (%)</label>
@@ -667,11 +715,11 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </div>
             </div>
 
-            {printTimeH > 0 && (
+            {printTimeMin > 0 && (
               <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
-                  {printTimeH}h impressão · {filamentUsedG}g de {filamentType}
+                  {formatMinutes(printTimeMin)} de impressão · {filamentUsedG}g de {filamentType}
                 </span>
               </div>
             )}
@@ -695,7 +743,6 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                       val: markupPct,
                       set: (v: number) => setMarkupPct(clampMarkup(v)),
                     },
-                    { label: 'Pós-processamento (h)', val: postProcessHours, set: setPostProcessHours },
                     { label: 'Embalagem (R$)', val: packagingCost, set: setPackagingCost },
                     { label: 'Outros custos (R$)', val: extrasCost, set: setExtrasCost },
                   ].map(f => (
@@ -710,6 +757,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                       />
                     </div>
                   ))}
+                  {/* Item 24: mão de obra em h + min (antes: horas decimais). */}
+                  <DurationFields label="Pós-processamento" minutes={postProcessMin} onChange={setPostProcessMin} />
                 </div>
               )}
             </div>
@@ -785,7 +834,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <button
                 type="button"
                 onClick={() => handleSaveJob()}
-                disabled={savingJob || !jobName || printTimeH <= 0}
+                disabled={savingJob || !jobName || printTimeMin <= 0}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-40"
               >
                 {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -793,7 +842,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </button>
               <SaveAndCreateProductButton
                 onClick={() => handleSaveJob(true)}
-                disabled={savingJob || !jobName || printTimeH <= 0}
+                disabled={savingJob || !jobName || printTimeMin <= 0}
               />
             </div>
           )}

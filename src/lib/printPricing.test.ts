@@ -1,6 +1,14 @@
 // Impressão 3D — valores do CHECKLIST-TESTES.md (seção 13).
 import { describe, expect, it } from 'vitest';
-import { calculatePrintPrice, NO_PRINT_FEES, parsePrintGcode, printFeesFromChannel } from './printPricing';
+import {
+  calculatePrintPrice,
+  formatMinutes,
+  minutesOf,
+  NO_PRINT_FEES,
+  parsePrintGcode,
+  printFeesFromChannel,
+  splitMinutes,
+} from './printPricing';
 import { DEFAULT_SALES_CHANNELS, findChannel } from './channels';
 
 const shopee = printFeesFromChannel(findChannel(DEFAULT_SALES_CHANNELS, 'shopee'));
@@ -98,6 +106,28 @@ describe('Impressão 3D — canais, lote e preço manual', () => {
   });
 });
 
+describe('Item 24: tempo em minutos', () => {
+  it('1,3 h = 78 min; trabalho antigo (só horas) é lido sem perda', () => {
+    expect(minutesOf(undefined, 1.3)).toBeCloseTo(78, 10);
+    expect(minutesOf(78, 1.3)).toBe(78);
+    expect(splitMinutes(78)).toEqual({ h: 1, min: 18 });
+    expect(formatMinutes(78)).toBe('1 h 18 min');
+  });
+  it('trabalho antigo: em minutos dá o mesmo custo e o mesmo preço que em horas', () => {
+    const { printTimeH: _h, postProcessHours: _p, ...rest } = base;
+    for (const [h, p] of [
+      [2, 0.5],
+      [1.3, 0.25],
+      [5.62, 0],
+    ]) {
+      const old = calculatePrintPrice({ ...rest, printTimeH: h, postProcessHours: p, fees: shopee });
+      const novo = calculatePrintPrice({ ...rest, printTimeMin: h * 60, postProcessMin: p * 60, fees: shopee });
+      expect(novo.totalCostUnit).toBeCloseTo(old.totalCostUnit, 9);
+      expect(novo.suggestedUnit).toBeCloseTo(old.suggestedUnit, 9);
+    }
+  });
+});
+
 describe('Leitura de G-code (seção 13)', () => {
   const grams = (line: string) => parsePrintGcode(`;TIME:3600\n${line}\n`).filamentUsedG;
 
@@ -117,6 +147,17 @@ describe('Leitura de G-code (seção 13)', () => {
   });
   it('tempo no formato "1h 30m 0s" → 1,5 h', () => {
     expect(parsePrintGcode('; estimated printing time (normal mode) = 1h 30m 0s\n').printTimeH).toBe(1.5);
+  });
+  it('item 24: G-code de 5h37m12s → 337,2 min exatos (sem arredondar)', () => {
+    const r = parsePrintGcode('; estimated printing time (normal mode) = 5h 37m 12s\n');
+    expect(r.printTimeMin).toBeCloseTo(337.2, 10);
+    expect(formatMinutes(r.printTimeMin!)).toBe('5 h 37 min 12 s');
+    expect(splitMinutes(r.printTimeMin!)).toEqual({ h: 5, min: 37.2 });
+    expect(parsePrintGcode(';TIME:20232\n').printTimeMin).toBeCloseTo(337.2, 10);
+  });
+  it('item 24: Cura com menos de 1 h não vira 1 h; "1.5h" é 1,5 h (antes virava 5 h)', () => {
+    expect(parsePrintGcode(';TIME:1800\n').printTimeMin).toBe(30);
+    expect(parsePrintGcode('; Print time: 1.5h\n').printTimeMin).toBe(90);
   });
   it('arquivo sem tempo nem peso → null', () => {
     const r = parsePrintGcode('G1 X0 Y0\n');

@@ -31,10 +31,38 @@ export const printFeesFromChannel = (channel: SalesChannel | undefined): PrintCh
 
 const safe = (value: number) => (Number.isFinite(value) && value >= 0 ? value : 0);
 
+/**
+ * Item 24 (2/11/2026): o tempo da 3D é em MINUTOS (com fração, para os segundos do G-code). Trabalho salvo antes só
+ * tem horas: horas × 60, sem perda (1,3 h = 78 min).
+ */
+export const minutesOf = (minutes: number | null | undefined, hours: number | null | undefined) =>
+  minutes !== null && minutes !== undefined && Number.isFinite(Number(minutes))
+    ? Number(minutes)
+    : (Number(hours) || 0) * 60;
+
+/** Minutos → campos "h" e "min" da tela (o "min" pode ter fração: 37,2 min = 37 min 12 s). */
+export function splitMinutes(minutes: number): { h: number; min: number } {
+  const total = Math.max(0, Number(minutes) || 0);
+  const h = Math.floor(total / 60);
+  return { h, min: Math.round((total - h * 60) * 1e6) / 1e6 };
+}
+
+/** "5 h 37 min 12 s" (sem as partes zeradas; 0 → "0 min"). */
+export function formatMinutes(minutes: number): string {
+  const totalSec = Math.round(Math.max(0, Number(minutes) || 0) * 60);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const parts = [h ? `${h} h` : '', m ? `${m} min` : '', s ? `${s} s` : ''].filter(Boolean);
+  return parts.length ? parts.join(' ') : '0 min';
+}
+
 export function calculatePrintPrice(input: {
   filamentUsedG: number;
   filamentCostPerKg: number;
-  printTimeH: number;
+  /** Tempo de impressão em minutos (item 24). Sem ele, vale `printTimeH`. */
+  printTimeMin?: number;
+  printTimeH?: number;
   powerConsumptionW: number;
   electricityRate: number;
   acquisitionCost?: number;
@@ -45,7 +73,9 @@ export function calculatePrintPrice(input: {
   bedLifeH: number;
   maintenanceCostPerH: number;
   hourlyRate: number;
-  postProcessHours: number;
+  /** Pós-processamento (mão de obra) em minutos (item 24). Sem ele, vale `postProcessHours`. */
+  postProcessMin?: number;
+  postProcessHours?: number;
   failureRatePct: number;
   packagingCost: number;
   extrasCost: number;
@@ -55,7 +85,9 @@ export function calculatePrintPrice(input: {
   manualPrice: number | null;
   fees: PrintChannelFees;
 }) {
-  const hours = safe(input.printTimeH);
+  // Minutos ÷ 60, sem arredondar antes do preço final.
+  const hours = safe(minutesOf(input.printTimeMin, input.printTimeH)) / 60;
+  const postProcessHours = safe(minutesOf(input.postProcessMin, input.postProcessHours)) / 60;
   const failFactor = 1 + safe(input.failureRatePct) / 100;
   const energyCost = energyFor(safe(input.powerConsumptionW), hours, safe(input.electricityRate)) * failFactor;
   const hotendWear = wearCost(safe(input.hotendReplacementCost), safe(input.hotendLifeH), hours) * failFactor;
@@ -63,7 +95,7 @@ export function calculatePrintPrice(input: {
   const machineWear = wearCost(safe(input.acquisitionCost ?? 0), safe(input.lifetimeHours ?? 0), hours) * failFactor;
   const maintenance = safe(input.maintenanceCostPerH) * hours * failFactor;
   const filamentCost = (safe(input.filamentUsedG) / 1000) * safe(input.filamentCostPerKg) * failFactor;
-  const laborCost = laborCostFromHours(safe(input.hourlyRate), safe(input.postProcessHours)) * failFactor;
+  const laborCost = laborCostFromHours(safe(input.hourlyRate), postProcessHours) * failFactor;
   const totalCostUnit =
     energyCost +
     hotendWear +
@@ -106,24 +138,28 @@ export function calculatePrintPrice(input: {
   };
 }
 
-function parseDuration(raw: string): number | null {
+/**
+ * Duração do slicer em SEGUNDOS exatos. Item 24: ";TIME:1800" (Cura) era lido com mínimo de 1 h (agora 30 min) e
+ * "1.5h" virava 5 h (agora 1,5 h).
+ */
+function parseDurationSeconds(raw: string): number | null {
   const value = raw.trim();
-  if (/^\d+$/.test(value)) return Math.max(1, Number(value) / 3600);
+  if (/^\d+(\.\d+)?$/.test(value)) return Number(value);
   let seconds = 0;
   let found = false;
   for (const [pattern, multiplier] of [
-    [/(\d+)\s*d/i, 86400],
-    [/(\d+)\s*h/i, 3600],
-    [/(\d+)\s*m(?!m)/i, 60],
-    [/(\d+)\s*s/i, 1],
+    [/(\d+(?:[.,]\d+)?)\s*d/i, 86400],
+    [/(\d+(?:[.,]\d+)?)\s*h/i, 3600],
+    [/(\d+(?:[.,]\d+)?)\s*m(?!m)/i, 60],
+    [/(\d+(?:[.,]\d+)?)\s*s/i, 1],
   ] as const) {
     const match = value.match(pattern);
     if (match?.[1]) {
-      seconds += Number(match[1]) * multiplier;
+      seconds += Number(match[1].replace(',', '.')) * multiplier;
       found = true;
     }
   }
-  return found ? seconds / 3600 : null;
+  return found ? seconds : null;
 }
 
 // Soma o peso de cada extrusora. Separadores: ";" sempre; "," quando os
@@ -149,14 +185,16 @@ export function parsePrintGcode(content: string) {
     /;\s*Print time\s*:\s*([^\n\r]+)/i,
     /;\s*model printing time\s*:\s*([^\n\r]+)/i,
   ];
-  let printTimeH: number | null = null;
+  let seconds: number | null = null;
   for (const pattern of timePatterns) {
     const match = sample.match(pattern);
     if (match?.[1]) {
-      printTimeH = parseDuration(match[1]);
-      if (printTimeH !== null) break;
+      seconds = parseDurationSeconds(match[1]);
+      if (seconds !== null) break;
     }
   }
+  const printTimeMin = seconds !== null && seconds > 0 ? seconds / 60 : null;
+  const printTimeH = printTimeMin !== null ? printTimeMin / 60 : null;
   const gramsMatch =
     sample.match(/;\s*(?:total\s+)?filament(?:[_ ](?:used|weight))?\s*\[g\]\s*[:=]\s*([0-9., ;]+)/i) ??
     sample.match(/;\s*Filament\s+weight\s*=\s*([0-9., ;]+)/i) ??
@@ -166,5 +204,10 @@ export function parsePrintGcode(content: string) {
     sample.match(/;\s*generated by\s+([^\n\r,]+)/i)?.[1]?.trim() ??
     sample.match(/;\s*(PrusaSlicer|SuperSlicer|OrcaSlicer|BambuStudio|Cura)[^\n]*/i)?.[1] ??
     null;
-  return { printTimeH, filamentUsedG: filamentUsedG && filamentUsedG > 0 ? filamentUsedG : null, slicer };
+  return {
+    printTimeMin,
+    printTimeH,
+    filamentUsedG: filamentUsedG && filamentUsedG > 0 ? filamentUsedG : null,
+    slicer,
+  };
 }
