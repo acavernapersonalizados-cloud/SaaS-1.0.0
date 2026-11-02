@@ -3,6 +3,7 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, StockReservation } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { salesRanking } from '../lib/salesRanking';
 import { ProductionDeadline } from './ProductionDeadline';
 import { useStore } from '../contexts/StoreContext';
 import { BarChart3, Package, Clock, CheckCircle2, XCircle, AlertCircle, TrendingUp } from 'lucide-react';
@@ -66,18 +67,10 @@ export function ProductionPanel() {
     });
   });
 
-  // Top produtos vendidos
-  const productCount: Record<string, number> = {};
-  quotes
-    .filter(q => ['Aprovado', 'Em produção', 'Finalizado'].includes(q.status || ''))
-    .forEach(q => {
-      (q.items || []).forEach(item => {
-        productCount[item.productName] = (productCount[item.productName] || 0) + (item.quantity || 1);
-      });
-    });
-  const topProducts = Object.entries(productCount)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+  // Top produtos vendidos (mesma conta do Dashboard, Estacionamento item 23)
+  const topProducts = salesRanking(quotes)
+    .slice(0, 5)
+    .map(r => [r.name, r.quantity] as const);
 
   if (!activeStore) return <div className="p-10 text-center text-neutral-400">Selecione uma loja.</div>;
   if (loading) return <div className="animate-pulse h-96 bg-neutral-200 rounded-2xl" />;

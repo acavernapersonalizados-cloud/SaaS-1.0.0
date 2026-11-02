@@ -44,8 +44,9 @@
   úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
   (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
 - Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
-- **Próximo (2/11/2026): 23 (ranking dos mais vendidos) → 21 (validade por lotes) → 22 (lista de separação) → 16
-  (IA, por último).** O prazo de 2/11 do 16 era só nosso. Emulador desligado com os dados exportados.
+- **2/11:** 23 (ranking dos mais vendidos) feito, ainda não publicado.
+- **Próximo: 21 (validade por lotes) → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16 era só
+  nosso.
 
 ## Entregue
 
@@ -845,6 +846,13 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 
 23. **Ranking dos mais vendidos** (pedido em 2/11/2026): conferir se existe e se funciona com dados reais (por produto,
     quantidade e faturamento, filtro por período, por loja). Se não existir ou estiver errado, propor a implantação.
+    ✅ **Feito em 2/11/2026 (não publicado):** existiam dois rankings incompletos (o do Dashboard somava pendentes e
+    cancelados e só os 100 últimos; nenhum tinha período; os dois juntavam pelo nome). Agora uma conta só
+    (lib/salesRanking.ts): Aprovado, Em produção e Finalizado, por produto (nome atual do cadastro), quantidade e
+    faturamento no Pix, 30 dias / 90 dias / este ano / tudo (pela data do orçamento), ordenar por quantidade ou
+    faturamento, total no rodapé, loja ativa. Tabela "Mais Vendidos" no Dashboard (saiu o gráfico e, com ele, o pacote
+    de gráficos do app); o Painel de Produção usa a mesma conta. 363 testes, lint, build; emulador em 390 px e no
+    computador, conferido com o banco e com o filtro de período.
 21. **Validade por lotes** (pedido em 2/11/2026): o produto/insumo continua um só no cadastro; cada entrada de estoque
     vira um lote com quantidade e data de validade. A baixa e a reserva consomem primeiro o lote que vence primeiro.
     Avisos de "vence em X dias" (amarelo, prazo configurável por loja) e "vencido" (vermelho) no estoque e no

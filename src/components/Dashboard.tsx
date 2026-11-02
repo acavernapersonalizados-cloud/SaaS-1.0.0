@@ -6,8 +6,8 @@ import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { deadlineStatus } from '../lib/productionDeadline';
 import { ProductionDeadline } from './ProductionDeadline';
+import { SalesRanking } from './SalesRanking';
 import { useStore } from '../contexts/StoreContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   TrendingUp,
   DollarSign,
@@ -94,20 +94,6 @@ export function Dashboard() {
 
   // ── Low stock ─────────────────────────────────────────────────────────────
   const lowStockItems = materials.filter(isLowStock);
-
-  // ── Chart: top products by revenue ───────────────────────────────────────
-  const productRevenue: Record<string, number> = {};
-  quotes.forEach(q =>
-    (q.items || []).forEach(item => {
-      productRevenue[item.productName] = (productRevenue[item.productName] || 0) + item.totalPrice;
-    }),
-  );
-  const chartData = Object.entries(productRevenue)
-    .map(([name, value]) => ({ name: name.length > 16 ? name.slice(0, 14) + '…' : name, value }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 6);
-
-  const COLORS = ['#171717', '#404040', '#525252', '#737373', '#a3a3a3', '#d4d4d4'];
 
   if (loading)
     return (
@@ -253,52 +239,8 @@ export function Dashboard() {
 
       {/* ── Gráficos ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Produtos por faturamento */}
-        <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
-          <h2 className="text-base font-bold text-neutral-900 mb-5">Top Produtos por Faturamento</h2>
-          {chartData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f5f5f5" />
-                  <XAxis
-                    type="number"
-                    tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`}
-                    tick={{ fontSize: 10 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    width={90}
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    formatter={v => formatCurrency(Number(v ?? 0))}
-                    contentStyle={{
-                      borderRadius: '12px',
-                      border: 'none',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-                      fontSize: 12,
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={18}>
-                    {chartData.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-64 flex items-center justify-center text-neutral-400 italic text-sm">
-              Nenhum orçamento aprovado.
-            </div>
-          )}
-        </div>
+        {/* Mais vendidos (Estacionamento item 23): só vendas, por período */}
+        {activeStore && <SalesRanking storeId={activeStore.id} products={products} />}
 
         {/* Saúde do catálogo */}
         <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
