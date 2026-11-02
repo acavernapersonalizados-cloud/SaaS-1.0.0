@@ -6,6 +6,7 @@ import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { formatCurrency } from '../lib/utils';
+import { formatQuantity } from '../lib/quantity';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import { calcLaserJob, laserStockMaterialCost, laserTotalTimeMin, machineToKeep } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
@@ -569,7 +570,8 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                   <option value="">Sem vínculo com estoque (custo digitado)</option>
                   {stockMaterials.map(m => (
                     <option key={m.id} value={m.id}>
-                      {m.name} · {formatCurrency(m.unitCost)}/{m.unit} · saldo {m.stockQuantity} {m.unit}
+                      {m.name} · {formatCurrency(m.unitCost)}/{m.unit} · saldo {formatQuantity(m.stockQuantity)}{' '}
+                      {m.unit}
                     </option>
                   ))}
                 </select>

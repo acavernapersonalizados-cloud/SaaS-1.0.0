@@ -4,6 +4,7 @@ import React from 'react';
 import { Material, Product } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { CategoryPicker } from './CategoryPicker';
+import { QuantityInput } from './QuantityInput';
 import { Plus, Search, Trash2, X } from 'lucide-react';
 
 type NewFinishing = { name: string; description: string; additionalValue: number };
@@ -249,12 +250,14 @@ export function ProductFormModal({
                           {mat?.unit} · {formatCurrency(mat?.unitCost || 0)}/un
                         </p>
                       </div>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={pm.quantity || ''}
+                      {/* Item 25: consumo com fração (5 g de filamento = 0,005 kg), kg ou g. */}
+                      <QuantityInput
+                        compact
+                        ariaLabel={`Quantidade de ${mat?.name ?? 'material'}`}
+                        unit={mat?.unit}
+                        value={pm.quantity || null}
                         readOnly={locked}
-                        onChange={e => updateMaterialQuantity(pm.materialId, Number(e.target.value))}
+                        onChange={v => updateMaterialQuantity(pm.materialId, v ?? 0)}
                         className="w-24 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm text-center font-bold outline-none focus:ring-2 focus:ring-neutral-900"
                         placeholder="Qtd"
                       />

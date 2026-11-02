@@ -4,6 +4,8 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
 import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
 import { addToLots, materialLots, stockFields } from '../lib/stockLots';
+import { confirmBigQuantity, formatQuantity } from '../lib/quantity';
+import { QuantityInput } from './QuantityInput';
 import { PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
@@ -269,6 +271,12 @@ export function PurchaseList() {
       addToast('Escolha se o valor informado é o preço por unidade ou o valor total pago.', 'error');
       return;
     }
+    // Item 25: trava kg/g (em pacote a quantidade é de pacotes, sem a trava).
+    if (
+      packageSize(materials.find(m => m.id === purchasingItem.materialId)) <= 1 &&
+      !confirmBigQuantity(purchaseForm.qty, purchasingItem.unit)
+    )
+      return;
     setSaving(true);
     try {
       const supplier = purchaseForm.supplierId ? suppliers.find(s => s.id === purchaseForm.supplierId) : null;
@@ -695,19 +703,19 @@ export function PurchaseList() {
                     <option value="">Selecione...</option>
                     {notInList.map(m => (
                       <option key={m.id} value={m.id}>
-                        {m.name} (estoque: {m.stockQuantity ?? 0} {m.unit})
+                        {m.name} (estoque: {formatQuantity(m.stockQuantity ?? 0)} {m.unit})
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-neutral-700">Quantidade a comprar</label>
-                  <input
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    value={manualQty || ''}
-                    onChange={e => setManualQty(Number(e.target.value))}
+                  {/* Item 25: fração com vírgula ou ponto (0,125 kg), kg ou g. */}
+                  <QuantityInput
+                    ariaLabel="Quantidade a comprar"
+                    unit={materials.find(m => m.id === manualMaterialId)?.unit}
+                    value={manualQty || null}
+                    onChange={v => setManualQty(v ?? 0)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-neutral-900"
                   />
                 </div>
@@ -744,12 +752,11 @@ export function PurchaseList() {
                     ? `Pacotes comprados (1 pacote = ${purchasePack} itens)`
                     : `Quantidade comprada (${purchasingItem.unit})`}
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
+                <QuantityInput
+                  ariaLabel="Quantidade comprada"
+                  unit={purchasePack > 1 ? 'pct' : purchasingItem.unit}
                   value={purchaseForm.qty}
-                  onChange={e => setPurchaseForm(f => ({ ...f, qty: Number(e.target.value) }))}
+                  onChange={v => setPurchaseForm(f => ({ ...f, qty: v ?? 0 }))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none font-bold"
                 />
               </div>

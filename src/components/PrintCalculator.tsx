@@ -16,6 +16,7 @@ import { Material, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
+import { formatQuantity } from '../lib/quantity';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
@@ -434,6 +435,20 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
             ...stockFields(taken.lots),
             updatedAt: new Date().toISOString(),
           });
+          // Item 25: a baixa da 3D fica no histórico de movimentos, para conferir depois (gramas → unidade do insumo).
+          transaction.set(doc(collection(db, 'stockMovements')), {
+            storeId: activeStore.id,
+            materialId,
+            materialName: selectedMaterial.name,
+            type: 'deduction',
+            reason: `Impressão 3D: ${jobName}`,
+            quantity: amount,
+            unit: selectedMaterial.unit,
+            filamentUsedG: filamentUsedG * quantity,
+            printJobId: jobRef.id,
+            lots: taken.taken.map(t => ({ expiresAt: t.expiresAt, quantity: t.quantity })),
+            createdAt: new Date().toISOString(),
+          });
           transaction.set(jobRef, payload);
         });
       } else {
@@ -654,7 +669,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                   <option value="">Sem vínculo com estoque</option>
                   {materials.map(item => (
                     <option key={item.id} value={item.id}>
-                      {item.name} · saldo {item.stockQuantity} {item.unit}
+                      {item.name} · saldo {formatQuantity(item.stockQuantity)} {item.unit}
                     </option>
                   ))}
                 </select>

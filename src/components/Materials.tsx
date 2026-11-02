@@ -15,6 +15,8 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency, isLowStock } from '../lib/utils';
 import { addToLots, materialLots, stockFields } from '../lib/stockLots';
+import { confirmBigQuantity } from '../lib/quantity';
+import { QuantityInput } from './QuantityInput';
 import { isPackageMaterial, materialPurchaseQuantity, PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -125,6 +127,15 @@ export function Materials() {
       addToast('Informe a quantidade de itens no pacote (maior que zero).', 'error');
       return;
     }
+    // Item 25: o campo aceita fração e não usa mais a checagem do navegador; vazio não salva (0 vale).
+    if (newMaterial.stockQuantity === undefined || newMaterial.stockQuantity === null) {
+      addToast('Informe o estoque atual (pode ser 0; aceita 0,5).', 'error');
+      return;
+    }
+    // Trava kg/g: 100 ou mais em kg, l ou m pede confirmação, quando o saldo foi digitado agora.
+    const stockChanged =
+      !editingMaterial || Number(editingMaterial.stockQuantity) !== Number(newMaterial.stockQuantity);
+    if (stockChanged && !confirmBigQuantity(Number(newMaterial.stockQuantity), newMaterial.unit)) return;
 
     const quantity = materialPurchaseQuantity(newMaterial);
     // Grava o mesmo de sempre: valor total pago e custo por unidade.
@@ -617,12 +628,12 @@ export function Materials() {
               ) : (
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Quantidade Comprada</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={newMaterial.purchaseQuantity || ''}
-                    onChange={e => setNewMaterial({ ...newMaterial, purchaseQuantity: Number(e.target.value) })}
+                  {/* Item 25: aceita fração com vírgula ou ponto (0,125 kg). */}
+                  <QuantityInput
+                    ariaLabel="Quantidade Comprada"
+                    unit={newMaterial.unit}
+                    value={newMaterial.purchaseQuantity || null}
+                    onChange={v => setNewMaterial({ ...newMaterial, purchaseQuantity: v ?? 0 })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 10"
                   />
@@ -642,29 +653,23 @@ export function Materials() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Estoque Atual</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    // Estacionamento item 10: estoque 0 é um valor válido (antes o 0 virava campo vazio e não salvava).
-                    value={newMaterial.stockQuantity ?? ''}
-                    onChange={e =>
-                      setNewMaterial({
-                        ...newMaterial,
-                        stockQuantity: e.target.value === '' ? undefined : Number(e.target.value),
-                      })
-                    }
+                  {/* Estacionamento item 10: estoque 0 é um valor válido. Item 25: com fração (0,5 kg), kg ou g. */}
+                  <QuantityInput
+                    ariaLabel="Estoque Atual"
+                    unit={newMaterial.unit}
+                    value={newMaterial.stockQuantity ?? null}
+                    onChange={v => setNewMaterial({ ...newMaterial, stockQuantity: v ?? undefined })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 50"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Estoque Mínimo (opcional)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={newMaterial.minStockQuantity || ''}
-                    onChange={e => setNewMaterial({ ...newMaterial, minStockQuantity: Number(e.target.value) })}
+                  <QuantityInput
+                    ariaLabel="Estoque Mínimo"
+                    unit={newMaterial.unit}
+                    value={newMaterial.minStockQuantity || null}
+                    onChange={v => setNewMaterial({ ...newMaterial, minStockQuantity: v ?? 0 })}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                     placeholder="Ex: 10"
                   />

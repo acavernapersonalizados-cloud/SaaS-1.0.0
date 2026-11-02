@@ -859,7 +859,22 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     loja quando falta foto; preço no Pix/crédito como a loja escolheu; botão "Pedir" no WhatsApp em cada produto, sempre
     no rodapé do cartão (regra do 55); "pacote com N un" no lugar de "kit N un". 355 testes, lint, build; conferido em
     390 px e no computador.
-**Ordem a partir de 2/11/2026 (seu pedido): 23 → 21 → 22 → 16 (a IA continua por último).**
+**Ordem a partir de 2/11/2026 (seu pedido): 23 → 21 → 24 → 25 → 22 → 16 (a IA continua por último).**
+
+25. **Quantidade fracionada no estoque** (correção urgente, 2/11/2026): o "Estoque Atual" do cadastro só aceitava
+    inteiro (campo sem casas, dentro de formulário) e o Estoque não tinha saída com quantidade.
+    ✅ **Feito e publicado em 2/11/2026 (só hosting):** campo único de quantidade (lib/quantity.ts,
+    QuantityInput.tsx): vírgula ou ponto ("0,5", "0.5", "0,125"; "1.000" = 1000), teclado decimal, botão kg/g (l/ml,
+    m/cm) com o equivalente embaixo, trava "500 kg = 500.000 g, confirma?" para 100 ou mais em kg/l/m. Usado no
+    cadastro (atual, mínimo, comprada), Entrada, Saída (nova: motivo uso/perda/ajuste, sai pela ordem dos lotes,
+    grava movimento "exit"), Alterar validade, Lista de Compras e consumo de produto/papelaria/cesta (agora aceita
+    0,005 kg). A baixa da 3D grava movimento ("deduction", "Impressão 3D: …", gramas e lotes). 386 testes, lint,
+    build; emulador em 390 px: cadastro em g (1.000 g = 1 kg), 1 kg − 500 g = 0,5 kg, entrada 0,25 → 0,75, lote de
+    0,75 dividido (0,25 + 0,5), saída de 5 kg recusada, trava de 500 kg, 3D de 120 g baixou 0,12 kg do lote que vence
+    primeiro com movimento gravado.
+    **Backup de 2/11 (só leitura):** as duas lojas estão nele; 2 trabalhos 3D (A Caverna, Creality Print, programa
+    não reconhecido): "Presépio Simples" gravado 4 h, arquivo diz 3h39m (sugerido R$ 39,12 → R$ 36,62, −R$ 2,50);
+    "Brinquedo sensorial" gravado 3,58 h, arquivo 3h35m (R$ 43,05 → R$ 43,07, +R$ 0,02). Reimportar os dois.
 
 23. **Ranking dos mais vendidos** (pedido em 2/11/2026): conferir se existe e se funciona com dados reais (por produto,
     quantidade e faturamento, filtro por período, por loja). Se não existir ou estiver errado, propor a implantação.

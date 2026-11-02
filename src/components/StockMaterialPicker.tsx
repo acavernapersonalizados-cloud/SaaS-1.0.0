@@ -2,6 +2,8 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { Material } from '../types';
 import { formatCurrency } from '../lib/utils';
+import { QuantityInput } from './QuantityInput';
+import { formatQuantity } from '../lib/quantity';
 
 interface StockMaterialPickerProps {
   /** Toda a matéria-prima da loja (para a mensagem de lista vazia). */
@@ -66,18 +68,20 @@ export function StockMaterialPicker({
           <option value="">{`Selecione o ${noun} do estoque...`}</option>
           {filtered.map(m => (
             <option key={m.id} value={m.id}>
-              {m.name} — {formatCurrency(Number(m.unitCost) || 0)}/{m.unit} (estoque: {m.stockQuantity ?? 0})
+              {m.name} — {formatCurrency(Number(m.unitCost) || 0)}/{m.unit} (estoque:{' '}
+              {formatQuantity(m.stockQuantity ?? 0)})
             </option>
           ))}
         </select>
-        <input
-          type="number"
-          min="0.01"
-          step="0.01"
+        {/* Item 25: fração com vírgula ou ponto, kg ou g. */}
+        <QuantityInput
+          compact
+          ariaLabel="Quantidade"
+          unit={selected?.unit}
           placeholder="Qtd"
-          value={quantity || ''}
-          onChange={e => onQuantity(Number(e.target.value))}
-          className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"
+          value={quantity || null}
+          onChange={v => onQuantity(v ?? 0)}
+          className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-xs outline-none"
         />
         <button
           type="button"
@@ -93,7 +97,7 @@ export function StockMaterialPicker({
           className={`text-[11px] font-bold ${(selected.stockQuantity || 0) < quantity ? 'text-amber-600' : 'text-neutral-500'}`}
         >
           {selected.name}: {formatCurrency(Number(selected.unitCost) || 0)}/{selected.unit} · estoque disponível{' '}
-          {selected.stockQuantity ?? 0} {selected.unit}
+          {formatQuantity(selected.stockQuantity ?? 0)} {selected.unit}
           {(selected.stockQuantity || 0) < quantity ? ' — quantidade acima do estoque atual' : ''}
         </p>
       )}
