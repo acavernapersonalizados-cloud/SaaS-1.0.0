@@ -15,6 +15,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
+import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
@@ -367,10 +368,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
           const materialRef = doc(db, 'materials', materialId);
           const snapshot = await transaction.get(materialRef);
           if (!snapshot.exists()) throw new Error('Material selecionado não encontrado.');
-          const currentStock = Number(snapshot.data().stockQuantity) || 0;
-          if (currentStock < amount) throw new Error('Estoque insuficiente para registrar esta impressão.');
+          // Item 21: sai do lote não vencido que vence antes; lote vencido não conta.
+          const today = todayISO();
+          const taken = takeFromLots(materialLots(snapshot.data() as Material, today), amount, today);
+          if (taken.missing > 0) throw new Error('Estoque insuficiente para registrar esta impressão.');
           transaction.update(materialRef, {
-            stockQuantity: currentStock - amount,
+            ...stockFields(taken.lots),
             updatedAt: new Date().toISOString(),
           });
           transaction.set(jobRef, payload);

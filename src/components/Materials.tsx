@@ -14,6 +14,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency, isLowStock } from '../lib/utils';
+import { addToLots, materialLots, stockFields } from '../lib/stockLots';
 import { isPackageMaterial, materialPurchaseQuantity, PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -57,6 +58,8 @@ export function Materials() {
   // Como o preço foi digitado: por unidade ou valor total pago. Começa sem escolha (não salva sem escolher);
   // na edição abre em "valor total pago", que é o que está gravado.
   const [priceMode, setPriceMode] = useState<PriceInputMode | null>(null);
+  // Estacionamento item 21: validade do estoque inicial (só no cadastro novo; depois, pela "Entrada" do Estoque).
+  const [initialExpiresAt, setInitialExpiresAt] = useState('');
 
   useEffect(() => {
     if (!activeStore) {
@@ -137,7 +140,14 @@ export function Materials() {
           purchaseQuantity: quantity,
           supplierId: newMaterial.supplierId || null,
           categoryIds: newMaterial.categoryIds || [],
-          stockQuantity: Number(newMaterial.stockQuantity) || 0,
+          // Item 21: o saldo digitado manda; os lotes acompanham (a diferença entra "sem validade" ou sai na ordem).
+          ...stockFields(
+            materialLots({
+              stockQuantity: Number(newMaterial.stockQuantity) || 0,
+              stockLots: editingMaterial.stockLots,
+              createdAt: editingMaterial.createdAt,
+            }),
+          ),
           minStockQuantity: Number(newMaterial.minStockQuantity) || 0,
           updatedAt: new Date().toISOString(),
         });
@@ -151,7 +161,8 @@ export function Materials() {
           purchaseQuantity: quantity, // Ensure we store the total quantity
           supplierId: newMaterial.supplierId || null,
           categoryIds: newMaterial.categoryIds || [],
-          stockQuantity: Number(newMaterial.stockQuantity) || 0,
+          // Item 21: o estoque inicial já entra como lote (com a validade, se informada).
+          ...stockFields(addToLots([], Number(newMaterial.stockQuantity) || 0, initialExpiresAt || null)),
           minStockQuantity: Number(newMaterial.minStockQuantity) || 0,
           createdAt: new Date().toISOString(),
         });
@@ -170,6 +181,7 @@ export function Materials() {
       });
       setEditingMaterial(null);
       setPriceMode(null);
+      setInitialExpiresAt('');
       setIsModalOpen(false);
       addToast(editingMaterial ? 'Material atualizado com sucesso!' : 'Material cadastrado com sucesso!', 'success');
     } catch (error) {
@@ -296,6 +308,7 @@ export function Materials() {
         <button
           onClick={() => {
             setPriceMode(null);
+            setInitialExpiresAt('');
             setIsModalOpen(true);
           }}
           className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm"
@@ -657,6 +670,20 @@ export function Materials() {
                   />
                 </div>
               </div>
+              {!editingMaterial && (
+                <div className="space-y-2">
+                  <label htmlFor="initial-expires" className="text-sm font-bold text-neutral-700">
+                    Validade do estoque atual (opcional)
+                  </label>
+                  <input
+                    id="initial-expires"
+                    type="date"
+                    value={initialExpiresAt}
+                    onChange={e => setInitialExpiresAt(e.target.value)}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                  />
+                </div>
+              )}
 
               <div className="sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 pt-4 bg-white border-t border-neutral-100">
                 <button

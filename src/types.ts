@@ -1,3 +1,5 @@
+import type { StockLot } from './lib/stockLots';
+
 export interface Store {
   id: string;
   name: string;
@@ -85,7 +87,10 @@ export interface Material {
   supplierId?: string;
   createdAt: string;
   updatedAt?: string;
+  /** Saldo: a soma dos lotes (Estacionamento item 21). */
   stockQuantity: number;
+  /** Lotes com validade (item 21). Sem o campo, o saldo inteiro é um lote "sem validade" (lib/stockLots.ts). */
+  stockLots?: StockLot[];
   minStockQuantity: number;
   /** Categorias (múltiplas) — ids da coleção `categories` com scope 'material' */
   categoryIds?: string[];
@@ -401,6 +406,8 @@ export interface StockReservation {
     materialId: string;
     materialName: string;
     quantity: number;
+    /** Lotes a pegar, sugeridos na reserva (item 21); a baixa pega pela ordem do dia em que acontece. */
+    lots?: Array<{ expiresAt: string | null; quantity: number }>;
   }>;
   status: ReservationStatus;
   createdAt: string;

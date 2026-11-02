@@ -11,8 +11,9 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, notifyError } from '../firebase';
-import { QuoteStatus, Quote, StockReservation, Product, CostBase } from '../types';
+import { QuoteStatus, Quote, StockReservation, Product, CostBase, Material } from '../types';
 import { productionDeadline } from '../lib/productionDeadline';
+import { materialLots, stockFields, suggestLots, takeFromLots, todayISO } from '../lib/stockLots';
 
 /**
  * Estacionamento item 20: início e prazo de produção do orçamento a partir de "start", com os produtos e a Base de
@@ -90,9 +91,43 @@ async function getActiveReservation(
   }
 }
 
-async function buildReservations(
-  quoteData: Quote,
-): Promise<Array<{ materialId: string; materialName: string; quantity: number }>> {
+type ReservationLine = StockReservation['reservations'][number];
+
+/**
+ * Estacionamento item 21: lotes a pegar em cada linha da reserva. Os outros orçamentos com reserva ativa pegam primeiro
+ * (na mesma ordem de consumo). Se não der para ler, a reserva sai sem a sugestão (o status muda mesmo assim).
+ */
+async function withSuggestedLots(lines: ReservationLine[], storeId: string, quoteId: string) {
+  const reservedByOthers: Record<string, number> = {};
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'stockReservations'), where('storeId', '==', storeId), where('status', '==', 'active')),
+    );
+    for (const d of snap.docs) {
+      if (d.data().quoteId === quoteId) continue;
+      for (const r of (d.data().reservations || []) as ReservationLine[])
+        reservedByOthers[r.materialId] = (reservedByOthers[r.materialId] || 0) + (Number(r.quantity) || 0);
+    }
+  } catch (err) {
+    console.warn('[automations] Other reservations lookup failed:', err);
+  }
+  const today = todayISO();
+  return Promise.all(
+    lines.map(async line => {
+      try {
+        const matSnap = await getDoc(doc(db, 'materials', line.materialId));
+        if (!matSnap.exists()) return line;
+        const lots = materialLots(matSnap.data() as Material, today);
+        const taken = suggestLots(lots, reservedByOthers[line.materialId] || 0, line.quantity, today);
+        return { ...line, lots: taken.map(t => ({ expiresAt: t.expiresAt, quantity: t.quantity })) };
+      } catch {
+        return line;
+      }
+    }),
+  );
+}
+
+async function buildReservations(quoteData: Quote): Promise<ReservationLine[]> {
   const deductions: Record<string, { materialName: string; quantity: number }> = {};
 
   for (const item of quoteData.items || []) {
@@ -138,7 +173,7 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
   // ── 1. CREATE RESERVATION (ID fixo por orçamento: no máximo uma reserva) ──
   if (RESERVE_STATUSES.includes(newStatus) && !RESERVE_STATUSES.includes(previousStatus)) {
     try {
-      const reservations = await buildReservations(quoteData);
+      const reservations = await withSuggestedLots(await buildReservations(quoteData), quoteData.storeId, quoteId);
 
       // Correção de 28/10/2026: a transação lia res_<orçamento> antes de existir, e a regra nega ler um documento
       // que não existe (resource nulo) — a reserva nunca era criada desde 17/10/2026. Agora procura a reserva ativa
@@ -178,10 +213,13 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
     const deductions = reservation ? reservation.reservations : await buildReservations(quoteData);
 
     if (deductions.length > 0) {
+      // Item 21: lotes que saíram de cada material (para o registro do movimento).
+      let lotsTaken: Array<Array<{ expiresAt: string | null; quantity: number }>> = [];
       try {
         // Tudo em uma transação: leitura do estoque e baixa acontecem de forma
         // atômica, evitando baixa duplicada ou perda de atualização.
         const applied = await runTransaction(db, async tx => {
+          lotsTaken = [];
           const resRef = doc(db, 'stockReservations', reservation ? reservation.id : `res_${quoteId}`);
           if (reservation) {
             const resSnap = await tx.get(resRef);
@@ -194,13 +232,14 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
           const matRefs = deductions.map(r => doc(db, 'materials', r.materialId));
           const matSnaps = await Promise.all(matRefs.map(ref => tx.get(ref)));
 
+          // Item 21: sai do lote não vencido que vence antes ("sem validade" por último); vencido não sai. O que
+          // faltar não fica negativo (como antes).
+          const today = todayISO();
           matSnaps.forEach((matSnap, i) => {
             if (!matSnap.exists()) return;
-            const currentStock = Number(matSnap.data().stockQuantity) || 0;
-            tx.update(matRefs[i], {
-              stockQuantity: Math.max(0, currentStock - deductions[i].quantity),
-              updatedAt: new Date().toISOString(),
-            });
+            const r = takeFromLots(materialLots(matSnap.data() as Material, today), deductions[i].quantity, today);
+            lotsTaken[i] = r.taken.map(t => ({ expiresAt: t.expiresAt, quantity: t.quantity }));
+            tx.update(matRefs[i], { ...stockFields(r.lots), updatedAt: new Date().toISOString() });
           });
 
           const now = new Date().toISOString();
@@ -228,7 +267,7 @@ export async function updateQuoteStatus(quoteId: string, newStatus: QuoteStatus)
             quoteId,
             type: 'deduction',
             reason: `Orçamento ${newStatus}`,
-            deductions,
+            deductions: deductions.map((d, i) => ({ ...d, lots: lotsTaken[i] ?? [] })),
             createdAt: new Date().toISOString(),
           }).catch(err => notifyError('Registro do movimento de estoque (baixa) não foi gravado', err, 'warning'));
 

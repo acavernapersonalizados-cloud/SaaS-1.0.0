@@ -49,8 +49,9 @@
 - Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
 - **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
   29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
-- **Próximo: 21 (validade por lotes) → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16 era só
-  nosso.
+- **2/11:** 21A (lotes: entradas, baixa e reserva) feito, não publicado.
+- **Próximo: 21B (avisos e "Descartar lote") → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16
+  era só nosso.
 
 ## Entregue
 
@@ -861,6 +862,17 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     vira um lote com quantidade e data de validade. A baixa e a reserva consomem primeiro o lote que vence primeiro.
     Avisos de "vence em X dias" (amarelo, prazo configurável por loja) e "vencido" (vermelho) no estoque e no
     Dashboard. O estoque atual vira um lote "sem validade", sem perder nada.
+    **Aprovado em 2/11/2026 em duas partes.** Regra: a baixa e a reserva pegam o lote não vencido que vence primeiro,
+    "sem validade" por último; o vencido fica em vermelho até tocar em "Descartar lote". Aviso amarelo padrão 30 dias,
+    configurável por loja.
+    ✅ **21A feito em 2/11/2026 (não publicado):** lib/stockLots.ts (lotes no próprio insumo, `stockLots`; o
+    `stockQuantity` continua sendo a soma; sem lotes = um lote "sem validade"; saldo mudado por fora é acertado na
+    leitura). Entradas viram lote: botão "Entrada" (quantidade + validade) no Estoque, validade na Lista de Compras e
+    no cadastro novo; o "+" entra sem validade. Saídas pela ordem: "−" do Estoque, filamento da Calculadora 3D (vencido
+    não conta) e baixa do orçamento finalizado (o movimento registra os lotes). A reserva guarda o "lote a pegar",
+    descontando o que outros orçamentos já reservaram. Sem mudança nas regras do banco. 371 testes, lint, build;
+    emulador: entradas, "−", duas reservas, baixa e compra conferidas no banco; 390 px e computador.
+    **Falta (21B):** avisos amarelo/vermelho no Estoque e no Dashboard, prazo do aviso por loja, "Descartar lote".
 22. **Lista de separação por pedido** (pedido em 2/11/2026): insumos de todos os itens somados × quantidade, kits
     abertos nos seus produtos, agrupados, com caixa para marcar, lote a pegar (do 21) e opção de imprimir/PDF. Também
     visível no cadastro do produto/cesta.

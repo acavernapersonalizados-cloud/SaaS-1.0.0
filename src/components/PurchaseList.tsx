@@ -3,6 +3,7 @@ import { collection, query, where, onSnapshot, addDoc, doc, deleteDoc, runTransa
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier, PurchaseListItem } from '../types';
 import { formatCurrency, isLowStock, packageSize } from '../lib/utils';
+import { addToLots, materialLots, stockFields } from '../lib/stockLots';
 import { PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
@@ -54,6 +55,8 @@ export function PurchaseList() {
     mode: PriceInputMode | null;
     estUnit: number;
     touched: boolean;
+    /** Validade do lote que entra (AAAA-MM-DD), opcional — Estacionamento item 21. */
+    expiresAt?: string;
   }>({ qty: 0, price: 0, supplierId: '', mode: null, estUnit: 0, touched: false });
   const [saving, setSaving] = useState(false);
 
@@ -300,8 +303,14 @@ export function PurchaseList() {
         });
 
         if (matRef && matSnap?.exists()) {
+          // Item 21: a compra entra como lote (com a validade, se informada).
+          const lots = addToLots(
+            materialLots(matSnap.data() as Material),
+            purchasedUnits,
+            purchaseForm.expiresAt || null,
+          );
           const updateData: Record<string, any> = {
-            stockQuantity: (Number(matSnap.data().stockQuantity) || 0) + purchasedUnits,
+            ...stockFields(lots),
             updatedAt: new Date().toISOString(),
           };
           if (purchaseForm.price > 0) {
@@ -807,6 +816,18 @@ export function PurchaseList() {
                     {purchasePack > 1 ? ` · entram ${purchaseUnits} itens no estoque` : ''}
                   </p>
                 )}
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="purchase-expires" className="text-xs font-bold text-neutral-700">
+                  Validade do lote (opcional)
+                </label>
+                <input
+                  id="purchase-expires"
+                  type="date"
+                  value={purchaseForm.expiresAt || ''}
+                  onChange={e => setPurchaseForm(f => ({ ...f, expiresAt: e.target.value }))}
+                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-neutral-700">Fornecedor</label>

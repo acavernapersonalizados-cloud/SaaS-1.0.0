@@ -3,6 +3,15 @@ import { collection, onSnapshot, query, where, doc, runTransaction } from 'fireb
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
 import { isLowStock } from '../lib/utils';
+import {
+  addToLots,
+  consumptionOrder,
+  formatLotDate,
+  materialLots,
+  stockFields,
+  takeFromLots,
+  todayISO,
+} from '../lib/stockLots';
 import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import { Plus, Minus, AlertCircle, Package } from 'lucide-react';
@@ -37,9 +46,15 @@ export function Inventory() {
     return () => unsubscribe();
   }, [activeStore]);
 
-  const updateStock = async (id: string, delta: number) => {
+  // Estacionamento item 21: entrada com validade (vira um lote; mesma validade junta no mesmo lote).
+  const [entryFor, setEntryFor] = useState<string | null>(null);
+  const [entryQty, setEntryQty] = useState<number | ''>('');
+  const [entryDate, setEntryDate] = useState('');
+
+  /** `delta` > 0 entra no lote da validade dada; < 0 sai do lote não vencido que vence antes. */
+  const updateStock = async (id: string, delta: number, expiresAt: string | null = null) => {
     const material = materials.find(m => m.id === id);
-    if (!material) return;
+    if (!material) return false;
 
     try {
       // Transação: evita perda de atualização quando dois usuários mexem ao
@@ -48,18 +63,39 @@ export function Inventory() {
         const ref = doc(db, 'materials', id);
         const snap = await tx.get(ref);
         if (!snap.exists()) throw new Error('Material não encontrado');
-        const current = Number(snap.data().stockQuantity) || 0;
-        const next = current + delta;
-        if (next < 0) throw new Error('Estoque não pode ficar negativo');
-        tx.update(ref, { stockQuantity: next, updatedAt: new Date().toISOString() });
+        const today = todayISO();
+        const lots = materialLots(snap.data() as Material, today);
+        let next = lots;
+        if (delta > 0) next = addToLots(lots, delta, expiresAt);
+        else {
+          const r = takeFromLots(lots, -delta, today);
+          if (r.missing > 0) throw new Error('Estoque não pode ficar negativo');
+          next = r.lots;
+        }
+        tx.update(ref, { ...stockFields(next), updatedAt: new Date().toISOString() });
       });
       addToast('Estoque atualizado com sucesso!', 'success');
+      return true;
     } catch (error) {
       if (error instanceof Error && error.message === 'Estoque não pode ficar negativo') {
-        addToast('Estoque não pode ficar negativo.', 'error');
-        return;
+        addToast('Estoque não pode ficar negativo (lote vencido não sai pela baixa).', 'error');
+        return false;
       }
       handleFirestoreError(error, OperationType.UPDATE, `materials/${id}`);
+      return false;
+    }
+  };
+
+  const saveEntry = async (id: string) => {
+    const qty = Number(entryQty) || 0;
+    if (qty <= 0) {
+      addToast('Informe a quantidade da entrada.', 'error');
+      return;
+    }
+    if (await updateStock(id, qty, entryDate || null)) {
+      setEntryFor(null);
+      setEntryQty('');
+      setEntryDate('');
     }
   };
 
@@ -122,38 +158,107 @@ export function Inventory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
-              {filteredMaterials.map(material => (
-                <tr key={material.id} className="group hover:bg-neutral-50 transition-colors">
-                  <td className="py-4 font-bold text-neutral-900">{material.name}</td>
-                  <td className="py-4 text-sm font-bold text-neutral-900">
-                    {material.stockQuantity} {material.unit}
-                    {isLowStock(material) && (
-                      <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
-                        BAIXO
-                      </span>
+              {filteredMaterials.map(material => {
+                const lots = consumptionOrder(materialLots(material), todayISO(), true);
+                return (
+                  <React.Fragment key={material.id}>
+                    <tr className="group hover:bg-neutral-50 transition-colors">
+                      <td className="py-4 font-bold text-neutral-900">{material.name}</td>
+                      <td className="py-4 text-sm font-bold text-neutral-900">
+                        {material.stockQuantity} {material.unit}
+                        {isLowStock(material) && (
+                          <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
+                            BAIXO
+                          </span>
+                        )}
+                        {(lots.length > 1 || lots.some(l => l.expiresAt)) && (
+                          <ul className="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500" aria-label="Lotes">
+                            {lots.map(l => (
+                              <li key={l.id} className="whitespace-nowrap">
+                                {l.quantity} {material.unit} ·{' '}
+                                {l.expiresAt ? `val. ${formatLotDate(l.expiresAt)}` : 'sem validade'}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {/* Abaixo do saldo (e não nas ações) para aparecer no celular sem rolar a tabela. */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEntryFor(entryFor === material.id ? null : material.id);
+                            setEntryQty('');
+                            setEntryDate('');
+                          }}
+                          className="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
+                        >
+                          Entrada
+                        </button>
+                      </td>
+                      <td className="py-4 text-sm text-neutral-500">
+                        {Number(material.minStockQuantity) > 0 ? `${material.minStockQuantity} ${material.unit}` : '—'}
+                      </td>
+                      <td className="py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => updateStock(material.id, -1)}
+                            className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => updateStock(material.id, 1)}
+                            className="p-2 text-neutral-400 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {entryFor === material.id && (
+                      <tr className="bg-neutral-50">
+                        <td colSpan={4} className="py-3 px-2">
+                          <div className="flex flex-wrap items-end gap-3">
+                            <label className="text-xs font-bold text-neutral-600 space-y-1">
+                              <span className="block">Quantidade ({material.unit})</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="any"
+                                value={entryQty}
+                                onChange={e => setEntryQty(e.target.value === '' ? '' : Number(e.target.value))}
+                                className="w-28 px-3 py-2 bg-white border border-neutral-200 rounded-lg"
+                              />
+                            </label>
+                            <label className="text-xs font-bold text-neutral-600 space-y-1">
+                              <span className="block">Validade (opcional)</span>
+                              <input
+                                type="date"
+                                value={entryDate}
+                                onChange={e => setEntryDate(e.target.value)}
+                                className="px-3 py-2 bg-white border border-neutral-200 rounded-lg"
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => saveEntry(material.id)}
+                              className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-lg"
+                            >
+                              Salvar entrada
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEntryFor(null)}
+                              className="px-3 py-2 text-xs font-bold text-neutral-500"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  <td className="py-4 text-sm text-neutral-500">
-                    {Number(material.minStockQuantity) > 0 ? `${material.minStockQuantity} ${material.unit}` : '—'}
-                  </td>
-                  <td className="py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => updateStock(material.id, -1)}
-                        className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => updateStock(material.id, 1)}
-                        className="p-2 text-neutral-400 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
