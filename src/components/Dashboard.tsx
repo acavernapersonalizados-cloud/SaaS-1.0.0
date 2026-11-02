@@ -5,6 +5,7 @@ import { Quote, Material, Product, CostBase } from '../types';
 import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { deadlineStatus } from '../lib/productionDeadline';
+import { expiryAlerts, expiryWarningDaysOf, formatLotDate, lotAlertText, todayISO } from '../lib/stockLots';
 import { ProductionDeadline } from './ProductionDeadline';
 import { SalesRanking } from './SalesRanking';
 import { useStore } from '../contexts/StoreContext';
@@ -233,6 +234,49 @@ export function Dashboard() {
                 ))}
               </ul>
             )}
+          </div>
+        );
+      })()}
+
+      {/* ── Validade dos insumos (Estacionamento item 21B) ────────────────────── */}
+      {(() => {
+        const today = todayISO();
+        const warnDays = expiryWarningDaysOf(costs);
+        const alerts = expiryAlerts(materials, today, warnDays);
+        if (alerts.length === 0) return null;
+        const expired = alerts.filter(a => a.alert.kind === 'expired').length;
+        return (
+          <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="text-base font-bold text-neutral-900">Validade dos insumos</h2>
+              <span className="text-sm text-neutral-500">
+                <span className={expired ? 'font-bold text-red-700' : ''}>{expired} vencido(s)</span> ·{' '}
+                <span className={alerts.length - expired ? 'font-bold text-amber-700' : ''}>
+                  {alerts.length - expired} vence(m) em até {warnDays} dias
+                </span>
+              </span>
+            </div>
+            <ul className="divide-y divide-neutral-100">
+              {alerts.slice(0, 6).map(a => (
+                <li
+                  key={`${a.materialId}-${a.lot.id}`}
+                  className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm"
+                >
+                  <span className="font-semibold text-neutral-800 truncate">
+                    {a.materialName} · {a.lot.quantity} {a.unit}
+                  </span>
+                  <span
+                    className={cn(
+                      'text-xs font-bold px-2 py-0.5 rounded-full',
+                      a.alert.kind === 'expired' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700',
+                    )}
+                  >
+                    {formatLotDate(a.lot.expiresAt)} · {lotAlertText(a.alert)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {alerts.length > 6 && <p className="text-xs text-neutral-500">E mais {alerts.length - 6} no Estoque.</p>}
           </div>
         );
       })()}

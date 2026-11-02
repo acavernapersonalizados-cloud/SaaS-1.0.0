@@ -21,6 +21,7 @@ import {
   wholesaleTiersOf,
 } from '../lib/wholesale';
 import { electricityRateOf } from '../lib/defaults';
+import { DEFAULT_EXPIRY_WARNING_DAYS, expiryWarningDaysOf } from '../lib/stockLots';
 import {
   FEE_CHECK,
   FEE_CHECK_UNAVAILABLE_MESSAGE,
@@ -53,6 +54,8 @@ export function CostBaseSettings() {
   const [markup, setMarkup] = useState(0);
   // Tarifa de energia da loja (Etapa 7.2); enquanto não é salva, mostra a padrão (0,79).
   const [electricityRate, setElectricityRate] = useState(electricityRateOf(null));
+  // Item 21B: prazo do aviso amarelo de validade (padrão 30 dias).
+  const [expiryWarningDays, setExpiryWarningDays] = useState(expiryWarningDaysOf(null));
   const round2 = (v: number) => Math.round(v * 100) / 100;
   // Tabela de canais da loja; enquanto não é salva, mostra a padrão.
   const [channels, setChannels] = useState<SalesChannel[]>(channelsOf(null));
@@ -181,11 +184,13 @@ export function CostBaseSettings() {
         setCosts(data);
         setMarkup(round2(markupOf(data)));
         setElectricityRate(electricityRateOf(data));
+        setExpiryWarningDays(expiryWarningDaysOf(data));
         setChannels(channelsOf(data));
         setTiers(wholesaleTiersOf(data));
       } else {
         setMarkup(0);
         setElectricityRate(electricityRateOf(null));
+        setExpiryWarningDays(expiryWarningDaysOf(null));
         setChannels(channelsOf(null));
         setTiers(wholesaleTiersOf(null));
         setCosts({
@@ -224,6 +229,7 @@ export function CostBaseSettings() {
         markupPct,
         profitGoal,
         electricityRate: electricityRateOf({ electricityRate }),
+        expiryWarningDays: expiryWarningDaysOf({ expiryWarningDays }),
         salesChannels,
         wholesaleTiers: normalizeWholesaleTiers(tiers),
         storeId: activeStore.id,
@@ -367,6 +373,28 @@ export function CostBaseSettings() {
                 Valor padrão: confira e salve para gravar a tarifa desta loja.
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="expiry-warning-days" className="text-sm font-bold text-neutral-700">
+              Aviso de validade (dias)
+            </label>
+            <input
+              id="expiry-warning-days"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={365}
+              step="1"
+              value={expiryWarningDays}
+              onChange={e => setExpiryWarningDays(Number(e.target.value))}
+              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none font-medium"
+              required
+            />
+            <p className="text-[10px] text-neutral-400">
+              Lotes que vencem em até {expiryWarningDaysOf({ expiryWarningDays })} dias ficam em amarelo no Estoque e no
+              Dashboard; vencidos ficam em vermelho. Padrão: {DEFAULT_EXPIRY_WARNING_DAYS} dias.
+            </p>
           </div>
 
           <div className="bg-neutral-900 p-6 rounded-2xl flex flex-col justify-center gap-2 text-white shadow-lg">

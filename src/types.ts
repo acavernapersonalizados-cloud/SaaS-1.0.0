@@ -34,6 +34,8 @@ export interface CostBase {
   hourlyRate: number;
   /** Tarifa de energia (R$/kWh) para Laser e 3D (Etapa 7.2). Sem ela, vale a padrão (0,79). */
   electricityRate?: number;
+  /** Aviso amarelo de validade: lotes que vencem em até N dias (item 21B). Sem ele, vale 30. */
+  expiryWarningDays?: number;
   /** Tabela de canais de venda da loja (Etapa 7). Sem ela, vale a padrão de lib/channels.ts. */
   salesChannels?: SalesChannel[];
   /** Faixas de desconto de atacado por quantidade (Etapa 8C). Sem elas, valem as padrão de lib/wholesale.ts. */

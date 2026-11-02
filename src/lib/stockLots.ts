@@ -146,6 +146,78 @@ export function changeLotExpiry(
   return { lots: [...without, { id: newLotId(), quantity: qty, expiresAt: exp, createdAt: now }] };
 }
 
+// ── 21B: avisos e descarte ────────────────────────────────────────────────
+
+/** Prazo do aviso amarelo ("vence em X dias") quando a loja não gravou o seu na Base de Custos. */
+export const DEFAULT_EXPIRY_WARNING_DAYS = 30;
+
+/** Prazo do aviso da loja (0 a 365 dias) ou, sem ele, o padrão de 30. */
+export function expiryWarningDaysOf(costs: { expiryWarningDays?: number } | null | undefined): number {
+  const raw = costs?.expiryWarningDays;
+  const days = Math.floor(Number(raw));
+  if (raw === undefined || raw === null || !Number.isFinite(days) || days < 0) return DEFAULT_EXPIRY_WARNING_DAYS;
+  return Math.min(365, days);
+}
+
+/** Dias corridos de hoje até a validade (0 = vence hoje; negativo = vencido). */
+export function daysUntil(expiresAt: string, today: string): number {
+  const toUtc = (d: string) => {
+    const [y, m, day] = d.split('-').map(Number);
+    return Date.UTC(y, m - 1, day);
+  };
+  return Math.round((toUtc(expiresAt) - toUtc(today)) / 86400000);
+}
+
+export type LotAlert = { kind: 'expired' } | { kind: 'soon'; days: number } | null;
+
+/** Vermelho = vencido; amarelo = vence em até `warnDays` dias (hoje incluso); sem validade nunca avisa. */
+export function lotAlert(lot: Pick<StockLot, 'expiresAt'>, today: string, warnDays: number): LotAlert {
+  if (!lot.expiresAt) return null;
+  const days = daysUntil(lot.expiresAt, today);
+  if (days < 0) return { kind: 'expired' };
+  return days <= warnDays ? { kind: 'soon', days } : null;
+}
+
+/** Texto do aviso: "vencido", "vence hoje", "vence amanhã", "vence em 12 dias". */
+export function lotAlertText(alert: LotAlert): string {
+  if (!alert) return '';
+  if (alert.kind === 'expired') return 'vencido';
+  return alert.days === 0 ? 'vence hoje' : alert.days === 1 ? 'vence amanhã' : `vence em ${alert.days} dias`;
+}
+
+export interface ExpiryAlertRow {
+  materialId: string;
+  materialName: string;
+  unit: string;
+  lot: StockLot;
+  alert: NonNullable<LotAlert>;
+}
+
+/** Lotes com aviso da loja: vencidos primeiro, depois os que vencem antes. */
+export function expiryAlerts(
+  materials: Array<{ id: string; name?: string; unit?: string } & MaterialStock>,
+  today: string,
+  warnDays: number,
+): ExpiryAlertRow[] {
+  const rows: ExpiryAlertRow[] = [];
+  for (const m of materials)
+    for (const lot of materialLots(m, today)) {
+      const alert = lotAlert(lot, today, warnDays);
+      if (alert) rows.push({ materialId: m.id, materialName: m.name || '', unit: m.unit || '', lot, alert });
+    }
+  return rows.sort((a, b) => (a.lot.expiresAt || '').localeCompare(b.lot.expiresAt || ''));
+}
+
+/** "Descartar lote": tira o lote inteiro. O saldo cai junto (stockFields). */
+export function discardLot(
+  lots: StockLot[],
+  lotId: string,
+): { lots: StockLot[]; removed: StockLot } | { error: string } {
+  const removed = lots.find(l => l.id === lotId);
+  if (!removed) return { error: 'Lote não encontrado (o estoque mudou). Abra de novo.' };
+  return { lots: lots.filter(l => l.id !== lotId), removed };
+}
+
 /** Validade para a tela: "10/12/2026" ou "sem validade". */
 export const formatLotDate = (expiresAt: string | null) =>
   expiresAt ? expiresAt.split('-').reverse().join('/') : 'sem validade';

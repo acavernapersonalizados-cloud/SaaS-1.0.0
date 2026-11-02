@@ -4,6 +4,12 @@ import {
   addToLots,
   changeLotExpiry,
   consumptionOrder,
+  daysUntil,
+  discardLot,
+  expiryAlerts,
+  expiryWarningDaysOf,
+  lotAlert,
+  lotAlertText,
   lotsTotal,
   materialLots,
   StockLot,
@@ -114,6 +120,42 @@ describe('validade por lotes', () => {
     expect(changeLotExpiry(lots, 'sem', 0, '2026-12-10')).toEqual({ error: 'Informe uma quantidade maior que zero.' });
     expect(changeLotExpiry(lots, 'sem', -1, '2026-12-10')).toEqual({ error: 'Informe uma quantidade maior que zero.' });
     expect(changeLotExpiry(lots, 'sem', 6, '2026-12-10')).toEqual({ error: 'A quantidade passa do lote (5).' });
+  });
+
+  it('21B: prazo do aviso da loja (padrão 30, de 0 a 365)', () => {
+    expect(expiryWarningDaysOf(null)).toBe(30);
+    expect(expiryWarningDaysOf({})).toBe(30);
+    expect(expiryWarningDaysOf({ expiryWarningDays: 7 })).toBe(7);
+    expect(expiryWarningDaysOf({ expiryWarningDays: 0 })).toBe(0);
+    expect(expiryWarningDaysOf({ expiryWarningDays: -3 })).toBe(30);
+    expect(expiryWarningDaysOf({ expiryWarningDays: 999 })).toBe(365);
+  });
+
+  it('21B: vermelho vencido, amarelo dentro do prazo, nada fora do prazo ou sem validade', () => {
+    expect(lotAlert({ expiresAt: '2026-11-01' }, TODAY, 30)).toEqual({ kind: 'expired' });
+    expect(lotAlert({ expiresAt: '2026-11-02' }, TODAY, 30)).toEqual({ kind: 'soon', days: 0 });
+    expect(lotAlert({ expiresAt: '2026-12-02' }, TODAY, 30)).toEqual({ kind: 'soon', days: 30 });
+    expect(lotAlert({ expiresAt: '2026-12-03' }, TODAY, 30)).toBeNull();
+    expect(lotAlert({ expiresAt: null }, TODAY, 30)).toBeNull();
+    expect(lotAlertText({ kind: 'soon', days: 0 })).toBe('vence hoje');
+    expect(lotAlertText({ kind: 'soon', days: 1 })).toBe('vence amanhã');
+    expect(lotAlertText({ kind: 'soon', days: 12 })).toBe('vence em 12 dias');
+    expect(daysUntil('2027-03-01', '2027-02-28')).toBe(1);
+  });
+
+  it('21B: avisos da loja, vencidos primeiro', () => {
+    const rows = expiryAlerts([{ id: 'm1', name: 'Tinta', unit: 'ml', stockQuantity: 14, stockLots: lots }], TODAY, 30);
+    expect(rows.map(r => [r.lot.id, r.alert.kind])).toEqual([
+      ['venc', 'expired'],
+      ['nov', 'soon'],
+    ]);
+  });
+
+  it('21B: descartar lote tira o lote inteiro e o saldo cai junto', () => {
+    const r = discardLot(lots, 'venc');
+    expect('lots' in r && stockFields(r.lots).stockQuantity).toBe(11);
+    expect('removed' in r && r.removed.quantity).toBe(3);
+    expect(discardLot(lots, 'xx')).toEqual({ error: 'Lote não encontrado (o estoque mudou). Abra de novo.' });
   });
 
   it('hoje no formato da validade', () => {
