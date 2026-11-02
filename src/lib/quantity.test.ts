@@ -1,7 +1,15 @@
 // Estacionamento item 25: quantidade com fração (vírgula ou ponto) e kg ↔ g.
 import { describe, expect, it } from 'vitest';
-import { bigQuantityQuestion, equivalentText, formatQuantity, parseQuantity, subUnitOf } from './quantity';
-import { addToLots, changeLotExpiry, stockFields, takeFromLots } from './stockLots';
+import {
+  bigQuantityQuestion,
+  equivalentText,
+  formatQuantity,
+  parseQuantity,
+  subUnitOf,
+  suspiciousUnitCost,
+  unitConversion,
+} from './quantity';
+import { addToLots, changeLotExpiry, stockFields, stockValue, takeFromLots } from './stockLots';
 
 describe('quantidade com fração', () => {
   it('vírgula ou ponto: 0,5 / 0.5 / 0,125 / 1.5 / 1.000,5 / 1.000.000', () => {
@@ -51,6 +59,38 @@ describe('quantidade com fração', () => {
     ]);
     expect(parseQuantity('120')! / 1000).toBe(0.12);
     expect(takeFromLots(um, 1.5, today).missing).toBe(0.5);
+  });
+
+  it('valor do estoque: dividir lote não muda; Saída e Entrada mudam exatamente quantidade × custo', () => {
+    const today = '2026-11-02';
+    const fil = {
+      stockQuantity: 0.75,
+      unitCost: 128.9,
+      stockLots: [{ id: 'a', quantity: 0.75, expiresAt: null, createdAt: '' }],
+    };
+    const outros = [{ stockQuantity: 35, unitCost: 9.84 }];
+    const antes = stockValue([fil, ...outros]);
+    const div = changeLotExpiry(fil.stockLots, 'a', 0.25, '2027-01-31');
+    const dividido = { ...fil, ...stockFields('lots' in div ? div.lots : []) };
+    expect(stockValue([dividido, ...outros])).toBe(antes);
+    const saida = { ...fil, ...stockFields(takeFromLots(fil.stockLots, 0.3, today).lots) };
+    expect(stockValue([saida, ...outros])).toBeCloseTo(antes - 0.3 * 128.9, 2);
+    const entrada = { ...fil, ...stockFields(addToLots(fil.stockLots, 0.25, null)) };
+    expect(stockValue([entrada, ...outros])).toBeCloseTo(antes + 0.25 * 128.9, 2);
+    expect(stockValue([{ stockQuantity: 500, unitCost: 128.9 }])).toBe(64450);
+  });
+
+  it('troca de unidade e custo suspeito', () => {
+    expect(unitConversion('kg', 'g')).toBe(1000);
+    expect(unitConversion('g', 'kg')).toBe(0.001);
+    expect(unitConversion('m', 'cm')).toBe(100);
+    expect(unitConversion('ml', 'l')).toBe(0.001);
+    expect(unitConversion('kg', 'un')).toBeNull();
+    expect(suspiciousUnitCost(128.9, 'g')?.replace(/\s/g, ' ')).toBe(
+      'R$ 128,90 por g? Parece preço de kg: confira a unidade e a quantidade comprada (1 kg = 1.000 g).',
+    );
+    expect(suspiciousUnitCost(0.1289, 'g')).toBeNull();
+    expect(suspiciousUnitCost(128.9, 'kg')).toBeNull();
   });
 
   it('trava: 100 ou mais em kg, l ou m pede confirmação com o equivalente', () => {

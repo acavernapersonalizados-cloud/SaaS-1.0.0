@@ -37,6 +37,30 @@ export function subUnitOf(unit: string | undefined): { unit: string; factor: num
   }
 }
 
+/** Fator para trocar a unidade do insumo (kg → g = 1000; g → kg = 0,001; idem l/ml e m/cm); null = sem conversão. */
+export function unitConversion(from: string | undefined, to: string | undefined): number | null {
+  const a = (from || '').toLowerCase();
+  const b = (to || '').toLowerCase();
+  const down = subUnitOf(a);
+  if (down && down.unit === b) return down.factor;
+  const up = subUnitOf(b);
+  if (up && up.unit === a) return 1 / up.factor;
+  return null;
+}
+
+/**
+ * Aviso de custo suspeito: em g, ml ou cm, mais de R$ 5 por unidade parece preço da unidade maior (R$ 128,90 por g
+ * em vez de por kg). Devolve a frase, ou null.
+ */
+export function suspiciousUnitCost(unitCost: number, unit: string | undefined): string | null {
+  const u = (unit || '').toLowerCase();
+  const big = ({ g: 'kg', ml: 'l', cm: 'm' } as Record<string, string>)[u];
+  if (!big || !(Number(unitCost) > 5)) return null;
+  const factor = u === 'cm' ? 100 : 1000;
+  const cost = Number(unitCost).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  return `${cost} por ${u}? Parece preço de ${big}: confira a unidade e a quantidade comprada (1 ${big} = ${formatQuantity(factor)} ${u}).`;
+}
+
 /**
  * Número para a tela, em português (até 6 casas): 0,5 · 1.000 · 0,125. Dentro de campo de digitar, sem o ponto de
  * milhar (`grouping: false` → "2000"), para o texto voltar igual ao ser lido.

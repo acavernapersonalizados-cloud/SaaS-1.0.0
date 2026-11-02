@@ -15,7 +15,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
 import { formatCurrency, isLowStock } from '../lib/utils';
 import { addToLots, materialLots, stockFields } from '../lib/stockLots';
-import { confirmBigQuantity } from '../lib/quantity';
+import { confirmBigQuantity, formatQuantity, suspiciousUnitCost, unitConversion } from '../lib/quantity';
 import { QuantityInput } from './QuantityInput';
 import { isPackageMaterial, materialPurchaseQuantity, PriceInputMode, purchaseFromInput } from '../lib/materials';
 import { useStore } from '../contexts/StoreContext';
@@ -62,6 +62,38 @@ export function Materials() {
   const [priceMode, setPriceMode] = useState<PriceInputMode | null>(null);
   // Estacionamento item 21: validade do estoque inicial (só no cadastro novo; depois, pela "Entrada" do Estoque).
   const [initialExpiresAt, setInitialExpiresAt] = useState('');
+  // 2/11/2026: trocar kg ↔ g (l ↔ ml, m ↔ cm) pergunta e converte saldo, mínimo, quantidade comprada e lotes, para o
+  // custo por unidade continuar certo. `lotFactor` guarda a conversão feita até salvar.
+  const [lotFactor, setLotFactor] = useState(1);
+  const changeUnit = (next: string) => {
+    const prev = newMaterial.unit;
+    const f = unitConversion(prev, next);
+    const stock = Number(newMaterial.stockQuantity) || 0;
+    const bought = Number(newMaterial.purchaseQuantity) || 0;
+    const min = Number(newMaterial.minStockQuantity) || 0;
+    const fmt = (n: number) => formatQuantity(n);
+    if (
+      f &&
+      (stock > 0 || bought > 0 || min > 0) &&
+      window.confirm(
+        `Trocar ${prev} por ${next}: converter o estoque (${fmt(stock)} ${prev} → ${fmt(stock * f)} ${next}), o mínimo e a quantidade comprada (${fmt(bought)} ${prev} → ${fmt(bought * f)} ${next})? O custo por unidade acompanha.`,
+      )
+    ) {
+      const r6 = (n: number) => Math.round(n * 1e6) / 1e6;
+      setNewMaterial({
+        ...newMaterial,
+        unit: next,
+        stockQuantity: r6(stock * f),
+        minStockQuantity: r6(min * f),
+        purchaseQuantity: r6(bought * f),
+        // Preço digitado "por unidade": a unidade mudou, o preço por unidade muda junto (o total pago fica igual).
+        ...(priceMode === 'unit' ? { purchasePrice: r6((Number(newMaterial.purchasePrice) || 0) / f) } : {}),
+      });
+      setLotFactor(x => x * f);
+      return;
+    }
+    setNewMaterial({ ...newMaterial, unit: next });
+  };
 
   useEffect(() => {
     if (!activeStore) {
@@ -155,7 +187,11 @@ export function Materials() {
           ...stockFields(
             materialLots({
               stockQuantity: Number(newMaterial.stockQuantity) || 0,
-              stockLots: editingMaterial.stockLots,
+              // Unidade trocada com conversão (kg → g): os lotes acompanham o mesmo fator.
+              stockLots: editingMaterial.stockLots?.map(l => ({
+                ...l,
+                quantity: Math.round(l.quantity * lotFactor * 1e6) / 1e6,
+              })),
               createdAt: editingMaterial.createdAt,
             }),
           ),
@@ -193,6 +229,7 @@ export function Materials() {
       setEditingMaterial(null);
       setPriceMode(null);
       setInitialExpiresAt('');
+      setLotFactor(1);
       setIsModalOpen(false);
       addToast(editingMaterial ? 'Material atualizado com sucesso!' : 'Material cadastrado com sucesso!', 'success');
     } catch (error) {
@@ -206,6 +243,7 @@ export function Materials() {
 
   const handleEdit = (material: Material) => {
     setEditingMaterial(material);
+    setLotFactor(1);
     setNewMaterial({
       name: material.name,
       unit: material.unit,
@@ -320,6 +358,7 @@ export function Materials() {
           onClick={() => {
             setPriceMode(null);
             setInitialExpiresAt('');
+            setLotFactor(1);
             setIsModalOpen(true);
           }}
           className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-all font-bold shadow-sm"
@@ -532,7 +571,7 @@ export function Materials() {
                   <label className="text-sm font-bold text-neutral-700">Unidade</label>
                   <select
                     value={newMaterial.unit}
-                    onChange={e => setNewMaterial({ ...newMaterial, unit: e.target.value })}
+                    onChange={e => changeUnit(e.target.value)}
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   >
                     <option value="un">Unidade (un)</option>
@@ -647,6 +686,15 @@ export function Materials() {
                 >
                   = {formatCurrency(pricePreview.unitCost)} por unidade · total{' '}
                   {formatCurrency(pricePreview.totalPrice)}
+                </p>
+              )}
+              {/* 2/11/2026: R$ 128,90 por g (em vez de por kg) fez o estoque valer R$ 64 mil. Só avisa, não impede. */}
+              {pricePreview && suspiciousUnitCost(pricePreview.unitCost, newMaterial.unit) && (
+                <p
+                  role="alert"
+                  className="px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-sm font-bold"
+                >
+                  {suspiciousUnitCost(pricePreview.unitCost, newMaterial.unit)}
                 </p>
               )}
 

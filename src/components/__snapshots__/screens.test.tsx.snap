@@ -12357,8 +12357,7 @@ exports[`Estoque > busca 1`] = `
           <div
             class="text-3xl font-bold text-neutral-900 mt-2"
           >
-            R$ 
-            177.40
+            R$ 177,40
           </div>
         </div>
         <div
@@ -12618,8 +12617,7 @@ exports[`Estoque > lista 1`] = `
           <div
             class="text-3xl font-bold text-neutral-900 mt-2"
           >
-            R$ 
-            177.40
+            R$ 177,40
           </div>
         </div>
         <div

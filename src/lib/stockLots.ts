@@ -222,6 +222,13 @@ export function discardLot(
 export const formatLotDate = (expiresAt: string | null) =>
   expiresAt ? expiresAt.split('-').reverse().join('/') : 'sem validade';
 
+/**
+ * Valor do estoque (card "Valor Total em Estoque"): saldo × custo por unidade de cada insumo. Conta única (2/11/2026),
+ * para dividir lote não mudar o total e Entrada/Saída mudarem exatamente quantidade × custo.
+ */
+export const stockValue = (materials: Array<{ stockQuantity?: number; unitCost?: number }>) =>
+  Math.round(materials.reduce((a, m) => a + (Number(m.stockQuantity) || 0) * (Number(m.unitCost) || 0), 0) * 100) / 100;
+
 /** Campos a gravar no insumo: os lotes e o saldo (a soma deles). */
 export const stockFields = (lots: StockLot[]) => ({ stockLots: lots, stockQuantity: lotsTotal(lots) });
 

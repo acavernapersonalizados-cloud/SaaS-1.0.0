@@ -55,6 +55,11 @@
 - **2/11:** 25 (quantidade fracionada) publicado (`index-Bij0dF8U.js`). Lista dos trabalhos 3D: reimportar
   "Presépio Simples" e "Brinquedo sensorial" (A Caverna).
 - **2/11:** 22 (lista de separação, opção B) publicado.
+- **Correção urgente (2/11):** o card "Valor Total em Estoque" de A Caverna mostrava R$ 68387.60. Causa: dado (o
+  "PLA SILK DOURADO - 3DLAB" foi trocado de kg para g às 18:11 com 500 de estoque e o custo ficou R$ 128,90 por g =
+  R$ 64.450,00); a conta da tela estava certa. Corrigido no código (publicado): card no formato R$ 68.387,60, conta
+  única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
+  Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
 - **Próximo: 16 (IA, o último):** riscos mostrados; esperando você fazer os passos no AI Studio e no Firebase. O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes

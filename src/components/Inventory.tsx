@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, doc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
-import { cn, isLowStock } from '../lib/utils';
+import { cn, formatCurrency, isLowStock } from '../lib/utils';
 import {
   addToLots,
   changeLotExpiry,
@@ -15,6 +15,7 @@ import {
   lotAlertText,
   materialLots,
   StockLot,
+  stockValue,
   stockFields,
   takeFromLots,
   todayISO,
@@ -251,7 +252,8 @@ export function Inventory() {
   const alerts = expiryAlerts(materials, today, warnDays);
   const expiredCount = alerts.filter(a => a.alert.kind === 'expired').length;
   const soonCount = alerts.length - expiredCount;
-  const totalValue = materials.reduce((acc, m) => acc + (m.stockQuantity || 0) * m.unitCost, 0);
+  // Conta única (lib/stockLots.ts); formato brasileiro no card (R$ 68.387,60).
+  const totalValue = stockValue(materials);
   const lowStockItems = materials.filter(isLowStock);
 
   if (!activeStore) {
@@ -282,7 +284,7 @@ export function Inventory() {
         </div>
         <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
           <div className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Valor Total em Estoque</div>
-          <div className="text-3xl font-bold text-neutral-900 mt-2">R$ {totalValue.toFixed(2)}</div>
+          <div className="text-3xl font-bold text-neutral-900 mt-2">{formatCurrency(totalValue)}</div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
           <div className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Itens com Estoque Baixo</div>
