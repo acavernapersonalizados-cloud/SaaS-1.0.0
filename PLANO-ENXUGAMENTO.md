@@ -44,7 +44,8 @@
   úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
   (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
 - Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
-- **2/11:** 23 (ranking dos mais vendidos) feito, ainda não publicado.
+- **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
+  29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
 - **Próximo: 21 (validade por lotes) → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16 era só
   nosso.
 
@@ -846,7 +847,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 
 23. **Ranking dos mais vendidos** (pedido em 2/11/2026): conferir se existe e se funciona com dados reais (por produto,
     quantidade e faturamento, filtro por período, por loja). Se não existir ou estiver errado, propor a implantação.
-    ✅ **Feito em 2/11/2026 (não publicado):** existiam dois rankings incompletos (o do Dashboard somava pendentes e
+    ✅ **Feito e publicado em 2/11/2026 (só hosting, `index-A_pK4SDV.js`):** existiam dois rankings incompletos (o do Dashboard somava pendentes e
     cancelados e só os 100 últimos; nenhum tinha período; os dois juntavam pelo nome). Agora uma conta só
     (lib/salesRanking.ts): Aprovado, Em produção e Finalizado, por produto (nome atual do cadastro), quantidade e
     faturamento no Pix, 30 dias / 90 dias / este ano / tudo (pela data do orçamento), ordenar por quantidade ou
