@@ -38,9 +38,10 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (28/10/2026, pausa até segunda 2/11):**
+**Onde paramos (2/11/2026):**
 
-- No ar: `index-CLHt8dnq.js` (28/10/2026), commit `4592c5c`. Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 20. 9C desligada.
+- No ar: `index-aDmjRhxd.js` (2/11/2026: itens 23, 21A, 24 e 21B). Etapas 0 a 9 e Estacionamento 2 a 15, 17 a 21, 23 e
+  24. 9C desligada.
 - **Correção urgente (28/10):** o catálogo público não oferece mais "instalar o sistema" ao cliente (sem manifesto e
   sem service worker lá); o painel continua instalável. Conferido no site, nos dois.
 - **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
@@ -50,8 +51,9 @@
 - **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
   29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
 - **2/11:** 21A (lotes: entradas, baixa, reserva e "Alterar validade") fechado, não publicado.
-- **2/11:** 24 (tempo da 3D em minutos) feito, não publicado.
-- **Próximo: 21B (avisos e "Descartar lote") → 22 (lista de separação) → 16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 21A + 24 + 21B publicados (só hosting, `index-aDmjRhxd.js`).
+- **Próximo: 22 (lista de separação) → 16 (IA, por último).** Pendente de você: backup do site real para eu listar os
+  trabalhos 3D que podem ter o erro antigo do G-code. O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
@@ -887,7 +889,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     estoque antigo tem código fixo. 9 casos conferidos no emulador em 390 px: dividir, inteiro, juntar, data passada,
     voltar a sem validade, quantidade 0/negativa/maior bloqueada, baixa pela ordem, lote reservado com data alterada
     (a baixa segue a ordem do dia) e outra loja sem acesso (403 para ler, listar e alterar). 373 testes, lint, build.
-    **Falta (21B):** avisos amarelo/vermelho no Estoque e no Dashboard, prazo do aviso por loja, "Descartar lote".
+    ✅ **21B feito e publicado em 2/11/2026 (junto com 21A e 24, só hosting, `index-aDmjRhxd.js`):** lote vencido em
+    vermelho com "Descartar lote" (pergunta antes; tira o lote, baixa o saldo e grava a saída em stockMovements,
+    tipo "discard"); amarelo "vence hoje / amanhã / em X dias" dentro do prazo da loja; aviso no topo do Estoque e
+    quadro "Validade dos insumos" no Dashboard; prazo na Base de Custos ("Aviso de validade (dias)", padrão 30, de 0 a
+    365). 381 testes, lint, build; emulador em 390 px: amarelo/vermelho, descarte (10 → 9 e movimento gravado), prazo
+    5 dias tira o amarelo de um lote a 10 dias e 30 devolve, quadro do Dashboard.
 22. **Lista de separação por pedido** (pedido em 2/11/2026): insumos de todos os itens somados × quantidade, kits
     abertos nos seus produtos, agrupados, com caixa para marcar, lote a pegar (do 21) e opção de imprimir/PDF. Também
     visível no cadastro do produto/cesta.
