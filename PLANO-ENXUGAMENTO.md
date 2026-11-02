@@ -44,8 +44,8 @@
   úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
   (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
 - Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
-- **Próximo: item 16 (IA), o último, com prazo 2/11:** testar a análise no AI Studio e no app e ligar o "Exigir" do
-  App Check. Emulador desligado com os dados exportados.
+- **Próximo (2/11/2026): 23 (ranking dos mais vendidos) → 21 (validade por lotes) → 22 (lista de separação) → 16
+  (IA, por último).** O prazo de 2/11 do 16 era só nosso. Emulador desligado com os dados exportados.
 
 ## Entregue
 
@@ -841,6 +841,17 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     loja quando falta foto; preço no Pix/crédito como a loja escolheu; botão "Pedir" no WhatsApp em cada produto, sempre
     no rodapé do cartão (regra do 55); "pacote com N un" no lugar de "kit N un". 355 testes, lint, build; conferido em
     390 px e no computador.
+**Ordem a partir de 2/11/2026 (seu pedido): 23 → 21 → 22 → 16 (a IA continua por último).**
+
+23. **Ranking dos mais vendidos** (pedido em 2/11/2026): conferir se existe e se funciona com dados reais (por produto,
+    quantidade e faturamento, filtro por período, por loja). Se não existir ou estiver errado, propor a implantação.
+21. **Validade por lotes** (pedido em 2/11/2026): o produto/insumo continua um só no cadastro; cada entrada de estoque
+    vira um lote com quantidade e data de validade. A baixa e a reserva consomem primeiro o lote que vence primeiro.
+    Avisos de "vence em X dias" (amarelo, prazo configurável por loja) e "vencido" (vermelho) no estoque e no
+    Dashboard. O estoque atual vira um lote "sem validade", sem perder nada.
+22. **Lista de separação por pedido** (pedido em 2/11/2026): insumos de todos os itens somados × quantidade, kits
+    abertos nos seus produtos, agrupados, com caixa para marcar, lote a pegar (do 21) e opção de imprimir/PDF. Também
+    visível no cadastro do produto/cesta.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
