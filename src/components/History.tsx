@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Client } from '../types';
@@ -24,9 +24,11 @@ import {
   Play,
   CheckCircle,
   Receipt,
+  ClipboardList,
 } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
+import { PickListModal } from './PickList';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
 const loadPdf = () => import('../lib/pdf');
@@ -42,6 +44,9 @@ export function History() {
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
+  // Item 22: orçamento com a lista de separação aberta.
+  const [pickFor, setPickFor] = useState<string | null>(null);
+  const closePick = useCallback(() => setPickFor(null), []);
 
   useEffect(() => {
     if (!activeStore) {
@@ -408,6 +413,14 @@ export function History() {
             </div>
 
             <div className="pt-6 border-t border-neutral-100 flex flex-wrap justify-end gap-3 sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 bg-white">
+              {/* Item 22: lista de separação do pedido (caixas marcadas gravadas no orçamento). */}
+              <button
+                onClick={() => setPickFor(selectedQuote.id)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-neutral-800 border border-neutral-300 hover:bg-neutral-50"
+              >
+                <ClipboardList className="w-4 h-4" />
+                Lista de separação
+              </button>
               <button
                 onClick={async () => {
                   try {
@@ -454,6 +467,12 @@ export function History() {
           </div>
         </div>
       )}
+
+      {pickFor &&
+        (() => {
+          const q = quotes.find(x => x.id === pickFor);
+          return q ? <PickListModal quote={q} store={activeStore} onClose={closePick} /> : null;
+        })()}
 
       {/* Delete Confirmation Modal */}
       {quoteToDelete && (

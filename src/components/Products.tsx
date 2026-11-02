@@ -613,6 +613,7 @@ export function Products({
       {/* ─── MODAL ─────────────────────────────────────────────────────────────── */}
       {isModalOpen && (
         <ProductFormModal
+          products={products}
           editingProduct={editingProduct}
           resetForm={resetForm}
           handleAddProduct={handleAddProduct}

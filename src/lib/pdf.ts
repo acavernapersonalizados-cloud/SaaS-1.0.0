@@ -2,6 +2,9 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Quote, Store } from '../types';
 import { formatCurrency, formatPercent } from './utils';
+import type { PickList } from './pickList';
+import { formatQuantity } from './quantity';
+import { formatLotDate } from './stockLots';
 
 // ─── Helper: parse hex color to RGB ──────────────────────────────────────────
 function hexToRgb(hex: string): [number, number, number] {
@@ -103,6 +106,55 @@ async function addStoreHeader(doc: jsPDF, store: Store | null): Promise<number> 
 
   return 38; // content starts at Y=38
 }
+
+// ─── Lista de separação (Estacionamento item 22) ─────────────────────────────
+export const generatePickListPDF = async (
+  title: string,
+  subtitle: string,
+  list: PickList,
+  checked: string[],
+  store: Store | null,
+) => {
+  const doc = new jsPDF();
+  const startY = await addStoreHeader(doc, store);
+  sectionTitle(doc, title, 14, startY);
+  doc.text(subtitle, 14, startY + 6);
+  const done = new Set(checked);
+  const lotText = (l: PickList['lines'][number]) =>
+    l.kind === 'product'
+      ? 'produto pronto'
+      : [
+          ...l.lots.map(x => `${formatQuantity(x.quantity)} ${l.unit} · ${formatLotDate(x.expiresAt)}`),
+          ...(l.short > 0 ? [`FALTA ${formatQuantity(l.short)} ${l.unit}`] : []),
+        ].join('\n');
+  autoTable(doc, {
+    startY: startY + 12,
+    head: [['', 'Separar', 'Quantidade', 'Lote a pegar', 'Para']],
+    body: list.lines.map(l => [
+      done.has(l.key) ? '[x]' : '[  ]',
+      l.name,
+      `${formatQuantity(l.quantity)} ${l.unit}`,
+      lotText(l),
+      { content: l.from.join('\n'), styles: { fontSize: 7 } },
+    ]),
+    theme: 'grid',
+    styles: { fontSize: 9, valign: 'top' },
+    columnStyles: { 0: { cellWidth: 10, halign: 'center' } },
+    headStyles: { fillColor: primaryColorOf(store) },
+  });
+  if (list.warnings.length) {
+    const y = ((doc as any).lastAutoTable?.finalY || 100) + 8;
+    doc.setFontSize(9);
+    doc.setTextColor(150, 80, 0);
+    doc.text(
+      list.warnings.map(w => `• ${w}`),
+      14,
+      y,
+      { maxWidth: 182 },
+    );
+  }
+  savePdf(doc, 'Separacao', title);
+};
 
 // ─── Client-facing quote PDF ──────────────────────────────────────────────────
 export const generateClientPDF = async (quote: Quote, store: Store | null) => {

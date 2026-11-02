@@ -54,7 +54,8 @@
 - **2/11:** 21A + 24 + 21B publicados (só hosting, `index-aDmjRhxd.js`).
 - **2/11:** 25 (quantidade fracionada) publicado (`index-Bij0dF8U.js`). Lista dos trabalhos 3D: reimportar
   "Presépio Simples" e "Brinquedo sensorial" (A Caverna).
-- **Próximo: 22 (lista de separação, opção B: caixas gravadas no orçamento) → 16 (IA, por último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 22 (lista de separação, opção B) publicado.
+- **Próximo: 16 (IA, o último):** riscos mostrados; esperando você fazer os passos no AI Studio e no Firebase. O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
@@ -914,6 +915,14 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
 22. **Lista de separação por pedido** (pedido em 2/11/2026): insumos de todos os itens somados × quantidade, kits
     abertos nos seus produtos, agrupados, com caixa para marcar, lote a pegar (do 21) e opção de imprimir/PDF. Também
     visível no cadastro do produto/cesta.
+    ✅ **Feito e publicado em 2/11/2026 (opção B, só hosting):** lib/pickList.ts + components/PickList.tsx. No
+    Histórico, "Lista de separação" no detalhe do orçamento: insumos somados × quantidade, kit aberto nos produtos,
+    produto sem matéria-prima como "produto pronto", lote a pegar (da reserva quando bate; senão o não vencido que
+    vence primeiro), "falta X" quando não há estoque, avisos (produto apagado, kit dentro de kit, receita mudou depois
+    da reserva); caixas gravadas no orçamento (`pickedItems`, sem mudar regras) e "Imprimir / PDF". No cadastro do
+    produto e na Cesta, a lista de 1 unidade. 391 testes, lint, build; emulador 390 px: pedido com 1 caneca + 2 kits
+    (2 canecas + 1 chaveiro) → 5 canecas (4 de 12/11 + 1 de 28/02) e 2 chaveiros; caixa gravada e mantida ao
+    reabrir; PDF sem erro.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.

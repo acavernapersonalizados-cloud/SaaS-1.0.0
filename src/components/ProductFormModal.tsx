@@ -5,6 +5,8 @@ import { Material, Product } from '../types';
 import { formatCurrency } from '../lib/utils';
 import { CategoryPicker } from './CategoryPicker';
 import { QuantityInput } from './QuantityInput';
+import { PickListView } from './PickList';
+import { buildPickList } from '../lib/pickList';
 import { Plus, Search, Trash2, X } from 'lucide-react';
 
 type NewFinishing = { name: string; description: string; additionalValue: number };
@@ -34,6 +36,7 @@ export function ProductFormModal({
   pricingSection,
   kitSection,
   catalogSection,
+  products = [],
 }: {
   editingProduct: Product | null;
   resetForm: () => void;
@@ -58,6 +61,8 @@ export function ProductFormModal({
   pricingSection: React.ReactNode;
   catalogSection: React.ReactNode;
   kitSection: React.ReactNode;
+  /** Produtos da loja (para abrir o kit na lista de separação, item 22). */
+  products?: Product[];
 }) {
   // Etapa 8C, item 4 (correção de 26/10/2026): produto criado de trabalho de calculadora. Tempo, embalagem e materiais
   // vêm do trabalho, só como informação e baixa de estoque, e ficam travados: o custo é o do trabalho.
@@ -285,6 +290,24 @@ export function ProductFormModal({
                 )}
               </div>
             </div>
+
+            {/* Item 22: lista de separação de 1 unidade (kit aberto nos produtos), com o lote a pegar. */}
+            {!!(newProduct.materials?.length || newProduct.kitItems?.length) && (
+              <details className="rounded-xl border border-neutral-200 p-3">
+                <summary className="text-xs font-bold text-neutral-700 uppercase tracking-wider cursor-pointer">
+                  Lista de separação (1 unidade)
+                </summary>
+                <div className="mt-3">
+                  <PickListView
+                    list={buildPickList(
+                      [{ product: { ...newProduct, id: editingProduct?.id || '__novo' }, quantity: 1 }],
+                      products,
+                      materials,
+                    )}
+                  />
+                </div>
+              </details>
+            )}
 
             {/* Finishing */}
             <div className="space-y-3 pt-2 border-t border-neutral-100">

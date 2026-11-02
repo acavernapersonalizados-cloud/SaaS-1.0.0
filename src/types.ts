@@ -360,6 +360,8 @@ export interface Quote {
   productionDueAt?: string;
   /** Legado: não é mais gravado nem lido; orçamentos antigos podem ter o valor. */
   followUpStatus?: FollowUpStatus;
+  /** Item 22: caixas marcadas na lista de separação (chaves "m:<insumo>" / "p:<produto>"). */
+  pickedItems?: string[];
   description?: string;
 }
 

@@ -17,6 +17,8 @@ import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import { StockMaterialPicker } from './StockMaterialPicker';
+import { PickListView } from './PickList';
+import { buildCestaPickList } from '../lib/pickList';
 import { aiUnavailableMessage, analyzeCestaPrice } from '../services/gemini';
 import {
   Gift,
@@ -310,6 +312,17 @@ export function CestaCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                   </button>
                 </div>
               ))}
+              {/* Item 22: lista de separação de 1 cesta (itens do estoque com o lote a pegar). */}
+              {items.length > 0 && (
+                <details className="rounded-xl border border-neutral-200 p-3">
+                  <summary className="text-xs font-bold text-neutral-700 uppercase tracking-wider cursor-pointer">
+                    Lista de separação (1 cesta)
+                  </summary>
+                  <div className="mt-3">
+                    <PickListView list={buildCestaPickList(items, materials)} />
+                  </div>
+                </details>
+              )}
               <div className="flex gap-2 bg-neutral-100 p-1 rounded-xl w-fit">
                 {[
                   { id: 'stock' as const, label: 'Do estoque', icon: Package },
