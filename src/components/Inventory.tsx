@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, doc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
-import { isLowStock } from '../lib/utils';
+import { cn, isLowStock } from '../lib/utils';
 import {
   addToLots,
+  changeLotExpiry,
   consumptionOrder,
   formatLotDate,
+  isExpired,
   materialLots,
   stockFields,
   takeFromLots,
@@ -16,6 +18,12 @@ import { useStore } from '../contexts/StoreContext';
 import { useToast } from '../contexts/ToastContext';
 import { Plus, Minus, AlertCircle, Package } from 'lucide-react';
 import { SearchBar } from './SearchBar';
+
+/** Recusa do "Alterar validade" dentro da transação (vira mensagem na tela, não erro do banco). */
+class LotError extends Error {}
+
+/** Formulário dentro da tabela: no celular, preso à esquerda e da largura da tela. */
+const FORM_FIT = 'sticky left-2 max-w-[calc(100vw-5rem)] md:static md:max-w-none';
 
 export function Inventory() {
   const { activeStore } = useStore();
@@ -99,8 +107,48 @@ export function Inventory() {
     }
   };
 
+  // Item 21: "Alterar validade" de um lote (inteiro ou parte). O saldo não muda.
+  const [editLot, setEditLot] = useState<{ materialId: string; lotId: string; qty: number | ''; date: string } | null>(
+    null,
+  );
+
+  const saveLotExpiry = async () => {
+    if (!editLot) return;
+    const material = materials.find(m => m.id === editLot.materialId);
+    if (!material) return;
+    const check = changeLotExpiry(materialLots(material), editLot.lotId, Number(editLot.qty), editLot.date || null);
+    if ('error' in check) {
+      addToast(check.error, 'error');
+      return;
+    }
+    try {
+      await runTransaction(db, async tx => {
+        const ref = doc(db, 'materials', material.id);
+        const snap = await tx.get(ref);
+        if (!snap.exists()) throw new Error('Material não encontrado');
+        const r = changeLotExpiry(
+          materialLots(snap.data() as Material),
+          editLot.lotId,
+          Number(editLot.qty),
+          editLot.date || null,
+        );
+        if ('error' in r) throw new LotError(r.error);
+        tx.update(ref, { ...stockFields(r.lots), updatedAt: new Date().toISOString() });
+      });
+      addToast('Validade alterada.', 'success');
+      setEditLot(null);
+    } catch (error) {
+      if (error instanceof LotError) {
+        addToast(error.message, 'error');
+        return;
+      }
+      handleFirestoreError(error, OperationType.UPDATE, `materials/${material.id}`);
+    }
+  };
+
   const filteredMaterials = materials.filter(m => (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const today = todayISO();
   const totalValue = materials.reduce((acc, m) => acc + (m.stockQuantity || 0) * m.unitCost, 0);
   const lowStockItems = materials.filter(isLowStock);
 
@@ -159,7 +207,7 @@ export function Inventory() {
             </thead>
             <tbody className="divide-y divide-neutral-50">
               {filteredMaterials.map(material => {
-                const lots = consumptionOrder(materialLots(material), todayISO(), true);
+                const lots = consumptionOrder(materialLots(material, today), today, true);
                 return (
                   <React.Fragment key={material.id}>
                     <tr className="group hover:bg-neutral-50 transition-colors">
@@ -171,14 +219,36 @@ export function Inventory() {
                             BAIXO
                           </span>
                         )}
-                        {(lots.length > 1 || lots.some(l => l.expiresAt)) && (
+                        {lots.length > 0 && (
                           <ul className="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500" aria-label="Lotes">
-                            {lots.map(l => (
-                              <li key={l.id} className="whitespace-nowrap">
-                                {l.quantity} {material.unit} ·{' '}
-                                {l.expiresAt ? `val. ${formatLotDate(l.expiresAt)}` : 'sem validade'}
-                              </li>
-                            ))}
+                            {lots.map(l => {
+                              const expired = isExpired(l, today);
+                              return (
+                                <li key={l.id} className={cn('whitespace-nowrap', expired && 'text-red-600 font-bold')}>
+                                  {l.quantity} {material.unit} ·{' '}
+                                  {l.expiresAt ? `val. ${formatLotDate(l.expiresAt)}` : 'sem validade'}
+                                  {expired && ' · vencido'}{' '}
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setEditLot(
+                                        editLot?.lotId === l.id && editLot.materialId === material.id
+                                          ? null
+                                          : {
+                                              materialId: material.id,
+                                              lotId: l.id,
+                                              qty: l.quantity,
+                                              date: l.expiresAt || '',
+                                            },
+                                      )
+                                    }
+                                    className="ml-1 underline text-neutral-700 font-bold"
+                                  >
+                                    alterar
+                                  </button>
+                                </li>
+                              );
+                            })}
                           </ul>
                         )}
                         {/* Abaixo do saldo (e não nas ações) para aparecer no celular sem rolar a tabela. */}
@@ -214,10 +284,70 @@ export function Inventory() {
                         </div>
                       </td>
                     </tr>
+                    {editLot?.materialId === material.id && lots.some(l => l.id === editLot.lotId) && (
+                      <tr className="bg-neutral-50">
+                        <td colSpan={4} className="py-3 px-2">
+                          {/* No celular a tabela rola para o lado; o formulário fica do tamanho da tela. */}
+                          <div className={FORM_FIT}>
+                            <p className="text-xs font-bold text-neutral-700 mb-2">
+                              Alterar validade do lote de{' '}
+                              {(() => {
+                                const l = lots.find(x => x.id === editLot.lotId)!;
+                                return `${l.quantity} ${material.unit} (${formatLotDate(l.expiresAt)})`;
+                              })()}
+                            </p>
+                            <div className="flex flex-wrap items-end gap-3">
+                              <label className="text-xs font-bold text-neutral-600 space-y-1">
+                                <span className="block">Quantidade ({material.unit})</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  value={editLot.qty}
+                                  onChange={e =>
+                                    setEditLot({ ...editLot, qty: e.target.value === '' ? '' : Number(e.target.value) })
+                                  }
+                                  className="w-28 px-3 py-2 bg-white border border-neutral-200 rounded-lg"
+                                />
+                              </label>
+                              <label className="text-xs font-bold text-neutral-600 space-y-1">
+                                <span className="block">Nova validade</span>
+                                <input
+                                  type="date"
+                                  value={editLot.date}
+                                  onChange={e => setEditLot({ ...editLot, date: e.target.value })}
+                                  className="px-3 py-2 bg-white border border-neutral-200 rounded-lg"
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={saveLotExpiry}
+                                className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-lg"
+                              >
+                                Salvar validade
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditLot(null)}
+                                className="px-3 py-2 text-xs font-bold text-neutral-500"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                            {editLot.date && editLot.date < today && (
+                              <p role="alert" className="mt-2 text-xs font-bold text-red-600">
+                                Essa data já passou: o lote fica vencido e não sai na baixa nem na reserva.
+                              </p>
+                            )}
+                            <p className="mt-2 text-[11px] text-neutral-400">Validade vazia = sem validade.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                     {entryFor === material.id && (
                       <tr className="bg-neutral-50">
                         <td colSpan={4} className="py-3 px-2">
-                          <div className="flex flex-wrap items-end gap-3">
+                          <div className={cn(FORM_FIT, 'flex flex-wrap items-end gap-3')}>
                             <label className="text-xs font-bold text-neutral-600 space-y-1">
                               <span className="block">Quantidade ({material.unit})</span>
                               <input

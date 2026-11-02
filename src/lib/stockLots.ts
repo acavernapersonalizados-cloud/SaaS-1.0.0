@@ -86,14 +86,18 @@ export function addToLots(
   quantity: number,
   expiresAt: string | null,
   now = new Date().toISOString(),
+  id = newLotId(),
 ): StockLot[] {
   const qty = round(Math.max(0, quantity));
   if (qty <= EPS) return lots;
   const exp = expiresAt || null;
   const same = lots.find(l => l.expiresAt === exp);
   if (same) return lots.map(l => (l === same ? { ...l, quantity: round(l.quantity + qty) } : l));
-  return [...lots, { id: newLotId(), quantity: qty, expiresAt: exp, createdAt: now }];
+  return [...lots, { id, quantity: qty, expiresAt: exp, createdAt: now }];
 }
+
+/** Código do lote "sem validade" criado na leitura: fixo, para a tela e a gravação acharem o mesmo lote. */
+const UNDATED_ID = 'sem-validade';
 
 /**
  * Lotes do insumo, sempre batendo com o saldo gravado. Sem lotes (estoque de antes do item 21), o saldo vira um lote
@@ -108,10 +112,38 @@ export function materialLots(material: MaterialStock, today = todayISO()): Stock
   const diff = round(total - lotsTotal(lots));
   if (diff > EPS) {
     const createdAt = material.stockLots?.length ? new Date().toISOString() : material.createdAt || '';
-    return addToLots(lots, diff, null, createdAt);
+    return addToLots(lots, diff, null, createdAt, lots.some(l => l.id === UNDATED_ID) ? newLotId() : UNDATED_ID);
   }
   if (diff < -EPS) return takeFromLots(lots, -diff, today, true).lots;
   return lots;
+}
+
+/**
+ * "Alterar validade" (item 21): passa `quantity` do lote `lotId` para a validade `expiresAt` (null = sem validade).
+ * Parte do lote vira outro lote; se já existe lote com essa data, junta nele. O saldo não muda. Devolve o erro em
+ * texto quando a quantidade não serve.
+ */
+export function changeLotExpiry(
+  lots: StockLot[],
+  lotId: string,
+  quantity: number,
+  expiresAt: string | null,
+  now = new Date().toISOString(),
+): { lots: StockLot[] } | { error: string } {
+  const lot = lots.find(l => l.id === lotId);
+  if (!lot) return { error: 'Lote não encontrado (o estoque mudou). Abra de novo.' };
+  const qty = round(Number(quantity) || 0);
+  if (!(qty > EPS)) return { error: 'Informe uma quantidade maior que zero.' };
+  if (qty > lot.quantity + EPS) return { error: `A quantidade passa do lote (${lot.quantity}).` };
+  const exp = expiresAt || null;
+  if (exp === lot.expiresAt) return { lots };
+  const rest = round(lot.quantity - qty);
+  const without = lots.flatMap(l => (l.id !== lotId ? [l] : rest > EPS ? [{ ...l, quantity: rest }] : []));
+  const target = without.find(l => l.expiresAt === exp);
+  if (target) return { lots: without.map(l => (l === target ? { ...l, quantity: round(l.quantity + qty) } : l)) };
+  // O lote inteiro só troca a data (mantém o id); uma parte vira lote novo.
+  if (rest <= EPS) return { lots: lots.map(l => (l.id === lotId ? { ...l, expiresAt: exp } : l)) };
+  return { lots: [...without, { id: newLotId(), quantity: qty, expiresAt: exp, createdAt: now }] };
 }
 
 /** Validade para a tela: "10/12/2026" ou "sem validade". */

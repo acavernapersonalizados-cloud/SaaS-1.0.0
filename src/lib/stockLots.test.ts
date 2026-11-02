@@ -2,7 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   addToLots,
+  changeLotExpiry,
   consumptionOrder,
+  lotsTotal,
   materialLots,
   StockLot,
   stockFields,
@@ -59,7 +61,12 @@ describe('validade por lotes', () => {
   it('estoque de antes vira um lote "sem validade", sem perder nada', () => {
     const r = materialLots({ stockQuantity: 12.5, createdAt: '2026-01-01T00:00:00.000Z' }, TODAY);
     expect(r).toHaveLength(1);
-    expect(r[0]).toMatchObject({ quantity: 12.5, expiresAt: null, createdAt: '2026-01-01T00:00:00.000Z' });
+    expect(r[0]).toEqual({
+      id: 'sem-validade',
+      quantity: 12.5,
+      expiresAt: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+    });
     expect(materialLots({ stockQuantity: 0 }, TODAY)).toEqual([]);
   });
 
@@ -79,6 +86,34 @@ describe('validade por lotes', () => {
       { lotId: 'dez', expiresAt: '2026-12-10', quantity: 3 },
       { lotId: 'sem', expiresAt: null, quantity: 1 },
     ]);
+  });
+
+  it('alterar validade: parte do lote vira outro lote; o lote inteiro só troca a data; mesma data junta', () => {
+    const base = [lot('sem', 10, null)];
+    const parte = changeLotExpiry(base, 'sem', 6, '2026-12-10', '2026-11-02T10:00:00.000Z');
+    expect('lots' in parte && parte.lots.map(l => [l.quantity, l.expiresAt])).toEqual([
+      [4, null],
+      [6, '2026-12-10'],
+    ]);
+    const inteiro = changeLotExpiry(base, 'sem', 10, '2027-01-31');
+    expect('lots' in inteiro && inteiro.lots).toEqual([lot('sem', 10, '2027-01-31')]);
+    const junta = changeLotExpiry(lots, 'sem', 5, '2026-12-10');
+    expect('lots' in junta && junta.lots.map(l => [l.id, l.quantity])).toEqual([
+      ['dez', 9],
+      ['venc', 3],
+      ['nov', 2],
+    ]);
+    const volta = changeLotExpiry(lots, 'dez', 4, null);
+    expect('lots' in volta && volta.lots.find(l => l.id === 'sem')?.quantity).toBe(9);
+    for (const r of [parte, inteiro, junta, volta])
+      expect('lots' in r && lotsTotal(r.lots)).toBe(lotsTotal('lots' in r ? r.lots : []));
+    expect('lots' in junta && lotsTotal(junta.lots)).toBe(lotsTotal(lots));
+  });
+
+  it('alterar validade: quantidade 0, negativa ou maior que o lote é recusada', () => {
+    expect(changeLotExpiry(lots, 'sem', 0, '2026-12-10')).toEqual({ error: 'Informe uma quantidade maior que zero.' });
+    expect(changeLotExpiry(lots, 'sem', -1, '2026-12-10')).toEqual({ error: 'Informe uma quantidade maior que zero.' });
+    expect(changeLotExpiry(lots, 'sem', 6, '2026-12-10')).toEqual({ error: 'A quantidade passa do lote (5).' });
   });
 
   it('hoje no formato da validade', () => {

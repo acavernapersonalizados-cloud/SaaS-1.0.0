@@ -12382,6 +12382,28 @@ exports[`Estoque > busca 1`] = `
                   >
                     BAIXO
                   </span>
+                  <ul
+                    aria-label="Lotes"
+                    class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
+                  >
+                    <li
+                      class="whitespace-nowrap"
+                    >
+                      2
+                       
+                      m
+                       ·
+                       
+                      sem validade
+                       
+                      <button
+                        class="ml-1 underline text-neutral-700 font-bold"
+                        type="button"
+                      >
+                        alterar
+                      </button>
+                    </li>
+                  </ul>
                   <button
                     class="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
                     type="button"
@@ -12606,6 +12628,28 @@ exports[`Estoque > lista 1`] = `
                   10
                    
                   un
+                  <ul
+                    aria-label="Lotes"
+                    class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
+                  >
+                    <li
+                      class="whitespace-nowrap"
+                    >
+                      10
+                       
+                      un
+                       ·
+                       
+                      sem validade
+                       
+                      <button
+                        class="ml-1 underline text-neutral-700 font-bold"
+                        type="button"
+                      >
+                        alterar
+                      </button>
+                    </li>
+                  </ul>
                   <button
                     class="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
                     type="button"
@@ -12686,6 +12730,28 @@ exports[`Estoque > lista 1`] = `
                   100
                    
                   pct
+                  <ul
+                    aria-label="Lotes"
+                    class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
+                  >
+                    <li
+                      class="whitespace-nowrap"
+                    >
+                      100
+                       
+                      pct
+                       ·
+                       
+                      sem validade
+                       
+                      <button
+                        class="ml-1 underline text-neutral-700 font-bold"
+                        type="button"
+                      >
+                        alterar
+                      </button>
+                    </li>
+                  </ul>
                   <button
                     class="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
                     type="button"
@@ -12771,6 +12837,28 @@ exports[`Estoque > lista 1`] = `
                   >
                     BAIXO
                   </span>
+                  <ul
+                    aria-label="Lotes"
+                    class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
+                  >
+                    <li
+                      class="whitespace-nowrap"
+                    >
+                      2
+                       
+                      m
+                       ·
+                       
+                      sem validade
+                       
+                      <button
+                        class="ml-1 underline text-neutral-700 font-bold"
+                        type="button"
+                      >
+                        alterar
+                      </button>
+                    </li>
+                  </ul>
                   <button
                     class="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
                     type="button"
