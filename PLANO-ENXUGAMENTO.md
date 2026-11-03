@@ -60,7 +60,7 @@
   R$ 64.450,00); a conta da tela estava certa. Corrigido no código (publicado): card no formato R$ 68.387,60, conta
   única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
   Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
-- **2/11:** 26 (frete no orçamento) publicado.
+- **2/11:** 26 (frete no orçamento) publicado (`index-871sOi1e.js`).
 - **Próximo: 27 (perdas por vencimento) → 16 (IA, o último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
