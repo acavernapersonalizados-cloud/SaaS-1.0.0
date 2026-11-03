@@ -947,6 +947,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     banco, sem o limite de 100 (mesmo índice do ranking). Orçamentos novos gravam `createdAt`. 404 testes, lint,
     build; emulador 390 px: finalizado de 2/11 → 1º/08 tirou R$ 60 de "este mês" e do ranking de 90 dias (ano igual),
     validade 30/11 → 29/08; 5 de uma vez; antigos sem o campo iguais; outra loja 403.
+29. **Calculadora 3D multicor** (pedido em 3/11/2026; **para depois do reset, não fazer agora**), no modelo do exemplo
+    do Mandri3D que você vai anexar: vários filamentos na mesma peça (cada um com cor, R$/kg ou vínculo com o
+    estoque, e gramas); campo "Desperdício da troca / purga (g)" que entra no custo; leitura do G-code com vários
+    filamentos (Orca, Bambu, Prusa: gramas por filamento e purga); baixa de estoque em cada filamento. Trabalhos
+    antigos de 1 cor continuam iguais. Riscos e aprovado antes.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
