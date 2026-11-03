@@ -387,6 +387,8 @@ export function Pricing() {
       const quoteData: any = {
         storeId: activeStore.id,
         date: new Date().toISOString(),
+        // Item 28: data do lançamento (não muda; `date` vira a data da venda se for alterada depois).
+        createdAt: new Date().toISOString(),
         expiryDate: new Date(Date.now() + QUOTE_VALIDITY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
         clientName: clientName.trim(),
         clientType,

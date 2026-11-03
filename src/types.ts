@@ -367,6 +367,8 @@ export interface Quote {
   shippingPaidBy?: 'cliente' | 'loja';
   /** Item 26: soma só dos produtos (o totalAmount inclui o frete quando o cliente paga). */
   productsTotal?: number;
+  /** Item 28: quando foi lançado no sistema (o `date` é a data da venda e pode ser alterado). */
+  createdAt?: string;
   description?: string;
 }
 

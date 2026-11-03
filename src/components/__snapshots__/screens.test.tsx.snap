@@ -14015,6 +14015,16 @@ exports[`Histórico > busca 1`] = `
           />
         </div>
         <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <button
+            class="px-3 py-2 rounded-xl text-xs font-bold border border-neutral-300 bg-white text-neutral-800"
+            type="button"
+          >
+            Alterar datas
+          </button>
+        </div>
+        <div
           class="overflow-x-auto"
         >
           <table
@@ -14316,6 +14326,16 @@ exports[`Histórico > confirmar exclusão 1`] = `
             type="text"
             value=""
           />
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <button
+            class="px-3 py-2 rounded-xl text-xs font-bold border border-neutral-300 bg-white text-neutral-800"
+            type="button"
+          >
+            Alterar datas
+          </button>
         </div>
         <div
           class="overflow-x-auto"
@@ -14688,6 +14708,16 @@ exports[`Histórico > lista 1`] = `
             type="text"
             value=""
           />
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <button
+            class="px-3 py-2 rounded-xl text-xs font-bold border border-neutral-300 bg-white text-neutral-800"
+            type="button"
+          >
+            Alterar datas
+          </button>
         </div>
         <div
           class="overflow-x-auto"

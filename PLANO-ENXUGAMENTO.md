@@ -38,31 +38,15 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (2/11/2026):**
+**Onde paramos (2/11/2026, noite):**
 
-- No ar: `index-CaCGiIl5.js` (2/11/2026: itens 23, 21, 24, 25 e 22). Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 25.
-  9C desligada. Falta só o 16 (IA).
-- **Correção urgente (28/10):** o catálogo público não oferece mais "instalar o sistema" ao cliente (sem manifesto e
-  sem service worker lá); o painel continua instalável. Conferido no site, nos dois.
-- **Entregues em 28/10:** 19 (Kit = soma dos produtos, desconto opcional, lista corrigida); 20 (prazo de produção em dias
-  úteis, atrasado/vence hoje, botão para os antigos); reserva de estoque corrigida (desde 17/10 não reservava); 15
-  (catálogo em vitrine: busca pelo nome, foto do mesmo tamanho, Pix/crédito e "Pedir" no WhatsApp). Também 17 e 18.
-- Falta você: backup; organizar as categorias (item 14) nas duas lojas; "Atualizar agora" no site.
-- **2/11:** 23 (ranking dos mais vendidos) feito e publicado (`index-A_pK4SDV.js`). `framer-motion` (instalado em
-  29/10 numa outra sessão, sem uso) desfeito; `.mcp.json` (21st) no `.gitignore`.
-- **2/11:** 21A (lotes: entradas, baixa, reserva e "Alterar validade") fechado, não publicado.
-- **2/11:** 21A + 24 + 21B publicados (só hosting, `index-aDmjRhxd.js`).
-- **2/11:** 25 (quantidade fracionada) publicado (`index-Bij0dF8U.js`). Lista dos trabalhos 3D: reimportar
-  "Presépio Simples" e "Brinquedo sensorial" (A Caverna).
-- **2/11:** 22 (lista de separação, opção B) publicado.
-- **Correção urgente (2/11):** o card "Valor Total em Estoque" de A Caverna mostrava R$ 68387.60. Causa: dado (o
-  "PLA SILK DOURADO - 3DLAB" foi trocado de kg para g às 18:11 com 500 de estoque e o custo ficou R$ 128,90 por g =
-  R$ 64.450,00); a conta da tela estava certa. Corrigido no código (publicado): card no formato R$ 68.387,60, conta
-  única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
-  Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
-- **2/11:** 26 (frete no orçamento) publicado (`index-871sOi1e.js`).
-- **2/11:** 27 (perdas por vencimento) publicado (`index-B-Vd94eA.js`).
-- **Próximo: 16 (IA, o último):** os passos são seus, no AI Studio e no Firebase (App Check → Exigir). O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **No ar:** `index-B-Vd94eA.js` (itens 21 a 27 e a correção do valor do estoque). **28 (data da venda) pronto, não publicado** (espera o seu "pode publicar").
+- **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 28 feitos. 9C desligada. **Falta só o 16 (IA)**: passos seus no AI Studio e no Firebase (App Check → Exigir).
+- **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
+- **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
+- **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
+
+- **Detalhe do item 24 (Calculadora 3D com tempo em minutos):**
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
@@ -953,6 +937,14 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     até 10 + "ver todos"). Dashboard: "R$ X vencendo em N dias · R$ Y perdidos no mês", vermelho com vencido ou
     perda no mês. 399 testes, lint, build; emulador 390 px: lote vencido de R$ 5,00 parado → descartado: perdido no
     mês R$ 25 → R$ 30, parado R$ 5 → R$ 0; movimento com custo e valor; linha do Dashboard em vermelho.
+28. **Data da venda** (pedido em 2/11/2026: o livro caixa entrou com a data do lançamento). ✅ **Feito em 2/11/2026
+    (não publicado):** lib/quoteDate.ts. A data da venda fica no próprio `date` (todas as telas já usam); a original
+    vai para `createdAt` na primeira troca; a validade anda junto com a mesma diferença de dias. No Histórico:
+    "Data da venda" no detalhe ("Lançado em …") e o modo "Alterar datas" (tabela, "Salvar tudo" em lote). Dashboard:
+    faturamento, lucro, margem e pendentes por período (este mês, mês passado, este ano), consultando por data no
+    banco, sem o limite de 100 (mesmo índice do ranking). Orçamentos novos gravam `createdAt`. 404 testes, lint,
+    build; emulador 390 px: finalizado de 2/11 → 1º/08 tirou R$ 60 de "este mês" e do ranking de 90 dias (ano igual),
+    validade 30/11 → 29/08; 5 de uma vez; antigos sem o campo iguais; outra loja 403.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where, writeBatch } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Client } from '../types';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { shippingLabel, shippingOf } from '../lib/shipping';
+import { changeSaleDate, dayOf, isFutureDay } from '../lib/quoteDate';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -47,6 +48,48 @@ export function History() {
   const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
   // Item 22: orçamento com a lista de separação aberta.
   const [pickFor, setPickFor] = useState<string | null>(null);
+
+  // Item 28: data da venda. `bulkDates` = modo "Alterar datas" aberto (id do orçamento → dia novo).
+  const [bulkDates, setBulkDates] = useState<Record<string, string> | null>(null);
+  const [savingDates, setSavingDates] = useState(false);
+  /** Grava a data da venda (e a validade junto); pede confirmação para data no futuro. */
+  const saveSaleDates = async (changes: Array<{ quote: Quote; day: string }>) => {
+    const today = dayOf(new Date().toISOString());
+    const writes = changes.flatMap(c => {
+      const fields = changeSaleDate(c.quote, c.day);
+      return fields ? [{ quote: c.quote, fields }] : [];
+    });
+    if (writes.length === 0) return false;
+    const future = changes.filter(c => isFutureDay(c.day, today)).length;
+    if (future && !window.confirm(`${future} data(s) no futuro. Salvar assim mesmo?`)) return false;
+    setSavingDates(true);
+    try {
+      for (let i = 0; i < writes.length; i += 450) {
+        const batch = writeBatch(db);
+        for (const w of writes.slice(i, i + 450)) batch.update(doc(db, 'quotes', w.quote.id), w.fields);
+        await batch.commit();
+      }
+      if (selectedQuote) {
+        const mine = writes.find(w => w.quote.id === selectedQuote.id);
+        if (mine) setSelectedQuote({ ...selectedQuote, ...mine.fields });
+      }
+      addToast(writes.length === 1 ? 'Data da venda alterada.' : `${writes.length} datas alteradas.`, 'success');
+      return true;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, 'quotes');
+      return false;
+    } finally {
+      setSavingDates(false);
+    }
+  };
+  const saveBulkDates = async () => {
+    if (!bulkDates) return;
+    const changes = Object.entries(bulkDates).flatMap(([id, day]) => {
+      const quote = quotes.find(q => q.id === id);
+      return quote ? [{ quote, day }] : [];
+    });
+    if (await saveSaleDates(changes)) setBulkDates({});
+  };
   const closePick = useCallback(() => setPickFor(null), []);
 
   useEffect(() => {
@@ -165,6 +208,69 @@ export function History() {
 
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
         <SearchBar placeholder="Buscar por cliente ou produto..." value={searchTerm} onChange={setSearchTerm} />
+
+        {/* Item 28: alterar a data da venda de vários orçamentos de uma vez (livro caixa). */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setBulkDates(bulkDates ? null : {});
+            }}
+            className="px-3 py-2 rounded-xl text-xs font-bold border border-neutral-300 bg-white text-neutral-800"
+          >
+            {bulkDates ? 'Fechar "Alterar datas"' : 'Alterar datas'}
+          </button>
+          {bulkDates && (
+            <button
+              type="button"
+              onClick={saveBulkDates}
+              disabled={savingDates || Object.keys(bulkDates).length === 0}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-neutral-900 text-white disabled:opacity-40"
+            >
+              {savingDates ? 'Salvando…' : `Salvar tudo (${Object.keys(bulkDates).length})`}
+            </button>
+          )}
+        </div>
+        {bulkDates && (
+          <div className="overflow-x-auto border border-neutral-200 rounded-xl">
+            <table className="w-full text-left text-sm" aria-label="Alterar datas">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-wider text-neutral-400">
+                  <th className="p-2">Cliente</th>
+                  <th className="p-2">Total</th>
+                  <th className="p-2">Status</th>
+                  <th className="p-2">Data da venda</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredQuotes.map(q => (
+                  <tr key={q.id} className={cn('border-t border-neutral-100', bulkDates[q.id] && 'bg-amber-50')}>
+                    <td className="p-2 font-bold text-neutral-900">{q.clientName}</td>
+                    <td className="p-2 whitespace-nowrap">{formatCurrency(q.totalAmount)}</td>
+                    <td className="p-2 text-xs">{q.status || 'Pendente'}</td>
+                    <td className="p-2">
+                      <input
+                        type="date"
+                        aria-label={`Data da venda de ${q.clientName}`}
+                        value={bulkDates[q.id] ?? dayOf(q.date)}
+                        onChange={e => {
+                          const day = e.target.value;
+                          setBulkDates(prev => {
+                            const next = { ...(prev || {}) };
+                            if (!day || day === dayOf(q.date)) delete next[q.id];
+                            else next[q.id] = day;
+                            return next;
+                          });
+                        }}
+                        className="px-2 py-1.5 border border-neutral-200 rounded-lg"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -398,6 +504,24 @@ export function History() {
               </div>
 
               <div className="p-6 bg-neutral-900 rounded-2xl text-white space-y-4">
+                {/* Item 28: data da venda (status, estoque e valores não mudam). */}
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <label htmlFor="sale-date" className="text-xs text-neutral-400">
+                    Data da venda
+                  </label>
+                  <input
+                    id="sale-date"
+                    type="date"
+                    value={dayOf(selectedQuote.date)}
+                    onChange={e => e.target.value && saveSaleDates([{ quote: selectedQuote, day: e.target.value }])}
+                    className="px-2 py-1 rounded-lg bg-white text-neutral-900 text-sm font-bold"
+                  />
+                </div>
+                {selectedQuote.createdAt && dayOf(selectedQuote.createdAt) !== dayOf(selectedQuote.date) && (
+                  <p className="text-[11px] text-neutral-400 -mt-2">
+                    Lançado em {new Date(selectedQuote.createdAt).toLocaleDateString('pt-BR')}
+                  </p>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-400">Total Orçado</span>
                   <span className="font-bold">{formatCurrency(selectedQuote.totalAmount)}</span>

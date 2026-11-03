@@ -4,6 +4,7 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, Product, CostBase } from '../types';
 import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { productsTotalOf } from '../lib/shipping';
+import { periodBounds, REVENUE_PERIODS, RevenuePeriod } from '../lib/quoteDate';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { deadlineStatus } from '../lib/productionDeadline';
 import {
@@ -99,11 +100,28 @@ export function Dashboard() {
     );
   }, [activeStore]);
 
-  // ── KPIs from quotes ──────────────────────────────────────────────────────
-  const approvedQuotes = quotes.filter(
+  // ── KPIs by period (item 28): consulta por data da venda no banco, sem o limite de 100 ──
+  const [period, setPeriod] = useState<RevenuePeriod>('thisMonth');
+  const [periodQuotes, setPeriodQuotes] = useState<Quote[]>([]);
+  useEffect(() => {
+    if (!activeStore) return;
+    const { start, end } = periodBounds(period);
+    return onSnapshot(
+      query(
+        collection(db, 'quotes'),
+        where('storeId', '==', activeStore.id),
+        where('date', '>=', start),
+        where('date', '<', end),
+        orderBy('date', 'desc'),
+      ),
+      snap => setPeriodQuotes(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Quote)),
+      err => handleFirestoreError(err, OperationType.LIST, 'quotes'),
+    );
+  }, [activeStore, period]);
+  const approvedQuotes = periodQuotes.filter(
     q => q.status === 'Aprovado' || q.status === 'Em produção' || q.status === 'Finalizado',
   );
-  const pendingQuotes = quotes.filter(q => q.status === 'Pendente');
+  const pendingQuotes = periodQuotes.filter(q => q.status === 'Pendente');
 
   // Item 26: faturamento só dos produtos (o frete do cliente não é venda).
   const totalRevenue = approvedQuotes.reduce((a, q) => a + productsTotalOf(q), 0);
@@ -137,7 +155,24 @@ export function Dashboard() {
         <p className="text-neutral-500 mt-1">Visão financeira completa do seu ateliê.</p>
       </header>
 
-      {/* ── KPIs principais ─────────────────────────────────────────────────── */}
+      {/* ── KPIs principais (item 28: por período, pela data da venda) ──────── */}
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Período do faturamento">
+        {REVENUE_PERIODS.map(p => (
+          <button
+            key={p.value}
+            type="button"
+            onClick={() => setPeriod(p.value)}
+            className={cn(
+              'px-3 py-1.5 rounded-full text-xs font-bold border',
+              period === p.value
+                ? 'bg-neutral-900 text-white border-neutral-900'
+                : 'bg-white text-neutral-600 border-neutral-200',
+            )}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
