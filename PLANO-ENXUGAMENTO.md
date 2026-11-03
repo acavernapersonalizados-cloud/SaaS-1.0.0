@@ -38,10 +38,12 @@
 | 9 — Monitor de taxas | 9A aviso de 60 dias, 9B Mercado Livre pela API, 9C verificação de taxas com IA. Ver seção 6. | ✅ **Feita e publicada** (26/10/2026): 9A no ar; 9C feita, mas **desligada** (sem a busca com fontes no nível gratuito, volta com a Etapa 10, se o Blaze for ativado); 9B foi para a Etapa 10. |
 | 10 — Ferramentas de venda | Registrada em 25/10/2026. Ver seção 6. | ⏸️ **Fora do projeto** (o projeto termina na Etapa 9, decidido em 26/10/2026); fica só registrada. Recebeu em 26/10/2026 o 9B (Mercado Livre pela API) e o lembrete de orçamento por WhatsApp. |
 
-**Onde paramos (2/11/2026, noite):**
+**Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
 - **No ar:** `index-D1TkJPs0.js` (3/11/2026: itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
-- **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 28 feitos. 9C desligada. **Falta só o 16 (IA)**: passos seus no AI Studio e no Firebase (App Check → Exigir).
+- **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
+  3/11/2026 (sem código).
+- **Próxima fase:** 1º o item 29 (Calculadora 3D multicor, depois do reset); depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -112,7 +114,9 @@ O que cada etapa trouxe para quem usa o app:
 19. ✅ Produtos Kit: produtos já cadastrados e desconto opcional (publicado em 28/10/2026; corrigido em 28/10/2026).
 20. ✅ Lembrete de produção: prazo pelo tempo de produção, no painel de Produção e no Dashboard (publicado em 28/10/2026).
 15. ✅ Catálogo público com cara de loja: vitrine em grade, busca pelo nome, WhatsApp por produto e Pix/crédito (publicado em 28/10/2026).
-16. **Por último — IA:** testar a análise no AI Studio e no app e ligar o "Exigir" do App Check (Firebase AI Logic).
+16. ✅ IA: AI Studio no pré-pagamento com saldo (sem recarga automática), "Análise IA" testada no site e App Check do Firebase AI Logic com 100% verificadas (51/51), "Básico: aplicado" (você, no console, 3/11/2026).
+
+**Próxima fase:** 1. item 29 — Calculadora 3D multicor (depois do reset; ver seção 7.1); 2. Etapa 10.
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -952,7 +956,10 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     estoque, e gramas); campo "Desperdício da troca / purga (g)" que entra no custo; leitura do G-code com vários
     filamentos (Orca, Bambu, Prusa: gramas por filamento e purga); baixa de estoque em cada filamento. Trabalhos
     antigos de 1 cor continuam iguais. Riscos e aprovado antes.
-16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
+16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
+    com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
+    com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:
+    **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.
 
