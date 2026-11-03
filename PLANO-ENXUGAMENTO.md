@@ -40,7 +40,7 @@
 
 **Onde paramos (2/11/2026, noite):**
 
-- **No ar:** `index-B-Vd94eA.js` (itens 21 a 27 e a correção do valor do estoque). **28 (data da venda) pronto, não publicado** (espera o seu "pode publicar").
+- **No ar:** `index-D28BTPLO.js` (2/11/2026, itens 21 a 28 e a correção do valor do estoque).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 28 feitos. 9C desligada. **Falta só o 16 (IA)**: passos seus no AI Studio e no Firebase (App Check → Exigir).
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
@@ -938,7 +938,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     perda no mês. 399 testes, lint, build; emulador 390 px: lote vencido de R$ 5,00 parado → descartado: perdido no
     mês R$ 25 → R$ 30, parado R$ 5 → R$ 0; movimento com custo e valor; linha do Dashboard em vermelho.
 28. **Data da venda** (pedido em 2/11/2026: o livro caixa entrou com a data do lançamento). ✅ **Feito em 2/11/2026
-    (não publicado):** lib/quoteDate.ts. A data da venda fica no próprio `date` (todas as telas já usam); a original
+    (publicado, `index-D28BTPLO.js`):** lib/quoteDate.ts. A data da venda fica no próprio `date` (todas as telas já usam); a original
     vai para `createdAt` na primeira troca; a validade anda junto com a mesma diferença de dias. No Histórico:
     "Data da venda" no detalhe ("Lançado em …") e o modo "Alterar datas" (tabela, "Salvar tudo" em lote). Dashboard:
     faturamento, lucro, margem e pendentes por período (este mês, mês passado, este ano), consultando por data no
