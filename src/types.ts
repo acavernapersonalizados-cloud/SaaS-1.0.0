@@ -362,6 +362,11 @@ export interface Quote {
   followUpStatus?: FollowUpStatus;
   /** Item 22: caixas marcadas na lista de separação (chaves "m:<insumo>" / "p:<produto>"). */
   pickedItems?: string[];
+  /** Item 26: frete (R$) e quem paga. Sem os campos = sem frete (orçamentos antigos). */
+  shippingAmount?: number;
+  shippingPaidBy?: 'cliente' | 'loja';
+  /** Item 26: soma só dos produtos (o totalAmount inclui o frete quando o cliente paga). */
+  productsTotal?: number;
   description?: string;
 }
 

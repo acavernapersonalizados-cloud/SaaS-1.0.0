@@ -5,6 +5,8 @@ import { Client, QuoteItem } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
 import { QuoteItemCalcResult, creditPrice } from '../lib/pricingEngine';
 import { feeLabel, QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
+import type { QuoteTotals, ShippingPaidBy } from '../lib/shipping';
+import { QuantityInput } from './QuantityInput';
 import {
   AlertCircle,
   ArrowRight,
@@ -277,6 +279,11 @@ export function QuoteSummary({
   quoteError,
   quoteSuccess,
   avgMargin,
+  totals,
+  shippingAmount,
+  setShippingAmount,
+  shippingPaidBy,
+  setShippingPaidBy,
 }: {
   totalAmount: number;
   quoteItems: QuoteItem[];
@@ -287,7 +294,16 @@ export function QuoteSummary({
   quoteError: string;
   quoteSuccess: string;
   avgMargin: number;
+  /** Item 26: totais com o frete (produtos, total a pagar, crédito, lucro). */
+  totals?: QuoteTotals;
+  shippingAmount?: number;
+  setShippingAmount?: (v: number) => void;
+  shippingPaidBy?: ShippingPaidBy;
+  setShippingPaidBy?: (v: ShippingPaidBy) => void;
 }) {
+  const productsTotal = totals?.productsTotal ?? totalAmount;
+  const credit = totals?.creditTotal ?? creditPrice(totalAmount);
+  const shipping = Number(shippingAmount) || 0;
   return (
     <div className="space-y-8">
       <div className="bg-white p-8 rounded-[32px] shadow-sm border border-neutral-100 space-y-8 sticky top-8">
@@ -300,13 +316,62 @@ export function QuoteSummary({
 
         <div className="space-y-4">
           <div className="flex justify-between text-sm">
-            <span className="text-neutral-400 font-bold uppercase tracking-wider">Subtotal</span>
-            <span className="text-neutral-900 font-black">{formatCurrency(totalAmount)}</span>
+            <span className="text-neutral-400 font-bold uppercase tracking-wider">Produtos</span>
+            <span className="text-neutral-900 font-black">{formatCurrency(productsTotal)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-neutral-400 font-bold uppercase tracking-wider">Itens</span>
             <span className="text-neutral-900 font-black">{quoteItems.length}</span>
           </div>
+          {/* Item 26: frete opcional; cliente paga (soma no total) ou frete grátis (custo da loja). */}
+          {setShippingAmount && setShippingPaidBy && (
+            <div className="space-y-2">
+              <label className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-neutral-400 font-bold uppercase tracking-wider">Frete (R$)</span>
+                <QuantityInput
+                  compact
+                  ariaLabel="Frete (R$)"
+                  placeholder="0,00"
+                  value={shippingAmount || null}
+                  onChange={v => setShippingAmount(v ?? 0)}
+                  className="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                />
+              </label>
+              {shipping > 0 && (
+                <div className="flex gap-2" role="radiogroup" aria-label="Quem paga o frete">
+                  {(
+                    [
+                      ['cliente', 'Cliente paga'],
+                      ['loja', 'Frete grátis (loja)'],
+                    ] as const
+                  ).map(([v, label]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      role="radio"
+                      aria-checked={shippingPaidBy === v}
+                      onClick={() => setShippingPaidBy(v)}
+                      className={cn(
+                        'flex-1 px-3 py-2 rounded-xl text-xs font-bold border',
+                        shippingPaidBy === v
+                          ? 'bg-neutral-900 text-white border-neutral-900'
+                          : 'bg-white text-neutral-600 border-neutral-200',
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {shipping > 0 && (
+                <p className="text-[11px] text-neutral-500">
+                  {shippingPaidBy === 'loja'
+                    ? `Frete grátis: não soma no total; ${formatCurrency(shipping)} saem do lucro.`
+                    : `Soma no total (fora do lucro e da margem).`}
+                </p>
+              )}
+            </div>
+          )}
           <div className="h-px bg-neutral-100" />
           <div className="flex justify-between items-end">
             <span className="text-neutral-400 font-bold uppercase tracking-wider text-xs mb-1">Total no Pix</span>
@@ -314,8 +379,13 @@ export function QuoteSummary({
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-neutral-400 font-bold uppercase tracking-wider">No crédito</span>
-            <span className="text-neutral-900 font-black">{formatCurrency(creditPrice(totalAmount))}</span>
+            <span className="text-neutral-900 font-black">{formatCurrency(credit)}</span>
           </div>
+          {totals && quoteItems.length > 0 && totals.totalProfit < 0 && (
+            <p role="alert" className="text-xs font-bold text-red-600">
+              Com o frete grátis, o lucro fica negativo ({formatCurrency(totals.totalProfit)}).
+            </p>
+          )}
         </div>
 
         <div className="space-y-3">

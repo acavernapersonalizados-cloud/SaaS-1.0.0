@@ -5,6 +5,7 @@ import { formatCurrency, formatPercent } from './utils';
 import type { PickList } from './pickList';
 import { formatQuantity } from './quantity';
 import { formatLotDate } from './stockLots';
+import { shippingLabel, shippingOf } from './shipping';
 
 // ─── Helper: parse hex color to RGB ──────────────────────────────────────────
 function hexToRgb(hex: string): [number, number, number] {
@@ -42,6 +43,22 @@ function itemRows(quote: Quote) {
       formatCurrency(item.totalPrice),
     ];
   });
+}
+
+/**
+ * Item 26: linha do frete na tabela (vazia sem frete). Cliente paga: o valor (já está no total). Frete grátis: "Grátis"
+ * para o cliente; no interno, o valor como custo da loja.
+ */
+function shippingRows(quote: Quote, internal = false) {
+  const label = shippingLabel(quote);
+  if (!label) return [];
+  const value =
+    quote.shippingPaidBy === 'loja'
+      ? internal
+        ? `- ${formatCurrency(shippingOf(quote))} (custo)`
+        : 'Grátis'
+      : formatCurrency(shippingOf(quote));
+  return [[{ content: label, styles: { fontStyle: 'italic' as const } }, '', '', value]];
 }
 
 /** Título de seção (12, preto) e prepara o texto seguinte (10, cinza). */
@@ -180,7 +197,7 @@ export const generateClientPDF = async (quote: Quote, store: Store | null) => {
     autoTable(doc, {
       startY: startY + 40,
       head: [['Produto', 'Quantidade', 'Valor Unitário', 'Total']],
-      body: itemRows(quote),
+      body: [...itemRows(quote), ...shippingRows(quote)],
       theme: 'striped',
       headStyles: { fillColor: primaryRgb as [number, number, number] },
     });
@@ -222,7 +239,7 @@ export const generateInternalPDF = async (quote: Quote, store: Store | null) => 
     autoTable(doc, {
       startY: startY + 46,
       head: [['Produto', 'Qtd', 'Preço Unit.', 'Total Venda']],
-      body: itemRows(quote),
+      body: [...itemRows(quote), ...shippingRows(quote, true)],
       theme: 'striped',
       headStyles: { fillColor: primaryRgb as [number, number, number] },
     });
@@ -278,7 +295,7 @@ export const generateInvoicePDF = async (quote: Quote, store: Store | null) => {
     autoTable(doc, {
       startY: startY + 56,
       head: [['Descrição', 'Quantidade', 'Valor Unitário', 'Valor Total']],
-      body: itemRows(quote),
+      body: [...itemRows(quote), ...shippingRows(quote)],
       theme: 'grid',
       headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
     });

@@ -3,6 +3,7 @@ import { collection, query, orderBy, limit, onSnapshot, where, doc } from 'fireb
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Material, Product, CostBase } from '../types';
 import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
+import { productsTotalOf } from '../lib/shipping';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { deadlineStatus } from '../lib/productionDeadline';
 import { expiryAlerts, expiryWarningDaysOf, formatLotDate, lotAlertText, todayISO } from '../lib/stockLots';
@@ -84,11 +85,12 @@ export function Dashboard() {
   );
   const pendingQuotes = quotes.filter(q => q.status === 'Pendente');
 
-  const totalRevenue = approvedQuotes.reduce((a, q) => a + (q.totalAmount || 0), 0);
+  // Item 26: faturamento só dos produtos (o frete do cliente não é venda).
+  const totalRevenue = approvedQuotes.reduce((a, q) => a + productsTotalOf(q), 0);
   const totalProfit = approvedQuotes.reduce((a, q) => a + (q.totalProfit || 0), 0);
   const avgMargin =
     approvedQuotes.length > 0 ? approvedQuotes.reduce((a, q) => a + (q.avgMargin || 0), 0) / approvedQuotes.length : 0;
-  const pendingRevenue = pendingQuotes.reduce((a, q) => a + (q.totalAmount || 0), 0);
+  const pendingRevenue = pendingQuotes.reduce((a, q) => a + productsTotalOf(q), 0);
 
   // ── Catalog KPIs ──────────────────────────────────────────────────────────
   const kpis = calcCatalogKPIs(products, materials, costs);

@@ -60,7 +60,8 @@
   R$ 64.450,00); a conta da tela estava certa. Corrigido no código (publicado): card no formato R$ 68.387,60, conta
   única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
   Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
-- **Próximo: 26 (frete no orçamento) → 27 (perdas por vencimento) → 16 (IA, o último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 26 (frete no orçamento) publicado.
+- **Próximo: 27 (perdas por vencimento) → 16 (IA, o último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
@@ -934,6 +935,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     margem) ou loja/frete grátis (não soma no total e entra como custo, reduzindo o lucro). Separado no resumo, no
     orçamento gerado e nos dois PDFs. Crédito = total com frete ÷ 0,95. Fora do desconto de atacado e do ranking de
     mais vendidos. Orçamentos antigos ficam sem frete, sem mudar nada.
+    ✅ **Feito e publicado em 2/11/2026 (só hosting):** lib/shipping.ts (quoteTotals, productsTotalOf, shippingLabel).
+    Resumo do orçamento: "Frete (R$)" + "Cliente paga" / "Frete grátis (loja)", aviso de lucro negativo. Grava
+    `shippingAmount`, `shippingPaidBy` e `productsTotal` só quando há frete. Orçamento gerado, detalhe do Histórico e
+    os 3 PDFs (cliente, interno, recibo) mostram o frete separado. Dashboard: faturamento só dos produtos.
+    397 testes, lint, build; emulador 390 px: R$ 11,50 + frete R$ 25 (cliente) = R$ 36,50, crédito R$ 38,42, lucro
+    R$ 5,75; frete grátis: total R$ 11,50 e lucro −R$ 19,25 com aviso; orçamento gravado certo; PDFs sem erro.
 27. **Perdas por vencimento** (sem menu novo): no Estoque, quadro "Perdas e vencimentos" com o valor já perdido
     (descartes no mês e no ano, pelos movimentos) e o valor parado em lotes vencidos não descartados, mais a lista do
     que vence dentro do prazo do aviso (insumo, lote, quantidade, data, valor em risco), do que vence primeiro. No

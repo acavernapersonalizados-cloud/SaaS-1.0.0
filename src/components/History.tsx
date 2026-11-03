@@ -3,6 +3,7 @@ import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where } from 'f
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Quote, Client } from '../types';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
+import { shippingLabel, shippingOf } from '../lib/shipping';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -401,6 +402,13 @@ export function History() {
                   <span className="text-xs text-neutral-400">Total Orçado</span>
                   <span className="font-bold">{formatCurrency(selectedQuote.totalAmount)}</span>
                 </div>
+                {/* Item 26: frete separado (no total só quando o cliente paga). */}
+                {shippingLabel(selectedQuote) && (
+                  <div className="flex justify-between items-center text-xs text-neutral-400">
+                    <span>{shippingLabel(selectedQuote)}</span>
+                    <span className="font-bold">{formatCurrency(shippingOf(selectedQuote))}</span>
+                  </div>
+                )}
                 <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                   <span className="text-xs text-neutral-400">Lucro Líquido Total</span>
                   <span className="text-lg font-bold text-green-400">+{formatCurrency(selectedQuote.totalProfit)}</span>

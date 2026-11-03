@@ -12,7 +12,8 @@ import {
 } from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
-import { calcQuoteItem, creditPrice, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
+import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
+import { quoteTotals, ShippingPaidBy } from '../lib/shipping';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { aiUnavailableMessage, analyzePriceHealth, suggestIdealMargin, rewriteDescription } from '../services/gemini';
@@ -59,6 +60,8 @@ export function Pricing() {
   const [clientType, setClientType] = useState<'PF' | 'PJ'>('PF');
   const [cnpj, setCnpj] = useState('');
   const [channel, setChannel] = useState('Venda Direta');
+  const [shippingAmount, setShippingAmount] = useState(0);
+  const [shippingPaidBy, setShippingPaidBy] = useState<ShippingPaidBy>('cliente');
   const [customMarkup, setCustomMarkup] = useState<number | null>(null);
   // Estacionamento item 18: preço manual por unidade (Pix) do item; null = preço calculado.
   const [manualUnitPrice, setManualUnitPrice] = useState<number | null>(null);
@@ -177,10 +180,12 @@ export function Pricing() {
   const currentItemResults = calculateItemCosts(currentItem);
 
   const allItemsResults = quoteItems.map(item => calculateItemCosts(item)).filter(Boolean) as any[];
-  const totalAmount = allItemsResults.reduce((acc, r) => acc + r.totalPrice, 0);
-  const totalProfit = allItemsResults.reduce((acc, r) => acc + r.itemProfit, 0);
+  const itemsTotal = allItemsResults.reduce((acc, r) => acc + r.totalPrice, 0);
+  const itemsProfit = allItemsResults.reduce((acc, r) => acc + r.itemProfit, 0);
   const totalPlatformFee = allItemsResults.reduce((acc, r) => acc + r.itemPlatformFee, 0);
-  const avgMargin = totalAmount > 0 ? (totalProfit / totalAmount) * 100 : 0;
+  // Item 26: frete opcional (cliente paga: soma no total; loja paga: sai do lucro). Sem frete, igual a antes.
+  const totals = quoteTotals(itemsTotal, itemsProfit, shippingAmount, shippingPaidBy);
+  const { totalAmount, totalProfit, avgMargin } = totals;
 
   const handleAddItem = () => {
     if (!currentItemResults || currentItemResults.invalidMargin) return;
@@ -411,10 +416,18 @@ export function Pricing() {
           wholesaleFloorApplied: r.wholesaleFloorApplied,
         })),
         totalAmount: isFinite(totalAmount) ? totalAmount : 0,
-        // Etapa 8C: total no crédito (Pix ÷ 0,95), só nos orçamentos novos.
-        creditTotal: isFinite(totalAmount) ? creditPrice(totalAmount) : 0,
+        // Etapa 8C: total no crédito (Pix ÷ 0,95), só nos orçamentos novos. Item 26: com o frete do cliente.
+        creditTotal: isFinite(totals.creditTotal) ? totals.creditTotal : 0,
         totalProfit: isFinite(totalProfit) ? totalProfit : 0,
         avgMargin: isFinite(avgMargin) ? avgMargin : 0,
+        // Item 26: só grava o frete quando há frete (orçamento sem frete fica igual aos de antes).
+        ...(totals.shippingAmount > 0
+          ? {
+              productsTotal: totals.productsTotal,
+              shippingAmount: totals.shippingAmount,
+              shippingPaidBy: totals.shippingPaidBy,
+            }
+          : {}),
         channel,
         platformFee: channelFeePct,
         channelFixedFee,
@@ -459,6 +472,8 @@ export function Pricing() {
 
       // Reset form
       setQuoteItems([]);
+      setShippingAmount(0);
+      setShippingPaidBy('cliente');
       setSelectedClientId('');
       setClientName('');
       setCnpj('');
@@ -499,6 +514,8 @@ export function Pricing() {
   const handleFinishQuote = () => {
     setShowQuoteModal(false);
     setQuoteItems([]);
+    setShippingAmount(0);
+    setShippingPaidBy('cliente');
     setClientName('');
     setClientSearch('');
     setSelectedClientId('');
@@ -610,6 +627,11 @@ export function Pricing() {
           quoteError={quoteError}
           quoteSuccess={quoteSuccess}
           avgMargin={avgMargin}
+          totals={totals}
+          shippingAmount={shippingAmount}
+          setShippingAmount={setShippingAmount}
+          shippingPaidBy={shippingPaidBy}
+          setShippingPaidBy={setShippingPaidBy}
         />
       </div>
 

@@ -28989,7 +28989,7 @@ exports[`Precificação > atacado: 30 unidades com 20% sobre o varejo, gravado n
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -29010,6 +29010,36 @@ exports[`Precificação > atacado: 30 unidades com 20% sobre o varejo, gravado n
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -29814,7 +29844,7 @@ exports[`Precificação > atacado: markup personalizado baixo para no piso e avi
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -29835,6 +29865,36 @@ exports[`Precificação > atacado: markup personalizado baixo para no piso e avi
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -30775,7 +30835,7 @@ exports[`Precificação > canal Shopee no resumo 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -30796,6 +30856,36 @@ exports[`Precificação > canal Shopee no resumo 1`] = `
                 >
                   1
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -31446,7 +31536,7 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 1`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -31467,6 +31557,36 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 1`
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -32016,7 +32136,7 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 2`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -32037,6 +32157,36 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 2`
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -32601,7 +32751,7 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 3`
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -32622,6 +32772,36 @@ exports[`Precificação > cliente: busca na lista e Pessoa Jurídica com CNPJ 3`
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -33290,7 +33470,7 @@ exports[`Precificação > com item e sem cliente: clique em Gerar Orçamento 1`]
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -33311,6 +33491,36 @@ exports[`Precificação > com item e sem cliente: clique em Gerar Orçamento 1`]
                 >
                   1
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -33959,7 +34169,7 @@ exports[`Precificação > inicial: sem itens 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -33980,6 +34190,36 @@ exports[`Precificação > inicial: sem itens 1`] = `
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -34520,7 +34760,7 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -34541,6 +34781,36 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -35521,7 +35791,7 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -35542,6 +35812,36 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 >
                   1
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -36295,7 +36595,7 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -36316,6 +36616,36 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 >
                   1
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -37234,7 +37564,7 @@ exports[`Precificação > orçamento gerado 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -37255,6 +37585,36 @@ exports[`Precificação > orçamento gerado 1`] = `
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"
@@ -37543,7 +37903,7 @@ exports[`Precificação > orçamento gerado 1`] = `
                     <span
                       class="text-xs text-neutral-400"
                     >
-                      Total Bruto
+                      Produtos
                     </span>
                     <span
                       class="font-black text-lg"
@@ -38137,7 +38497,7 @@ exports[`Precificação > sem itens: clique em Gerar Orçamento 1`] = `
                 <span
                   class="text-neutral-400 font-bold uppercase tracking-wider"
                 >
-                  Subtotal
+                  Produtos
                 </span>
                 <span
                   class="text-neutral-900 font-black"
@@ -38158,6 +38518,36 @@ exports[`Precificação > sem itens: clique em Gerar Orçamento 1`] = `
                 >
                   0
                 </span>
+              </div>
+              <div
+                class="space-y-2"
+              >
+                <label
+                  class="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span
+                    class="text-neutral-400 font-bold uppercase tracking-wider"
+                  >
+                    Frete (R$)
+                  </span>
+                  <div
+                    class="space-y-0"
+                  >
+                    <div
+                      class="flex items-center gap-1.5"
+                    >
+                      <input
+                        aria-label="Frete (R$)"
+                        autocomplete="off"
+                        class="w-28 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-right font-bold outline-none"
+                        inputmode="decimal"
+                        placeholder="0,00"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </label>
               </div>
               <div
                 class="h-px bg-neutral-100"

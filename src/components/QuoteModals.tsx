@@ -3,6 +3,7 @@
 import React from 'react';
 import { Product, Quote, Store } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
+import { productsTotalOf, shippingLabel, shippingOf } from '../lib/shipping';
 import { MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT, QuoteItemCalcResult } from '../lib/pricingEngine';
 import { feeLabel } from '../lib/quoteFormat';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
@@ -376,9 +377,16 @@ export function GeneratedQuoteModal({
               <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Resumo Financeiro</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-neutral-400">Total Bruto</span>
-                  <span className="font-black text-lg">{formatCurrency(generatedQuote.totalAmount)}</span>
+                  <span className="text-xs text-neutral-400">Produtos</span>
+                  <span className="font-black text-lg">{formatCurrency(productsTotalOf(generatedQuote))}</span>
                 </div>
+                {/* Item 26: frete separado (cliente paga: soma no total; frete grátis: custo da loja). */}
+                {shippingLabel(generatedQuote) && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-neutral-400">{shippingLabel(generatedQuote)}</span>
+                    <span className="font-bold">{formatCurrency(shippingOf(generatedQuote))}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-400">Canal ({generatedQuote.channel})</span>
                   <span className="font-bold">
