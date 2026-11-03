@@ -229,6 +229,67 @@ export const formatLotDate = (expiresAt: string | null) =>
 export const stockValue = (materials: Array<{ stockQuantity?: number; unitCost?: number }>) =>
   Math.round(materials.reduce((a, m) => a + (Number(m.stockQuantity) || 0) * (Number(m.unitCost) || 0), 0) * 100) / 100;
 
+// ── Item 27: perdas por vencimento ────────────────────────────────────────
+
+export interface DiscardMovement {
+  materialId?: string;
+  quantity?: number;
+  /** Gravados a partir do item 27; descartes de antes não têm (valem o custo de hoje, "aprox."). */
+  unitCost?: number;
+  value?: number;
+  createdAt?: string;
+}
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+/** Perdido (R$) no mês e no ano de hoje, pelos descartes. `approx` = quantos usaram o custo de hoje. */
+export function lossSummary(
+  discards: DiscardMovement[],
+  materials: Array<{ id: string; unitCost?: number }>,
+  now = new Date(),
+): { month: number; year: number; approx: number } {
+  const cost = new Map(materials.map(m => [m.id, Number(m.unitCost) || 0]));
+  const today = todayISO(now);
+  let month = 0;
+  let year = 0;
+  let approx = 0;
+  for (const d of discards) {
+    if (!d.createdAt) continue;
+    const day = todayISO(new Date(d.createdAt));
+    if (day.slice(0, 4) !== today.slice(0, 4)) continue;
+    const exact = d.value !== undefined && d.value !== null;
+    const value = exact
+      ? Number(d.value) || 0
+      : (Number(d.quantity) || 0) * (d.unitCost ?? cost.get(d.materialId || '') ?? 0);
+    if (!exact && d.unitCost === undefined) approx++;
+    year += value;
+    if (day.slice(0, 7) === today.slice(0, 7)) month += value;
+  }
+  return { month: r2(month), year: r2(year), approx };
+}
+
+export type RiskRow = ExpiryAlertRow & { value: number };
+
+/**
+ * Valor parado em lotes vencidos (ainda não descartados) e lista do que vence dentro do prazo do aviso, com o valor
+ * em risco (quantidade × custo por unidade de hoje), do que vence primeiro.
+ */
+export function expiryRisk(
+  materials: Array<{ id: string; name?: string; unit?: string; unitCost?: number } & MaterialStock>,
+  today: string,
+  warnDays: number,
+): { expiredValue: number; soonValue: number; soon: RiskRow[]; expired: RiskRow[] } {
+  const cost = new Map(materials.map(m => [m.id, Number(m.unitCost) || 0]));
+  const rows = expiryAlerts(materials, today, warnDays).map(r => ({
+    ...r,
+    value: r2(r.lot.quantity * (cost.get(r.materialId) || 0)),
+  }));
+  const expired = rows.filter(r => r.alert.kind === 'expired');
+  const soon = rows.filter(r => r.alert.kind === 'soon');
+  const sum = (a: RiskRow[]) => r2(a.reduce((s, r) => s + r.value, 0));
+  return { expiredValue: sum(expired), soonValue: sum(soon), soon, expired };
+}
+
 /** Campos a gravar no insumo: os lotes e o saldo (a soma deles). */
 export const stockFields = (lots: StockLot[]) => ({ stockLots: lots, stockQuantity: lotsTotal(lots) });
 

@@ -61,7 +61,8 @@
   única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
   Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
 - **2/11:** 26 (frete no orçamento) publicado (`index-871sOi1e.js`).
-- **Próximo: 27 (perdas por vencimento) → 16 (IA, o último).** O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
+- **2/11:** 27 (perdas por vencimento) publicado.
+- **Próximo: 16 (IA, o último):** os passos são seus, no AI Studio e no Firebase (App Check → Exigir). O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
   do preço; trabalhos já salvos não mudam de preço. Riscos e aprovado antes.
@@ -946,6 +947,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     que vence dentro do prazo do aviso (insumo, lote, quantidade, data, valor em risco), do que vence primeiro. No
     Dashboard, "Validade dos insumos" ganha "R$ X vencendo em N dias · R$ Y perdidos no mês", em vermelho se houver
     vencido.
+    ✅ **Feito e publicado em 2/11/2026 (só hosting):** lib/stockLots.ts (lossSummary, expiryRisk). O descarte grava
+    `unitCost` e `value`; descartes de antes valem o custo de hoje ("aprox."). Estoque: quadro "Perdas e
+    vencimentos" (perdido no mês e no ano, parado em vencidos, vence em até N dias e a lista com o valor em risco,
+    até 10 + "ver todos"). Dashboard: "R$ X vencendo em N dias · R$ Y perdidos no mês", vermelho com vencido ou
+    perda no mês. 399 testes, lint, build; emulador 390 px: lote vencido de R$ 5,00 parado → descartado: perdido no
+    mês R$ 25 → R$ 30, parado R$ 5 → R$ 0; movimento com custo e valor; linha do Dashboard em vermelho.
 16. **Por último — IA (AI Studio + "Exigir" no App Check)** (você, no console; movido para o fim em 26/10/2026):
     testar uma "Análise IA" (no AI Studio e no app); funcionou → App Check → APIs → Firebase AI Logic → **Exigir** e
     testar de novo. Se a análise falhar depois do "Exigir", voltar para "Não exigir" e me avisar.

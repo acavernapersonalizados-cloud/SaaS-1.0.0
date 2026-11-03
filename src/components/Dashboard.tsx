@@ -6,7 +6,16 @@ import { formatCurrency, formatPercent, cn, isLowStock } from '../lib/utils';
 import { productsTotalOf } from '../lib/shipping';
 import { calcCatalogKPIs, calcProductPricing, getProfitStatus } from '../lib/pricingEngine';
 import { deadlineStatus } from '../lib/productionDeadline';
-import { expiryAlerts, expiryWarningDaysOf, formatLotDate, lotAlertText, todayISO } from '../lib/stockLots';
+import {
+  DiscardMovement,
+  expiryAlerts,
+  expiryRisk,
+  expiryWarningDaysOf,
+  formatLotDate,
+  lossSummary,
+  lotAlertText,
+  todayISO,
+} from '../lib/stockLots';
 import { ProductionDeadline } from './ProductionDeadline';
 import { SalesRanking } from './SalesRanking';
 import { useStore } from '../contexts/StoreContext';
@@ -77,6 +86,17 @@ export function Dashboard() {
       unsubM();
       unsubC();
     };
+  }, [activeStore]);
+
+  // Item 27: descartes da loja (perdidos no mês, no quadro de validade).
+  const [discards, setDiscards] = useState<DiscardMovement[]>([]);
+  useEffect(() => {
+    if (!activeStore) return;
+    return onSnapshot(
+      query(collection(db, 'stockMovements'), where('storeId', '==', activeStore.id), where('type', '==', 'discard')),
+      snap => setDiscards(snap.docs.map(d => d.data() as DiscardMovement)),
+      () => setDiscards([]),
+    );
   }, [activeStore]);
 
   // ── KPIs from quotes ──────────────────────────────────────────────────────
@@ -245,7 +265,10 @@ export function Dashboard() {
         const today = todayISO();
         const warnDays = expiryWarningDaysOf(costs);
         const alerts = expiryAlerts(materials, today, warnDays);
-        if (alerts.length === 0) return null;
+        // Item 27: valor vencendo e perdido no mês (descartes).
+        const risk = expiryRisk(materials, today, warnDays);
+        const losses = lossSummary(discards, materials);
+        if (alerts.length === 0 && losses.month === 0) return null;
         const expired = alerts.filter(a => a.alert.kind === 'expired').length;
         return (
           <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
@@ -258,6 +281,14 @@ export function Dashboard() {
                 </span>
               </span>
             </div>
+            <p
+              className={cn('text-sm font-bold', expired || losses.month > 0 ? 'text-red-700' : 'text-amber-700')}
+              aria-label="Valor em risco e perdido"
+            >
+              {formatCurrency(risk.soonValue)} vencendo em {warnDays} dias · {formatCurrency(losses.month)} perdidos no
+              mês
+              {risk.expiredValue > 0 && ` · ${formatCurrency(risk.expiredValue)} parados em vencidos`}
+            </p>
             <ul className="divide-y divide-neutral-100">
               {alerts.slice(0, 6).map(a => (
                 <li

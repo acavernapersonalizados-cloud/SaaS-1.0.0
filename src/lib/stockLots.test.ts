@@ -6,6 +6,8 @@ import {
   consumptionOrder,
   daysUntil,
   discardLot,
+  expiryRisk,
+  lossSummary,
   expiryAlerts,
   expiryWarningDaysOf,
   lotAlert,
@@ -156,6 +158,48 @@ describe('validade por lotes', () => {
     expect('lots' in r && stockFields(r.lots).stockQuantity).toBe(11);
     expect('removed' in r && r.removed.quantity).toBe(3);
     expect(discardLot(lots, 'xx')).toEqual({ error: 'Lote não encontrado (o estoque mudou). Abra de novo.' });
+  });
+
+  it('27: perdido no mês e no ano pelos descartes; descarte antigo sem custo vale o custo de hoje (aprox.)', () => {
+    const mats = [
+      { id: 'tinta', unitCost: 0.5 },
+      { id: 'caneca', unitCost: 10 },
+    ];
+    const r = lossSummary(
+      [
+        { materialId: 'caneca', quantity: 2, unitCost: 9, value: 18, createdAt: '2026-11-02T15:00:00.000Z' },
+        { materialId: 'tinta', quantity: 100, createdAt: '2026-11-01T15:00:00.000Z' },
+        { materialId: 'caneca', quantity: 1, unitCost: 8, value: 8, createdAt: '2026-03-10T15:00:00.000Z' },
+        { materialId: 'caneca', quantity: 5, value: 50, createdAt: '2025-12-30T15:00:00.000Z' },
+      ],
+      mats,
+      new Date(2026, 10, 2, 12),
+    );
+    expect(r).toEqual({ month: 68, year: 76, approx: 1 });
+  });
+
+  it('27: valor parado nos vencidos e valor em risco do que vence no prazo, do que vence primeiro', () => {
+    const r = expiryRisk(
+      [
+        { id: 'c', name: 'Caneca', unit: 'un', unitCost: 10, stockQuantity: 14, stockLots: lots },
+        {
+          id: 't',
+          name: 'Tinta',
+          unit: 'ml',
+          unitCost: 0.5,
+          stockQuantity: 10,
+          stockLots: [lot('t1', 10, '2026-11-20')],
+        },
+      ],
+      TODAY,
+      30,
+    );
+    expect(r.expiredValue).toBe(30);
+    expect(r.soon.map(x => [x.materialName, x.lot.expiresAt, x.value])).toEqual([
+      ['Caneca', '2026-11-02', 20],
+      ['Tinta', '2026-11-20', 5],
+    ]);
+    expect(r.soonValue).toBe(25);
   });
 
   it('hoje no formato da validade', () => {

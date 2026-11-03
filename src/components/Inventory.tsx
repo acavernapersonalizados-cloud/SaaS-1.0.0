@@ -16,6 +16,9 @@ import {
   materialLots,
   StockLot,
   stockValue,
+  lossSummary,
+  expiryRisk,
+  DiscardMovement,
   stockFields,
   takeFromLots,
   todayISO,
@@ -67,6 +70,18 @@ export function Inventory() {
       },
     );
     return () => unsubscribe();
+  }, [activeStore]);
+
+  // Item 27: descartes da loja (perdido no mês e no ano).
+  const [discards, setDiscards] = useState<DiscardMovement[]>([]);
+  const [showAllRisk, setShowAllRisk] = useState(false);
+  useEffect(() => {
+    if (!activeStore) return;
+    return onSnapshot(
+      query(collection(db, 'stockMovements'), where('storeId', '==', activeStore.id), where('type', '==', 'discard')),
+      snap => setDiscards(snap.docs.map(d => d.data() as DiscardMovement)),
+      () => setDiscards([]),
+    );
   }, [activeStore]);
 
   // Estacionamento item 21: entrada com validade (vira um lote; mesma validade junta no mesmo lote).
@@ -232,6 +247,9 @@ export function Inventory() {
           reason: 'Lote vencido descartado',
           quantity: r.removed.quantity,
           lot: { expiresAt: r.removed.expiresAt, quantity: r.removed.quantity },
+          // Item 27: custo do dia do descarte, para a perda não mudar se o preço de compra mudar depois.
+          unitCost: Number(material.unitCost) || 0,
+          value: Math.round(r.removed.quantity * (Number(material.unitCost) || 0) * 100) / 100,
           createdAt: new Date().toISOString(),
         });
       });
@@ -252,6 +270,8 @@ export function Inventory() {
   const alerts = expiryAlerts(materials, today, warnDays);
   const expiredCount = alerts.filter(a => a.alert.kind === 'expired').length;
   const soonCount = alerts.length - expiredCount;
+  const losses = lossSummary(discards, materials);
+  const risk = expiryRisk(materials, today, warnDays);
   // Conta única (lib/stockLots.ts); formato brasileiro no card (R$ 68.387,60).
   const totalValue = stockValue(materials);
   const lowStockItems = materials.filter(isLowStock);
@@ -310,6 +330,59 @@ export function Inventory() {
           <span className="block text-xs font-medium mt-1 text-neutral-600">
             Lote vencido não sai na baixa nem na reserva: use "Descartar lote" para tirar do estoque.
           </span>
+        </div>
+      )}
+
+      {/* Item 27: perdas e vencimentos (sem menu novo). */}
+      {(losses.year > 0 || risk.expiredValue > 0 || risk.soon.length > 0) && (
+        <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-neutral-900">Perdas e vencimentos</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Perdido no mês', value: losses.month, red: losses.month > 0 },
+              { label: 'Perdido no ano', value: losses.year, red: false },
+              { label: 'Parado em vencidos', value: risk.expiredValue, red: risk.expiredValue > 0 },
+              { label: `Vence em até ${warnDays} dias`, value: risk.soonValue, red: false },
+            ].map(c => (
+              <div key={c.label} className="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{c.label}</p>
+                <p className={cn('text-lg font-black', c.red ? 'text-red-600' : 'text-neutral-900')}>
+                  {formatCurrency(c.value)}
+                </p>
+              </div>
+            ))}
+          </div>
+          {losses.approx > 0 && (
+            <p className="text-[11px] text-neutral-500">
+              {losses.approx} descarte(s) de antes valem o custo de hoje do insumo (aprox.).
+            </p>
+          )}
+          {risk.soon.length > 0 && (
+            <ul className="divide-y divide-neutral-100" aria-label="Vencendo no prazo do aviso">
+              {(showAllRisk ? risk.soon : risk.soon.slice(0, 10)).map(r => (
+                <li
+                  key={`${r.materialId}-${r.lot.id}`}
+                  className="py-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-sm"
+                >
+                  <span className="font-semibold text-neutral-800">
+                    {r.materialName} · {formatQuantity(r.lot.quantity)} {r.unit}
+                  </span>
+                  <span className="text-xs font-bold text-amber-700">
+                    {formatLotDate(r.lot.expiresAt)} · {lotAlertText(r.alert)} · {formatCurrency(r.value)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {risk.soon.length > 10 && (
+            <button
+              type="button"
+              onClick={() => setShowAllRisk(v => !v)}
+              className="text-xs font-bold text-neutral-600 underline"
+            >
+              {showAllRisk ? 'Mostrar só os 10 primeiros' : `Ver todos (${risk.soon.length})`}
+            </button>
+          )}
         </div>
       )}
 
