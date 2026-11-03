@@ -46,6 +46,8 @@
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
 
+- **Correção do 24 (2/11, não publicada):** tempo da 3D em h, min e s inteiros (G-code 7h05m31s → 7 / 5 / 31; a conta usa os segundos exatos); gramas e margem no padrão brasileiro ("82,02 g", "50,0%"). 405 testes; 1 h 18 min = mesmo preço da conta antiga (R$ 16,09).
+
 - **Detalhe do item 24 (Calculadora 3D com tempo em minutos):**
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes

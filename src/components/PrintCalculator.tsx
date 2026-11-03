@@ -17,6 +17,7 @@ import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
 import { formatQuantity } from '../lib/quantity';
+import { QuantityInput } from './QuantityInput';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
@@ -25,7 +26,8 @@ import {
   parsePrintGcode,
   printFeesFromChannel,
   formatMinutes,
-  splitMinutes,
+  splitHms,
+  hmsToMinutes,
 } from '../lib/printPricing';
 import { channelsOf, findChannel } from '../lib/channels';
 import { machineToKeep } from '../lib/calculators';
@@ -73,8 +75,8 @@ const FILAMENTS = [
 ];
 
 /**
- * Item 24 (2/11/2026): tempo em "h" e "min" lado a lado (teclado numérico no celular). Guarda minutos; o "min" aceita
- * fração (os segundos do G-code: 37,2 min = 37 min 12 s).
+ * Item 24 (2/11/2026; correção): tempo em "h", "min" e "s", três campos inteiros (teclado numérico no celular).
+ * Guarda os minutos exatos, com os segundos do G-code (7 h 5 min 31 s = 425,5167 min), sem arredondar o preço.
  */
 function DurationFields({
   label,
@@ -85,38 +87,35 @@ function DurationFields({
   minutes: number;
   onChange: (minutes: number) => void;
 }) {
-  const { h, min } = splitMinutes(minutes);
+  const { h, min, s } = splitHms(minutes);
   const id = label.toLowerCase().replace(/[^a-z]+/g, '-');
   const input =
-    'w-full px-3 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm';
+    'w-full min-w-0 px-2 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm text-center';
+  const field = (key: 'h' | 'min' | 's', value: number, aria: string) => (
+    <input
+      id={`${id}-${key}`}
+      aria-label={`${label}: ${aria}`}
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      value={value}
+      onChange={e => {
+        const n = Number(e.target.value.replace(/\D/g, '')) || 0;
+        onChange(hmsToMinutes(key === 'h' ? n : h, key === 'min' ? n : min, key === 's' ? n : s));
+      }}
+      className={input}
+    />
+  );
   return (
     <fieldset className="space-y-1">
       <legend className="text-xs font-bold text-neutral-600">{label}</legend>
-      <div className="flex items-center gap-2">
-        <input
-          id={`${id}-h`}
-          aria-label={`${label}: horas`}
-          type="number"
-          inputMode="numeric"
-          min="0"
-          step="1"
-          value={h}
-          onChange={e => onChange(Math.max(0, Math.floor(Number(e.target.value) || 0)) * 60 + min)}
-          className={input}
-        />
+      <div className="flex items-center gap-1.5">
+        {field('h', h, 'horas')}
         <span className="text-xs font-bold text-neutral-500">h</span>
-        <input
-          id={`${id}-min`}
-          aria-label={`${label}: minutos`}
-          type="number"
-          inputMode="decimal"
-          min="0"
-          step="any"
-          value={min}
-          onChange={e => onChange(h * 60 + Math.max(0, Number(e.target.value) || 0))}
-          className={input}
-        />
+        {field('min', min, 'minutos')}
         <span className="text-xs font-bold text-neutral-500">min</span>
+        {field('s', s, 'segundos')}
+        <span className="text-xs font-bold text-neutral-500">s</span>
       </div>
       <p className="text-[10px] text-neutral-400">= {formatMinutes(minutes)}</p>
     </fieldset>
@@ -700,12 +699,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Filamento Usado (g)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
+                {/* Padrão brasileiro: "82,02" (vírgula), aceita vírgula ou ponto. */}
+                <QuantityInput
+                  compact
+                  ariaLabel="Filamento Usado (g)"
                   value={filamentUsedG}
-                  onChange={e => setFilamentUsedG(Number(e.target.value))}
+                  onChange={v => setFilamentUsedG(v ?? 0)}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
                 <p className="text-[10px] text-neutral-400">Valor do slicer (Cura, PrusaSlicer, etc.)</p>
@@ -734,7 +733,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
-                  {formatMinutes(printTimeMin)} de impressão · {filamentUsedG}g de {filamentType}
+                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentUsedG)} g de {filamentType}
                 </span>
               </div>
             )}
@@ -955,7 +954,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                       <div>
                         <p className="text-[10px] text-neutral-400 uppercase font-bold">Margem</p>
                         <p className={`font-black text-sm ${result.margin >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {result.margin.toFixed(1)}%
+                          {formatPercent(result.margin)}
                         </p>
                       </div>
                     </div>

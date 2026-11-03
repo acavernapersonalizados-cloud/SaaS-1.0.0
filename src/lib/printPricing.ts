@@ -40,12 +40,17 @@ export const minutesOf = (minutes: number | null | undefined, hours: number | nu
     ? Number(minutes)
     : (Number(hours) || 0) * 60;
 
-/** Minutos → campos "h" e "min" da tela (o "min" pode ter fração: 37,2 min = 37 min 12 s). */
-export function splitMinutes(minutes: number): { h: number; min: number } {
-  const total = Math.max(0, Number(minutes) || 0);
-  const h = Math.floor(total / 60);
-  return { h, min: Math.round((total - h * 60) * 1e6) / 1e6 };
+/** Minutos → campos inteiros "h", "min" e "s" da tela (337,2 min = 5 h 37 min 12 s). */
+export function splitHms(minutes: number): { h: number; min: number; s: number } {
+  const totalSec = Math.round(Math.max(0, Number(minutes) || 0) * 60);
+  return { h: Math.floor(totalSec / 3600), min: Math.floor((totalSec % 3600) / 60), s: totalSec % 60 };
 }
+
+/** Campos "h", "min" e "s" → minutos exatos (com os segundos), sem arredondar. */
+export const hmsToMinutes = (h: number, min: number, s: number) =>
+  Math.max(0, Math.floor(Number(h) || 0)) * 60 +
+  Math.max(0, Math.floor(Number(min) || 0)) +
+  Math.max(0, Math.floor(Number(s) || 0)) / 60;
 
 /** "5 h 37 min 12 s" (sem as partes zeradas; 0 → "0 min"). */
 export function formatMinutes(minutes: number): string {

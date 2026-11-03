@@ -7,7 +7,8 @@ import {
   NO_PRINT_FEES,
   parsePrintGcode,
   printFeesFromChannel,
-  splitMinutes,
+  splitHms,
+  hmsToMinutes,
 } from './printPricing';
 import { DEFAULT_SALES_CHANNELS, findChannel } from './channels';
 
@@ -110,9 +111,16 @@ describe('Item 24: tempo em minutos', () => {
   it('1,3 h = 78 min; trabalho antigo (só horas) é lido sem perda', () => {
     expect(minutesOf(undefined, 1.3)).toBeCloseTo(78, 10);
     expect(minutesOf(78, 1.3)).toBe(78);
-    expect(splitMinutes(78)).toEqual({ h: 1, min: 18 });
+    expect(splitHms(78)).toEqual({ h: 1, min: 18, s: 0 });
     expect(formatMinutes(78)).toBe('1 h 18 min');
   });
+  it('correção: h, min e s inteiros; G-code de 7h05m31s → 7 / 5 / 31 e volta exato', () => {
+    const r = parsePrintGcode('; estimated printing time (normal mode) = 7h 5m 31s\n');
+    expect(splitHms(r.printTimeMin!)).toEqual({ h: 7, min: 5, s: 31 });
+    expect(hmsToMinutes(7, 5, 31)).toBeCloseTo(r.printTimeMin!, 10);
+    expect(hmsToMinutes(1, 18, 0)).toBe(78);
+  });
+
   it('trabalho antigo: em minutos dá o mesmo custo e o mesmo preço que em horas', () => {
     const { printTimeH: _h, postProcessHours: _p, ...rest } = base;
     for (const [h, p] of [
@@ -152,7 +160,7 @@ describe('Leitura de G-code (seção 13)', () => {
     const r = parsePrintGcode('; estimated printing time (normal mode) = 5h 37m 12s\n');
     expect(r.printTimeMin).toBeCloseTo(337.2, 10);
     expect(formatMinutes(r.printTimeMin!)).toBe('5 h 37 min 12 s');
-    expect(splitMinutes(r.printTimeMin!)).toEqual({ h: 5, min: 37.2 });
+    expect(splitHms(r.printTimeMin!)).toEqual({ h: 5, min: 37, s: 12 });
     expect(parsePrintGcode(';TIME:20232\n').printTimeMin).toBeCloseTo(337.2, 10);
   });
   it('item 24: Cura com menos de 1 h não vira 1 h; "1.5h" é 1,5 h (antes virava 5 h)', () => {
