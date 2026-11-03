@@ -40,13 +40,13 @@
 
 **Onde paramos (2/11/2026, noite):**
 
-- **No ar:** `index-D28BTPLO.js` (2/11/2026, itens 21 a 28 e a correção do valor do estoque).
+- **No ar:** `index-D1TkJPs0.js` (3/11/2026: itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 15 e 17 a 28 feitos. 9C desligada. **Falta só o 16 (IA)**: passos seus no AI Studio e no Firebase (App Check → Exigir).
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
 
-- **Correção do 24 (2/11, não publicada):** tempo da 3D em h, min e s inteiros (G-code 7h05m31s → 7 / 5 / 31; a conta usa os segundos exatos); gramas e margem no padrão brasileiro ("82,02 g", "50,0%"). 405 testes; 1 h 18 min = mesmo preço da conta antiga (R$ 16,09).
+- **Correção do 24 (publicada em 3/11, `index-D1TkJPs0.js`):** tempo da 3D em h, min e s inteiros (G-code 7h05m31s → 7 / 5 / 31; a conta usa os segundos exatos); gramas e margem no padrão brasileiro ("82,02 g", "50,0%"). 405 testes; 1 h 18 min = mesmo preço da conta antiga (R$ 16,09).
 
 - **Detalhe do item 24 (Calculadora 3D com tempo em minutos):**
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
