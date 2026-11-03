@@ -61,7 +61,7 @@
   única `stockValue`, trocar kg↔g/l↔ml/m↔cm pergunta e converte saldo/mínimo/comprada/lotes, aviso "R$ X por g?
   Parece preço de kg". Dado: você mantém "PLA Silk Dourado" (kg) e apaga o "PLA SILK DOURADO - 3DLAB" pela tela.
 - **2/11:** 26 (frete no orçamento) publicado (`index-871sOi1e.js`).
-- **2/11:** 27 (perdas por vencimento) publicado.
+- **2/11:** 27 (perdas por vencimento) publicado (`index-B-Vd94eA.js`).
 - **Próximo: 16 (IA, o último):** os passos são seus, no AI Studio e no Firebase (App Check → Exigir). O prazo de 2/11 do 16 era só nosso. O emulador agora roda no terminal (aba "dev emulador").
 - **24. Calculadora 3D com tempo em minutos** (pedido em 2/11/2026, correção): mostrar como está hoje; manual em
   h + min (ou só minutos), G-code com o tempo exato em h e min editável; conta com minutos ÷ 60 sem arredondar antes
