@@ -110,6 +110,23 @@ describe('Tempo, embalagem e materiais vindos do trabalho', () => {
     ]);
     expect(jobProductDetails('print3d', job as never, () => 'm').materials).toEqual([]);
   });
+  it('Impressão 3D multicor (item 29): cada filamento baixa a sua parte, com a purga', () => {
+    const line = { name: 'PLA', color: '#000000', costPerKg: 100 };
+    const job = {
+      ...base,
+      materialId: 'preto',
+      filamentUsedG: 48,
+      purgeG: 8,
+      filaments: [
+        { ...line, grams: 30, materialId: 'preto' },
+        { ...line, grams: 10, materialId: 'branco' },
+      ],
+    };
+    expect(jobProductDetails('print3d', job as never, id => (id === 'preto' ? 'kg' : 'g')).materials).toEqual([
+      { materialId: 'preto', quantity: 0.036 },
+      { materialId: 'branco', quantity: 12 },
+    ]);
+  });
   it('Sublimação: mão de obra por peça, embalagem e a peça base do estoque', () => {
     const job = {
       ...base,

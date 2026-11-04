@@ -4,8 +4,9 @@
  * o produto nasce oculto no catálogo; o preço é o que valia na calculadora ao salvar (nada é recalculado);
  * trabalho sem máquina cadastrada ou com custo zero não vira produto.
  */
-import type { JobKind, JobProductFields, Product, ProductMaterial } from '../types';
+import type { JobKind, JobProductFields, PrintFilament, Product, ProductMaterial } from '../types';
 import { laserTotalTimeMin } from './calculators';
+import { filamentStockDeductions } from './printPricing';
 import { roundCents } from './utils';
 
 /** Coleção de cada calculadora. */
@@ -109,14 +110,28 @@ export function jobProductDetails(
         ),
       };
     case 'print3d': {
-      const id = typeof j.materialId === 'string' ? j.materialId : '';
-      const unit = id ? (materialUnit(id) || '').toLowerCase() : '';
-      const grams = num(j.filamentUsedG);
-      const quantity = unit === 'kg' ? grams / 1000 : unit === 'g' ? grams : 0;
+      // Item 29: cada filamento com a sua parte da purga; trabalho antigo tem um só, nos campos de sempre.
+      const saved = list(j.filaments) as unknown as PrintFilament[];
+      const lines: PrintFilament[] = saved.length
+        ? saved
+        : [
+            {
+              name: '',
+              color: '',
+              costPerKg: 0,
+              grams: num(j.filamentUsedG),
+              materialId: typeof j.materialId === 'string' ? j.materialId : null,
+            },
+          ];
       return {
         productionTime: round2(num(j.postProcessHours) * 60),
         packagingCost: num(j.packagingCost),
-        materials: stockMaterials([{ materialId: id, quantity }]),
+        materials: stockMaterials(
+          filamentStockDeductions(lines, num(j.purgeG), 1, materialUnit).map(d => ({
+            materialId: d.materialId,
+            quantity: d.amount ?? 0,
+          })),
+        ),
       };
     }
     case 'sublimacao':

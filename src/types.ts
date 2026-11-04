@@ -240,15 +240,28 @@ export interface PrinterProfile {
   createdAt: string;
 }
 
+/** Item 29: um filamento da peça (gramas por peça, sem a purga). */
+export interface PrintFilament {
+  name: string;
+  color: string; // #rrggbb
+  costPerKg: number; // BRL
+  grams: number;
+  materialId: string | null;
+}
+
 export interface PrintJob extends JobProductFields {
   id: string;
   storeId: string;
   name: string;
   printerId: string;
   printerName?: string;
-  filamentType: string; // PLA, PETG, ABS, TPU, Resina…
-  filamentCostPerKg: number; // BRL
-  filamentUsedG: number;
+  filamentType: string; // PLA, PETG, ABS, TPU, Resina… (multicor: nomes juntos, "PLA + PETG")
+  filamentCostPerKg: number; // BRL (multicor: média ponderada pelas gramas)
+  filamentUsedG: number; // multicor: total, com a purga
+  /** Item 29: filamentos da peça. Trabalho antigo não tem: vale filamentType, filamentCostPerKg e filamentUsedG. */
+  filaments?: PrintFilament[];
+  /** Item 29: desperdício da troca / purga por peça (g), dividido entre os filamentos pelas gramas. */
+  purgeG?: number;
   printTimeH: number;
   /** Item 24: tempo de impressão em minutos (com fração). Trabalho antigo não tem: vale printTimeH × 60. */
   printTimeMin?: number;

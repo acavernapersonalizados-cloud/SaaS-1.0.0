@@ -12,19 +12,24 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Material, PrintJob, PrinterProfile } from '../types';
+import { Material, PrintFilament, PrintJob, PrinterProfile } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
 import { formatQuantity } from '../lib/quantity';
-import { QuantityInput } from './QuantityInput';
+import { PrintFilaments } from './PrintFilaments';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
   CUSTOM_PRINT_CHANNEL,
+  filamentColorAt,
+  filamentsFromGcode,
+  filamentStockDeductions,
   NO_PRINT_FEES,
   parsePrintGcode,
   printFeesFromChannel,
+  printFilamentLabel,
+  printFilamentTotals,
   formatMinutes,
   splitHms,
   hmsToMinutes,
@@ -57,22 +62,6 @@ import {
   Clock,
   Upload,
 } from 'lucide-react';
-
-const FILAMENTS = [
-  'PLA',
-  'PLA+',
-  'PETG',
-  'ABS',
-  'ASA',
-  'TPU',
-  'Nylon',
-  'Resina Standard',
-  'Resina ABS-Like',
-  'Resina Flex',
-  'Fibra de Carbono',
-  'Wood Fill',
-  'Personalizado',
-];
 
 /**
  * Item 24 (2/11/2026; correção): tempo em "h", "min" e "s", três campos inteiros (teclado numérico no celular).
@@ -157,9 +146,11 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   // Item 11: só conta como escolha o clique da pessoa; a marcação automática (uma impressora só) não.
   const printerChosen = useRef(false);
   const [jobName, setJobName] = useState('');
-  const [filamentType, setFilamentType] = useState('PLA');
-  const [filamentCostPerKg, setFilamentCostPerKg] = useState(80);
-  const [filamentUsedG, setFilamentUsedG] = useState(50);
+  // Item 29: um ou mais filamentos na mesma peça.
+  const [filaments, setFilaments] = useState<PrintFilament[]>([
+    { name: 'PLA', color: filamentColorAt(0), costPerKg: 80, grams: 50, materialId: null },
+  ]);
+  const [purgeG, setPurgeG] = useState(0);
   // Item 24: tempo em minutos (com fração para os segundos do G-code).
   const [printTimeMin, setPrintTimeMin] = useState(120);
   const [failureRatePct, setFailureRatePct] = useState(5);
@@ -184,7 +175,6 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [channelId, setChannelId] = useState('venda-direta');
   const [fees, setFees] = useState(NO_PRINT_FEES);
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [materialId, setMaterialId] = useState('');
   const [deductStock, setDeductStock] = useState(false);
   const [gcodeInfo, setGcodeInfo] = useState('');
   const [gcodeFileName, setGcodeFileName] = useState('');
@@ -248,12 +238,14 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   }, [activeStore]);
 
   const selectedPrinter = printers.find(p => p.id === selectedPrinterId) ?? null;
+  const filamentTotals = printFilamentTotals(filaments, purgeG);
+  const filamentLabel = printFilamentLabel(filaments);
 
   const calc = () => {
     if (!selectedPrinter || printTimeMin <= 0) return null;
     return calculatePrintPrice({
-      filamentUsedG,
-      filamentCostPerKg,
+      filamentUsedG: filamentTotals.usedG,
+      filamentCostPerKg: filamentTotals.costPerKg,
       printTimeMin,
       powerConsumptionW: selectedPrinter.powerConsumptionW,
       electricityRate,
@@ -290,11 +282,18 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     }
     // Item 24: tempo exato do arquivo (sem arredondar); fica editável em h e min.
     if (parsed.printTimeMin !== null) setPrintTimeMin(parsed.printTimeMin);
-    if (parsed.filamentUsedG !== null) setFilamentUsedG(Number(parsed.filamentUsedG.toFixed(2)));
+    // Item 29: arquivo com várias cores monta as linhas; a torre de purga já vem nas gramas, então a purga zera.
+    if (parsed.filaments.length > 1) setFilaments(filamentsFromGcode(filaments, parsed.filaments));
+    else if (parsed.filamentUsedG !== null && filaments.length === 1)
+      setFilaments([{ ...filaments[0]!, grams: Number(parsed.filamentUsedG.toFixed(2)) }]);
+    else if (parsed.filamentUsedG !== null)
+      addToast(`O arquivo traz só o total (${formatQuantity(parsed.filamentUsedG)} g): divida entre os filamentos.`, 'info');
+    if (parsed.wipeTowerG !== null) setPurgeG(0);
     if (!jobName) setJobName(file.name.replace(/\.(gcode|gco|g|3mf)$/i, ''));
     setGcodeFileName(file.name);
     setGcodeSlicer(parsed.slicer);
-    setGcodeInfo(`${file.name}${parsed.slicer ? ` · ${parsed.slicer}` : ''}`);
+    const tower = parsed.wipeTowerG !== null ? ` · purga de ${formatQuantity(parsed.wipeTowerG)} g já nas gramas` : '';
+    setGcodeInfo(`${file.name}${parsed.slicer ? ` · ${parsed.slicer}` : ''}${tower}`);
     addToast('Arquivo lido com sucesso.', 'success');
   };
 
@@ -383,9 +382,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         name: jobName,
         printerId: selectedPrinter.id,
         printerName: selectedPrinter.label,
-        filamentType,
-        filamentCostPerKg,
-        filamentUsedG,
+        // Item 29: os campos de um filamento continuam gravados (nomes, média e total) para quem lê só eles.
+        filamentType: filamentLabel,
+        filamentCostPerKg: filamentTotals.costPerKg,
+        filamentUsedG: filamentTotals.usedG,
+        filaments,
+        purgeG,
         // Item 24: minutos; as horas continuam gravadas (= minutos ÷ 60) para quem lê horas.
         printTimeMin,
         printTimeH: printTimeMin / 60,
@@ -393,7 +395,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         quantity,
         manualPrice: manualPrice ?? null,
         notes,
-        materialId: materialId || null,
+        materialId: filaments.find(line => line.materialId)?.materialId ?? null,
         postProcessMin,
         postProcessHours: postProcessMin / 60,
         packagingCost,
@@ -411,42 +413,56 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         unitPrice: manualPrice ?? result?.suggestedUnit ?? 0,
         createdAt: new Date().toISOString(),
       };
-      if (deductStock && materialId) {
-        const selectedMaterial = materials.find(item => item.id === materialId);
-        if (!selectedMaterial) throw new Error('Material selecionado não encontrado.');
+      const materialOf = (id: string) => materials.find(item => item.id === id);
+      const deductions = deductStock
+        ? filamentStockDeductions(filaments, purgeG, quantity, id => materialOf(id)?.unit)
+        : [];
+      if (deductions.length > 0) {
         // O peso do filamento está em gramas: só dá para baixar de materiais em kg ou g.
-        const unit = (selectedMaterial.unit || '').toLowerCase();
-        if (unit !== 'kg' && unit !== 'g') {
-          throw new Error(
-            `Não foi possível baixar o estoque: o material está em "${selectedMaterial.unit}". Use kg ou g para filamento.`,
-          );
+        for (const { materialId, amount } of deductions) {
+          const selectedMaterial = materialOf(materialId);
+          if (!selectedMaterial) throw new Error('Material selecionado não encontrado.');
+          if (amount === null) {
+            throw new Error(
+              `Não foi possível baixar o estoque: o material está em "${selectedMaterial.unit}". Use kg ou g para filamento.`,
+            );
+          }
         }
-        const amount = unit === 'kg' ? (filamentUsedG * quantity) / 1000 : filamentUsedG * quantity;
+        // Item 29: tudo na mesma transação; se faltar um filamento, nada sai do estoque e o trabalho não é salvo.
         await runTransaction(db, async transaction => {
-          const materialRef = doc(db, 'materials', materialId);
-          const snapshot = await transaction.get(materialRef);
-          if (!snapshot.exists()) throw new Error('Material selecionado não encontrado.');
+          const snapshots = await Promise.all(
+            deductions.map(({ materialId }) => transaction.get(doc(db, 'materials', materialId))),
+          );
           // Item 21: sai do lote não vencido que vence antes; lote vencido não conta.
           const today = todayISO();
-          const taken = takeFromLots(materialLots(snapshot.data() as Material, today), amount, today);
-          if (taken.missing > 0) throw new Error('Estoque insuficiente para registrar esta impressão.');
-          transaction.update(materialRef, {
-            ...stockFields(taken.lots),
-            updatedAt: new Date().toISOString(),
+          const takes = snapshots.map((snapshot, index) => {
+            if (!snapshot.exists()) throw new Error('Material selecionado não encontrado.');
+            const data = snapshot.data() as Material;
+            const taken = takeFromLots(materialLots(data, today), deductions[index]!.amount ?? 0, today);
+            if (taken.missing > 0) throw new Error(`Estoque insuficiente de ${data.name} para registrar esta impressão.`);
+            return taken;
           });
-          // Item 25: a baixa da 3D fica no histórico de movimentos, para conferir depois (gramas → unidade do insumo).
-          transaction.set(doc(collection(db, 'stockMovements')), {
-            storeId: activeStore.id,
-            materialId,
-            materialName: selectedMaterial.name,
-            type: 'deduction',
-            reason: `Impressão 3D: ${jobName}`,
-            quantity: amount,
-            unit: selectedMaterial.unit,
-            filamentUsedG: filamentUsedG * quantity,
-            printJobId: jobRef.id,
-            lots: taken.taken.map(t => ({ expiresAt: t.expiresAt, quantity: t.quantity })),
-            createdAt: new Date().toISOString(),
+          deductions.forEach(({ materialId, grams, amount }, index) => {
+            const taken = takes[index]!;
+            const selectedMaterial = materialOf(materialId);
+            transaction.update(doc(db, 'materials', materialId), {
+              ...stockFields(taken.lots),
+              updatedAt: new Date().toISOString(),
+            });
+            // Item 25: a baixa da 3D fica no histórico de movimentos, para conferir depois (gramas → unidade do insumo).
+            transaction.set(doc(collection(db, 'stockMovements')), {
+              storeId: activeStore.id,
+              materialId,
+              materialName: selectedMaterial?.name ?? '',
+              type: 'deduction',
+              reason: `Impressão 3D: ${jobName}`,
+              quantity: amount,
+              unit: selectedMaterial?.unit ?? '',
+              filamentUsedG: grams,
+              printJobId: jobRef.id,
+              lots: taken.taken.map(t => ({ expiresAt: t.expiresAt, quantity: t.quantity })),
+              createdAt: new Date().toISOString(),
+            });
           });
           transaction.set(jobRef, payload);
         });
@@ -632,47 +648,13 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Filamento</label>
-                <select
-                  value={filamentType}
-                  onChange={e => setFilamentType(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                >
-                  {FILAMENTS.map(f => (
-                    <option key={f} value={f}>
-                      {f}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Material do estoque (opcional)</label>
-                <select
-                  value={materialId}
-                  onChange={e => {
-                    const id = e.target.value;
-                    setMaterialId(id);
-                    const selected = materials.find(item => item.id === id);
-                    if (selected) {
-                      setFilamentType(selected.name);
-                      if (selected.unitCost > 0)
-                        setFilamentCostPerKg(
-                          selected.unit.toLowerCase() === 'kg' ? selected.unitCost : selected.unitCost * 1000,
-                        );
-                    }
-                  }}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none text-sm"
-                >
-                  <option value="">Sem vínculo com estoque</option>
-                  {materials.map(item => (
-                    <option key={item.id} value={item.id}>
-                      {item.name} · saldo {formatQuantity(item.stockQuantity)} {item.unit}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <PrintFilaments
+                lines={filaments}
+                onChange={setFilaments}
+                purgeG={purgeG}
+                onPurgeChange={setPurgeG}
+                materials={materials}
+              />
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Quantidade de peças</label>
@@ -683,31 +665,6 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                   onChange={e => setQuantity(Math.max(1, Number(e.target.value)))}
                   className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
                 />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Custo do Filamento (R$/kg)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={filamentCostPerKg}
-                  onChange={e => setFilamentCostPerKg(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-600">Filamento Usado (g)</label>
-                {/* Padrão brasileiro: "82,02" (vírgula), aceita vírgula ou ponto. */}
-                <QuantityInput
-                  compact
-                  ariaLabel="Filamento Usado (g)"
-                  value={filamentUsedG}
-                  onChange={v => setFilamentUsedG(v ?? 0)}
-                  className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm"
-                />
-                <p className="text-[10px] text-neutral-400">Valor do slicer (Cura, PrusaSlicer, etc.)</p>
               </div>
 
               <DurationFields label="Tempo de Impressão" minutes={printTimeMin} onChange={setPrintTimeMin} />
@@ -733,7 +690,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
-                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentUsedG)} g de {filamentType}
+                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentTotals.usedG)} g de {filamentLabel}
                 </span>
               </div>
             )}
@@ -812,10 +769,10 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 />
               </div>
             </div>
-            {materialId && (
+            {filaments.some(line => line.materialId) && (
               <label className="flex items-center gap-2 text-xs font-bold text-neutral-600">
                 <input type="checkbox" checked={deductStock} onChange={e => setDeductStock(e.target.checked)} /> Baixar
-                o material do estoque ao salvar
+                {filaments.length > 1 ? ' os filamentos vinculados' : ' o material'} do estoque ao salvar
               </label>
             )}
 
@@ -1011,7 +968,21 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                   <tr key={job.id} className="border-b border-neutral-50 hover:bg-neutral-50 transition-colors">
                     <td className="py-3 pr-4 font-bold text-neutral-900">{job.name}</td>
                     <td className="py-3 pr-4 text-neutral-500 text-xs">{job.printerName || job.printerId}</td>
-                    <td className="py-3 pr-4 text-neutral-500">{job.filamentType}</td>
+                    <td className="py-3 pr-4 text-neutral-500">
+                      {job.filaments && job.filaments.length > 1 && (
+                        <span className="flex gap-1 mb-1">
+                          {job.filaments.map((line, index) => (
+                            <span
+                              key={index}
+                              title={line.name}
+                              className="w-3 h-3 rounded-full border border-neutral-200"
+                              style={{ backgroundColor: line.color }}
+                            />
+                          ))}
+                        </span>
+                      )}
+                      {job.filamentType}
+                    </td>
                     <td className="py-3 pr-4 text-right">{job.quantity}</td>
                     <td className="py-3 pr-4 font-bold text-right">
                       {job.manualPrice ? formatCurrency(job.manualPrice) : '—'}

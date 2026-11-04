@@ -2,11 +2,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculatePrintPrice,
+  filamentsFromGcode,
+  filamentStockDeductions,
   formatMinutes,
   minutesOf,
   NO_PRINT_FEES,
   parsePrintGcode,
   printFeesFromChannel,
+  printFilamentLabel,
+  printFilamentTotals,
   splitHms,
   hmsToMinutes,
 } from './printPricing';
@@ -133,6 +137,128 @@ describe('Item 24: tempo em minutos', () => {
       expect(novo.totalCostUnit).toBeCloseTo(old.totalCostUnit, 9);
       expect(novo.suggestedUnit).toBeCloseTo(old.suggestedUnit, 9);
     }
+  });
+});
+
+describe('Item 29: vários filamentos na mesma peça', () => {
+  const line = (name: string, costPerKg: number, grams: number, materialId: string | null = null) => ({
+    name,
+    color: '#000000',
+    costPerKg,
+    grams,
+    materialId,
+  });
+
+  it('um filamento só: mesma conta de antes, com os mesmos totais e o mesmo preço', () => {
+    for (const [grams, cost] of [
+      [50, 80],
+      [82.02, 129.9],
+      [0.37, 77.77],
+    ] as const) {
+      const totals = printFilamentTotals([line('PLA', cost, grams)]);
+      expect(totals.usedG).toBe(grams);
+      expect(totals.costPerKg).toBe(cost);
+      const old = calculatePrintPrice({ ...base, filamentUsedG: grams, filamentCostPerKg: cost, fees: shopee });
+      const novo = calculatePrintPrice({
+        ...base,
+        filamentUsedG: totals.usedG,
+        filamentCostPerKg: totals.costPerKg,
+        fees: shopee,
+      });
+      expect(novo).toEqual(old);
+    }
+  });
+  it('duas cores: cada grama pelo preço do seu filamento (30 g a R$ 100 + 10 g a R$ 200 = R$ 5,00)', () => {
+    const totals = printFilamentTotals([line('PLA', 100, 30), line('PETG', 200, 10)]);
+    expect(totals.usedG).toBe(40);
+    expect(totals.costPerKg).toBeCloseTo(125, 10);
+    expect((totals.usedG / 1000) * totals.costPerKg).toBeCloseTo(5, 10);
+  });
+  it('purga: entra no custo e divide pelas gramas (30 + 10, purga 8 → 36 + 12 = R$ 6,00)', () => {
+    const totals = printFilamentTotals([line('PLA', 100, 30), line('PETG', 200, 10)], 8);
+    expect(totals.gramsWithPurge).toEqual([36, 12]);
+    expect(totals.usedG).toBe(48);
+    expect((totals.usedG / 1000) * totals.costPerKg).toBeCloseTo(6, 10);
+  });
+  it('sem gramas, a purga divide em partes iguais; nome junta os filamentos', () => {
+    const lines = [line('PLA', 100, 0), line('PETG', 200, 0)];
+    expect(printFilamentTotals(lines, 10).gramsWithPurge).toEqual([5, 5]);
+    expect(printFilamentLabel(lines)).toBe('PLA + PETG');
+  });
+  it('baixa: por material, com purga e quantidade, na unidade de cada um', () => {
+    const lines = [line('Preto', 100, 30, 'preto'), line('Branco', 200, 10, 'branco'), line('Sem vínculo', 90, 10)];
+    const unit = (id: string) => (id === 'preto' ? 'kg' : 'g');
+    expect(filamentStockDeductions(lines, 10, 2, unit)).toEqual([
+      { materialId: 'preto', grams: 72, amount: 0.072 },
+      { materialId: 'branco', grams: 24, amount: 24 },
+    ]);
+  });
+  it('baixa: mesmo rolo em duas linhas soma; unidade que não é peso volta null', () => {
+    const lines = [line('A', 100, 30, 'rolo'), line('B', 100, 10, 'rolo'), line('C', 100, 5, 'fita')];
+    expect(filamentStockDeductions(lines, 0, 1, id => (id === 'rolo' ? 'KG' : 'm'))).toEqual([
+      { materialId: 'rolo', grams: 40, amount: 0.04 },
+      { materialId: 'fita', grams: 5, amount: null },
+    ]);
+  });
+  it('sem vínculo ou sem gramas: nada sai do estoque', () => {
+    expect(filamentStockDeductions([line('A', 100, 30), line('B', 100, 0, 'rolo')], 0, 1, () => 'g')).toEqual([]);
+  });
+});
+
+describe('Item 29: G-code com vários filamentos', () => {
+  const prusa = [
+    '; filament used [g] = 12.50, 0.00, 3.20',
+    '; total filament used [g] = 15.70',
+    '; total filament used for wipe tower [g] = 2.10',
+    '; filament_colour = #FF0000;#00FF00;#0000FF',
+    '; filament_type = PLA;PETG;ABS',
+  ].join('\n');
+
+  it('Prusa: gramas, cor e tipo da mesma posição; extrusora sem uso sai; torre só como aviso', () => {
+    const r = parsePrintGcode(prusa);
+    expect(r.filamentUsedG).toBeCloseTo(15.7, 10);
+    expect(r.wipeTowerG).toBe(2.1);
+    expect(r.filaments).toEqual([
+      { grams: 12.5, color: '#ff0000', type: 'PLA' },
+      { grams: 3.2, color: '#0000ff', type: 'ABS' },
+    ]);
+  });
+  it('Orca e Bambu: total em cima e lista no fim; sem espaço depois da vírgula', () => {
+    const r = parsePrintGcode(
+      [
+        '; total filament weight [g] : 20.5',
+        '; filament used [g] = 15.25,5.25',
+        '; filament_colour = #000000FF;"#FFFFFF"',
+        '; filament_type = PLA;PLA',
+      ].join('\n'),
+    );
+    expect(r.filamentUsedG).toBeCloseTo(20.5, 10);
+    expect(r.filaments).toEqual([
+      { grams: 15.25, color: '#000000', type: 'PLA' },
+      { grams: 5.25, color: '#ffffff', type: 'PLA' },
+    ]);
+  });
+  it('uma cor e arquivo sem lista: leitura de antes, sem torre', () => {
+    const r = parsePrintGcode('; filament used [g] = 50.5\n');
+    expect(r.filaments).toEqual([{ grams: 50.5, color: null, type: null }]);
+    expect(r.wipeTowerG).toBeNull();
+    expect(parsePrintGcode('; total filament weight [g] : 9\n').filaments).toEqual([]);
+  });
+  it('linhas da tela: mantém vínculo e preço; filamento novo entra com o preço do primeiro', () => {
+    const current = [
+      { name: 'Preto 3DLAB', color: '#111111', costPerKg: 120, grams: 1, materialId: 'preto' },
+      { name: 'PLA', color: '#222222', costPerKg: 90, grams: 1, materialId: null },
+    ];
+    const lines = filamentsFromGcode(current, [
+      { grams: 10.123, color: '#ff0000', type: 'PLA' },
+      { grams: 5, color: null, type: 'PETG' },
+      { grams: 2, color: '#00ff00', type: 'TPU' },
+    ]);
+    expect(lines).toEqual([
+      { name: 'Preto 3DLAB', color: '#ff0000', costPerKg: 120, grams: 10.12, materialId: 'preto' },
+      { name: 'PETG', color: '#222222', costPerKg: 90, grams: 5, materialId: null },
+      { name: 'TPU', color: '#00ff00', costPerKg: 120, grams: 2, materialId: null },
+    ]);
   });
 });
 

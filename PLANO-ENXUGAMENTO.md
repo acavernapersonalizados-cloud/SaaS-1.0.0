@@ -116,7 +116,7 @@ O que cada etapa trouxe para quem usa o app:
 15. ✅ Catálogo público com cara de loja: vitrine em grade, busca pelo nome, WhatsApp por produto e Pix/crédito (publicado em 28/10/2026).
 16. ✅ IA: AI Studio no pré-pagamento com saldo (sem recarga automática), "Análise IA" testada no site e App Check do Firebase AI Logic com 100% verificadas (51/51), "Básico: aplicado" (você, no console, 3/11/2026).
 
-**Próxima fase:** 1. item 29 — Calculadora 3D multicor (depois do reset; ver seção 7.1); 2. Etapa 10.
+**Próxima fase:** 1. ✅ item 29 — Calculadora 3D multicor (feito, não publicado; ver seção 7.1); 2. Etapa 10.
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -956,6 +956,15 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     estoque, e gramas); campo "Desperdício da troca / purga (g)" que entra no custo; leitura do G-code com vários
     filamentos (Orca, Bambu, Prusa: gramas por filamento e purga); baixa de estoque em cada filamento. Trabalhos
     antigos de 1 cor continuam iguais. Riscos e aprovado antes.
+    ✅ **Feito em 4/11/2026 (aprovado; não publicado):** "Adicionar filamento" na 3D, cada linha com cor, tipo, vínculo
+    com o estoque, R$/kg e gramas (`filaments`); "Desperdício da troca / purga (g)" (`purgeG`) dividido pelas gramas e
+    somado ao custo; campos antigos seguem gravados (nomes, média por kg, total). G-code: gramas, cor e tipo por
+    filamento; a torre de purga só aparece como aviso, porque já está nas gramas (purga zera). Baixa de todos numa
+    transação só; faltou um, nada sai. Produto do trabalho baixa cada filamento. 417 testes, lint, build; preços de
+    1 cor iguais (snapshots sem mudança de valor). Emulador 390 px: 30 g a R$ 50 + 10 g a R$ 200, purga 8 → 48 g,
+    R$ 87,50/kg, filamento R$ 4,41; estoque 0,63 → 0,594 kg e 100 → 88 g; sem saldo: aviso e nada baixado; G-code de
+    teste com 2 cores preencheu as linhas. **Falta testar com um G-code multicor real** (o de teste foi montado à mão)
+    e o exemplo do Mandri3D não chegou.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

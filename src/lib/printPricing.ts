@@ -1,4 +1,4 @@
-import type { SalesChannel } from '../types';
+import type { PrintFilament, SalesChannel } from '../types';
 import { energyCost as energyFor, laborCostFromHours, priceForMarkup, wearCost } from './pricingEngine';
 
 export interface PrintChannelFees {
@@ -30,6 +30,54 @@ export const printFeesFromChannel = (channel: SalesChannel | undefined): PrintCh
     : { ...NO_PRINT_FEES };
 
 const safe = (value: number) => (Number.isFinite(value) && value >= 0 ? value : 0);
+
+/** Cores das linhas novas de filamento (a pessoa troca na tela). */
+const FILAMENT_COLORS = ['#9ca3af', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
+export const filamentColorAt = (index: number) => FILAMENT_COLORS[index % FILAMENT_COLORS.length];
+
+/**
+ * Item 29: total da peça com vários filamentos. A purga é dividida pelas gramas de cada um (sem gramas, em partes
+ * iguais). O R$/kg é a média ponderada; com um filamento só é o dele, e a conta fica igual à de antes.
+ */
+export function printFilamentTotals(lines: PrintFilament[], purgeG = 0) {
+  const base = lines.reduce((sum, line) => sum + safe(line.grams), 0);
+  const gramsWithPurge = lines.map(
+    line => safe(line.grams) + safe(purgeG) * (base > 0 ? safe(line.grams) / base : 1 / lines.length),
+  );
+  const usedG = gramsWithPurge.reduce((sum, grams) => sum + grams, 0);
+  const paid = lines.reduce((sum, line, index) => sum + (gramsWithPurge[index] ?? 0) * safe(line.costPerKg), 0);
+  const single = lines.length === 1 ? lines[0] : undefined;
+  return {
+    usedG,
+    costPerKg: single ? safe(single.costPerKg) : usedG > 0 ? paid / usedG : 0,
+    gramsWithPurge,
+  };
+}
+
+/** "PLA + PETG": o nome que as listas e os trabalhos antigos leem. */
+export const printFilamentLabel = (lines: PrintFilament[]) => lines.map(line => line.name).join(' + ');
+
+/**
+ * Item 29: o que sai do estoque, somado por material (o mesmo rolo pode estar em duas linhas). `amount` vem na unidade
+ * do material; null quando ela não é kg nem g, e o peso não dá para converter.
+ */
+export function filamentStockDeductions(
+  lines: PrintFilament[],
+  purgeG: number,
+  quantity: number,
+  materialUnit: (materialId: string) => string | undefined,
+) {
+  const { gramsWithPurge } = printFilamentTotals(lines, purgeG);
+  const byId = new Map<string, number>();
+  lines.forEach((line, index) => {
+    const grams = (gramsWithPurge[index] ?? 0) * quantity;
+    if (line.materialId && grams > 0) byId.set(line.materialId, (byId.get(line.materialId) ?? 0) + grams);
+  });
+  return [...byId].map(([materialId, grams]) => {
+    const unit = (materialUnit(materialId) || '').toLowerCase();
+    return { materialId, grams, amount: unit === 'kg' ? grams / 1000 : unit === 'g' ? grams : null };
+  });
+}
 
 /**
  * Item 24 (2/11/2026): o tempo da 3D é em MINUTOS (com fração, para os segundos do G-code). Trabalho salvo antes só
@@ -170,15 +218,72 @@ function parseDurationSeconds(raw: string): number | null {
 // Soma o peso de cada extrusora. Separadores: ";" sempre; "," quando os
 // números usam ponto decimal ("12.5, 3.2"); senão só ", " com espaço, para
 // que "12,5" seja lido como 12,5 g e não como 12 + 5.
-function sumGrams(raw: string): number {
+function gramsList(raw: string): number[] {
   const value = raw.trim();
   const parts = value.includes(';') ? value.split(';') : value.includes('.') ? value.split(',') : value.split(/,\s+/);
   return parts
     .map(part => part.trim())
     .filter(Boolean)
     .map(part => Number(part.replace(',', '.')))
-    .filter(Number.isFinite)
-    .reduce((sum, grams) => sum + grams, 0);
+    .filter(Number.isFinite);
+}
+
+const sumGrams = (raw: string) => gramsList(raw).reduce((sum, grams) => sum + grams, 0);
+
+/** Lista do slicer separada por ";" ou "," ("#FF0000;#00FF00", "PLA;PETG"), sem aspas. */
+const settingList = (sample: string, key: string) =>
+  (sample.match(new RegExp(`;\\s*${key}\\s*[:=]\\s*([^\\n\\r]+)`, 'i'))?.[1] ?? '')
+    .split(/[;,]/)
+    .map(part => part.trim().replace(/^"|"$/g, ''));
+
+export interface GcodeFilament {
+  grams: number;
+  color: string | null;
+  type: string | null;
+}
+
+/** Item 29: gramas por filamento (Prusa, Orca, Bambu), com a cor e o tipo da mesma posição; extrusora sem uso sai. */
+function gcodeFilaments(sample: string): GcodeFilament[] {
+  const raw = sample.match(/;\s*filament(?:[_ ](?:used|weight))?\s*\[g\]\s*[:=]\s*([0-9., ;]+)/i)?.[1];
+  if (!raw) return [];
+  const colors = settingList(sample, 'filament_colou?r');
+  const types = settingList(sample, 'filament_type');
+  return gramsList(raw)
+    .map((grams, index) => {
+      const color = colors[index] ?? '';
+      return {
+        grams,
+        color: /^#[0-9a-f]{6}/i.test(color) ? color.slice(0, 7).toLowerCase() : null,
+        type: types[index] || null,
+      };
+    })
+    .filter(filament => filament.grams > 0);
+}
+
+/**
+ * Item 29: linhas da tela depois de ler um G-code com vários filamentos. Cada posição mantém o vínculo e o preço que
+ * já tinha; filamento a mais entra com o preço do primeiro.
+ */
+export function filamentsFromGcode(current: PrintFilament[], found: GcodeFilament[]): PrintFilament[] {
+  return found.map((filament, index) => {
+    const grams = Number(filament.grams.toFixed(2));
+    const kept = current[index];
+    if (kept) {
+      return {
+        ...kept,
+        name: kept.materialId ? kept.name : (filament.type ?? kept.name),
+        color: filament.color ?? kept.color,
+        grams,
+      };
+    }
+    return {
+      name: filament.type ?? current[0]?.name ?? 'PLA',
+      color: filament.color ?? filamentColorAt(index),
+      costPerKg: current[0]?.costPerKg ?? 0,
+      grams,
+      materialId: null,
+    };
+  });
 }
 
 export function parsePrintGcode(content: string) {
@@ -205,6 +310,9 @@ export function parsePrintGcode(content: string) {
     sample.match(/;\s*Filament\s+weight\s*=\s*([0-9., ;]+)/i) ??
     sample.match(/;\s*filament_weight\s*[:=]\s*([0-9., ;]+)/i);
   const filamentUsedG = gramsMatch?.[1] ? sumGrams(gramsMatch[1]) : null;
+  // A torre de purga já está nas gramas de cada filamento: serve só de aviso, não entra de novo no custo.
+  const wipeTower = sample.match(/;\s*total filament used for wipe tower \[g\]\s*[:=]\s*([0-9.,]+)/i)?.[1];
+  const wipeTowerG = wipeTower ? Number(wipeTower.replace(',', '.')) : 0;
   const slicer =
     sample.match(/;\s*generated by\s+([^\n\r,]+)/i)?.[1]?.trim() ??
     sample.match(/;\s*(PrusaSlicer|SuperSlicer|OrcaSlicer|BambuStudio|Cura)[^\n]*/i)?.[1] ??
@@ -213,6 +321,8 @@ export function parsePrintGcode(content: string) {
     printTimeMin,
     printTimeH,
     filamentUsedG: filamentUsedG && filamentUsedG > 0 ? filamentUsedG : null,
+    filaments: gcodeFilaments(sample),
+    wipeTowerG: wipeTowerG > 0 ? wipeTowerG : null,
     slicer,
   };
 }
