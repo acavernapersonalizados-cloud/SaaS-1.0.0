@@ -186,7 +186,8 @@ export function PrintFilaments({
               className={FIELD}
             />
             <p className="text-[10px] text-neutral-400">
-              Só o que não está nas gramas acima (no G-code, a purga já vem nelas). Divide pelas gramas de cada filamento.
+              Só o que não está nas gramas acima (no G-code, a purga já vem nelas). Divide pelas gramas de cada
+              filamento.
             </p>
           </div>
           <p className="p-3 bg-neutral-50 rounded-xl text-xs font-bold text-neutral-700">

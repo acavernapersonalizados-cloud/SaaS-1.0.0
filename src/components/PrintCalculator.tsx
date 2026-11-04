@@ -287,7 +287,10 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     else if (parsed.filamentUsedG !== null && filaments.length === 1)
       setFilaments([{ ...filaments[0]!, grams: Number(parsed.filamentUsedG.toFixed(2)) }]);
     else if (parsed.filamentUsedG !== null)
-      addToast(`O arquivo traz só o total (${formatQuantity(parsed.filamentUsedG)} g): divida entre os filamentos.`, 'info');
+      addToast(
+        `O arquivo traz só o total (${formatQuantity(parsed.filamentUsedG)} g): divida entre os filamentos.`,
+        'info',
+      );
     if (parsed.filaments.length > 1) setPurgeG(0);
     if (!jobName) setJobName(file.name.replace(/\.(gcode|gco|g|3mf)$/i, ''));
     setGcodeFileName(file.name);
@@ -439,7 +442,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
             if (!snapshot.exists()) throw new Error('Material selecionado não encontrado.');
             const data = snapshot.data() as Material;
             const taken = takeFromLots(materialLots(data, today), deductions[index]!.amount ?? 0, today);
-            if (taken.missing > 0) throw new Error(`Estoque insuficiente de ${data.name} para registrar esta impressão.`);
+            if (taken.missing > 0)
+              throw new Error(`Estoque insuficiente de ${data.name} para registrar esta impressão.`);
             return taken;
           });
           deductions.forEach(({ materialId, grams, amount }, index) => {
@@ -690,7 +694,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
-                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentTotals.usedG)} g de {filamentLabel}
+                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentTotals.usedG)} g de{' '}
+                  {filamentLabel}
                 </span>
               </div>
             )}
