@@ -43,7 +43,7 @@
 - **No ar:** `index-D1TkJPs0.js` (3/11/2026: itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito em 4/11/2026, **ainda não publicado** (falta o seu "pode publicar" e testar com um G-code multicor real); depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito em 4/11/2026, **ainda não publicado** (falta o seu "pode publicar"; G-code real do Creality Print conferido); depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -963,8 +963,9 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     transação só; faltou um, nada sai. Produto do trabalho baixa cada filamento. 417 testes, lint, build; preços de
     1 cor iguais (snapshots sem mudança de valor). Emulador 390 px: 30 g a R$ 50 + 10 g a R$ 200, purga 8 → 48 g,
     R$ 87,50/kg, filamento R$ 4,41; estoque 0,63 → 0,594 kg e 100 → 88 g; sem saldo: aviso e nada baixado; G-code de
-    teste com 2 cores preencheu as linhas. **Falta testar com um G-code multicor real** (o de teste foi montado à mão)
-    e o exemplo do Mandri3D não chegou.
+    teste com 2 cores preencheu as linhas. O exemplo do Mandri3D não chegou. Conferido com G-code real (Creality Print
+    7.3, "Porta-chaves de parede", 4 slots, 2 usados): PETG branco 7,98 g + PLA preto 39,48 g, 2 h 29 min 19 s. O
+    arquivo não separa a purga e ela já está nas gramas, por isso todo G-code multicor zera o campo e avisa na tela.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

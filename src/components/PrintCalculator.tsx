@@ -288,12 +288,12 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       setFilaments([{ ...filaments[0]!, grams: Number(parsed.filamentUsedG.toFixed(2)) }]);
     else if (parsed.filamentUsedG !== null)
       addToast(`O arquivo traz só o total (${formatQuantity(parsed.filamentUsedG)} g): divida entre os filamentos.`, 'info');
-    if (parsed.wipeTowerG !== null) setPurgeG(0);
+    if (parsed.filaments.length > 1) setPurgeG(0);
     if (!jobName) setJobName(file.name.replace(/\.(gcode|gco|g|3mf)$/i, ''));
     setGcodeFileName(file.name);
     setGcodeSlicer(parsed.slicer);
-    const tower = parsed.wipeTowerG !== null ? ` · purga de ${formatQuantity(parsed.wipeTowerG)} g já nas gramas` : '';
-    setGcodeInfo(`${file.name}${parsed.slicer ? ` · ${parsed.slicer}` : ''}${tower}`);
+    const purge = parsed.filaments.length > 1 ? ' · purga já incluída nas gramas' : '';
+    setGcodeInfo(`${file.name}${parsed.slicer ? ` · ${parsed.slicer}` : ''}${purge}`);
     addToast('Arquivo lido com sucesso.', 'success');
   };
 
