@@ -40,10 +40,10 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-D1TkJPs0.js` (3/11/2026: itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-p4BKfhAu.js` (4/11/2026: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito em 4/11/2026, **ainda não publicado** (falta o seu "pode publicar"; G-code real do Creality Print conferido); depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido); depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -116,7 +116,7 @@ O que cada etapa trouxe para quem usa o app:
 15. ✅ Catálogo público com cara de loja: vitrine em grade, busca pelo nome, WhatsApp por produto e Pix/crédito (publicado em 28/10/2026).
 16. ✅ IA: AI Studio no pré-pagamento com saldo (sem recarga automática), "Análise IA" testada no site e App Check do Firebase AI Logic com 100% verificadas (51/51), "Básico: aplicado" (você, no console, 3/11/2026).
 
-**Próxima fase:** 1. ✅ item 29 — Calculadora 3D multicor (feito, não publicado; ver seção 7.1); 2. Etapa 10.
+**Próxima fase:** 1. ✅ item 29 — Calculadora 3D multicor (publicado em 4/11/2026; ver seção 7.1); 2. Etapa 10.
 
 **Estacionamento — decidir depois de usar o app (opcionais):** abrir trabalho salvo na calculadora; seus produtos
 na tabela da sublimação; desconto de fornecedor no custo; markup extra por canal.
@@ -956,7 +956,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     estoque, e gramas); campo "Desperdício da troca / purga (g)" que entra no custo; leitura do G-code com vários
     filamentos (Orca, Bambu, Prusa: gramas por filamento e purga); baixa de estoque em cada filamento. Trabalhos
     antigos de 1 cor continuam iguais. Riscos e aprovado antes.
-    ✅ **Feito em 4/11/2026 (aprovado; não publicado):** "Adicionar filamento" na 3D, cada linha com cor, tipo, vínculo
+    ✅ **Feito e publicado em 4/11/2026 (`index-p4BKfhAu.js`):** "Adicionar filamento" na 3D, cada linha com cor, tipo, vínculo
     com o estoque, R$/kg e gramas (`filaments`); "Desperdício da troca / purga (g)" (`purgeG`) dividido pelas gramas e
     somado ao custo; campos antigos seguem gravados (nomes, média por kg, total). G-code: gramas, cor e tipo por
     filamento; a torre de purga só aparece como aviso, porque já está nas gramas (purga zera). Baixa de todos numa
