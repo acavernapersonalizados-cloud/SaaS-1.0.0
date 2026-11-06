@@ -40,10 +40,10 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-p4BKfhAu.js` (4/11/2026: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-y03cdgUI.js` (6/11/2026: item 30 parte A, variações de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): parte A feita em 5/11/2026, **não publicada**; falta a parte B (camiseta). Depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): parte A publicada em 6/11/2026; falta a parte B (camiseta). Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -967,7 +967,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     7.3, "Porta-chaves de parede", 4 slots, 2 usados): PETG branco 7,98 g + PLA preto 39,48 g, 2 h 29 min 19 s. O
     arquivo não separa a purga e ela já está nas gramas, por isso todo G-code multicor zera o campo e avisa na tela.
 30. **Variações de produto** (pedido em 5/11/2026).
-    ✅ **Parte A (caneca), feita em 5/11/2026 (aprovada; não publicada):** bloco "Variações" no produto (ex.: Cor), cada
+    ✅ **Parte A (caneca), feita em 5/11/2026 e publicada em 6/11/2026 (`index-y03cdgUI.js`):** bloco "Variações" no produto (ex.: Cor), cada
     opção com material do estoque e valor a mais (`variation`). O material da opção soma à receita; o valor a mais soma
     como acabamento. No orçamento a escolha é obrigatória e fica gravada no item (`variationLabel`, `variationMaterialId`),
     com reserva, baixa, lista de separação, PDF e Histórico pela opção escolhida. Sem escolha (lista de produtos,
