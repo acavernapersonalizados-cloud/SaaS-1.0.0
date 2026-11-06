@@ -70,8 +70,8 @@ export function ProductGradeSection({
       {grade && (
         <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-4">
           <p className="text-xs text-neutral-500">
-            Separe por vírgula. Ao salvar, cada peça marcada vira um item na Matéria-prima, com saldo zero; o saldo entra
-            pela tela de Estoque.
+            Separe por vírgula. Ao salvar, cada peça marcada vira um item na Matéria-prima, com saldo zero; o saldo
+            entra pela tela de Estoque.
           </p>
           {(
             [
