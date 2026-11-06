@@ -135,7 +135,14 @@ describe('Item 30 B2: técnica', () => {
     additionalValue: 0,
     fabrics: ['Dryfit'],
   };
-  const dtf = { id: 'dtf', name: 'DTF', materials: [], minutes: 12, additionalValue: 8, fabrics: ['Algodão', 'Dryfit'] };
+  const dtf = {
+    id: 'dtf',
+    name: 'DTF',
+    materials: [],
+    minutes: 12,
+    additionalValue: 8,
+    fabrics: ['Algodão', 'Dryfit'],
+  };
   const withTech: ProductGrade = { ...grade, techniques: [sub, dtf] };
   const shirt = { ...product, grade: withTech, materials: [] } as unknown as Product;
   const stock = [...materials, material('papel', 3), material('zero', 100)];
@@ -205,7 +212,10 @@ describe('Item 30 B2: técnica', () => {
     const clean = cleanGradeTechniques({
       ...withTech,
       fabrics: ['Dryfit'],
-      techniques: [{ ...dtf, name: ' D|TF ' }, { ...sub, name: ' ' }],
+      techniques: [
+        { ...dtf, name: ' D|TF ' },
+        { ...sub, name: ' ' },
+      ],
     });
     expect(clean.techniques).toEqual([{ ...dtf, name: 'DTF', fabrics: ['Dryfit'] }]);
   });
