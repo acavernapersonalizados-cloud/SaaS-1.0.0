@@ -43,7 +43,7 @@ const num = (v: unknown) => Number(v) || 0;
  */
 export function buildPickList(
   items: Array<
-    Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity' | 'variationLabel'> & {
+    Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity' | 'variationMaterials' | 'variationLabel'> & {
       productId?: string | null;
       productName?: string;
       quantity?: number;

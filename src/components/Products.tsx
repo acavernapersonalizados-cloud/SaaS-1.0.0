@@ -33,7 +33,13 @@ import { ProductKitSection } from './ProductKitSection';
 import { ProductVariationSection } from './ProductVariationSection';
 import { ProductGradeSection } from './ProductGradeSection';
 import { cleanVariation } from '../lib/variation';
-import { gradeMissingCosts, gradeStockChanges, hasGrade } from '../lib/grade';
+import {
+  cleanGradeTechniques,
+  gradeFabricsWithoutTechnique,
+  gradeMissingCosts,
+  gradeStockChanges,
+  hasGrade,
+} from '../lib/grade';
 import { addToLots, stockFields } from '../lib/stockLots';
 import { CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
@@ -227,14 +233,20 @@ export function Products({
       };
       // Item 30 B1: peças novas viram material e o produto salva junto, numa gravação só.
       if (newProduct.grade && hasGrade(newProduct)) {
-        const missing = gradeMissingCosts(newProduct.grade);
+        const grade = cleanGradeTechniques(newProduct.grade);
+        const noTechnique = gradeFabricsWithoutTechnique(grade);
+        if (noTechnique.length > 0) {
+          addToast(`Marque uma técnica para: ${noTechnique.join(', ')}.`, 'error');
+          return;
+        }
+        const missing = gradeMissingCosts(grade);
         if (missing.length > 0) {
           addToast(`Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`, 'error');
           return;
         }
         const productRef = editingProduct ? doc(db, 'products', editingProduct.id) : doc(collection(db, 'products'));
         const stock = gradeStockChanges(
-          newProduct.grade,
+          grade,
           newProduct.name,
           materials,
           editingProduct?.grade,

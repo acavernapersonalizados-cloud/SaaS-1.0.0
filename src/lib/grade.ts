@@ -4,16 +4,23 @@
  * todas as cores. No orçamento a escolha vai em `variationOptionId` ("Algodão|GG|Rosa"), com os mesmos campos da
  * variação simples (lib/variation.ts): reserva, baixa e separação não mudam.
  */
-import type { Material, Product, ProductGrade, QuoteItem } from '../types';
+import type { Material, Product, ProductGrade, ProductGradeTechnique, QuoteItem } from '../types';
 
 const num = (v: unknown) => Number(v) || 0;
 
-export const gradeKey = (fabric: string, size: string, color: string) => [fabric, size, color].join('|');
+/** "tecido|tamanho|cor" é a peça; no orçamento, a técnica escolhida vem depois: "tecido|tamanho|cor|técnica". */
+export const gradeKey = (fabric: string, size: string, color: string, technique?: string) =>
+  [fabric, size, color, ...(technique ? [technique] : [])].join('|');
 
 export function splitGradeKey(key?: string | null) {
-  const [fabric = '', size = '', color = ''] = (key ?? '').split('|');
-  return { fabric, size, color };
+  const [fabric = '', size = '', color = '', technique = ''] = (key ?? '').split('|');
+  return { fabric, size, color, technique };
 }
+
+const pieceKeyOf = (key: string) => {
+  const { fabric, size, color } = splitGradeKey(key);
+  return gradeKey(fabric, size, color);
+};
 
 export const gradeCostKey = (fabric: string, size: string) => `${fabric}|${size}`;
 
@@ -42,7 +49,39 @@ export const activePieces = (grade: ProductGrade) =>
   grade.pieces.filter(piece => piece.active && inLists(grade, piece.key));
 
 export const gradePieceOf = (grade: ProductGrade | null | undefined, key?: string | null) =>
-  grade && key ? activePieces(grade).find(piece => piece.key === key) : undefined;
+  grade && key ? activePieces(grade).find(piece => piece.key === pieceKeyOf(key)) : undefined;
+
+/** Técnicas que o tecido aceita. */
+export const techniquesFor = (grade: ProductGrade, fabric: string) =>
+  (grade.techniques ?? []).filter(technique => technique.fabrics.includes(fabric));
+
+const chosenTechnique = (grade: ProductGrade, key?: string | null) => {
+  const { fabric, technique } = splitGradeKey(key);
+  return techniquesFor(grade, fabric).find(t => t.id === technique);
+};
+
+const techniqueCost = (technique: ProductGradeTechnique, materials: Material[]) =>
+  technique.materials.reduce(
+    (sum, pm) => sum + num(materials.find(m => m.id === pm.materialId)?.unitCost) * num(pm.quantity),
+    0,
+  );
+
+/** Técnica da conta: a escolhida; sem escolha, a mais cara, para a referência nunca sair abaixo do custo. */
+function techniqueForCost(grade: ProductGrade, materials: Material[], key?: string | null) {
+  return (
+    chosenTechnique(grade, key) ??
+    [...(grade.techniques ?? [])].sort((a, b) => techniqueCost(b, materials) - techniqueCost(a, materials))[0]
+  );
+}
+
+/** Minutos de mão de obra da técnica, somados ao tempo do produto. */
+export function gradeTechniqueMinutes(
+  grade: ProductGrade | null | undefined,
+  materials: Material[],
+  key?: string | null,
+) {
+  return grade ? num(techniqueForCost(grade, materials, key)?.minutes) : 0;
+}
 
 /** Marca ou desmarca. A peça desmarcada guarda o material: marcar de novo volta para o mesmo saldo. */
 export function toggleGradePiece(grade: ProductGrade, key: string): ProductGrade {
@@ -61,12 +100,14 @@ export function toggleGradePiece(grade: ProductGrade, key: string): ProductGrade
  */
 export function gradeUnitCost(grade: ProductGrade | null | undefined, materials: Material[], key?: string | null) {
   if (!grade) return 0;
+  const technique = techniqueForCost(grade, materials, key);
+  const extra = technique ? techniqueCost(technique, materials) : 0;
   const { fabric, size } = splitGradeKey(key);
   if (key && inLists(grade, key)) {
     const stock = materials.find(m => m.id === gradePieceOf(grade, key)?.materialId);
-    return num(stock?.unitCost) || num(grade.costs[gradeCostKey(fabric, size)]);
+    return (num(stock?.unitCost) || num(grade.costs[gradeCostKey(fabric, size)])) + extra;
   }
-  return Math.max(0, ...Object.values(grade.costs).map(num));
+  return Math.max(0, ...Object.values(grade.costs).map(num)) + extra;
 }
 
 /** Campos do item do orçamento. Escolha incompleta: nada, e o orçamento pede para terminar. */
@@ -76,12 +117,17 @@ export function gradeItemFields(grade: ProductGrade, key?: string | null): Parti
   const materialId = gradePieceOf(grade, key)?.materialId;
   // Sem peça e sem custo na grade, o preço sairia sem a camiseta: o orçamento trava até preencher.
   if (!materialId && !(num(grade.costs[gradeCostKey(fabric, size)]) > 0)) return {};
+  // Item 30 B2: com técnica cadastrada, a escolha é obrigatória e tem de ser aceita pelo tecido.
+  const technique = chosenTechnique(grade, key);
+  if ((grade.techniques ?? []).length > 0 && !technique) return {};
+  const supplies = (technique?.materials ?? []).filter(pm => num(pm.quantity) > 0);
   return {
     variationOptionId: key,
-    variationLabel: `${fabric} · ${size} · ${color}`,
-    variationValue: 0,
+    variationLabel: [fabric, size, color, technique?.name].filter(Boolean).join(' · '),
+    variationValue: num(technique?.additionalValue),
     // Peça sem cadastro: dá para orçar, mas não há o que baixar.
     ...(materialId ? { variationMaterialId: materialId, variationQuantity: 1 } : {}),
+    ...(supplies.length > 0 ? { variationMaterials: supplies } : {}),
   };
 }
 
@@ -94,6 +140,22 @@ export const gradeMissingCosts = (grade: ProductGrade) => [
       .map(({ fabric, size }) => `${fabric} ${size}`),
   ),
 ];
+
+/** Tecidos sem nenhuma técnica aceita: o orçamento não teria o que escolher, então o produto não salva. */
+export const gradeFabricsWithoutTechnique = (grade: ProductGrade) =>
+  (grade.techniques ?? []).length > 0 ? grade.fabrics.filter(fabric => techniquesFor(grade, fabric).length === 0) : [];
+
+/** Ao salvar: tira técnica sem nome e tecido que saiu da lista. */
+export const cleanGradeTechniques = (grade: ProductGrade): ProductGrade => ({
+  ...grade,
+  techniques: (grade.techniques ?? [])
+    .filter(technique => technique.name.trim())
+    .map(technique => ({
+      ...technique,
+      name: technique.name.replace(/\|/g, '').trim(),
+      fabrics: technique.fabrics.filter(fabric => grade.fabrics.includes(fabric)),
+    })),
+});
 
 /**
  * O que salvar no estoque: peças novas viram material; peça cujo custo mudou na grade atualiza o material. Custo igual

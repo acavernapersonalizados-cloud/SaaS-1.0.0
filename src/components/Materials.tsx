@@ -322,6 +322,10 @@ export function Materials() {
             ) ||
             ((d.data().grade?.pieces || []) as Array<{ materialId: string | null }>).some(
               p => p.materialId === materialToDelete,
+            ) ||
+            // Item 30 B2: insumo de técnica da grade também conta.
+            ((d.data().grade?.techniques || []) as Array<{ materials: Array<{ materialId: string }> }>).some(t =>
+              t.materials.some(m => m.materialId === materialToDelete),
             ),
         )
         .map(d => d.data().name as string);

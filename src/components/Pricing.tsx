@@ -224,6 +224,7 @@ export function Pricing() {
                 wholesaleFloorApplied: currentItemResults.wholesaleFloorApplied,
                 ...currentItemResults.variationFields,
                 variationOptionId: currentItemResults.variationFields.variationOptionId,
+                variationMaterials: currentItemResults.variationFields.variationMaterials,
               }
             : item,
         ),
@@ -379,6 +380,12 @@ export function Pricing() {
 
     if (hasInvalidItems) {
       setQuoteError('Erro: Um ou mais itens possuem valores inválidos. Verifique os dados.');
+      return;
+    }
+
+    // Item 30: a opção pode ter sumido do produto depois de o item entrar na lista.
+    if (allItemsResults.some(r => r.variationMissing)) {
+      setQuoteError('Um item está sem a variação ou a técnica: edite o item e escolha de novo.');
       return;
     }
 

@@ -140,6 +140,18 @@ export interface ProductGradePiece {
   active: boolean;
 }
 
+/** Item 30 B2: técnica da grade. Insumos e tempo entram no custo; o valor a mais soma por fora, como acabamento. */
+export interface ProductGradeTechnique {
+  id: string;
+  name: string;
+  materials: ProductMaterial[];
+  /** Mão de obra por peça, somada ao tempo do produto. */
+  minutes: number;
+  additionalValue: number;
+  /** Tecidos que aceitam a técnica. */
+  fabrics: string[];
+}
+
 /** Item 30 B1: grade por tecido, tamanho e cor. Custo por "tecido|tamanho", igual para todas as cores. */
 export interface ProductGrade {
   fabrics: string[];
@@ -147,6 +159,8 @@ export interface ProductGrade {
   colors: string[];
   costs: Record<string, number>;
   pieces: ProductGradePiece[];
+  /** Item 30 B2: com alguma cadastrada, o orçamento exige escolher. Sem o campo, a grade funciona como no B1. */
+  techniques?: ProductGradeTechnique[];
 }
 
 export interface Product {
@@ -387,6 +401,8 @@ export interface QuoteItem {
   variationValue?: number;
   variationMaterialId?: string;
   variationQuantity?: number;
+  /** Item 30 B2: insumos da técnica escolhida, por unidade (gravados: mudar a técnica depois não muda a venda). */
+  variationMaterials?: ProductMaterial[];
 }
 
 export interface Quote {

@@ -8,7 +8,7 @@ import { MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT, QuoteItemCalcResult } from
 import { feeLabel } from '../lib/quoteFormat';
 import { formatQuantity } from '../lib/quantity';
 import { hasVariation } from '../lib/variation';
-import { gradeKey, gradePieceOf, hasGrade, splitGradeKey } from '../lib/grade';
+import { gradeKey, gradePieceOf, hasGrade, splitGradeKey, techniquesFor } from '../lib/grade';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
@@ -46,6 +46,11 @@ function GradePicker({
     ['size', 'Tamanho', grade.sizes],
     ['color', 'Cor', grade.colors],
   ] as const;
+  // Item 30 B2: só as técnicas que o tecido aceita; trocar para um tecido que não aceita limpa a escolha.
+  const hasTechniques = (grade.techniques ?? []).length > 0;
+  const techniques = techniquesFor(grade, choice.fabric);
+  const technique = techniques.find(t => t.id === choice.technique);
+  const complete = !!(choice.fabric && choice.size && choice.color && (technique || !hasTechniques));
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -57,7 +62,8 @@ function GradePicker({
               value={choice[field]}
               onChange={e => {
                 const next = { ...choice, [field]: e.target.value };
-                onChange(gradeKey(next.fabric, next.size, next.color));
+                const kept = techniquesFor(grade, next.fabric).some(t => t.id === next.technique);
+                onChange(gradeKey(next.fabric, next.size, next.color, kept ? next.technique : ''));
               }}
               className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
             >
@@ -70,12 +76,31 @@ function GradePicker({
             </select>
           </div>
         ))}
+        {hasTechniques && (
+          <div className="space-y-2 min-w-0">
+            <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">Técnica</label>
+            <select
+              aria-label="Técnica"
+              value={technique?.id ?? ''}
+              onChange={e => onChange(gradeKey(choice.fabric, choice.size, choice.color, e.target.value))}
+              className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+            >
+              <option value="">{choice.fabric ? 'Selecione' : 'Escolha o tecido'}</option>
+              {techniques.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                  {t.additionalValue > 0 ? ` (+${formatCurrency(t.additionalValue)})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       {missing ? (
         <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
-          {choice.fabric && choice.size && choice.color
+          {complete
             ? 'Esta peça não tem custo na grade: preencha no cadastro do produto.'
-            : 'Escolha tecido, tamanho e cor para calcular.'}
+            : `Escolha tecido, tamanho, cor${hasTechniques ? ' e técnica' : ''} para calcular.`}
         </p>
       ) : stock ? (
         <p className="text-xs font-bold text-emerald-700 ml-1">

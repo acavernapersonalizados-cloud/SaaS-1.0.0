@@ -49,12 +49,17 @@ export function variationItemFields(product: Partial<Product>, optionId?: string
 /** Receita do item: a do produto mais o material da variação gravada no orçamento (reserva, baixa e separação). */
 export function itemMaterials(
   recipe: ProductMaterial[] | undefined,
-  item: Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity'>,
+  item: Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity' | 'variationMaterials'>,
 ): ProductMaterial[] {
   const base = recipe ?? [];
-  return item.variationMaterialId
-    ? [...base, { materialId: item.variationMaterialId, quantity: num(item.variationQuantity) }]
-    : base;
+  if (!item.variationMaterialId && !item.variationMaterials?.length) return base;
+  return [
+    ...base,
+    ...(item.variationMaterialId
+      ? [{ materialId: item.variationMaterialId, quantity: num(item.variationQuantity) }]
+      : []),
+    ...(item.variationMaterials ?? []),
+  ];
 }
 
 /** Na hora de salvar: tira opção sem nome; sem nenhuma opção, o produto fica sem variação. */

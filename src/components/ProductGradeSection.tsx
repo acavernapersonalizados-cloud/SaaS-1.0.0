@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Material, Product, ProductGrade } from '../types';
 import { cn } from '../lib/utils';
 import { activePieces, gradeCostKey, gradeKey, parseGradeList, toggleGradePiece } from '../lib/grade';
+import { ProductGradeTechniques } from './ProductGradeTechniques';
 
 const FIELD =
   'w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900';
@@ -170,6 +171,8 @@ export function ProductGradeSection({
             ))}
 
           <p className="text-xs font-bold text-neutral-700">{marked.size} peça(s) marcada(s)</p>
+
+          {grade.fabrics.length > 0 && <ProductGradeTechniques grade={grade} update={update} materials={materials} />}
         </div>
       )}
     </div>
