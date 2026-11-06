@@ -40,10 +40,10 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-zR-mIDUs.js` (6/11/2026: item 30 partes A e B1, variações e grade de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-D5_aveOg.js` (item 30 partes A, B1 e B2: variações, grade e técnicas de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): partes A e B1 publicadas em 6/11/2026; B2 (técnica) feita, **não publicada**; falta B3 (DTF). Depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): partes A, B1 e B2 (técnica) publicadas; falta B3 (DTF). Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -982,7 +982,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     confirmação e atualiza as peças; orçamentos feitos não mudam; compra posterior vale sobre a grade. 448 testes, lint,
     build; emulador 390 px: 3 peças criadas, Algodão GG Rosa × 2 = R$ 58,67, baixa 5 → 3, custo 25 → 28 com orçamento
     igual; o teste achou peça sem custo saindo a R$ 8,67, corrigido.
-    ✅ **Parte B2 (técnica), feita (aprovada; não publicada):** técnicas na grade (`grade.techniques`), com insumos, tempo,
+    ✅ **Parte B2 (técnica), feita e publicada (`index-D5_aveOg.js`):** técnicas na grade (`grade.techniques`), com insumos, tempo,
     valor a mais e tecidos que aceitam. Obrigatória, sem lisa, quando há técnica cadastrada; grade sem técnica segue como
     no B1. Consumo fixo por técnica (sublimação em camiseta é sempre A4). Insumos e tempo entram no custo com markup; o
     valor a mais soma por fora. Item grava `variationMaterials`; baixa de peça e insumos juntos. Tecido sem técnica trava
