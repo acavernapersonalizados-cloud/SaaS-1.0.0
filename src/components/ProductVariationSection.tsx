@@ -21,8 +21,8 @@ export function ProductVariationSection({
   /** O produto faz parte de um kit: o kit não sabe escolher a variação. */
   inKit: boolean;
 }) {
-  // Vem da calculadora ou é kit: o custo é gravado e os materiais estão travados.
-  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit) return null;
+  // Vem da calculadora ou é kit: o custo é gravado e os materiais estão travados. Com grade, a escolha é a da grade.
+  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit || newProduct.grade) return null;
 
   const variation = newProduct.variation ?? null;
   const update = (patch: Partial<ProductVariation>) =>

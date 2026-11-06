@@ -12,6 +12,7 @@
 
 import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../types';
 import { applyWholesale } from './wholesale';
+import { gradeUnitCost } from './grade';
 import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
@@ -275,7 +276,9 @@ export function calcProductCost(
     (product.materials || []).reduce((acc, pm) => {
       const mat = materials.find(m => m.id === pm.materialId);
       return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
-    }, 0) + variationMaterialCost(product.variation, materials, variationOptionId);
+    }, 0) +
+    variationMaterialCost(product.variation, materials, variationOptionId) +
+    gradeUnitCost(product.grade, materials, variationOptionId);
 
   const laborCost = costs ? ((Number(product.productionTime) || 0) / 60) * (Number(costs.hourlyRate) || 0) : 0;
 

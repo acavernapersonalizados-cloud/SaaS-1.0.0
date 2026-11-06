@@ -40110,6 +40110,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 class="space-y-3 pt-2 border-t border-neutral-100"
               >
                 <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
                   class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
                 >
                   Acabamentos (opcional)
@@ -41863,6 +41880,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                   </svg>
                    Adicionar opção
                 </button>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
               </div>
               <div
                 class="space-y-3 pt-2 border-t border-neutral-100"
@@ -44119,6 +44153,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 class="space-y-3 pt-2 border-t border-neutral-100"
               >
                 <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
                   class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
                 >
                   Acabamentos (opcional)
@@ -46142,6 +46193,23 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                   </svg>
                    Adicionar opção
                 </button>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
               </div>
               <div
                 class="space-y-3 pt-2 border-t border-neutral-100"

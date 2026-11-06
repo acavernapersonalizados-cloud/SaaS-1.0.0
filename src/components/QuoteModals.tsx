@@ -1,13 +1,14 @@
 // Janelas da tela Precificação (Etapa 8A): adicionar/editar item e orçamento gerado.
 // Só exibição e campos; o estado, as contas e a gravação ficam em Pricing.tsx.
 import React from 'react';
-import { Material, Product, Quote, Store } from '../types';
+import { Material, Product, ProductGrade, Quote, Store } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
 import { productsTotalOf, shippingLabel, shippingOf } from '../lib/shipping';
 import { MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT, QuoteItemCalcResult } from '../lib/pricingEngine';
 import { feeLabel } from '../lib/quoteFormat';
 import { formatQuantity } from '../lib/quantity';
 import { hasVariation } from '../lib/variation';
+import { gradeKey, gradePieceOf, hasGrade, splitGradeKey } from '../lib/grade';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
@@ -24,6 +25,70 @@ type ItemDraft = {
   /** Estacionamento item 18: preço manual por unidade (Pix). */
   manualUnitPrice?: number | null;
 };
+
+function GradePicker({
+  grade,
+  value,
+  onChange,
+  materials,
+  missing,
+}: {
+  grade: ProductGrade;
+  value: string;
+  onChange: (value: string) => void;
+  materials: Material[];
+  missing: boolean;
+}) {
+  const choice = splitGradeKey(value);
+  const stock = materials.find(m => m.id === gradePieceOf(grade, value)?.materialId);
+  const fields = [
+    ['fabric', 'Tecido', grade.fabrics],
+    ['size', 'Tamanho', grade.sizes],
+    ['color', 'Cor', grade.colors],
+  ] as const;
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {fields.map(([field, label, options]) => (
+          <div key={field} className="space-y-2 min-w-0">
+            <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">{label}</label>
+            <select
+              aria-label={label}
+              value={choice[field]}
+              onChange={e => {
+                const next = { ...choice, [field]: e.target.value };
+                onChange(gradeKey(next.fabric, next.size, next.color));
+              }}
+              className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+            >
+              <option value="">Selecione</option>
+              {options.map(option => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
+      {missing ? (
+        <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
+          {choice.fabric && choice.size && choice.color
+            ? 'Esta peça não tem custo na grade: preencha no cadastro do produto.'
+            : 'Escolha tecido, tamanho e cor para calcular.'}
+        </p>
+      ) : stock ? (
+        <p className="text-xs font-bold text-emerald-700 ml-1">
+          Saldo desta peça: {formatQuantity(stock.stockQuantity)} {stock.unit}
+        </p>
+      ) : (
+        <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
+          Sem estoque: esta peça não está cadastrada na grade. Dá para orçar, mas não haverá baixa.
+        </p>
+      )}
+    </div>
+  );
+}
 
 export function AddItemModal({
   editingItemId,
@@ -107,8 +172,19 @@ export function AddItemModal({
             </select>
           </div>
 
+          {/* Item 30 B1: tecido, tamanho e cor definem a peça do custo e da baixa. */}
+          {selectedProduct?.grade && hasGrade(selectedProduct) && (
+            <GradePicker
+              grade={selectedProduct.grade}
+              value={variationOptionId}
+              onChange={setVariationOptionId}
+              materials={materials}
+              missing={!!currentItemResults?.variationMissing}
+            />
+          )}
+
           {/* Item 30: a opção escolhida define o material do custo e da baixa. */}
-          {selectedProduct?.variation && hasVariation(selectedProduct) && (
+          {selectedProduct?.variation && !hasGrade(selectedProduct) && hasVariation(selectedProduct) && (
             <div className="space-y-3">
               <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
                 {selectedProduct.variation.name}

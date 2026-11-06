@@ -4,11 +4,13 @@
  * orçamento guarda a escolha, para que mudar o produto depois não mude o que já foi vendido.
  */
 import type { Material, Product, ProductMaterial, ProductVariation, QuoteItem } from '../types';
+import { gradeItemFields, hasGrade } from './grade';
 
 const num = (v: unknown) => Number(v) || 0;
 
+/** O orçamento precisa de uma escolha: opção da variação ou peça da grade. */
 export const hasVariation = (product: Partial<Product> | null | undefined) =>
-  (product?.variation?.options?.length ?? 0) > 0;
+  (product?.variation?.options?.length ?? 0) > 0 || hasGrade(product);
 
 export const variationOptionOf = (variation: ProductVariation | null | undefined, optionId?: string | null) =>
   optionId ? variation?.options?.find(option => option.id === optionId) : undefined;
@@ -31,6 +33,7 @@ export function variationMaterialCost(
 
 /** Campos gravados no item do orçamento. Sem variação, nada: o item fica igual aos de antes. */
 export function variationItemFields(product: Partial<Product>, optionId?: string | null): Partial<QuoteItem> {
+  if (product.grade && hasGrade(product)) return gradeItemFields(product.grade, optionId);
   const option = variationOptionOf(product.variation, optionId);
   if (!option) return {};
   return {

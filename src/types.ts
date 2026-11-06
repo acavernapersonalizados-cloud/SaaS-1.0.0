@@ -96,6 +96,8 @@ export interface Material {
   minStockQuantity: number;
   /** Categorias (múltiplas) — ids da coleção `categories` com scope 'material' */
   categoryIds?: string[];
+  /** Item 30 B1: peça da grade deste produto; a Matéria-prima esconde por padrão. */
+  gradeProductId?: string;
 }
 
 export interface ProductMaterial {
@@ -131,6 +133,22 @@ export interface ProductVariation {
   options: ProductVariationOption[];
 }
 
+/** Item 30 B1: peça marcada na grade. A chave é "tecido|tamanho|cor"; desmarcada, guarda o material. */
+export interface ProductGradePiece {
+  key: string;
+  materialId: string | null;
+  active: boolean;
+}
+
+/** Item 30 B1: grade por tecido, tamanho e cor. Custo por "tecido|tamanho", igual para todas as cores. */
+export interface ProductGrade {
+  fabrics: string[];
+  sizes: string[];
+  colors: string[];
+  costs: Record<string, number>;
+  pieces: ProductGradePiece[];
+}
+
 export interface Product {
   id: string;
   storeId: string;
@@ -147,6 +165,8 @@ export interface Product {
   accessories?: Accessory[];
   /** Item 30: o material da opção soma à receita. Sem o campo, o produto funciona como antes. */
   variation?: ProductVariation | null;
+  /** Item 30 B1: a peça escolhida soma à receita, como a opção da variação. */
+  grade?: ProductGrade | null;
   manualPrice?: number | null; // Preço manual definido pelo usuário
   suggestedPrice?: number | null; // Preço sugerido calculado pelo sistema
   aiPriceAnalysis?: string | null; // Análise IA sobre o preço manual

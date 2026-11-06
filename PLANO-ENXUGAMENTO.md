@@ -43,7 +43,7 @@
 - **No ar:** `index-y03cdgUI.js` (6/11/2026: item 30 parte A, variações de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): parte A publicada em 6/11/2026; falta a parte B (camiseta). Depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): parte A publicada em 6/11/2026; B1 (grade da camiseta) feita em 6/11/2026, **não publicada**; faltam B2 (técnica) e B3 (DTF). Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -974,10 +974,21 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     catálogo), o preço de referência usa a opção mais cara. Produto com variação fica de fora dos kits; produto de
     calculadora e kit não têm o bloco. 431 testes, lint, build; emulador 390 px: Rosa + R$ 5 → R$ 43,67, reserva e
     separação só da rosa, finalizado: rosa 2 → 1, azul 10 sem mudar.
-    **Parte B (camiseta), para depois, com riscos e aprovado antes:** tecido, tamanho, cor e técnica no mesmo produto.
-    Respostas de 5/11: o estoque é por tecido, cor e tamanho (peça exata, precisa gerar a grade de combinações); técnica,
-    tecido e tamanho mudam o preço; DTF é terceirizado por metro, e o tamanho da arte define o tamanho do DTF; Dryfit só
-    aceita sublimação ou DTF.
+    ✅ **Parte B1 (grade), feita em 6/11/2026 (aprovada; não publicada):** no produto, tecidos, tamanhos e cores, custo
+    por tecido e tamanho e as peças que existem (`grade`). Ao salvar, só as peças marcadas viram material, com saldo
+    zero, numa gravação só com o produto (`gradeProductId`; a Matéria-prima esconde por padrão, botão "Peças da grade").
+    No orçamento: tecido, tamanho e cor, com o saldo da peça; usa os mesmos campos da variação, então reserva, baixa e
+    separação não mudaram. Peça sem cadastro orça com aviso e sem baixa; sem custo na grade, trava. Custo mudou: pede
+    confirmação e atualiza as peças; orçamentos feitos não mudam; compra posterior vale sobre a grade. 448 testes, lint,
+    build; emulador 390 px: 3 peças criadas, Algodão GG Rosa × 2 = R$ 58,67, baixa 5 → 3, custo 25 → 28 com orçamento
+    igual; o teste achou peça sem custo saindo a R$ 8,67, corrigido.
+    **Parte B2 (técnica), com riscos e aprovado antes:** técnicas permitidas por tecido (Dryfit: sublimação ou DTF), cada
+    uma com insumos e valor a mais.
+    **Parte B3 (DTF), com riscos e aprovado antes:** terceirizado. Regra sua de 6/11: você informa a metragem e quantas
+    estampas tem no arquivo, e o app divide o custo por estampa. Tabela do fornecedor (Pix): têxtil, rolo 58 cm: meio
+    metro (58x50) R$ 30; 1 a 5 m R$ 60/m; 6 a 50 m R$ 50/m; 51 a 100 m R$ 45/m; acima de 100 m R$ 38/m; arquivo de até
+    250 cm. UV (adesivos): metro (41x100) R$ 90; metro e meio (41x150) R$ 135; folha 29x41: 1 a 4 R$ 39,90; 5 a 9
+    R$ 37,90; 10 a 49 R$ 34,90; 50 a 100 R$ 28.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

@@ -40,6 +40,8 @@ export function Materials() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  // Item 30 B1: as peças da grade ficam escondidas para a lista não lotar; o saldo delas segue na tela de Estoque.
+  const [showGradePieces, setShowGradePieces] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [sortField, setSortField] = useState<SortField>('name');
@@ -276,7 +278,9 @@ export function Materials() {
     }
   };
 
+  const gradePieceCount = materials.filter(m => m.gradeProductId).length;
   const filteredMaterials = materials
+    .filter(m => showGradePieces || !m.gradeProductId)
     .filter(
       m =>
         (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -315,6 +319,9 @@ export function Materials() {
             // Item 30: material usado numa opção de variação também conta.
             ((d.data().variation?.options || []) as Array<{ materialId: string | null }>).some(
               o => o.materialId === materialToDelete,
+            ) ||
+            ((d.data().grade?.pieces || []) as Array<{ materialId: string | null }>).some(
+              p => p.materialId === materialToDelete,
             ),
         )
         .map(d => d.data().name as string);
@@ -385,6 +392,17 @@ export function Materials() {
           <div className="w-full md:w-auto">
             <CategoryFilterBar scope="material" selected={categoryFilter} onChange={setCategoryFilter} />
           </div>
+
+          {gradePieceCount > 0 && (
+            <button
+              type="button"
+              aria-pressed={showGradePieces}
+              onClick={() => setShowGradePieces(show => !show)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${showGradePieces ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+            >
+              Peças da grade ({gradePieceCount})
+            </button>
+          )}
 
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
             <span className="text-xs font-bold text-neutral-400 uppercase whitespace-nowrap">Ordenar por:</span>

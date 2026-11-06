@@ -5,6 +5,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  writeBatch,
   onSnapshot,
   query,
   orderBy,
@@ -30,7 +31,10 @@ import { ProductFormModal } from './ProductFormModal';
 import { ProductCatalogSection, ProductPricingSection } from './ProductFormSections';
 import { ProductKitSection } from './ProductKitSection';
 import { ProductVariationSection } from './ProductVariationSection';
+import { ProductGradeSection } from './ProductGradeSection';
 import { cleanVariation } from '../lib/variation';
+import { gradeMissingCosts, gradeStockChanges, hasGrade } from '../lib/grade';
+import { addToLots, stockFields } from '../lib/stockLots';
 import { CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
 import {
@@ -221,7 +225,66 @@ export function Products({
           (Number(editingProduct?.catalogPrice) || 0),
         updatedAt: new Date().toISOString(),
       };
-      if (editingProduct) {
+      // Item 30 B1: peças novas viram material e o produto salva junto, numa gravação só.
+      if (newProduct.grade && hasGrade(newProduct)) {
+        const missing = gradeMissingCosts(newProduct.grade);
+        if (missing.length > 0) {
+          addToast(`Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`, 'error');
+          return;
+        }
+        const productRef = editingProduct ? doc(db, 'products', editingProduct.id) : doc(collection(db, 'products'));
+        const stock = gradeStockChanges(
+          newProduct.grade,
+          newProduct.name,
+          materials,
+          editingProduct?.grade,
+          () => doc(collection(db, 'materials')).id,
+        );
+        if (stock.create.length + stock.update.length > 450) {
+          addToast('Grade grande demais para salvar de uma vez: marque menos peças.', 'error');
+          return;
+        }
+        if (
+          stock.update.length > 0 &&
+          !window.confirm(
+            `O custo mudou: atualizar ${stock.update.length} peça(s) no estoque? Orçamentos já feitos não mudam.`,
+          )
+        ) {
+          return;
+        }
+        const now = new Date().toISOString();
+        const batch = writeBatch(db);
+        for (const piece of stock.create) {
+          batch.set(doc(db, 'materials', piece.id), {
+            name: piece.name,
+            unit: 'un',
+            purchasePrice: piece.unitCost,
+            purchaseQuantity: 1,
+            unitCost: piece.unitCost,
+            isPackage: false,
+            packageQuantity: 1,
+            supplierId: null,
+            categoryIds: [],
+            storeId: activeStore.id,
+            gradeProductId: productRef.id,
+            ...stockFields(addToLots([], 0, null)),
+            minStockQuantity: 0,
+            createdAt: now,
+          });
+        }
+        for (const piece of stock.update) {
+          batch.update(doc(db, 'materials', piece.id), {
+            purchasePrice: piece.unitCost,
+            purchaseQuantity: 1,
+            unitCost: piece.unitCost,
+            updatedAt: now,
+          });
+        }
+        if (editingProduct) batch.update(productRef, { ...productData, grade: stock.grade });
+        else batch.set(productRef, { ...productData, grade: stock.grade, createdAt: now });
+        await batch.commit();
+        addToast(editingProduct ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!', 'success');
+      } else if (editingProduct) {
         await updateDoc(doc(db, 'products', editingProduct.id), productData);
         addToast('Produto atualizado com sucesso!', 'success');
       } else {
@@ -650,6 +713,15 @@ export function Products({
           }
           variationSection={
             <ProductVariationSection
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              materials={materials}
+              inKit={products.some(p => p.kitItems?.some(k => k.productId === editingProduct?.id))}
+            />
+          }
+          gradeSection={
+            <ProductGradeSection
+              key={editingProduct?.id ?? 'novo'}
               newProduct={newProduct}
               setNewProduct={setNewProduct}
               materials={materials}
