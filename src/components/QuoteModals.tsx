@@ -1,7 +1,7 @@
 // Janelas da tela Precificação (Etapa 8A): adicionar/editar item e orçamento gerado.
 // Só exibição e campos; o estado, as contas e a gravação ficam em Pricing.tsx.
 import React from 'react';
-import { Material, Product, ProductGrade, Quote, Store } from '../types';
+import { DtfTable, Material, Product, ProductGrade, Quote, Store } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
 import { productsTotalOf, shippingLabel, shippingOf } from '../lib/shipping';
 import { MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT, QuoteItemCalcResult } from '../lib/pricingEngine';
@@ -9,12 +9,16 @@ import { feeLabel } from '../lib/quoteFormat';
 import { formatQuantity } from '../lib/quantity';
 import { hasVariation } from '../lib/variation';
 import { gradeKey, gradePieceOf, hasGrade, splitGradeKey, techniquesFor } from '../lib/grade';
+import { dtfBilledMeters, dtfFileCost, dtfPieceCost, DTF_FILE_LIMIT_METERS } from '../lib/dtf';
+import { QuantityInput } from './QuantityInput';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
 const loadPdf = () => import('../lib/pdf');
 
-type ItemDraft = {
+type DtfDraft = { dtfMeters: number; dtfPrints: number; dtfPrintsPerPiece: number };
+
+type ItemDraft = Partial<DtfDraft> & {
   productId: string;
   /** Item 30: opção da variação do produto. */
   variationOptionId?: string;
@@ -32,12 +36,18 @@ function GradePicker({
   onChange,
   materials,
   missing,
+  dtf,
+  setDtf,
+  dtfTable,
 }: {
   grade: ProductGrade;
   value: string;
   onChange: (value: string) => void;
   materials: Material[];
   missing: boolean;
+  dtf: DtfDraft;
+  setDtf: (value: DtfDraft) => void;
+  dtfTable: DtfTable;
 }) {
   const choice = splitGradeKey(value);
   const stock = materials.find(m => m.id === gradePieceOf(grade, value)?.materialId);
@@ -51,6 +61,11 @@ function GradePicker({
   const techniques = techniquesFor(grade, choice.fabric);
   const technique = techniques.find(t => t.id === choice.technique);
   const complete = !!(choice.fabric && choice.size && choice.color && (technique || !hasTechniques));
+  const pieceCost = dtfPieceCost(dtfTable, {
+    meters: dtf.dtfMeters,
+    prints: dtf.dtfPrints,
+    printsPerPiece: dtf.dtfPrintsPerPiece,
+  });
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -96,9 +111,67 @@ function GradePicker({
           </div>
         )}
       </div>
+      {/* Item 30 B3: a pessoa informa o arquivo e o app divide o custo por estampa. */}
+      {technique?.perMeter && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-2 min-w-0">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                Metragem do arquivo (m)
+              </label>
+              <QuantityInput
+                compact
+                ariaLabel="Metragem do arquivo (m)"
+                value={dtf.dtfMeters || null}
+                onChange={v => setDtf({ ...dtf, dtfMeters: v ?? 0 })}
+                className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+              />
+            </div>
+            <div className="space-y-2 min-w-0">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                Estampas no arquivo
+              </label>
+              <input
+                type="number"
+                min="1"
+                aria-label="Estampas no arquivo"
+                value={dtf.dtfPrints || ''}
+                onChange={e => setDtf({ ...dtf, dtfPrints: Number(e.target.value) })}
+                className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+              />
+            </div>
+            <div className="space-y-2 min-w-0">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                Estampas por peça
+              </label>
+              <input
+                type="number"
+                min="1"
+                aria-label="Estampas por peça"
+                value={dtf.dtfPrintsPerPiece || ''}
+                onChange={e => setDtf({ ...dtf, dtfPrintsPerPiece: Number(e.target.value) })}
+                className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
+              />
+            </div>
+          </div>
+          {pieceCost !== null && (
+            <p className="text-xs font-bold text-emerald-700 ml-1">
+              Fornecedor: {formatQuantity(dtfBilledMeters(dtf.dtfMeters))} m ={' '}
+              {formatCurrency(dtfFileCost(dtfTable, dtf.dtfMeters))} · custo do DTF {formatCurrency(pieceCost)} por peça
+            </p>
+          )}
+          {dtf.dtfMeters > DTF_FILE_LIMIT_METERS && (
+            <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
+              O fornecedor aceita arquivo de até 250 cm: acima disso, separe em mais de um.
+            </p>
+          )}
+        </div>
+      )}
       {missing ? (
         <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
-          {complete
+          {technique?.perMeter && complete && pieceCost === null
+            ? 'Preencha a metragem e as estampas do arquivo para calcular.'
+            : complete
             ? 'Esta peça não tem custo na grade: preencha no cadastro do produto.'
             : `Escolha tecido, tamanho, cor${hasTechniques ? ' e técnica' : ''} para calcular.`}
         </p>
@@ -124,6 +197,9 @@ export function AddItemModal({
   setSelectedProductId,
   variationOptionId,
   setVariationOptionId,
+  dtf,
+  setDtf,
+  dtfTable,
   materials,
   quantity,
   setQuantity,
@@ -147,6 +223,9 @@ export function AddItemModal({
   setSelectedProductId: (value: string) => void;
   variationOptionId: string;
   setVariationOptionId: (value: string) => void;
+  dtf: DtfDraft;
+  setDtf: (value: DtfDraft) => void;
+  dtfTable: DtfTable;
   materials: Material[];
   quantity: number;
   setQuantity: (value: number) => void;
@@ -205,6 +284,9 @@ export function AddItemModal({
               onChange={setVariationOptionId}
               materials={materials}
               missing={!!currentItemResults?.variationMissing}
+              dtf={dtf}
+              setDtf={setDtf}
+              dtfTable={dtfTable}
             />
           )}
 
@@ -397,6 +479,7 @@ export function AddItemModal({
                 calculateItemCosts({
                   productId: selectedProductId,
                   variationOptionId,
+                  ...dtf,
                   quantity,
                   selectedFinishingIds: selectedFinishes,
                   selectedAccessoryIds: selectedAccessories,

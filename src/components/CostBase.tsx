@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { CostBase, SalesChannel, WholesaleTier } from '../types';
+import { CostBase, DtfTable, SalesChannel, WholesaleTier } from '../types';
+import { dtfTableOf } from '../lib/dtf';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { MAX_MARKUP_PERCENT, clampMarkup, markupOf, priceForMarkup, realMargin } from '../lib/pricingEngine';
 import {
@@ -170,6 +171,11 @@ export function CostBaseSettings() {
     );
   };
 
+  // Item 30 B3: tabela do DTF terceirizado; enquanto não é salva, mostra a padrão.
+  const [dtfTable, setDtfTable] = useState<DtfTable>(dtfTableOf(null));
+  const setDtfTier = (i: number, patch: Partial<DtfTable['tiers'][number]>) =>
+    setDtfTable(table => ({ ...table, tiers: table.tiers.map((t, j) => (j === i ? { ...t, ...patch } : t)) }));
+
   useEffect(() => {
     if (!activeStore) {
       setLoading(false);
@@ -187,12 +193,14 @@ export function CostBaseSettings() {
         setExpiryWarningDays(expiryWarningDaysOf(data));
         setChannels(channelsOf(data));
         setTiers(wholesaleTiersOf(data));
+        setDtfTable(dtfTableOf(data));
       } else {
         setMarkup(0);
         setElectricityRate(electricityRateOf(null));
         setExpiryWarningDays(expiryWarningDaysOf(null));
         setChannels(channelsOf(null));
         setTiers(wholesaleTiersOf(null));
+        setDtfTable(dtfTableOf(null));
         setCosts({
           fixedCosts: 0,
           productiveHours: 0,
@@ -232,6 +240,7 @@ export function CostBaseSettings() {
         expiryWarningDays: expiryWarningDaysOf({ expiryWarningDays }),
         salesChannels,
         wholesaleTiers: normalizeWholesaleTiers(tiers),
+        dtfTable,
         storeId: activeStore.id,
       };
       await setDoc(doc(db, 'costBases', activeStore.id), updatedCosts);
@@ -644,6 +653,58 @@ export function CostBaseSettings() {
               )}
             </div>
           )}
+        </div>
+
+        <div className="space-y-3 pt-6 border-t border-neutral-100">
+          <div>
+            <h2 className="text-sm font-bold text-neutral-700">DTF terceirizado (preço do fornecedor)</h2>
+            <p className="text-[10px] text-neutral-400">
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+              {!costs.dtfTable?.tiers?.length && ' Valores padrão: confira e salve para gravar os desta loja.'}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 max-w-md">
+            <label className="col-span-2 space-y-1">
+              <span className="block text-[10px] font-bold uppercase text-neutral-400">Meio metro (R$)</span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                aria-label="Preço do meio metro de DTF"
+                className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                value={dtfTable.halfMeter}
+                onChange={e => setDtfTable(table => ({ ...table, halfMeter: Number(e.target.value) }))}
+              />
+            </label>
+            {dtfTable.tiers.map((t, i) => (
+              <React.Fragment key={i}>
+                <label className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase text-neutral-400">A partir de (m)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    aria-label={`Metragem mínima da faixa ${i + 1} de DTF`}
+                    className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    value={t.minMeters}
+                    onChange={e => setDtfTier(i, { minMeters: Number(e.target.value) })}
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase text-neutral-400">R$ por metro</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    aria-label={`Preço por metro da faixa ${i + 1} de DTF`}
+                    className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                    value={t.pricePerMeter}
+                    onChange={e => setDtfTier(i, { pricePerMeter: Number(e.target.value) })}
+                  />
+                </label>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-3 pt-6 border-t border-neutral-100">

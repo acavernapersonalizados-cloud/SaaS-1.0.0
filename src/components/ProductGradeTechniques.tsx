@@ -95,6 +95,16 @@ export function ProductGradeTechniques({
               </label>
             </div>
 
+            <label className="flex items-center gap-2 text-xs font-bold text-neutral-600">
+              <input
+                type="checkbox"
+                aria-label={`A ${label} é terceirizada por metro`}
+                checked={!!technique.perMeter}
+                onChange={e => change(technique.id, { perMeter: e.target.checked })}
+              />
+              Terceirizada por metro (DTF): o orçamento pede a metragem e as estampas do arquivo
+            </label>
+
             <div className="space-y-1">
               <span className="text-xs font-bold text-neutral-600">Tecidos que aceitam</span>
               <div className="flex flex-wrap gap-1.5">

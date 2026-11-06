@@ -55,7 +55,7 @@ export const gradePieceOf = (grade: ProductGrade | null | undefined, key?: strin
 export const techniquesFor = (grade: ProductGrade, fabric: string) =>
   (grade.techniques ?? []).filter(technique => technique.fabrics.includes(fabric));
 
-const chosenTechnique = (grade: ProductGrade, key?: string | null) => {
+export const chosenTechnique = (grade: ProductGrade, key?: string | null) => {
   const { fabric, technique } = splitGradeKey(key);
   return techniquesFor(grade, fabric).find(t => t.id === technique);
 };

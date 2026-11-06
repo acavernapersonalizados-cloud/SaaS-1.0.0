@@ -40,6 +40,14 @@ export interface CostBase {
   salesChannels?: SalesChannel[];
   /** Faixas de desconto de atacado por quantidade (Etapa 8C). Sem elas, valem as padrão de lib/wholesale.ts. */
   wholesaleTiers?: WholesaleTier[];
+  /** Item 30 B3: tabela do DTF terceirizado. Sem ela, vale a padrão de lib/dtf.ts. */
+  dtfTable?: DtfTable;
+}
+
+/** Item 30 B3: preço do fornecedor. Meio metro tem preço próprio; a partir de minMeters, vale pricePerMeter. */
+export interface DtfTable {
+  halfMeter: number;
+  tiers: Array<{ minMeters: number; pricePerMeter: number }>;
 }
 
 /** Faixa de atacado: a partir de minQty unidades no item, desconto de discountPct% sobre o varejo. */
@@ -150,6 +158,8 @@ export interface ProductGradeTechnique {
   additionalValue: number;
   /** Tecidos que aceitam a técnica. */
   fabrics: string[];
+  /** Item 30 B3: terceirizado por metro (DTF): o orçamento pede a metragem e as estampas do arquivo. */
+  perMeter?: boolean;
 }
 
 /** Item 30 B1: grade por tecido, tamanho e cor. Custo por "tecido|tamanho", igual para todas as cores. */
@@ -403,6 +413,12 @@ export interface QuoteItem {
   variationQuantity?: number;
   /** Item 30 B2: insumos da técnica escolhida, por unidade (gravados: mudar a técnica depois não muda a venda). */
   variationMaterials?: ProductMaterial[];
+  // Item 30 B3: conta do DTF gravada no item (mudar a tabela depois não muda a venda).
+  dtfMeters?: number;
+  dtfPrints?: number;
+  dtfPrintsPerPiece?: number;
+  /** Custo do DTF por peça (R$), já somado ao custo do item. */
+  dtfCostUnit?: number;
 }
 
 export interface Quote {

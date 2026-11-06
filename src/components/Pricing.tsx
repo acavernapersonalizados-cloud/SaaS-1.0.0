@@ -11,6 +11,7 @@ import {
   staleChannels,
 } from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
+import { dtfTableOf } from '../lib/dtf';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { quoteTotals, ShippingPaidBy } from '../lib/shipping';
@@ -43,6 +44,8 @@ import {
 import { QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
 import { QuoteClientCard, QuoteItemsCard, QuoteSummary } from './QuoteForm';
 import { AddItemModal, GeneratedQuoteModal } from './QuoteModals';
+
+const EMPTY_DTF = { dtfMeters: 0, dtfPrints: 0, dtfPrintsPerPiece: 1 };
 
 export function Pricing() {
   const { activeStore } = useStore();
@@ -80,10 +83,13 @@ export function Pricing() {
   const [selectedAccessories, setSelectedAccessories] = useState<string[]>([]);
   // Item 30: opção da variação do produto (ex.: a caneca azul).
   const [variationOptionId, setVariationOptionId] = useState('');
+  // Item 30 B3: metragem e estampas do arquivo de DTF.
+  const [dtf, setDtf] = useState(EMPTY_DTF);
 
   const currentItem = {
     productId: selectedProductId,
     variationOptionId,
+    ...dtf,
     quantity,
     selectedFinishingIds: selectedFinishes,
     selectedAccessoryIds: selectedAccessories,
@@ -267,6 +273,7 @@ export function Pricing() {
     setSelectedFinishes([]);
     setSelectedAccessories([]);
     setVariationOptionId('');
+    setDtf(EMPTY_DTF);
     setCustomMarkup(null);
     setManualUnitPrice(null);
     setEditingItemId(null);
@@ -279,6 +286,11 @@ export function Pricing() {
     setSelectedFinishes(item.selectedFinishingIds);
     setSelectedAccessories(item.selectedAccessoryIds);
     setVariationOptionId(item.variationOptionId ?? '');
+    setDtf({
+      dtfMeters: item.dtfMeters ?? 0,
+      dtfPrints: item.dtfPrints ?? 0,
+      dtfPrintsPerPiece: item.dtfPrintsPerPiece ?? 1,
+    });
     setCustomMarkup(item.customMarkup ?? null);
     setManualUnitPrice(item.manualUnitPrice ?? null);
     setEditingItemId(item.id);
@@ -524,6 +536,7 @@ export function Pricing() {
     setSelectedFinishes([]);
     setSelectedAccessories([]);
     setVariationOptionId('');
+    setDtf(EMPTY_DTF);
     setCustomMarkup(null);
     setManualUnitPrice(null);
     setIsAddingItem(true);
@@ -665,9 +678,13 @@ export function Pricing() {
           setSelectedProductId={id => {
             setSelectedProductId(id);
             setVariationOptionId('');
+            setDtf(EMPTY_DTF);
           }}
           variationOptionId={variationOptionId}
           setVariationOptionId={setVariationOptionId}
+          dtf={dtf}
+          setDtf={setDtf}
+          dtfTable={dtfTableOf(costs)}
           materials={materials}
           quantity={quantity}
           setQuantity={setQuantity}

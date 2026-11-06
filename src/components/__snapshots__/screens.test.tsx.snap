@@ -1271,6 +1271,180 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
             <h2
               class="text-sm font-bold text-neutral-700"
             >
+              DTF terceirizado (preço do fornecedor)
+            </h2>
+            <p
+              class="text-[10px] text-neutral-400"
+            >
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+               Valores padrão: confira e salve para gravar os desta loja.
+            </p>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 max-w-md"
+          >
+            <label
+              class="col-span-2 space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Meio metro (R$)
+              </span>
+              <input
+                aria-label="Preço do meio metro de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="30"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 1 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="1"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 1 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="60"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 2 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="6"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 2 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="50"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 3 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="51"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 3 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="45"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 4 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="101"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 4 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="38"
+              />
+            </label>
+          </div>
+        </div>
+        <div
+          class="space-y-3 pt-6 border-t border-neutral-100"
+        >
+          <div>
+            <h2
+              class="text-sm font-bold text-neutral-700"
+            >
               Desconto de atacado (por quantidade)
             </h2>
             <p
@@ -65465,6 +65639,180 @@ exports[`Verificar taxas com IA > mostra as sugestões com a fonte; "Aplicar" gr
                 </ul>
               </div>
             </div>
+          </div>
+        </div>
+        <div
+          class="space-y-3 pt-6 border-t border-neutral-100"
+        >
+          <div>
+            <h2
+              class="text-sm font-bold text-neutral-700"
+            >
+              DTF terceirizado (preço do fornecedor)
+            </h2>
+            <p
+              class="text-[10px] text-neutral-400"
+            >
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+               Valores padrão: confira e salve para gravar os desta loja.
+            </p>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 max-w-md"
+          >
+            <label
+              class="col-span-2 space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Meio metro (R$)
+              </span>
+              <input
+                aria-label="Preço do meio metro de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="30"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 1 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="1"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 1 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="60"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 2 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="6"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 2 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="50"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 3 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="51"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 3 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="45"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                A partir de (m)
+              </span>
+              <input
+                aria-label="Metragem mínima da faixa 4 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="1"
+                step="1"
+                type="number"
+                value="101"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                R$ por metro
+              </span>
+              <input
+                aria-label="Preço por metro da faixa 4 de DTF"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="38"
+              />
+            </label>
           </div>
         </div>
         <div

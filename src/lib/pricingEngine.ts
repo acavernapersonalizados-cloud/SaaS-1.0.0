@@ -12,7 +12,8 @@
 
 import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../types';
 import { applyWholesale } from './wholesale';
-import { gradeTechniqueMinutes, gradeUnitCost } from './grade';
+import { dtfPieceCost, dtfTableOf } from './dtf';
+import { chosenTechnique, gradeTechniqueMinutes, gradeUnitCost } from './grade';
 import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
@@ -363,11 +364,16 @@ export function calcQuoteItem(
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
 
-  const {
-    materialCost,
-    laborCost,
-    totalCost: totalProductionCost,
-  } = calcProductCost(product, materials, costs, item.variationOptionId);
+  const productCost = calcProductCost(product, materials, costs, item.variationOptionId);
+  const { laborCost } = productCost;
+  // Item 30 B3: técnica por metro (DTF): o custo por peça soma ao custo e leva o markup, como um insumo.
+  const perMeter = !!(product.grade && chosenTechnique(product.grade, item.variationOptionId)?.perMeter);
+  const printsPerPiece = Number(item.dtfPrintsPerPiece) || 1;
+  const dtfCost = perMeter
+    ? dtfPieceCost(dtfTableOf(costs), { meters: item.dtfMeters, prints: item.dtfPrints, printsPerPiece })
+    : null;
+  const materialCost = productCost.materialCost + (dtfCost ?? 0);
+  const totalProductionCost = productCost.totalCost + (dtfCost ?? 0);
 
   // Markup: o personalizado do item ou o da Base de Custos (Etapa 7).
   // Item 19: kit usa o markup que o preço gravado do kit dá (preço ÷ custo), para o orçamento sair pelo preço do kit
@@ -416,7 +422,17 @@ export function calcQuoteItem(
     .reduce((acc, a) => acc + (Number(a.additionalValue) || 0), 0);
 
   // Item 30: o valor a mais da opção soma como acabamento, sem markup e sem desconto de atacado.
-  const variationFields = variationItemFields(product, item.variationOptionId);
+  const variationFields: Partial<QuoteItem> = {
+    ...variationItemFields(product, item.variationOptionId),
+    ...(dtfCost !== null
+      ? {
+          dtfMeters: Number(item.dtfMeters),
+          dtfPrints: Number(item.dtfPrints),
+          dtfPrintsPerPiece: printsPerPiece,
+          dtfCostUnit: dtfCost,
+        }
+      : {}),
+  };
   const variationValue = Number(variationFields.variationValue) || 0;
 
   const suggestedUnitPrice =
@@ -485,7 +501,7 @@ export function calcQuoteItem(
     manualUnitPrice: useManual ? manual : null,
     variationValue: useManual ? 0 : variationValue,
     variationFields,
-    variationMissing: hasVariation(product) && !variationFields.variationOptionId,
+    variationMissing: (hasVariation(product) && !variationFields.variationOptionId) || (perMeter && dtfCost === null),
     suggestedUnitPrice: isFinite(suggestedUnitPrice) ? suggestedUnitPrice : 0,
     belowCost: isFinite(itemProfit) && itemProfit < -0.004,
     belowGoal: useManual && !invalidMargin && manual < suggestedUnitPrice - 0.004,
