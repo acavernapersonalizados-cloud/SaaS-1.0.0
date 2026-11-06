@@ -35,6 +35,7 @@ export function ProductFormModal({
   removeAccessory,
   pricingSection,
   kitSection,
+  variationSection,
   catalogSection,
   products = [],
 }: {
@@ -61,6 +62,7 @@ export function ProductFormModal({
   pricingSection: React.ReactNode;
   catalogSection: React.ReactNode;
   kitSection: React.ReactNode;
+  variationSection: React.ReactNode;
   /** Produtos da loja (para abrir o kit na lista de separação, item 22). */
   products?: Product[];
 }) {
@@ -308,6 +310,9 @@ export function ProductFormModal({
                 </div>
               </details>
             )}
+
+            {/* Variações (Estacionamento item 30) */}
+            {variationSection}
 
             {/* Finishing */}
             <div className="space-y-3 pt-2 border-t border-neutral-100">

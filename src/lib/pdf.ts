@@ -31,6 +31,7 @@ const creditTotalOf = (quote: Quote) => Number(quote.creditTotal) || 0;
 function itemRows(quote: Quote) {
   return quote.items.map(item => {
     const details = [
+      item.variationLabel ?? '',
       item.finishingNames?.length ? `Acabamentos: ${item.finishingNames.join(', ')}` : '',
       item.accessoryNames?.length ? `Acessórios: ${item.accessoryNames.join(', ')}` : '',
     ]

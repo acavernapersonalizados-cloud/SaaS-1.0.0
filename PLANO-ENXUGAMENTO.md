@@ -43,7 +43,7 @@
 - **No ar:** `index-p4BKfhAu.js` (4/11/2026: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido); depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): parte A feita em 5/11/2026, **não publicada**; falta a parte B (camiseta). Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -966,6 +966,18 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     teste com 2 cores preencheu as linhas. O exemplo do Mandri3D não chegou. Conferido com G-code real (Creality Print
     7.3, "Porta-chaves de parede", 4 slots, 2 usados): PETG branco 7,98 g + PLA preto 39,48 g, 2 h 29 min 19 s. O
     arquivo não separa a purga e ela já está nas gramas, por isso todo G-code multicor zera o campo e avisa na tela.
+30. **Variações de produto** (pedido em 5/11/2026).
+    ✅ **Parte A (caneca), feita em 5/11/2026 (aprovada; não publicada):** bloco "Variações" no produto (ex.: Cor), cada
+    opção com material do estoque e valor a mais (`variation`). O material da opção soma à receita; o valor a mais soma
+    como acabamento. No orçamento a escolha é obrigatória e fica gravada no item (`variationLabel`, `variationMaterialId`),
+    com reserva, baixa, lista de separação, PDF e Histórico pela opção escolhida. Sem escolha (lista de produtos,
+    catálogo), o preço de referência usa a opção mais cara. Produto com variação fica de fora dos kits; produto de
+    calculadora e kit não têm o bloco. 431 testes, lint, build; emulador 390 px: Rosa + R$ 5 → R$ 43,67, reserva e
+    separação só da rosa, finalizado: rosa 2 → 1, azul 10 sem mudar.
+    **Parte B (camiseta), para depois, com riscos e aprovado antes:** tecido, tamanho, cor e técnica no mesmo produto.
+    Respostas de 5/11: o estoque é por tecido, cor e tamanho (peça exata, precisa gerar a grade de combinações); técnica,
+    tecido e tamanho mudam o preço; DTF é terceirizado por metro, e o tamanho da arte define o tamanho do DTF; Dryfit só
+    aceita sublimação ou DTF.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

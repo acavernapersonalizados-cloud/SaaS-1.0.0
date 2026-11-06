@@ -78,9 +78,12 @@ export function Pricing() {
   const [quantity, setQuantity] = useState(1);
   const [selectedFinishes, setSelectedFinishes] = useState<string[]>([]);
   const [selectedAccessories, setSelectedAccessories] = useState<string[]>([]);
+  // Item 30: opção da variação do produto (ex.: a caneca azul).
+  const [variationOptionId, setVariationOptionId] = useState('');
 
   const currentItem = {
     productId: selectedProductId,
+    variationOptionId,
     quantity,
     selectedFinishingIds: selectedFinishes,
     selectedAccessoryIds: selectedAccessories,
@@ -188,7 +191,7 @@ export function Pricing() {
   const { totalAmount, totalProfit, avgMargin } = totals;
 
   const handleAddItem = () => {
-    if (!currentItemResults || currentItemResults.invalidMargin) return;
+    if (!currentItemResults || currentItemResults.invalidMargin || currentItemResults.variationMissing) return;
 
     if (editingItemId) {
       // Update existing item
@@ -219,6 +222,8 @@ export function Pricing() {
                 platformFee: currentItemResults.platformFee,
                 wholesaleDiscountPct: currentItemResults.wholesaleDiscountPct,
                 wholesaleFloorApplied: currentItemResults.wholesaleFloorApplied,
+                ...currentItemResults.variationFields,
+                variationOptionId: currentItemResults.variationFields.variationOptionId,
               }
             : item,
         ),
@@ -249,6 +254,7 @@ export function Pricing() {
         platformFee: currentItemResults.platformFee,
         wholesaleDiscountPct: currentItemResults.wholesaleDiscountPct,
         wholesaleFloorApplied: currentItemResults.wholesaleFloorApplied,
+        ...currentItemResults.variationFields,
       };
 
       setQuoteItems([...quoteItems, newItem]);
@@ -259,6 +265,7 @@ export function Pricing() {
     setQuantity(1);
     setSelectedFinishes([]);
     setSelectedAccessories([]);
+    setVariationOptionId('');
     setCustomMarkup(null);
     setManualUnitPrice(null);
     setEditingItemId(null);
@@ -270,6 +277,7 @@ export function Pricing() {
     setQuantity(item.quantity);
     setSelectedFinishes(item.selectedFinishingIds);
     setSelectedAccessories(item.selectedAccessoryIds);
+    setVariationOptionId(item.variationOptionId ?? '');
     setCustomMarkup(item.customMarkup ?? null);
     setManualUnitPrice(item.manualUnitPrice ?? null);
     setEditingItemId(item.id);
@@ -416,6 +424,7 @@ export function Pricing() {
           platformFee: r.platformFee,
           wholesaleDiscountPct: r.wholesaleDiscountPct,
           wholesaleFloorApplied: r.wholesaleFloorApplied,
+          ...r.variationFields,
         })),
         totalAmount: isFinite(totalAmount) ? totalAmount : 0,
         // Etapa 8C: total no crédito (Pix ÷ 0,95), só nos orçamentos novos. Item 26: com o frete do cliente.
@@ -507,6 +516,7 @@ export function Pricing() {
     setQuantity(1);
     setSelectedFinishes([]);
     setSelectedAccessories([]);
+    setVariationOptionId('');
     setCustomMarkup(null);
     setManualUnitPrice(null);
     setIsAddingItem(true);
@@ -645,7 +655,13 @@ export function Pricing() {
           products={products}
           selectedProduct={selectedProduct}
           selectedProductId={selectedProductId}
-          setSelectedProductId={setSelectedProductId}
+          setSelectedProductId={id => {
+            setSelectedProductId(id);
+            setVariationOptionId('');
+          }}
+          variationOptionId={variationOptionId}
+          setVariationOptionId={setVariationOptionId}
+          materials={materials}
           quantity={quantity}
           setQuantity={setQuantity}
           customMarkup={customMarkup}

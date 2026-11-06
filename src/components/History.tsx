@@ -396,6 +396,9 @@ export function History() {
                     {selectedQuote.items.map((item, idx) => (
                       <div key={idx} className="mb-4 p-3 bg-neutral-50 rounded-xl border border-neutral-100">
                         <p className="font-bold text-neutral-900">{item.productName}</p>
+                        {item.variationLabel && (
+                          <p className="text-xs font-bold text-neutral-600">{item.variationLabel}</p>
+                        )}
                         <p className="text-xs text-neutral-500">
                           {item.quantity} unidades • {formatCurrency(item.unitPrice)}/un
                         </p>

@@ -116,6 +116,21 @@ export interface Accessory {
   additionalValue: number;
 }
 
+/** Estacionamento item 30, parte A: uma opção da variação (ex.: Azul), com o material do estoque e um valor a mais. */
+export interface ProductVariationOption {
+  id: string;
+  name: string;
+  materialId: string | null;
+  additionalValue: number;
+}
+
+export interface ProductVariation {
+  name: string; // Ex.: Cor
+  /** Quanto do material da opção vai em uma unidade do produto. */
+  quantity: number;
+  options: ProductVariationOption[];
+}
+
 export interface Product {
   id: string;
   storeId: string;
@@ -130,6 +145,8 @@ export interface Product {
   packageQuantity?: number;
   finishingOptions?: FinishingOption[];
   accessories?: Accessory[];
+  /** Item 30: o material da opção soma à receita. Sem o campo, o produto funciona como antes. */
+  variation?: ProductVariation | null;
   manualPrice?: number | null; // Preço manual definido pelo usuário
   suggestedPrice?: number | null; // Preço sugerido calculado pelo sistema
   aiPriceAnalysis?: string | null; // Análise IA sobre o preço manual
@@ -343,6 +360,13 @@ export interface QuoteItem {
    * final: sem desconto de atacado e sem somar acabamentos e acessórios. Sem ele, o preço é o calculado.
    */
   manualUnitPrice?: number | null;
+  // Item 30: a escolha fica gravada no item; mudar o produto depois não muda o que foi vendido.
+  variationOptionId?: string;
+  /** Ex.: "Cor: Azul". */
+  variationLabel?: string;
+  variationValue?: number;
+  variationMaterialId?: string;
+  variationQuantity?: number;
 }
 
 export interface Quote {

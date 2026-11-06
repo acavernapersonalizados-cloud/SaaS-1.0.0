@@ -216,7 +216,15 @@ export function QuoteItemsCard({
                     <div>
                       <p className="font-bold text-neutral-900">{results?.productName}</p>
                       <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400">
+                        {results?.variationFields.variationLabel && (
+                          <span className="font-bold text-neutral-600">{results.variationFields.variationLabel}</span>
+                        )}
                         <span>{formatCurrency(results?.unitPrice || 0)} / un</span>
+                        {(results?.variationValue ?? 0) > 0 && (
+                          <span className="px-1.5 py-0.5 bg-neutral-200 rounded text-neutral-600 font-bold">
+                            +{formatCurrency(results?.variationValue ?? 0)} var.
+                          </span>
+                        )}
                         {(results?.finishingValue ?? 0) > 0 && (
                           <span className="px-1.5 py-0.5 bg-neutral-200 rounded text-neutral-600 font-bold">
                             +{formatCurrency(results?.finishingValue ?? 0)} acab.

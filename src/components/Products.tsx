@@ -29,6 +29,8 @@ import { channelsOf } from '../lib/channels';
 import { ProductFormModal } from './ProductFormModal';
 import { ProductCatalogSection, ProductPricingSection } from './ProductFormSections';
 import { ProductKitSection } from './ProductKitSection';
+import { ProductVariationSection } from './ProductVariationSection';
+import { cleanVariation } from '../lib/variation';
 import { CategoryFilterBar } from './CategoryPicker';
 import { useCategories, categoryNames } from '../hooks/useCategories';
 import {
@@ -205,6 +207,8 @@ export function Products({
       const pricing = calcProductPricing(newProduct as Product, materials, costs);
       const productData = {
         ...newProduct,
+        // Item 30: só grava o campo em quem já teve variação; produto sem ela fica igual.
+        ...(newProduct.variation !== undefined ? { variation: cleanVariation(newProduct.variation) } : {}),
         categoryIds: newProduct.categoryIds || [],
         // Mantém o campo antigo preenchido para telas/dados legados. Item 14: vale o nome das categorias oficiais;
         // o texto antigo só fica enquanto o produto não tem nenhuma oficial.
@@ -642,6 +646,14 @@ export function Products({
               products={products}
               materials={materials}
               costs={costs}
+            />
+          }
+          variationSection={
+            <ProductVariationSection
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              materials={materials}
+              inKit={products.some(p => p.kitItems?.some(k => k.productId === editingProduct?.id))}
             />
           }
           pricingSection={

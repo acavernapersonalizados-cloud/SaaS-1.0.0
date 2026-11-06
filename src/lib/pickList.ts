@@ -3,8 +3,9 @@
  * quantidade, kits abertos nos seus produtos, agrupados por insumo, com o lote a pegar (item 21). Produto sem
  * matéria-prima cadastrada entra como o próprio produto a separar.
  */
-import type { Material, Product, StockReservation } from '../types';
+import type { Material, Product, QuoteItem, StockReservation } from '../types';
 import { materialLots, takeFromLots, todayISO } from './stockLots';
+import { itemMaterials } from './variation';
 
 type ReservationLine = StockReservation['reservations'][number];
 
@@ -41,7 +42,14 @@ const num = (v: unknown) => Number(v) || 0;
  * dela quando a quantidade bate com a receita de agora; senão sugere pela ordem do dia e avisa a diferença.
  */
 export function buildPickList(
-  items: Array<{ productId?: string | null; productName?: string; quantity?: number; product?: Partial<Product> }>,
+  items: Array<
+    Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity' | 'variationLabel'> & {
+      productId?: string | null;
+      productName?: string;
+      quantity?: number;
+      product?: Partial<Product>;
+    }
+  >,
   products: Product[],
   materials: Material[],
   { reservation, today = todayISO() }: { reservation?: ReservationLine[]; today?: string } = {},
@@ -106,7 +114,12 @@ export function buildPickList(
       }
       continue;
     }
-    addProduct(p, count, p.name || 'Produto');
+    // Item 30: a variação gravada no orçamento entra junto com a receita.
+    addProduct(
+      { ...p, materials: itemMaterials(p.materials, item) },
+      count,
+      [p.name || 'Produto', item.variationLabel].filter(Boolean).join(' · '),
+    );
   }
 
   const reserved = new Map((reservation || []).map(r => [r.materialId, r]));

@@ -309,8 +309,13 @@ export function Materials() {
       // Impede referências órfãs: não deixa excluir material usado em produtos
       const usedSnap = await getDocs(query(collection(db, 'products'), where('storeId', '==', activeStore.id)));
       const usedBy = usedSnap.docs
-        .filter(d =>
-          ((d.data().materials || []) as Array<{ materialId: string }>).some(m => m.materialId === materialToDelete),
+        .filter(
+          d =>
+            ((d.data().materials || []) as Array<{ materialId: string }>).some(m => m.materialId === materialToDelete) ||
+            // Item 30: material usado numa opção de variação também conta.
+            ((d.data().variation?.options || []) as Array<{ materialId: string | null }>).some(
+              o => o.materialId === materialToDelete,
+            ),
         )
         .map(d => d.data().name as string);
 

@@ -1,11 +1,13 @@
 // Janelas da tela Precificação (Etapa 8A): adicionar/editar item e orçamento gerado.
 // Só exibição e campos; o estado, as contas e a gravação ficam em Pricing.tsx.
 import React from 'react';
-import { Product, Quote, Store } from '../types';
+import { Material, Product, Quote, Store } from '../types';
 import { cn, formatCurrency, formatPercent } from '../lib/utils';
 import { productsTotalOf, shippingLabel, shippingOf } from '../lib/shipping';
 import { MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT, QuoteItemCalcResult } from '../lib/pricingEngine';
 import { feeLabel } from '../lib/quoteFormat';
+import { formatQuantity } from '../lib/quantity';
+import { hasVariation } from '../lib/variation';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
@@ -13,6 +15,8 @@ const loadPdf = () => import('../lib/pdf');
 
 type ItemDraft = {
   productId: string;
+  /** Item 30: opção da variação do produto. */
+  variationOptionId?: string;
   quantity: number;
   selectedFinishingIds: string[];
   selectedAccessoryIds: string[];
@@ -28,6 +32,9 @@ export function AddItemModal({
   selectedProduct,
   selectedProductId,
   setSelectedProductId,
+  variationOptionId,
+  setVariationOptionId,
+  materials,
   quantity,
   setQuantity,
   customMarkup,
@@ -48,6 +55,9 @@ export function AddItemModal({
   selectedProduct: Product | undefined;
   selectedProductId: string;
   setSelectedProductId: (value: string) => void;
+  variationOptionId: string;
+  setVariationOptionId: (value: string) => void;
+  materials: Material[];
   quantity: number;
   setQuantity: (value: number) => void;
   customMarkup: number | null;
@@ -96,6 +106,53 @@ export function AddItemModal({
               ))}
             </select>
           </div>
+
+          {/* Item 30: a opção escolhida define o material do custo e da baixa. */}
+          {selectedProduct?.variation && hasVariation(selectedProduct) && (
+            <div className="space-y-3">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
+                {selectedProduct.variation.name}
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {selectedProduct.variation.options.map(opt => {
+                  const stock = materials.find(m => m.id === opt.materialId);
+                  const active = variationOptionId === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setVariationOptionId(opt.id)}
+                      className={cn(
+                        'p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between group',
+                        active
+                          ? 'border-neutral-900 bg-neutral-900 text-white'
+                          : 'border-neutral-100 bg-neutral-50 text-neutral-600 hover:border-neutral-200',
+                      )}
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold">{opt.name}</p>
+                        <p className="text-[10px] text-neutral-400">
+                          {[
+                            stock ? `saldo ${formatQuantity(stock.stockQuantity)} ${stock.unit}` : '',
+                            opt.additionalValue > 0 ? `+${formatCurrency(opt.additionalValue)}` : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </p>
+                      </div>
+                      {active && <CheckCircle2 className="w-4 h-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {currentItemResults?.variationMissing && (
+                <p role="alert" className="text-xs font-bold text-amber-700 ml-1">
+                  Escolha {selectedProduct.variation.name.toLowerCase()} para calcular e dar baixa no material certo.
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -238,6 +295,7 @@ export function AddItemModal({
               {formatCurrency(
                 calculateItemCosts({
                   productId: selectedProductId,
+                  variationOptionId,
                   quantity,
                   selectedFinishingIds: selectedFinishes,
                   selectedAccessoryIds: selectedAccessories,
@@ -280,7 +338,9 @@ export function AddItemModal({
           </div>
           <button
             onClick={handleAddItem}
-            disabled={!selectedProductId || !!currentItemResults?.invalidMargin}
+            disabled={
+              !selectedProductId || !!currentItemResults?.invalidMargin || !!currentItemResults?.variationMissing
+            }
             className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black hover:bg-black transition-all disabled:opacity-50"
           >
             {editingItemId ? 'Salvar Alterações' : 'Confirmar Item'}
@@ -345,6 +405,9 @@ export function GeneratedQuoteModal({
                       <tr key={i}>
                         <td className="px-5 py-4">
                           <p className="font-bold text-neutral-900 text-sm">{item.productName}</p>
+                          {item.variationLabel && (
+                            <p className="text-[10px] font-bold text-neutral-600">{item.variationLabel}</p>
+                          )}
                           <p className="text-[10px] text-neutral-400">Unitário: {formatCurrency(item.unitPrice)}</p>
                         </td>
                         <td className="px-5 py-4 text-center font-bold text-neutral-900 text-sm">{item.quantity}</td>

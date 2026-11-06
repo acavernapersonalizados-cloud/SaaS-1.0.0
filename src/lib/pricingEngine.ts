@@ -12,6 +12,7 @@
 
 import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../types';
 import { applyWholesale } from './wholesale';
+import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
 
@@ -95,6 +96,12 @@ export interface QuoteItemCalcResult {
   wholesaleFloorPrice: number | null;
   /** Item 18: preço manual por unidade (Pix) usado no item, ou null quando o preço é o calculado. */
   manualUnitPrice: number | null;
+  /** Item 30: valor a mais da opção escolhida (0 com preço manual). */
+  variationValue: number;
+  /** Item 30: campos da escolha para gravar no item; vazio em produto sem variação. */
+  variationFields: Partial<QuoteItem>;
+  /** Item 30: o produto tem variação e nenhuma opção válida foi escolhida. */
+  variationMissing: boolean;
   /** Item 18: o preço que a conta daria (markup, atacado, acabamentos), para comparar com o manual. */
   suggestedUnitPrice: number;
   /** Item 18: o preço não cobre o custo e as taxas (prejuízo). */
@@ -251,6 +258,8 @@ export function calcProductCost(
   product: Partial<Product>,
   materials: Material[],
   costs: CostBase | null,
+  /** Item 30: opção escolhida no orçamento; sem ela, vale a mais cara. */
+  variationOptionId?: string | null,
 ): ProductCostResult {
   // Etapa 8C, item 4: produto criado de trabalho de calculadora. O custo é só o do trabalho, que já inclui
   // materiais, mão de obra, embalagem e máquina; tempo, embalagem e materiais do produto são só informação
@@ -262,10 +271,11 @@ export function calcProductCost(
   const kitCost = product.isKit ? Number(product.kitCostUnit) || 0 : 0;
   if (kitCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost: 0, kitCost, totalCost: kitCost };
 
-  const materialCost = (product.materials || []).reduce((acc, pm) => {
-    const mat = materials.find(m => m.id === pm.materialId);
-    return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
-  }, 0);
+  const materialCost =
+    (product.materials || []).reduce((acc, pm) => {
+      const mat = materials.find(m => m.id === pm.materialId);
+      return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
+    }, 0) + variationMaterialCost(product.variation, materials, variationOptionId);
 
   const laborCost = costs ? ((Number(product.productionTime) || 0) / 60) * (Number(costs.hourlyRate) || 0) : 0;
 
@@ -348,7 +358,11 @@ export function calcQuoteItem(
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
 
-  const { materialCost, laborCost, totalCost: totalProductionCost } = calcProductCost(product, materials, costs);
+  const {
+    materialCost,
+    laborCost,
+    totalCost: totalProductionCost,
+  } = calcProductCost(product, materials, costs, item.variationOptionId);
 
   // Markup: o personalizado do item ou o da Base de Custos (Etapa 7).
   // Item 19: kit usa o markup que o preço gravado do kit dá (preço ÷ custo), para o orçamento sair pelo preço do kit
@@ -396,10 +410,15 @@ export function calcQuoteItem(
     .filter(a => item.selectedAccessoryIds?.includes(a.id))
     .reduce((acc, a) => acc + (Number(a.additionalValue) || 0), 0);
 
+  // Item 30: o valor a mais da opção soma como acabamento, sem markup e sem desconto de atacado.
+  const variationFields = variationItemFields(product, item.variationOptionId);
+  const variationValue = Number(variationFields.variationValue) || 0;
+
   const suggestedUnitPrice =
     (isFinite(baseUnitPrice) ? baseUnitPrice : 0) +
     (isFinite(finishingValue) ? finishingValue : 0) +
-    (isFinite(accessoriesValue) ? accessoriesValue : 0);
+    (isFinite(accessoriesValue) ? accessoriesValue : 0) +
+    variationValue;
   // Item 18: com preço manual, ele é o preço final da unidade (Pix): sem atacado e sem somar acabamentos/acessórios.
   const manual = Number(item.manualUnitPrice) || 0;
   const useManual = manual > 0;
@@ -459,6 +478,9 @@ export function calcQuoteItem(
     wholesaleFloorApplied: useManual ? false : wholesale.floorApplied,
     wholesaleFloorPrice: wholesale.floorPrice,
     manualUnitPrice: useManual ? manual : null,
+    variationValue: useManual ? 0 : variationValue,
+    variationFields,
+    variationMissing: hasVariation(product) && !variationFields.variationOptionId,
     suggestedUnitPrice: isFinite(suggestedUnitPrice) ? suggestedUnitPrice : 0,
     belowCost: isFinite(itemProfit) && itemProfit < -0.004,
     belowGoal: useManual && !invalidMargin && manual < suggestedUnitPrice - 0.004,

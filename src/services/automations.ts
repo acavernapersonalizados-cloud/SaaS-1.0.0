@@ -14,6 +14,7 @@ import { db, notifyError } from '../firebase';
 import { QuoteStatus, Quote, StockReservation, Product, CostBase, Material } from '../types';
 import { productionDeadline } from '../lib/productionDeadline';
 import { materialLots, stockFields, suggestLots, takeFromLots, todayISO } from '../lib/stockLots';
+import { itemMaterials } from '../lib/variation';
 
 /**
  * Estacionamento item 20: início e prazo de produção do orçamento a partir de "start", com os produtos e a Base de
@@ -136,7 +137,8 @@ async function buildReservations(quoteData: Quote): Promise<ReservationLine[]> {
       if (!productSnap.exists()) continue;
       const product = productSnap.data();
 
-      for (const pm of product.materials || []) {
+      // Item 30: a variação escolhida no orçamento baixa junto com a receita.
+      for (const pm of itemMaterials(product.materials, item)) {
         const totalQty = (Number(pm.quantity) || 0) * (Number(item.quantity) || 1);
         if (totalQty <= 0) continue;
 
