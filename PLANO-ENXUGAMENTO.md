@@ -40,10 +40,10 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-D5_aveOg.js` (item 30 partes A, B1 e B2: variações, grade e técnicas de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-7NcUYkyY.js` (item 30 completo: variações, grade, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): partes A, B1 e B2 publicadas; B3 (DTF) e as correções de 6/11 feitas, **não publicadas**. Depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -988,7 +988,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     valor a mais soma por fora. Item grava `variationMaterials`; baixa de peça e insumos juntos. Tecido sem técnica trava
     o salvar. 456 testes, lint, build; emulador 390 px: Algodão só oferece DTF; Dryfit GG Preta + Sublimação = R$ 132,65;
     finalizado: peça 4 → 3, folha 1 → 0.
-    ✅ **Parte B3 (DTF), feita (aprovada; não publicada):** tabela na Base de Custos (`dtfTable`) e técnica "Terceirizada por
+    ✅ **Parte B3 (DTF), feita e publicada (`index-7NcUYkyY.js`):** tabela na Base de Custos (`dtfTable`) e técnica "Terceirizada por
     metro" (`perMeter`). No orçamento: metragem, estampas no arquivo e estampas por peça. Metragem arredonda para cima
     (até 0,5 m = meio metro; acima, metro inteiro). Custo por peça entra no custo com markup e fica gravado no item
     (`dtfCostUnit`); não baixa estoque. Aviso acima de 250 cm. 467 testes, lint, build; emulador 390 px: 1,2 m, 40 estampas,
@@ -997,7 +997,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     metro (58x50) R$ 30; 1 a 5 m R$ 60/m; 6 a 50 m R$ 50/m; 51 a 100 m R$ 45/m; acima de 100 m R$ 38/m; arquivo de até
     250 cm. UV (adesivos): metro (41x100) R$ 90; metro e meio (41x150) R$ 135; folha 29x41: 1 a 4 R$ 39,90; 5 a 9
     R$ 37,90; 10 a 49 R$ 34,90; 50 a 100 R$ 28.
-    ✅ **Correções de 6/11/2026 (aprovadas; não publicadas), pedidas depois de usar:**
+    ✅ **Correções de 6/11/2026, publicadas (`index-7NcUYkyY.js`), pedidas depois de usar:**
     1. Preço manual do produto: o orçamento nunca usou (desde a primeira versão, não veio do item 30). Agora é o preço da
     venda direta; em canal com taxa as taxas somam por cima e o lucro fica o mesmo; markup e preço manual do item mandam
     sobre ele; a grade não usa, porque tecido e tamanho mudam o preço. 2. Variação em produto de calculadora: o bloco
