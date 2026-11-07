@@ -246,7 +246,7 @@ export function Products({
           addToast(`Marque uma técnica para: ${noTechnique.join(', ')}.`, 'error');
           return;
         }
-        const missing = gradeMissingCosts(grade);
+        const missing = gradeMissingCosts(grade, materials);
         if (missing.length > 0) {
           addToast(`Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`, 'error');
           return;

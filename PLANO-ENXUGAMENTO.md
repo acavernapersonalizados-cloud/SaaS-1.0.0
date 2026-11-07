@@ -1008,6 +1008,11 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     cadastrar: Algodão: OBM (A4, feito aqui) e DTF. Poliéster branco: só sublimação; outras cores: sublimação ou DTF;
     escuras: também OBM. Dryfit: sublimação e DTF, sem OBM. 486 testes, lint, build; emulador 390 px: caneca de
     calculadora com manual R$ 35, custo 20 → 23, Azul 10 → 9, Branca 4 sem mudar; cor sem técnica trava o salvar.
+    ✅ **Grade com peças do estoque, feita em 6/11/2026 (aprovada; não publicada):** a grade criava itens novos e não usava
+    os que já existem. Agora cada peça marcada tem o seletor "Peças no estoque": a escolha é sua (decisão de 6/11, sem
+    ligação automática); sem escolha, cria item novo com saldo zero. Peça ligada usa o custo do item e não pede custo na
+    grade; custo digitado depois não sobrescreve o item. Com opções em Variações, a grade mostra um aviso em vez de sumir.
+    490 testes, lint, build; emulador 390 px: peça ligada ao item com saldo 9, orçamento com esse saldo e custo.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

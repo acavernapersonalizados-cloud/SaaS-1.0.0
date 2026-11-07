@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { Material, Product, ProductGrade } from '../types';
 import { cn } from '../lib/utils';
-import { activePieces, gradeCostKey, gradeKey, parseGradeList, toggleGradePiece } from '../lib/grade';
+import {
+  activePieces,
+  gradeCostKey,
+  gradeKey,
+  parseGradeList,
+  setGradePieceMaterial,
+  splitGradeKey,
+  toggleGradePiece,
+} from '../lib/grade';
+import { MaterialPicker } from './MaterialPicker';
 import { ProductGradeTechniques } from './ProductGradeTechniques';
 
 const FIELD =
@@ -29,9 +38,16 @@ export function ProductGradeSection({
     colors: grade?.colors.join(', ') ?? '',
   });
 
-  // Vem da calculadora, é kit ou já usa a variação simples: não tem grade.
-  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit || newProduct.variation?.options?.length) {
-    return null;
+  // Vem da calculadora ou é kit: não tem grade.
+  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit) return null;
+  // Variação e grade não andam juntas: avisa, em vez de sumir com a opção.
+  if (newProduct.variation?.options?.length) {
+    return (
+      <p className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-600">
+        Para usar a grade (tecido, tamanho, cor e técnica), remova as opções do bloco Variações acima. Os itens do estoque
+        continuam lá, e você escolhe cada um na grade.
+      </p>
+    );
   }
 
   const update = (next: ProductGrade) => setNewProduct(p => ({ ...p, grade: next }));
@@ -71,8 +87,8 @@ export function ProductGradeSection({
       {grade && (
         <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-4">
           <p className="text-xs text-neutral-500">
-            Separe por vírgula. Ao salvar, cada peça marcada vira um item na Matéria-prima, com saldo zero; o saldo
-            entra pela tela de Estoque.
+            Separe por vírgula. Marque as peças e escolha, em "Peças no estoque", o item de cada uma. Peça sem item
+            escolhido vira um item novo na Matéria-prima, com saldo zero.
           </p>
           {(
             [
@@ -171,6 +187,29 @@ export function ProductGradeSection({
             ))}
 
           <p className="text-xs font-bold text-neutral-700">{marked.size} peça(s) marcada(s)</p>
+
+          {marked.size > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-bold text-neutral-900">Peças no estoque</p>
+              {activePieces(grade).map(piece => {
+                const { fabric, size, color } = splitGradeKey(piece.key);
+                const label = `${fabric} ${size} ${color}`;
+                return (
+                  <div key={piece.key} className="space-y-1">
+                    <span className="text-[11px] font-bold text-neutral-500">{label}</span>
+                    <MaterialPicker
+                      ariaLabel={`Item do estoque de ${label}`}
+                      materials={materials}
+                      value={piece.materialId}
+                      onChange={id => update(setGradePieceMaterial(grade, piece.key, id))}
+                      emptyLabel="Criar item novo no estoque"
+                      clearable
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {grade.fabrics.length > 0 && <ProductGradeTechniques grade={grade} update={update} materials={materials} />}
         </div>

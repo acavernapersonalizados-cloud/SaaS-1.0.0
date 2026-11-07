@@ -8,6 +8,7 @@ import {
   cleanGradeTechniques,
   gradeFabricsWithoutTechnique,
   gradeIsPartial,
+  setGradePieceMaterial,
   techniquesFor,
   gradeItemFields,
   gradeKey,
@@ -308,5 +309,34 @@ describe('Correção de 6/11: técnica por tecido e cor', () => {
     expect(gradeIsPartial({ ...rules, fabrics: [], sizes: [] })).toBe(true);
     expect(gradeIsPartial({ ...rules, fabrics: [], sizes: [], colors: [] })).toBe(false);
     expect(gradeIsPartial(rules)).toBe(false);
+  });
+});
+
+describe('Correção de 6/11: a pessoa escolhe a peça no estoque', () => {
+  const stock = [{ id: 'azul', name: 'Camiseta algodão AZUL M', unit: 'un', unitCost: 30 } as unknown as Material];
+  const key2 = gradeKey('Algodão', 'M', 'Azul');
+  const empty: ProductGrade = { fabrics: ['Algodão'], sizes: ['M'], colors: ['Azul'], costs: {}, pieces: [] };
+  const marked = toggleGradePiece(empty, key2);
+  const linked = setGradePieceMaterial(marked, key2, 'azul');
+
+  it('marcar não liga sozinho: sem escolha, cria item novo ao salvar', () => {
+    expect(marked.pieces).toEqual([{ key: key2, materialId: null, active: true }]);
+    const noCost = { ...marked, costs: { 'Algodão|M': 20 } };
+    expect(gradeStockChanges(noCost, 'Camiseta', stock, null, () => 'novo').create).toHaveLength(1);
+  });
+  it('peça escolhida não vira item novo, não pede custo e usa o custo do item', () => {
+    expect(gradeStockChanges(linked, 'Camiseta', stock, null, () => 'novo').create).toEqual([]);
+    expect(gradeMissingCosts(linked, stock)).toEqual([]);
+    expect(gradeUnitCost(linked, stock, key2)).toBe(30);
+    expect(gradeItemFields(linked, key2).variationMaterialId).toBe('azul');
+  });
+  it('soltar a peça volta para criar item novo', () => {
+    expect(setGradePieceMaterial(linked, key2, null).pieces[0]?.materialId).toBeNull();
+  });
+  it('custo digitado depois não sobrescreve o item; mudar um custo já salvo sim', () => {
+    const typed = { ...linked, costs: { 'Algodão|M': 25 } };
+    expect(gradeStockChanges(typed, 'Camiseta', stock, linked, () => 'novo').update).toEqual([]);
+    const raised = { ...linked, costs: { 'Algodão|M': 28 } };
+    expect(gradeStockChanges(raised, 'Camiseta', stock, typed, () => 'novo').update).toHaveLength(1);
   });
 });

@@ -97,6 +97,12 @@ export function toggleGradePiece(grade: ProductGrade, key: string): ProductGrade
   };
 }
 
+/** Liga a peça a um item que já existe no estoque; a escolha é sempre da pessoa. null: cria um item novo ao salvar. */
+export const setGradePieceMaterial = (grade: ProductGrade, key: string, materialId: string | null): ProductGrade => ({
+  ...grade,
+  pieces: grade.pieces.map(piece => (piece.key === key ? { ...piece, materialId } : piece)),
+});
+
 /**
  * Custo da peça. Com a peça no estoque, vale o custo do material (a compra pode ter mudado); senão, o da grade. Sem
  * escolha (lista de produtos, catálogo), vale o maior custo, para a referência nunca sair abaixo do custo.
@@ -135,9 +141,11 @@ export function gradeItemFields(grade: ProductGrade, key?: string | null): Parti
 }
 
 /** Peças marcadas sem custo: o produto não salva até preencher. */
-export const gradeMissingCosts = (grade: ProductGrade) => [
+export const gradeMissingCosts = (grade: ProductGrade, materials: Material[] = []) => [
   ...new Set(
     activePieces(grade)
+      // Peça ligada a um item com custo usa o custo dele.
+      .filter(piece => !(num(materials.find(m => m.id === piece.materialId)?.unitCost) > 0))
       .map(piece => splitGradeKey(piece.key))
       .filter(({ fabric, size }) => !(num(grade.costs[gradeCostKey(fabric, size)]) > 0))
       .map(({ fabric, size }) => `${fabric} ${size}`),
@@ -201,7 +209,9 @@ export function gradeStockChanges(
     const unitCost = num(grade.costs[costKey]);
     const stock = materials.find(m => m.id === piece.materialId);
     if (stock) {
-      if (saved && num(saved.costs[costKey]) !== unitCost) update.push({ id: stock.id, name: stock.name, unitCost });
+      // Custo novo em tecido e tamanho sem custo salvo não mexe: o item ligado já tem o dele.
+      const savedCost = num(saved?.costs[costKey]);
+      if (savedCost > 0 && savedCost !== unitCost) update.push({ id: stock.id, name: stock.name, unitCost });
       return piece;
     }
     const id = newId();
