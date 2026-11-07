@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-7NcUYkyY.js` (item 30 completo: variações, grade, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-D_vAHG40.js` (item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1008,7 +1008,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     cadastrar: Algodão: OBM (A4, feito aqui) e DTF. Poliéster branco: só sublimação; outras cores: sublimação ou DTF;
     escuras: também OBM. Dryfit: sublimação e DTF, sem OBM. 486 testes, lint, build; emulador 390 px: caneca de
     calculadora com manual R$ 35, custo 20 → 23, Azul 10 → 9, Branca 4 sem mudar; cor sem técnica trava o salvar.
-    ✅ **Grade com peças do estoque, feita em 6/11/2026 (aprovada; não publicada):** a grade criava itens novos e não usava
+    ✅ **Grade com peças do estoque, feita e publicada em 6/11/2026 (`index-D_vAHG40.js`):** a grade criava itens novos e não usava
     os que já existem. Agora cada peça marcada tem o seletor "Peças no estoque": a escolha é sua (decisão de 6/11, sem
     ligação automática); sem escolha, cria item novo com saldo zero. Peça ligada usa o custo do item e não pede custo na
     grade; custo digitado depois não sobrescreve o item. Com opções em Variações, a grade mostra um aviso em vez de sumir.
