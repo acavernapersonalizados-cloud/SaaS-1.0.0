@@ -13,7 +13,7 @@
 import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../types';
 import { applyWholesale } from './wholesale';
 import { dtfPieceCost, dtfTableOf } from './dtf';
-import { chosenTechnique, gradeTechniqueMinutes, gradeUnitCost } from './grade';
+import { chosenTechnique, gradeTechniqueMinutes, gradeUnitCost, hasGrade } from './grade';
 import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
@@ -98,6 +98,8 @@ export interface QuoteItemCalcResult {
   wholesaleFloorPrice: number | null;
   /** Item 18: preço manual por unidade (Pix) usado no item, ou null quando o preço é o calculado. */
   manualUnitPrice: number | null;
+  /** Preço manual do produto usado como preço da venda direta, ou null. */
+  productManualPrice: number | null;
   /** Item 30: valor a mais da opção escolhida (0 com preço manual). */
   variationValue: number;
   /** Item 30: campos da escolha para gravar no item; vazio em produto sem variação. */
@@ -267,7 +269,13 @@ export function calcProductCost(
   // materiais, mão de obra, embalagem e máquina; tempo, embalagem e materiais do produto são só informação
   // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
   const jobCost = Number(product.jobCostUnit) || 0;
-  if (jobCost > 0) return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost, totalCost: jobCost };
+  if (jobCost > 0) {
+    // Item 30: a opção escolhida troca um material do trabalho; o custo muda só pela diferença entre os dois.
+    const difference = variationOptionId
+      ? variationMaterialCost(product.variation, materials, variationOptionId, product.materials)
+      : 0;
+    return { materialCost: 0, laborCost: 0, packagingCost: 0, jobCost, totalCost: jobCost + difference };
+  }
   // Estacionamento item 19: kit usa o custo gravado (soma dos custos dos produtos); os materiais do kit são só a
   // baixa de estoque, nunca somados de novo.
   const kitCost = product.isKit ? Number(product.kitCostUnit) || 0 : 0;
@@ -278,7 +286,7 @@ export function calcProductCost(
       const mat = materials.find(m => m.id === pm.materialId);
       return acc + (Number(mat?.unitCost) || 0) * (Number(pm.quantity) || 0);
     }, 0) +
-    variationMaterialCost(product.variation, materials, variationOptionId) +
+    variationMaterialCost(product.variation, materials, variationOptionId, product.materials) +
     gradeUnitCost(product.grade, materials, variationOptionId);
 
   const minutes =
@@ -397,7 +405,16 @@ export function calcQuoteItem(
   // Markup sobre o custo, com a taxa do canal somada por cima: depois de pagar a taxa,
   // o lucro em R$ é o mesmo da venda direta (custo × markup).
   const fixedFee = Math.max(0, Number(channelFixedFee) || 0);
-  const markupPrice = priceForMarkup(totalProductionCost, markup, platformFeePercent, fixedFee);
+  // Correção de 6/11/2026: o preço manual do produto é o preço da venda direta; em canal com taxa, as taxas somam por
+  // cima e o lucro fica o mesmo. O markup do item manda sobre ele. A grade não usa: tamanho e tecido mudam o preço.
+  const productManual =
+    !hasGrade(product) && (item.customMarkup === undefined || item.customMarkup === null)
+      ? Number(product.manualPrice) || 0
+      : 0;
+  const markupPrice =
+    productManual > 0
+      ? priceForMarkup(productManual, 0, platformFeePercent, fixedFee)
+      : priceForMarkup(totalProductionCost, markup, platformFeePercent, fixedFee);
   const invalidMargin = markupPrice === null;
   const retailBasePrice = markupPrice ?? 0;
 
@@ -489,7 +506,8 @@ export function calcQuoteItem(
     materialCost,
     laborCost,
     productionCost: totalProductionCost,
-    markup,
+    markup: productManual > 0 && totalProductionCost > 0 ? (productManual / totalProductionCost - 1) * 100 : markup,
+    productManualPrice: productManual > 0 ? productManual : null,
     // Margem real: o que sobra do preço depois do custo e da taxa do canal.
     margin: totalPrice > 0 && isFinite(itemProfit) ? (itemProfit / totalPrice) * 100 : 0,
     platformFee: platformFeePercent,

@@ -2,6 +2,7 @@ import { Plus, Trash2, X } from 'lucide-react';
 import { Material, ProductGrade, ProductGradeTechnique } from '../types';
 import { cn } from '../lib/utils';
 import { QuantityInput } from './QuantityInput';
+import { MaterialPicker } from './MaterialPicker';
 
 const BOX =
   'px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900';
@@ -135,6 +136,50 @@ export function ProductGradeTechniques({
               </div>
             </div>
 
+            {/* Cores aceitas em cada tecido marcado (ex.: Poliéster branco só sublimação). */}
+            {technique.fabrics
+              .filter(fabric => grade.fabrics.includes(fabric))
+              .map(fabric => {
+                const allowed = technique.colorsByFabric?.[fabric];
+                return (
+                  <div key={fabric} className="space-y-1">
+                    <span className="text-xs font-bold text-neutral-600">Cores em {fabric}</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {grade.colors.map(color => {
+                        const on = !allowed?.length || allowed.includes(color);
+                        return (
+                          <button
+                            key={color}
+                            type="button"
+                            aria-pressed={on}
+                            aria-label={`${color} em ${fabric} na ${label}`}
+                            onClick={() => {
+                              const current = allowed?.length ? allowed : grade.colors;
+                              const next = on ? current.filter(c => c !== color) : [...current, color];
+                              // Sem nenhuma cor, o tecido deixa de aceitar a técnica.
+                              change(
+                                technique.id,
+                                next.length > 0
+                                  ? { colorsByFabric: { ...technique.colorsByFabric, [fabric]: next } }
+                                  : { fabrics: technique.fabrics.filter(f => f !== fabric) },
+                              );
+                            }}
+                            className={cn(
+                              'px-2 py-1.5 rounded-lg border text-xs font-bold transition-colors',
+                              on
+                                ? 'bg-neutral-900 border-neutral-900 text-white'
+                                : 'bg-white border-neutral-200 text-neutral-500',
+                            )}
+                          >
+                            {color}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+
             <div className="space-y-2">
               <span className="text-xs font-bold text-neutral-600">Insumos por peça</span>
               {technique.materials.map(pm => {
@@ -174,26 +219,15 @@ export function ProductGradeTechniques({
                   </div>
                 );
               })}
-              <select
-                aria-label={`Adicionar insumo na ${label}`}
-                value=""
-                onChange={e =>
-                  e.target.value &&
-                  change(technique.id, {
-                    materials: [...technique.materials, { materialId: e.target.value, quantity: 1 }],
-                  })
+              <MaterialPicker
+                ariaLabel={`Adicionar insumo na ${label}`}
+                materials={stock.filter(m => !technique.materials.some(pm => pm.materialId === m.id))}
+                value={null}
+                onChange={id =>
+                  id && change(technique.id, { materials: [...technique.materials, { materialId: id, quantity: 1 }] })
                 }
-                className={`${BOX} w-full`}
-              >
-                <option value="">Adicionar insumo…</option>
-                {stock
-                  .filter(m => !technique.materials.some(pm => pm.materialId === m.id))
-                  .map(m => (
-                    <option key={m.id} value={m.id}>
-                      {m.name} ({m.unit})
-                    </option>
-                  ))}
-              </select>
+                emptyLabel="Adicionar insumo…"
+              />
             </div>
           </div>
         );

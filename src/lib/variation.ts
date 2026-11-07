@@ -23,9 +23,15 @@ export function variationMaterialCost(
   variation: ProductVariation | null | undefined,
   materials: Material[],
   optionId?: string | null,
+  /** Receita do produto, para descontar o item que a opção troca. */
+  recipe: ProductMaterial[] = [],
 ) {
+  const unitCost = (materialId: string | null | undefined) => num(materials.find(m => m.id === materialId)?.unitCost);
+  const replaced = recipe
+    .filter(pm => variation?.replacesMaterialId && pm.materialId === variation.replacesMaterialId)
+    .reduce((sum, pm) => sum + unitCost(pm.materialId) * num(pm.quantity), 0);
   const costOf = (materialId: string | null | undefined) =>
-    num(materials.find(m => m.id === materialId)?.unitCost) * num(variation?.quantity);
+    materialId ? unitCost(materialId) * num(variation?.quantity) - replaced : 0;
   const chosen = variationOptionOf(variation, optionId);
   if (chosen) return costOf(chosen.materialId);
   return Math.max(0, ...(variation?.options ?? []).map(option => costOf(option.materialId)));
@@ -41,7 +47,13 @@ export function variationItemFields(product: Partial<Product>, optionId?: string
     variationLabel: `${product.variation?.name || 'Variação'}: ${option.name}`,
     variationValue: num(option.additionalValue),
     ...(option.materialId
-      ? { variationMaterialId: option.materialId, variationQuantity: num(product.variation?.quantity) }
+      ? {
+          variationMaterialId: option.materialId,
+          variationQuantity: num(product.variation?.quantity),
+          ...(product.variation?.replacesMaterialId
+            ? { variationReplacesMaterialId: product.variation.replacesMaterialId }
+            : {}),
+        }
       : {}),
   };
 }
@@ -49,12 +61,15 @@ export function variationItemFields(product: Partial<Product>, optionId?: string
 /** Receita do item: a do produto mais o material da variação gravada no orçamento (reserva, baixa e separação). */
 export function itemMaterials(
   recipe: ProductMaterial[] | undefined,
-  item: Pick<Partial<QuoteItem>, 'variationMaterialId' | 'variationQuantity' | 'variationMaterials'>,
+  item: Pick<
+    Partial<QuoteItem>,
+    'variationMaterialId' | 'variationQuantity' | 'variationMaterials' | 'variationReplacesMaterialId'
+  >,
 ): ProductMaterial[] {
   const base = recipe ?? [];
   if (!item.variationMaterialId && !item.variationMaterials?.length) return base;
   return [
-    ...base,
+    ...base.filter(pm => pm.materialId !== item.variationReplacesMaterialId),
     ...(item.variationMaterialId
       ? [{ materialId: item.variationMaterialId, quantity: num(item.variationQuantity) }]
       : []),
@@ -62,13 +77,22 @@ export function itemMaterials(
   ];
 }
 
-/** Na hora de salvar: tira opção sem nome; sem nenhuma opção, o produto fica sem variação. */
-export function cleanVariation(variation: ProductVariation | null | undefined): ProductVariation | null {
-  const options = (variation?.options ?? []).filter(option => option.name.trim());
+/** Na hora de salvar: opção sem nome usa o nome do material; sem nome e sem material, sai. Nada some em silêncio. */
+export function cleanVariation(
+  variation: ProductVariation | null | undefined,
+  materials: Material[] = [],
+): ProductVariation | null {
+  const options = (variation?.options ?? [])
+    .map(option => ({
+      ...option,
+      name: option.name.trim() || materials.find(m => m.id === option.materialId)?.name || '',
+    }))
+    .filter(option => option.name);
   if (!variation || options.length === 0) return null;
   return {
     name: variation.name.trim() || 'Variação',
     quantity: num(variation.quantity) || 1,
-    options: options.map(option => ({ ...option, name: option.name.trim() })),
+    options,
+    ...(variation.replacesMaterialId ? { replacesMaterialId: variation.replacesMaterialId } : {}),
   };
 }

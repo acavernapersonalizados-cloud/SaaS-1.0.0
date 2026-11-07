@@ -152,3 +152,91 @@ describe('Item 30: cadastro', () => {
     expect(hasVariation(product)).toBe(true);
   });
 });
+
+describe('Correção de 6/11: preço manual do produto no orçamento', () => {
+  const manual = { ...plain, manualPrice: 30 } as Product;
+  const fee = (p: Product, pct: number, fixed = 0, extra = {}) =>
+    calcQuoteItem(
+      { quantity: 2, selectedFinishingIds: [], selectedAccessoryIds: [], ...extra },
+      p,
+      materials,
+      costs,
+      pct,
+      fixed,
+    )!;
+
+  it('venda direta: vale o manual, não o sugerido', () => {
+    const r = fee(manual, 0);
+    expect(r.unitPrice).toBe(30);
+    expect(r.productManualPrice).toBe(30);
+    expect(r.itemProfit).toBeCloseTo(56, 10);
+    expect(r.markup).toBeCloseTo(1400, 10);
+  });
+  it('canal com taxa: as taxas somam por cima e o lucro fica o mesmo', () => {
+    const r = fee(manual, 20, 4);
+    expect(r.unitPrice).toBeCloseTo(42.5, 10);
+    expect(r.itemProfit).toBeCloseTo(56, 10);
+  });
+  it('sem preço manual: a conta de sempre', () => {
+    expect(fee(plain, 0).unitPrice).toBeCloseTo(4, 10);
+    expect(fee(plain, 0).productManualPrice).toBeNull();
+  });
+  it('markup e preço manual do item mandam sobre o do produto', () => {
+    expect(fee(manual, 0, 0, { customMarkup: 50 }).unitPrice).toBeCloseTo(3, 10);
+    expect(fee(manual, 0, 0, { manualUnitPrice: 18 }).unitPrice).toBe(18);
+  });
+  it('com variação: o preço é o manual mais o valor a mais; a margem muda com a opção', () => {
+    const p = { ...product, manualPrice: 30 } as Product;
+    const r = fee(p, 0, 0, { variationOptionId: 'r' });
+    expect(r.unitPrice).toBe(35);
+    expect(r.productionCost).toBe(14);
+    expect(fee(p, 0, 0, { variationOptionId: 'a' }).productionCost).toBe(12);
+  });
+  it('manual abaixo do custo aparece como prejuízo', () => {
+    expect(fee({ ...plain, manualPrice: 1 } as Product, 0).belowCost).toBe(true);
+  });
+});
+
+describe('Correção de 6/11: variação em produto da calculadora', () => {
+  const job = {
+    ...plain,
+    jobCostUnit: 20,
+    materials: [{ materialId: 'tinta', quantity: 2 }],
+    variation: { ...product.variation!, quantity: 2, replacesMaterialId: 'tinta' },
+  } as Product;
+  it('custo do trabalho mais a diferença entre a opção e o material trocado', () => {
+    expect(calcProductCost(job, materials, costs, 'a').totalCost).toBe(38);
+    expect(calcProductCost(job, materials, costs).totalCost).toBe(20);
+  });
+  it('sem material trocado, o custo do trabalho não muda de referência', () => {
+    expect(calcProductCost({ ...job, variation: null }, materials, costs).totalCost).toBe(20);
+  });
+  it('baixa troca o material: não sai caneca-base junto', () => {
+    const fields = variationItemFields(job, 'a');
+    expect(fields.variationReplacesMaterialId).toBe('tinta');
+    expect(itemMaterials(job.materials, fields)).toEqual([{ materialId: 'azul', quantity: 2 }]);
+  });
+  it('opção sem material não troca nada', () => {
+    const fields = variationItemFields(job, 's');
+    expect(fields.variationReplacesMaterialId).toBeUndefined();
+    expect(itemMaterials(job.materials, fields)).toEqual(job.materials);
+  });
+  it('produto normal com troca: custo sai pela diferença', () => {
+    const p = { ...job, jobCostUnit: 0 } as Product;
+    expect(calcProductCost(p, materials, costs, 'a').materialCost).toBe(20);
+  });
+});
+
+describe('Correção de 6/11: opção sem nome não some', () => {
+  const v = { name: 'Cor', quantity: 1, options: [{ id: 'a', name: ' ', materialId: 'azul', additionalValue: 0 }] };
+  it('usa o nome do material', () => {
+    expect(cleanVariation(v, materials)?.options[0]?.name).toBe('azul');
+  });
+  it('sem nome e sem material, sai', () => {
+    expect(cleanVariation({ ...v, options: [{ ...v.options[0]!, materialId: null }] }, materials)).toBeNull();
+  });
+  it('guarda o material trocado só quando há', () => {
+    expect(cleanVariation({ ...v, replacesMaterialId: 'tinta' }, materials)?.replacesMaterialId).toBe('tinta');
+    expect('replacesMaterialId' in cleanVariation(v, materials)!).toBe(false);
+  });
+});

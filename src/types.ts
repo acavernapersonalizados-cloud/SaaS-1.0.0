@@ -139,6 +139,8 @@ export interface ProductVariation {
   /** Quanto do material da opção vai em uma unidade do produto. */
   quantity: number;
   options: ProductVariationOption[];
+  /** Item da receita que a opção troca (ex.: a caneca-base do trabalho). Sem ele, o material da opção soma à receita. */
+  replacesMaterialId?: string | null;
 }
 
 /** Item 30 B1: peça marcada na grade. A chave é "tecido|tamanho|cor"; desmarcada, guarda o material. */
@@ -158,6 +160,8 @@ export interface ProductGradeTechnique {
   additionalValue: number;
   /** Tecidos que aceitam a técnica. */
   fabrics: string[];
+  /** Cores aceitas em cada tecido. Tecido sem lista aceita todas. */
+  colorsByFabric?: Record<string, string[]>;
   /** Item 30 B3: terceirizado por metro (DTF): o orçamento pede a metragem e as estampas do arquivo. */
   perMeter?: boolean;
 }
@@ -411,6 +415,8 @@ export interface QuoteItem {
   variationValue?: number;
   variationMaterialId?: string;
   variationQuantity?: number;
+  /** Item da receita trocado pela opção: não baixa. */
+  variationReplacesMaterialId?: string;
   /** Item 30 B2: insumos da técnica escolhida, por unidade (gravados: mudar a técnica depois não muda a venda). */
   variationMaterials?: ProductMaterial[];
   // Item 30 B3: conta do DTF gravada no item (mudar a tabela depois não muda a venda).

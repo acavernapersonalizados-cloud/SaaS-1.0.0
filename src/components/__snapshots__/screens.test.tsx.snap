@@ -39995,6 +39995,14 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     value=""
                   />
                 </div>
+                <label
+                  class="flex items-center gap-2 text-xs font-bold text-neutral-600"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  Só o que tem saldo
+                </label>
                 <div
                   class="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto"
                 >
@@ -40010,6 +40018,9 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     <span
                       class="text-xs text-neutral-400 font-bold"
                     >
+                      saldo 
+                      2
+                       
                       m
                        · 
                       R$ 1,20
@@ -40248,7 +40259,9 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 <p
                   class="text-xs text-neutral-500"
                 >
-                  Ex.: Cor com Preta, Azul e Rosa. O material da opção soma à receita acima, então tire dela o que varia. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                  Ex.: Cor com Preta, Azul e Rosa. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                   
+                  O material da opção soma à receita, a não ser que você escolha abaixo o material que ela troca.
                 </p>
                 <div
                   class="space-y-2"
@@ -41770,6 +41783,14 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     value=""
                   />
                 </div>
+                <label
+                  class="flex items-center gap-2 text-xs font-bold text-neutral-600"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  Só o que tem saldo
+                </label>
                 <div
                   class="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto"
                 >
@@ -41785,6 +41806,9 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     <span
                       class="text-xs text-neutral-400 font-bold"
                     >
+                      saldo 
+                      2
+                       
                       m
                        · 
                       R$ 1,20
@@ -42023,7 +42047,9 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 <p
                   class="text-xs text-neutral-500"
                 >
-                  Ex.: Cor com Preta, Azul e Rosa. O material da opção soma à receita acima, então tire dela o que varia. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                  Ex.: Cor com Preta, Azul e Rosa. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                   
+                  O material da opção soma à receita, a não ser que você escolha abaixo o material que ela troca.
                 </p>
                 <div
                   class="space-y-2"
@@ -43975,6 +44001,14 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     value=""
                   />
                 </div>
+                <label
+                  class="flex items-center gap-2 text-xs font-bold text-neutral-600"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  Só o que tem saldo
+                </label>
                 <div
                   class="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto"
                 >
@@ -44291,7 +44325,9 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 <p
                   class="text-xs text-neutral-500"
                 >
-                  Ex.: Cor com Preta, Azul e Rosa. O material da opção soma à receita acima, então tire dela o que varia. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                  Ex.: Cor com Preta, Azul e Rosa. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                   
+                  O material da opção soma à receita, a não ser que você escolha abaixo o material que ela troca.
                 </p>
                 <div
                   class="space-y-2"
@@ -46260,6 +46296,14 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     value=""
                   />
                 </div>
+                <label
+                  class="flex items-center gap-2 text-xs font-bold text-neutral-600"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  Só o que tem saldo
+                </label>
                 <div
                   class="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto"
                 >
@@ -46275,6 +46319,9 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     <span
                       class="text-xs text-neutral-400 font-bold"
                     >
+                      saldo 
+                      100
+                       
                       pct
                        · 
                       R$ 0,25
@@ -46292,6 +46339,9 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     <span
                       class="text-xs text-neutral-400 font-bold"
                     >
+                      saldo 
+                      2
+                       
                       m
                        · 
                       R$ 1,20
@@ -46309,6 +46359,9 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     <span
                       class="text-xs text-neutral-400 font-bold"
                     >
+                      saldo 
+                      10
+                       
                       un
                        · 
                       R$ 15,00
@@ -46336,7 +46389,9 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                 <p
                   class="text-xs text-neutral-500"
                 >
-                  Ex.: Cor com Preta, Azul e Rosa. O material da opção soma à receita acima, então tire dela o que varia. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                  Ex.: Cor com Preta, Azul e Rosa. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+                   
+                  O material da opção soma à receita, a não ser que você escolha abaixo o material que ela troca.
                 </p>
                 <div
                   class="space-y-2"

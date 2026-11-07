@@ -36,6 +36,7 @@ import { cleanVariation } from '../lib/variation';
 import {
   cleanGradeTechniques,
   gradeFabricsWithoutTechnique,
+  gradeIsPartial,
   gradeMissingCosts,
   gradeStockChanges,
   hasGrade,
@@ -122,6 +123,7 @@ export function Products({
   };
   const [newProduct, setNewProduct] = useState<Partial<Product>>(emptyProduct);
   const [materialSearchTerm, setMaterialSearchTerm] = useState('');
+  const [onlyInStock, setOnlyInStock] = useState(false);
   const [newFinishing, setNewFinishing] = useState({ name: '', description: '', additionalValue: 0 });
   const [newAccessory, setNewAccessory] = useState({ name: '', additionalValue: 0 });
 
@@ -214,11 +216,16 @@ export function Products({
     e.preventDefault();
     if (!activeStore || !newProduct.name) return;
     try {
+      // Grade pela metade não aparece no orçamento: avisa em vez de salvar sem funcionar.
+      if (newProduct.grade && gradeIsPartial(newProduct.grade)) {
+        addToast('Preencha tecidos, tamanhos e cores da grade, ou desmarque a grade.', 'error');
+        return;
+      }
       const pricing = calcProductPricing(newProduct as Product, materials, costs);
       const productData = {
         ...newProduct,
         // Item 30: só grava o campo em quem já teve variação; produto sem ela fica igual.
-        ...(newProduct.variation !== undefined ? { variation: cleanVariation(newProduct.variation) } : {}),
+        ...(newProduct.variation !== undefined ? { variation: cleanVariation(newProduct.variation, materials) } : {}),
         categoryIds: newProduct.categoryIds || [],
         // Mantém o campo antigo preenchido para telas/dados legados. Item 14: vale o nome das categorias oficiais;
         // o texto antigo só fica enquanto o produto não tem nenhuma oficial.
@@ -497,6 +504,7 @@ export function Products({
   const filteredMaterialsSearch = materials.filter(
     m =>
       !newProduct.materials?.some(pm => pm.materialId === m.id) &&
+      (!onlyInStock || (Number(m.stockQuantity) || 0) > 0) &&
       (m.name || '').toLowerCase().includes(materialSearchTerm.toLowerCase()),
   );
 
@@ -702,6 +710,8 @@ export function Products({
           materialSearchTerm={materialSearchTerm}
           setMaterialSearchTerm={setMaterialSearchTerm}
           filteredMaterialsSearch={filteredMaterialsSearch}
+          onlyInStock={onlyInStock}
+          setOnlyInStock={setOnlyInStock}
           addMaterialToProduct={addMaterialToProduct}
           updateMaterialQuantity={updateMaterialQuantity}
           removeMaterialFromProduct={removeMaterialFromProduct}

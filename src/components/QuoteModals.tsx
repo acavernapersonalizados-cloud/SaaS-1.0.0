@@ -58,7 +58,7 @@ function GradePicker({
   ] as const;
   // Item 30 B2: só as técnicas que o tecido aceita; trocar para um tecido que não aceita limpa a escolha.
   const hasTechniques = (grade.techniques ?? []).length > 0;
-  const techniques = techniquesFor(grade, choice.fabric);
+  const techniques = techniquesFor(grade, choice.fabric, choice.color);
   const technique = techniques.find(t => t.id === choice.technique);
   const complete = !!(choice.fabric && choice.size && choice.color && (technique || !hasTechniques));
   const pieceCost = dtfPieceCost(dtfTable, {
@@ -77,7 +77,7 @@ function GradePicker({
               value={choice[field]}
               onChange={e => {
                 const next = { ...choice, [field]: e.target.value };
-                const kept = techniquesFor(grade, next.fabric).some(t => t.id === next.technique);
+                const kept = techniquesFor(grade, next.fabric, next.color).some(t => t.id === next.technique);
                 onChange(gradeKey(next.fabric, next.size, next.color, kept ? next.technique : ''));
               }}
               className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
@@ -494,7 +494,13 @@ export function AddItemModal({
                 {formatPercent(currentItemResults.margin)} · lucro {formatCurrency(currentItemResults.itemProfit)}
               </p>
             )}
-            {currentItemResults?.manualUnitPrice != null && currentItemResults.belowCost && (
+            {currentItemResults?.productManualPrice != null && currentItemResults.manualUnitPrice == null && (
+              <p className="text-xs font-bold text-neutral-600">
+                Preço manual do produto: {formatCurrency(currentItemResults.productManualPrice)}
+              </p>
+            )}
+            {(currentItemResults?.manualUnitPrice != null || currentItemResults?.productManualPrice != null) &&
+              currentItemResults.belowCost && (
               <p role="alert" className="text-xs font-bold text-red-700">
                 Abaixo do custo: prejuízo de{' '}
                 {formatCurrency(-currentItemResults.itemProfit / currentItemResults.quantity)} por unidade.

@@ -43,7 +43,7 @@
 - **No ar:** `index-D5_aveOg.js` (item 30 partes A, B1 e B2: variações, grade e técnicas de produto; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
-- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): partes A, B1 e B2 publicadas; B3 (DTF) feita, **não publicada**. Depois a Etapa 10.
+- **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): partes A, B1 e B2 publicadas; B3 (DTF) e as correções de 6/11 feitas, **não publicadas**. Depois a Etapa 10.
 - **Falta você:** apagar o "PLA SILK DOURADO - 3DLAB" (A Caverna) e acertar o "PLA Silk Dourado"; reimportar o G-code de "Presépio Simples" e "Brinquedo sensorial"; ajustar a data das 41 vendas do livro caixa (T&N) pelo "Alterar datas" do Histórico, depois de publicado; organizar as categorias (item 14).
 - **GitHub:** a conta `acavernapersonalizados-cloud` ficou fixa neste repositório (push sem pedir login). Publicar pede a sua autorização a cada vez.
 - **Emulador:** desligado com os dados exportados (`.emulator-data`). Para voltar: `npm run dev` numa aba do terminal.
@@ -997,6 +997,17 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     metro (58x50) R$ 30; 1 a 5 m R$ 60/m; 6 a 50 m R$ 50/m; 51 a 100 m R$ 45/m; acima de 100 m R$ 38/m; arquivo de até
     250 cm. UV (adesivos): metro (41x100) R$ 90; metro e meio (41x150) R$ 135; folha 29x41: 1 a 4 R$ 39,90; 5 a 9
     R$ 37,90; 10 a 49 R$ 34,90; 50 a 100 R$ 28.
+    ✅ **Correções de 6/11/2026 (aprovadas; não publicadas), pedidas depois de usar:**
+    1. Preço manual do produto: o orçamento nunca usou (desde a primeira versão, não veio do item 30). Agora é o preço da
+    venda direta; em canal com taxa as taxas somam por cima e o lucro fica o mesmo; markup e preço manual do item mandam
+    sobre ele; a grade não usa, porque tecido e tamanho mudam o preço. 2. Variação em produto de calculadora: o bloco
+    estava escondido. Liberado, com "Material da receita que a opção troca": a baixa troca a caneca-base pela escolhida,
+    e o custo muda só pela diferença. 3. Opção sem nome usa o nome do material (antes sumia ao salvar); grade pela metade
+    trava o salvar. 4. `MaterialPicker`: busca, categoria e "Só o que tem saldo" nas opções e nos insumos; a lista de
+    materiais do produto ganhou saldo e o mesmo filtro. 5. Técnica por tecido e cor (`colorsByFabric`). Regra sua, para
+    cadastrar: Algodão: OBM (A4, feito aqui) e DTF. Poliéster branco: só sublimação; outras cores: sublimação ou DTF;
+    escuras: também OBM. Dryfit: sublimação e DTF, sem OBM. 486 testes, lint, build; emulador 390 px: caneca de
+    calculadora com manual R$ 35, custo 20 → 23, Azul 10 → 9, Branca 4 sem mudar; cor sem técnica trava o salvar.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

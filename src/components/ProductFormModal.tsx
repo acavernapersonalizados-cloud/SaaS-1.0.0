@@ -22,6 +22,8 @@ export function ProductFormModal({
   materialSearchTerm,
   setMaterialSearchTerm,
   filteredMaterialsSearch,
+  onlyInStock,
+  setOnlyInStock,
   addMaterialToProduct,
   updateMaterialQuantity,
   removeMaterialFromProduct,
@@ -49,6 +51,8 @@ export function ProductFormModal({
   materialSearchTerm: string;
   setMaterialSearchTerm: (value: string) => void;
   filteredMaterialsSearch: Material[];
+  onlyInStock: boolean;
+  setOnlyInStock: (value: boolean) => void;
   addMaterialToProduct: (materialId: string) => void;
   updateMaterialQuantity: (materialId: string, quantity: number) => void;
   removeMaterialFromProduct: (materialId: string) => void;
@@ -218,6 +222,10 @@ export function ProductFormModal({
                       className="bg-transparent border-none outline-none flex-1 text-sm"
                     />
                   </div>
+                  <label className="flex items-center gap-2 text-xs font-bold text-neutral-600">
+                    <input type="checkbox" checked={onlyInStock} onChange={e => setOnlyInStock(e.target.checked)} />
+                    Só o que tem saldo
+                  </label>
                   <div className="bg-white border border-neutral-200 rounded-xl max-h-40 overflow-y-auto">
                     {filteredMaterialsSearch.length > 0 ? (
                       filteredMaterialsSearch.map(m => (
@@ -232,7 +240,7 @@ export function ProductFormModal({
                         >
                           <span className="font-medium text-sm text-neutral-900">{m.name}</span>
                           <span className="text-xs text-neutral-400 font-bold">
-                            {m.unit} · {formatCurrency(m.unitCost)}
+                            saldo {m.stockQuantity} {m.unit} · {formatCurrency(m.unitCost)}
                           </span>
                         </button>
                       ))

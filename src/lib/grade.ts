@@ -51,13 +51,16 @@ export const activePieces = (grade: ProductGrade) =>
 export const gradePieceOf = (grade: ProductGrade | null | undefined, key?: string | null) =>
   grade && key ? activePieces(grade).find(piece => piece.key === pieceKeyOf(key)) : undefined;
 
-/** Técnicas que o tecido aceita. */
-export const techniquesFor = (grade: ProductGrade, fabric: string) =>
-  (grade.techniques ?? []).filter(technique => technique.fabrics.includes(fabric));
+/** Técnicas que o tecido aceita naquela cor. Tecido sem lista de cores aceita todas. */
+export const techniquesFor = (grade: ProductGrade, fabric: string, color?: string) =>
+  (grade.techniques ?? []).filter(technique => {
+    const colors = technique.colorsByFabric?.[fabric];
+    return technique.fabrics.includes(fabric) && (!color || !colors?.length || colors.includes(color));
+  });
 
 export const chosenTechnique = (grade: ProductGrade, key?: string | null) => {
-  const { fabric, technique } = splitGradeKey(key);
-  return techniquesFor(grade, fabric).find(t => t.id === technique);
+  const { fabric, color, technique } = splitGradeKey(key);
+  return techniquesFor(grade, fabric, color).find(t => t.id === technique);
 };
 
 const techniqueCost = (technique: ProductGradeTechnique, materials: Material[]) =>
@@ -141,9 +144,28 @@ export const gradeMissingCosts = (grade: ProductGrade) => [
   ),
 ];
 
-/** Tecidos sem nenhuma técnica aceita: o orçamento não teria o que escolher, então o produto não salva. */
+/** Tecido ou cor sem nenhuma técnica aceita: o orçamento não teria o que escolher, então o produto não salva. */
 export const gradeFabricsWithoutTechnique = (grade: ProductGrade) =>
-  (grade.techniques ?? []).length > 0 ? grade.fabrics.filter(fabric => techniquesFor(grade, fabric).length === 0) : [];
+  (grade.techniques ?? []).length === 0
+    ? []
+    : grade.fabrics.flatMap(fabric => {
+        const missing = grade.colors.filter(color => techniquesFor(grade, fabric, color).length === 0);
+        return missing.length === grade.colors.length ? [fabric] : missing.map(color => `${fabric} ${color}`);
+      });
+
+/** Ao salvar, gravar só o que continua nas listas de tecidos e cores. */
+const cleanColorsByFabric = (colors: Record<string, string[]>, grade: ProductGrade) =>
+  Object.fromEntries(
+    Object.entries(colors)
+      .filter(([fabric]) => grade.fabrics.includes(fabric))
+      .map(([fabric, list]) => [fabric, list.filter(color => grade.colors.includes(color))]),
+  );
+
+/** Hora de saber se um produto com grade está pela metade (só cores, por exemplo). */
+export const gradeIsPartial = (grade: ProductGrade) => {
+  const filled = [grade.fabrics, grade.sizes, grade.colors].filter(list => list.length > 0).length;
+  return filled > 0 && filled < 3;
+};
 
 /** Ao salvar: tira técnica sem nome e tecido que saiu da lista. */
 export const cleanGradeTechniques = (grade: ProductGrade): ProductGrade => ({
@@ -154,6 +176,7 @@ export const cleanGradeTechniques = (grade: ProductGrade): ProductGrade => ({
       ...technique,
       name: technique.name.replace(/\|/g, '').trim(),
       fabrics: technique.fabrics.filter(fabric => grade.fabrics.includes(fabric)),
+      ...(technique.colorsByFabric ? { colorsByFabric: cleanColorsByFabric(technique.colorsByFabric, grade) } : {}),
     })),
 });
 

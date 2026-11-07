@@ -1,8 +1,8 @@
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Material, Product, ProductVariation, ProductVariationOption } from '../types';
-import { formatQuantity } from '../lib/quantity';
 import { QuantityInput } from './QuantityInput';
+import { MaterialPicker } from './MaterialPicker';
 
 const BOX =
   'px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900';
@@ -21,8 +21,10 @@ export function ProductVariationSection({
   /** O produto faz parte de um kit: o kit não sabe escolher a variação. */
   inKit: boolean;
 }) {
-  // Vem da calculadora ou é kit: o custo é gravado e os materiais estão travados. Com grade, a escolha é a da grade.
-  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit || newProduct.grade) return null;
+  // Kit não escolhe variação; com grade, a escolha é a da grade.
+  if (newProduct.isKit || newProduct.grade) return null;
+  const fromJob = (Number(newProduct.jobCostUnit) || 0) > 0;
+  const recipe = newProduct.materials ?? [];
 
   const variation = newProduct.variation ?? null;
   const update = (patch: Partial<ProductVariation>) =>
@@ -52,8 +54,11 @@ export function ProductVariationSection({
       ) : (
         <>
           <p className="text-xs text-neutral-500">
-            Ex.: Cor com Preta, Azul e Rosa. O material da opção soma à receita acima, então tire dela o que varia. No
-            orçamento vale a opção escolhida; a lista de produtos mostra o preço pela opção mais cara.
+            Ex.: Cor com Preta, Azul e Rosa. No orçamento vale a opção escolhida; a lista de produtos mostra o preço pela
+            opção mais cara.{' '}
+            {fromJob
+              ? 'Vem da calculadora: escolha abaixo o material que a opção troca, para não baixar dois do estoque. O custo muda só pela diferença entre eles.'
+              : 'O material da opção soma à receita, a não ser que você escolha abaixo o material que ela troca.'}
           </p>
           {variation && (
             <div className="grid grid-cols-2 gap-2">
@@ -78,6 +83,28 @@ export function ProductVariationSection({
                   className={FIELD}
                 />
               </div>
+            </div>
+          )}
+          {variation && recipe.length > 0 && (
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-neutral-600">Material da receita que a opção troca</span>
+              <select
+                aria-label="Material da receita que a opção troca"
+                value={variation.replacesMaterialId ?? ''}
+                onChange={e => {
+                  const id = e.target.value || null;
+                  const line = recipe.find(pm => pm.materialId === id);
+                  update({ replacesMaterialId: id, ...(line ? { quantity: line.quantity } : {}) });
+                }}
+                className={FIELD}
+              >
+                <option value="">Nenhum: soma à receita</option>
+                {recipe.map(pm => (
+                  <option key={pm.materialId} value={pm.materialId}>
+                    {materials.find(m => m.id === pm.materialId)?.name ?? 'Material apagado'}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
           <div className="space-y-2">
@@ -111,19 +138,14 @@ export function ProductVariationSection({
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <select
-                  aria-label={`Material da opção ${index + 1}`}
-                  value={option.materialId ?? ''}
-                  onChange={e => updateOption(option.id, { materialId: e.target.value || null })}
-                  className={`${FIELD} bg-white`}
-                >
-                  <option value="">Sem material do estoque</option>
-                  {materials.map(item => (
-                    <option key={item.id} value={item.id}>
-                      {item.name} · saldo {formatQuantity(item.stockQuantity)} {item.unit}
-                    </option>
-                  ))}
-                </select>
+                <MaterialPicker
+                  ariaLabel={`Material da opção ${index + 1}`}
+                  materials={materials}
+                  value={option.materialId}
+                  onChange={materialId => updateOption(option.id, { materialId })}
+                  emptyLabel="Sem material do estoque"
+                  clearable
+                />
               </div>
             ))}
           </div>

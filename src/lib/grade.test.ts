@@ -7,6 +7,8 @@ import {
   activePieces,
   cleanGradeTechniques,
   gradeFabricsWithoutTechnique,
+  gradeIsPartial,
+  techniquesFor,
   gradeItemFields,
   gradeKey,
   gradeMissingCosts,
@@ -250,5 +252,61 @@ describe('Item 30 B1: peças no estoque', () => {
     const noCost = { ...grade, costs: { 'Algodão|GG': 25 } };
     expect(gradeMissingCosts(noCost)).toEqual(['Dryfit P']);
     expect(gradeMissingCosts(grade)).toEqual([]);
+  });
+});
+
+describe('Correção de 6/11: técnica por tecido e cor', () => {
+  const tech = (id: string, fabrics: string[], colorsByFabric?: Record<string, string[]>) => ({
+    id,
+    name: id,
+    materials: [],
+    minutes: 0,
+    additionalValue: 0,
+    fabrics,
+    ...(colorsByFabric ? { colorsByFabric } : {}),
+  });
+  const rules: ProductGrade = {
+    fabrics: ['Algodão', 'Poliéster', 'Dryfit'],
+    sizes: ['P'],
+    colors: ['Branca', 'Azul', 'Preta'],
+    costs: { 'Algodão|P': 20, 'Poliéster|P': 20, 'Dryfit|P': 20 },
+    pieces: [],
+    techniques: [
+      tech('obm', ['Algodão', 'Poliéster'], { Poliéster: ['Preta'] }),
+      tech('dtf', ['Algodão', 'Poliéster', 'Dryfit'], { Poliéster: ['Azul', 'Preta'] }),
+      tech('sub', ['Poliéster', 'Dryfit']),
+    ],
+  };
+  const ids = (fabric: string, color: string) => techniquesFor(rules, fabric, color).map(t => t.id);
+
+  it('a regra do ateliê: cada tecido e cor com as técnicas certas', () => {
+    expect(ids('Algodão', 'Branca')).toEqual(['obm', 'dtf']);
+    expect(ids('Poliéster', 'Branca')).toEqual(['sub']);
+    expect(ids('Poliéster', 'Azul')).toEqual(['dtf', 'sub']);
+    expect(ids('Poliéster', 'Preta')).toEqual(['obm', 'dtf', 'sub']);
+    expect(ids('Dryfit', 'Preta')).toEqual(['dtf', 'sub']);
+  });
+  it('técnica de outra cor não entra no orçamento', () => {
+    expect(gradeItemFields(rules, gradeKey('Poliéster', 'P', 'Branca', 'dtf'))).toEqual({});
+    expect(gradeItemFields(rules, gradeKey('Poliéster', 'P', 'Preta', 'dtf')).variationOptionId).toBeTruthy();
+  });
+  it('cor sem técnica trava o salvar, com o nome do tecido e da cor', () => {
+    const sem = { ...rules, techniques: [tech('dtf', ['Algodão', 'Poliéster', 'Dryfit'], { Poliéster: ['Azul'] })] };
+    expect(gradeFabricsWithoutTechnique(sem)).toEqual(['Poliéster Branca', 'Poliéster Preta']);
+    expect(gradeFabricsWithoutTechnique(rules)).toEqual([]);
+  });
+  it('limpa tecido e cor que saíram das listas', () => {
+    const clean = cleanGradeTechniques({
+      ...rules,
+      fabrics: ['Poliéster'],
+      colors: ['Azul'],
+      techniques: [tech('dtf', ['Poliéster'], { Poliéster: ['Azul', 'Preta'], Velho: ['Azul'] })],
+    });
+    expect(clean.techniques?.[0]?.colorsByFabric).toEqual({ Poliéster: ['Azul'] });
+  });
+  it('grade pela metade é apontada; vazia ou completa, não', () => {
+    expect(gradeIsPartial({ ...rules, fabrics: [], sizes: [] })).toBe(true);
+    expect(gradeIsPartial({ ...rules, fabrics: [], sizes: [], colors: [] })).toBe(false);
+    expect(gradeIsPartial(rules)).toBe(false);
   });
 });
