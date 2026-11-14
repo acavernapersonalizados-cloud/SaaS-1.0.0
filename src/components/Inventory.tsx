@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, doc, runTransaction } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
-import { cn, formatCurrency, isLowStock } from '../lib/utils';
+import { cn, formatCurrency, isLowStock, packageSize } from '../lib/utils';
+import { packageStockText, stockByItem } from '../lib/packages';
 import {
   addToLots,
   changeLotExpiry,
@@ -88,6 +89,8 @@ export function Inventory() {
   const [entryFor, setEntryFor] = useState<string | null>(null);
   const [entryQty, setEntryQty] = useState<number | ''>('');
   const [entryDate, setEntryDate] = useState('');
+  // Correção de 14/11: pacote controlado por item aceita entrada e saída em pacotes (× itens do pacote).
+  const [entryInPacks, setEntryInPacks] = useState(false);
 
   /** `delta` > 0 entra no lote da validade dada; < 0 sai do lote não vencido que vence antes. */
   const updateStock = async (id: string, delta: number, expiresAt: string | null = null) => {
@@ -125,7 +128,7 @@ export function Inventory() {
   };
 
   const saveEntry = async (id: string) => {
-    const qty = Number(entryQty) || 0;
+    const qty = (Number(entryQty) || 0) * (entryInPacks ? packageSize(materials.find(m => m.id === id)) : 1);
     if (qty <= 0) {
       addToast('Informe a quantidade da entrada.', 'error');
       return;
@@ -136,6 +139,7 @@ export function Inventory() {
       setEntryFor(null);
       setEntryQty('');
       setEntryDate('');
+      setEntryInPacks(false);
     }
   };
 
@@ -143,9 +147,10 @@ export function Inventory() {
   const [exitFor, setExitFor] = useState<string | null>(null);
   const [exitQty, setExitQty] = useState<number | ''>('');
   const [exitReason, setExitReason] = useState<ExitReason>('uso');
+  const [exitInPacks, setExitInPacks] = useState(false);
 
   const saveExit = async (material: Material) => {
-    const qty = Number(exitQty) || 0;
+    const qty = (Number(exitQty) || 0) * (exitInPacks ? packageSize(material) : 1);
     if (qty <= 0) {
       addToast('Informe a quantidade da saída.', 'error');
       return;
@@ -178,6 +183,7 @@ export function Inventory() {
       addToast('Saída registrada.', 'success');
       setExitFor(null);
       setExitQty('');
+      setExitInPacks(false);
     } catch (error) {
       if (error instanceof LotError) {
         addToast(error.message, 'error');
@@ -411,7 +417,7 @@ export function Inventory() {
                     <tr className="group hover:bg-neutral-50 transition-colors">
                       <td className="py-4 font-bold text-neutral-900">{material.name}</td>
                       <td className="py-4 text-sm font-bold text-neutral-900">
-                        {formatQuantity(material.stockQuantity)} {material.unit}
+                        {packageStockText(material)}
                         {isLowStock(material) && (
                           <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                             BAIXO
@@ -584,6 +590,16 @@ export function Inventory() {
                                 className="w-28 px-3 py-2 bg-white border border-neutral-200 rounded-lg"
                               />
                             </label>
+                            {stockByItem(material) && (
+                              <label className="flex items-center gap-1 text-xs font-bold text-neutral-600">
+                                <input
+                                  type="checkbox"
+                                  checked={entryInPacks}
+                                  onChange={e => setEntryInPacks(e.target.checked)}
+                                />
+                                em pacotes de {packageSize(material)}
+                              </label>
+                            )}
                             <label className="text-xs font-bold text-neutral-600 space-y-1">
                               <span className="block">Validade (opcional)</span>
                               <input
@@ -625,6 +641,16 @@ export function Inventory() {
                                 className="w-28 px-3 py-2 bg-white border border-neutral-200 rounded-lg"
                               />
                             </label>
+                            {stockByItem(material) && (
+                              <label className="flex items-center gap-1 text-xs font-bold text-neutral-600">
+                                <input
+                                  type="checkbox"
+                                  checked={exitInPacks}
+                                  onChange={e => setExitInPacks(e.target.checked)}
+                                />
+                                em pacotes de {packageSize(material)}
+                              </label>
+                            )}
                             <label className="text-xs font-bold text-neutral-600 space-y-1">
                               <span className="block">Motivo</span>
                               <select

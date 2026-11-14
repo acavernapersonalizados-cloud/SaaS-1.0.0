@@ -18,6 +18,14 @@ import { addToLots, materialLots, stockFields } from '../lib/stockLots';
 import { confirmBigQuantity, formatQuantity, suspiciousUnitCost, unitConversion } from '../lib/quantity';
 import { QuantityInput } from './QuantityInput';
 import { isPackageMaterial, materialPurchaseQuantity, PriceInputMode, purchaseFromInput } from '../lib/materials';
+import {
+  convertPackageStock,
+  legacyPackageStock,
+  packageBreakdown,
+  packageStockText,
+  stockByItem,
+} from '../lib/packages';
+import { packageSize } from '../lib/utils';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -257,9 +265,41 @@ export function Materials() {
       categoryIds: material.categoryIds || [],
       stockQuantity: material.stockQuantity || 0,
       minStockQuantity: material.minStockQuantity || 0,
+      stockByItem: material.stockByItem ?? false,
     });
     setPriceMode('total');
     setIsModalOpen(true);
+  };
+
+  // Correção de 14/11: pacote antigo passa a controlar o saldo por item. Mostra o antes e o depois, avisa se há reserva
+  // ativa (feita na unidade antiga) e só grava ao salvar.
+  const convertToItems = async (alreadyItems: boolean) => {
+    if (!editingMaterial || !activeStore) return;
+    const { factor, fields } = convertPackageStock(newMaterial, alreadyItems);
+    let reserved = false;
+    try {
+      const snap = await getDocs(
+        query(
+          collection(db, 'stockReservations'),
+          where('storeId', '==', activeStore.id),
+          where('status', '==', 'active'),
+        ),
+      );
+      reserved = snap.docs.some(d => JSON.stringify(d.data()).includes(editingMaterial.id));
+    } catch {
+      /* sem a consulta, a confirmação segue sem o aviso de reserva */
+    }
+    const before = formatQuantity(Number(newMaterial.stockQuantity) || 0);
+    const text =
+      (alreadyItems
+        ? `O saldo já está em itens: ${before} continua ${formatQuantity(fields.stockQuantity)} ${fields.unit}.`
+        : `Converter: ${before} pacote(s) vira(m) ${formatQuantity(fields.stockQuantity)} ${fields.unit}; o mínimo e os lotes ` +
+          `acompanham (× ${factor}).`) +
+      (reserved ? ' Atenção: há orçamento aprovado com reserva deste material, feita na unidade antiga.' : '') +
+      ' Só vale ao salvar.';
+    if (!window.confirm(text)) return;
+    setNewMaterial({ ...newMaterial, ...fields, isPackage: true });
+    setLotFactor(x => x * factor);
   };
 
   // Prévia ao vivo do que será gravado ("= R$ X por unidade · total R$ Y").
@@ -487,7 +527,7 @@ export function Materials() {
                     </span>
                   </td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
-                    {material.stockQuantity} {material.unit}
+                    {packageStockText(material)}
                     {isLowStock(material) && (
                       <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                         BAIXO
@@ -595,7 +635,9 @@ export function Materials() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-neutral-700">Unidade</label>
+                  <label className="text-sm font-bold text-neutral-700">
+                    {stockByItem(newMaterial) ? 'Unidade do item' : 'Unidade'}
+                  </label>
                   <select
                     value={newMaterial.unit}
                     onChange={e => changeUnit(e.target.value)}
@@ -668,7 +710,16 @@ export function Materials() {
                   type="checkbox"
                   id="isPackage"
                   checked={newMaterial.isPackage || newMaterial.unit === 'pct'}
-                  onChange={e => setNewMaterial({ ...newMaterial, isPackage: e.target.checked })}
+                  onChange={e => {
+                    const on = e.target.checked;
+                    setNewMaterial({
+                      ...newMaterial,
+                      isPackage: on,
+                      // Correção de 14/11: pacote novo já controla por item; o antigo só pela conversão.
+                      stockByItem: on ? !(editingMaterial && legacyPackageStock(editingMaterial)) : false,
+                      unit: on && newMaterial.unit === 'pct' ? 'un' : newMaterial.unit,
+                    });
+                  }}
                   className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
                 />
                 <label htmlFor="isPackage" className="text-sm font-bold text-neutral-700">
@@ -725,18 +776,87 @@ export function Materials() {
                 </p>
               )}
 
+              {editingMaterial && legacyPackageStock(newMaterial) && (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 space-y-2">
+                  <p className="font-bold">
+                    Pacote no jeito antigo: o saldo ({packageStockText(newMaterial)}) pode estar em pacotes, e a receita
+                    baixa em itens.
+                  </p>
+                  <p>Converta para controlar por item ({packageSize(newMaterial)} por pacote). Nada muda sem salvar.</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => convertToItems(false)}
+                      className="px-3 py-2 bg-white border border-amber-300 rounded-xl font-bold text-amber-900 hover:bg-amber-100"
+                    >
+                      O saldo está em pacotes: converter
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => convertToItems(true)}
+                      className="px-3 py-2 bg-white border border-amber-300 rounded-xl font-bold text-amber-900 hover:bg-amber-100"
+                    >
+                      O saldo já está em itens
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Estoque Atual</label>
-                  {/* Estacionamento item 10: estoque 0 é um valor válido. Item 25: com fração (0,5 kg), kg ou g. */}
-                  <QuantityInput
-                    ariaLabel="Estoque Atual"
-                    unit={newMaterial.unit}
-                    value={newMaterial.stockQuantity ?? null}
-                    onChange={v => setNewMaterial({ ...newMaterial, stockQuantity: v ?? undefined })}
-                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
-                    placeholder="Ex: 50"
-                  />
+                  {stockByItem(newMaterial) ? (
+                    (() => {
+                      // Correção de 14/11: pacotes fechados + itens avulsos; grava o total em itens.
+                      const size = packageSize(newMaterial);
+                      const { packs, loose } = packageBreakdown(Number(newMaterial.stockQuantity) || 0, size);
+                      return (
+                        <div className="space-y-2">
+                          <label className="block space-y-1">
+                            <span className="block text-[11px] font-bold text-neutral-500">Pacotes fechados</span>
+                            <input
+                              type="number"
+                              min={0}
+                              step={1}
+                              aria-label="Pacotes fechados"
+                              value={packs}
+                              onChange={e =>
+                                setNewMaterial({
+                                  ...newMaterial,
+                                  stockQuantity: Math.max(0, Math.floor(Number(e.target.value) || 0)) * size + loose,
+                                })
+                              }
+                              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                            />
+                          </label>
+                          <label className="block space-y-1">
+                            <span className="block text-[11px] font-bold text-neutral-500">
+                              Avulsos ({newMaterial.unit})
+                            </span>
+                            <QuantityInput
+                              compact
+                              ariaLabel="Itens avulsos"
+                              unit={newMaterial.unit}
+                              value={loose}
+                              onChange={v => setNewMaterial({ ...newMaterial, stockQuantity: packs * size + (v ?? 0) })}
+                              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                            />
+                          </label>
+                          <p className="text-[11px] font-bold text-neutral-500">= {packageStockText(newMaterial)}</p>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    // Estacionamento item 10: estoque 0 é um valor válido. Item 25: com fração (0,5 kg), kg ou g.
+                    <QuantityInput
+                      ariaLabel="Estoque Atual"
+                      unit={newMaterial.unit}
+                      value={newMaterial.stockQuantity ?? null}
+                      onChange={v => setNewMaterial({ ...newMaterial, stockQuantity: v ?? undefined })}
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
+                      placeholder="Ex: 50"
+                    />
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">Estoque Mínimo (opcional)</label>

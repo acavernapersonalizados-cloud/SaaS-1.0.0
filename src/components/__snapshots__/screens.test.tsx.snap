@@ -12630,9 +12630,7 @@ exports[`Estoque > busca 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -12890,9 +12888,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                   <ul
                     aria-label="Lotes"
                     class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
@@ -13002,9 +12998,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  100
-                   
-                  pct
+                  100 pct
                   <ul
                     aria-label="Lotes"
                     class="mt-1 space-y-0.5 text-[11px] font-medium text-neutral-500"
@@ -13114,9 +13108,7 @@ exports[`Estoque > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -21695,9 +21687,7 @@ exports[`Matéria-prima > busca 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -22039,9 +22029,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  100
-                   
-                  pct
+                  100 pct
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -22150,9 +22138,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -22307,9 +22293,7 @@ exports[`Matéria-prima > confirmar exclusão 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -22722,9 +22706,7 @@ exports[`Matéria-prima > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  100
-                   
-                  pct
+                  100 pct
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -22833,9 +22815,7 @@ exports[`Matéria-prima > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -22990,9 +22970,7 @@ exports[`Matéria-prima > lista 1`] = `
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -23334,9 +23312,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  100
-                   
-                  pct
+                  100 pct
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -23445,9 +23421,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -23602,9 +23576,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -24355,9 +24327,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  100
-                   
-                  pct
+                  100 pct
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"
@@ -24466,9 +24436,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  2
-                   
-                  m
+                  2 m
                   <span
                     class="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold"
                   >
@@ -24623,9 +24591,7 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                 <td
                   class="py-4 text-sm font-bold text-neutral-900"
                 >
-                  10
-                   
-                  un
+                  10 un
                 </td>
                 <td
                   class="py-4 text-right sticky right-0 bg-white group-hover:bg-neutral-50 transition-colors pl-2"

@@ -1020,6 +1020,14 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     o preço manual continua. Ao salvar, o trabalho fica com `productId` = null, então "Atualizar preço do produto" não
     regrava o custo. A grade avisa em vez de sumir. 493 testes, lint, build. **Emulador não testado:** a porta 8080 estava
     ocupada pelo servidor do Beleza em Dia (C:eleza-em-dia), que não foi parado.
+31. ✅ **Pacote com estoque por item, feito em 14/11/2026 (aprovado; não publicado; falta o teste na tela):** o custo do
+    pacote já era por item, mas o saldo ficava em pacotes, e a receita (50 folhas de um pacote de 500) não conseguia
+    baixar. Agora `stockByItem`: saldo, mínimo e lotes em itens; o pacote é só o jeito de comprar (a Lista de Compras já
+    gravava em itens). Cadastro: pacotes fechados + avulsos; saldo "1.030 un (2 pct + 30)" na Matéria-prima e no Estoque;
+    entrada e saída "em pacotes" no Estoque. Pacote antigo: aviso com "O saldo está em pacotes: converter" (× itens do
+    pacote, com lotes e mínimo) ou "O saldo já está em itens"; avisa se há reserva ativa; só grava ao salvar. Você
+    converte um material por vez. 500 testes, lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em
+    Dia.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

@@ -106,6 +106,8 @@ export interface Material {
   categoryIds?: string[];
   /** Item 30 B1: peça da grade deste produto; a Matéria-prima esconde por padrão. */
   gradeProductId?: string;
+  /** Correção de 14/11: pacote com saldo, mínimo e lotes em itens (o pacote é só o jeito de comprar). */
+  stockByItem?: boolean;
 }
 
 export interface ProductMaterial {
