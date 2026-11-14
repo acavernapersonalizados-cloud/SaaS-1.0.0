@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-D_vAHG40.js` (item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-CX2oFHd6.js` (14/11/2026: botão "Editar como produto normal", publicado sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1013,7 +1013,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     ligação automática); sem escolha, cria item novo com saldo zero. Peça ligada usa o custo do item e não pede custo na
     grade; custo digitado depois não sobrescreve o item. Com opções em Variações, a grade mostra um aviso em vez de sumir.
     490 testes, lint, build; emulador 390 px: peça ligada ao item com saldo 9, orçamento com esse saldo e custo.
-    ✅ **Produto da calculadora vira produto normal, feito em 14/11/2026 (aprovado; não publicado; falta o teste na tela):**
+    ✅ **Produto da calculadora vira produto normal, feito e publicado em 14/11/2026 (`index-CX2oFHd6.js`; publicado sem teste na tela, a seu pedido):**
     as camisetas já cadastradas vieram da calculadora, onde a grade sumia e os materiais ficavam travados. Botão "Editar
     como produto normal" no aviso amarelo, com confirmação mostrando o custo antes e depois: sai o custo fixo do trabalho
     (`jobCostUnit`, `jobSuggestedUnit`, `sourceJob` = null) e o custo passa a vir de materiais, tempo e embalagem;
