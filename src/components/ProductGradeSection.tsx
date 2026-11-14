@@ -38,8 +38,16 @@ export function ProductGradeSection({
     colors: grade?.colors.join(', ') ?? '',
   });
 
-  // Vem da calculadora ou é kit: não tem grade.
-  if ((Number(newProduct.jobCostUnit) || 0) > 0 || newProduct.isKit) return null;
+  // Kit não tem grade. Produto da calculadora avisa, em vez de sumir com a opção (correção de 14/11).
+  if (newProduct.isKit) return null;
+  if ((Number(newProduct.jobCostUnit) || 0) > 0) {
+    return (
+      <p className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-600">
+        Para usar a grade (tecido, tamanho, cor e técnica), clique em "Editar como produto normal" no aviso amarelo, lá
+        em cima.
+      </p>
+    );
+  }
   // Variação e grade não andam juntas: avisa, em vez de sumir com a opção.
   if (newProduct.variation?.options?.length) {
     return (

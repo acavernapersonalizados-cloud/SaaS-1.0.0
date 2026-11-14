@@ -1013,6 +1013,13 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     ligação automática); sem escolha, cria item novo com saldo zero. Peça ligada usa o custo do item e não pede custo na
     grade; custo digitado depois não sobrescreve o item. Com opções em Variações, a grade mostra um aviso em vez de sumir.
     490 testes, lint, build; emulador 390 px: peça ligada ao item com saldo 9, orçamento com esse saldo e custo.
+    ✅ **Produto da calculadora vira produto normal, feito em 14/11/2026 (aprovado; não publicado; falta o teste na tela):**
+    as camisetas já cadastradas vieram da calculadora, onde a grade sumia e os materiais ficavam travados. Botão "Editar
+    como produto normal" no aviso amarelo, com confirmação mostrando o custo antes e depois: sai o custo fixo do trabalho
+    (`jobCostUnit`, `jobSuggestedUnit`, `sourceJob` = null) e o custo passa a vir de materiais, tempo e embalagem;
+    o preço manual continua. Ao salvar, o trabalho fica com `productId` = null, então "Atualizar preço do produto" não
+    regrava o custo. A grade avisa em vez de sumir. 493 testes, lint, build. **Emulador não testado:** a porta 8080 estava
+    ocupada pelo servidor do Beleza em Dia (C:eleza-em-dia), que não foi parado.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

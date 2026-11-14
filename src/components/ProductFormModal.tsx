@@ -15,6 +15,7 @@ type NewAccessory = { name: string; additionalValue: number };
 export function ProductFormModal({
   editingProduct,
   resetForm,
+  onUnlinkJob,
   handleAddProduct,
   newProduct,
   setNewProduct,
@@ -44,6 +45,8 @@ export function ProductFormModal({
 }: {
   editingProduct: Product | null;
   resetForm: () => void;
+  /** Correção de 14/11: produto da calculadora vira produto normal (com confirmação). */
+  onUnlinkJob?: () => void;
   handleAddProduct: (e: React.FormEvent) => void;
   newProduct: Partial<Product>;
   setNewProduct: React.Dispatch<React.SetStateAction<Partial<Product>>>;
@@ -131,6 +134,18 @@ export function ProductFormModal({
                   Tempo, embalagem e materiais abaixo são só informação (e a baixa de estoque). Para mudar, refaça o
                   trabalho na calculadora e use "Atualizar preço do produto".
                 </p>
+                {onUnlinkJob && (
+                  <div className="pt-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={onUnlinkJob}
+                      className="px-3 py-2 bg-white border border-amber-300 rounded-xl font-bold text-amber-900 hover:bg-amber-100"
+                    >
+                      Editar como produto normal
+                    </button>
+                    <p>Destrava materiais, tempo, embalagem e a grade. O custo passa a ser calculado por eles.</p>
+                  </div>
+                )}
               </div>
             )}
 

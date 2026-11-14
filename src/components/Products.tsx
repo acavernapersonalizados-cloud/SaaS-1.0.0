@@ -15,7 +15,15 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, ProductMaterial, CostBase, FinishingOption, Accessory } from '../types';
 import { formatCurrency, formatPercent, roundCents } from '../lib/utils';
-import { calcProductPricing, calcReversePrice, getProfitStatus, calcCatalogKPIs, markupOf } from '../lib/pricingEngine';
+import {
+  calcProductCost,
+  calcProductPricing,
+  calcReversePrice,
+  getProfitStatus,
+  calcCatalogKPIs,
+  markupOf,
+} from '../lib/pricingEngine';
+import { JOB_COLLECTIONS, unlinkProductFromJob } from '../lib/jobProduct';
 import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
 import { isAppOutdated } from '../lib/appUpdate';
 import { useStore } from '../contexts/StoreContext';
@@ -212,6 +220,21 @@ export function Products({
     setIsModalOpen(false);
   };
 
+  // Correção de 14/11/2026: produto da calculadora vira produto normal. Mostra o custo antes e depois e pede confirmação;
+  // só grava ao clicar em "Atualizar Produto".
+  const unlinkFromJob = () => {
+    const next = unlinkProductFromJob(newProduct);
+    const before = Number(newProduct.jobCostUnit) || 0;
+    const after = calcProductCost(next, materials, costs).totalCost;
+    const ok = window.confirm(
+      `Editar como produto normal? O custo deixa de ser o do trabalho (${formatCurrency(before)} por unidade) e passa a ser ` +
+        `calculado por materiais, tempo e embalagem (${formatCurrency(after)} hoje). Energia e máquina da calculadora ` +
+        `deixam de entrar. O preço manual continua. O trabalho da calculadora deixa de atualizar este produto. Só vale ` +
+        `ao clicar em "Atualizar Produto".`,
+    );
+    if (ok) setNewProduct(next);
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeStore || !newProduct.name) return;
@@ -309,6 +332,13 @@ export function Products({
       } else {
         await addDoc(collection(db, 'products'), { ...productData, createdAt: new Date().toISOString() });
         addToast('Produto cadastrado com sucesso!', 'success');
+      }
+      // Virou produto normal: o trabalho deixa de apontar para ele, e "Atualizar preço do produto" não regrava o custo.
+      const job = editingProduct?.sourceJob;
+      if (job && newProduct.sourceJob === null) {
+        await updateDoc(doc(db, JOB_COLLECTIONS[job.kind], job.id), { productId: null }).catch(() =>
+          addToast('O produto foi salvo, mas o trabalho da calculadora não foi desvinculado.', 'error'),
+        );
       }
       resetForm();
     } catch (err) {
@@ -703,6 +733,7 @@ export function Products({
           products={products}
           editingProduct={editingProduct}
           resetForm={resetForm}
+          onUnlinkJob={unlinkFromJob}
           handleAddProduct={handleAddProduct}
           newProduct={newProduct}
           setNewProduct={setNewProduct}

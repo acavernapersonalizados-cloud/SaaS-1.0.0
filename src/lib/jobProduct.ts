@@ -215,3 +215,14 @@ export function productPriceUpdate(
     updatedAt: now,
   };
 }
+
+/**
+ * Correção de 14/11/2026: produto criado de trabalho vira produto normal. Sai o custo fixo do trabalho e o vínculo; o
+ * resto (materiais, tempo, embalagem, preço manual) fica, e o custo passa a ser calculado por eles.
+ */
+export const unlinkProductFromJob = (product: Partial<Product>): Partial<Product> => ({
+  ...product,
+  jobCostUnit: 0,
+  jobSuggestedUnit: 0,
+  sourceJob: null,
+});

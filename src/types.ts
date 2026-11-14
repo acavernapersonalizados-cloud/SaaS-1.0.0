@@ -213,7 +213,8 @@ export interface Product {
   /** Preço sugerido da calculadora no trabalho de origem; é o sugerido do produto (correção de 26/10/2026). */
   jobSuggestedUnit?: number;
   /** Trabalho de calculadora que originou o produto. */
-  sourceJob?: { kind: JobKind; id: string };
+  /** null: virou produto normal (correção de 14/11/2026). */
+  sourceJob?: { kind: JobKind; id: string } | null;
   // ── Estacionamento item 19 (28/10/2026): Kit montado com produtos já cadastrados ──
   isKit?: boolean;
   /** Produtos do kit e quantas unidades de cada (um kit não entra em outro kit). */
