@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-CX2oFHd6.js` (14/11/2026: botão "Editar como produto normal", publicado sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-aLmwVXLx.js` (14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1020,7 +1020,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     o preço manual continua. Ao salvar, o trabalho fica com `productId` = null, então "Atualizar preço do produto" não
     regrava o custo. A grade avisa em vez de sumir. 493 testes, lint, build. **Emulador não testado:** a porta 8080 estava
     ocupada pelo servidor do Beleza em Dia (C:eleza-em-dia), que não foi parado.
-31. ✅ **Pacote com estoque por item, feito em 14/11/2026 (aprovado; não publicado; falta o teste na tela):** o custo do
+31. ✅ **Pacote com estoque por item, feito e publicado em 14/11/2026 (`index-aLmwVXLx.js`; publicado sem teste na tela, a seu pedido):** o custo do
     pacote já era por item, mas o saldo ficava em pacotes, e a receita (50 folhas de um pacote de 500) não conseguia
     baixar. Agora `stockByItem`: saldo, mínimo e lotes em itens; o pacote é só o jeito de comprar (a Lista de Compras já
     gravava em itens). Cadastro: pacotes fechados + avulsos; saldo "1.030 un (2 pct + 30)" na Matéria-prima e no Estoque;
