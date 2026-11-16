@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-BIp0noLL.js` (16/11/2026: item 32 entrega 1, grade na matéria-prima, e a retirada do DTF, publicados sem teste na tela, a seu pedido; 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-C0GmxK1W.js` (16/11/2026: item 32 completo, grade na matéria-prima com orçamento e baixa pela combinação, e a retirada do DTF, publicados sem teste na tela, a seu pedido; 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1042,7 +1042,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     retirada (`parkingCost`, `fuelCost` na tabela do DTF, editáveis na Base de Custos). Somam ao arquivo e se dividem
     pelas estampas dele (2 m, 40 estampas: R$ 3,00 → R$ 3,41 por estampa), e pelos "Arquivos nesta retirada"
     (`dtfFilesPerTrip`, começa em 1). Gravado no item. 511 testes, lint, build.
-    ✅ **Entrega 2, feita em 16/11/2026 (aprovada; não publicada; falta o teste na tela):** produto com a "Camiseta" com
+    ✅ **Entrega 2, feita e publicada em 16/11/2026 (`index-C0GmxK1W.js`; sem teste na tela, a seu pedido):** produto com a "Camiseta" com
     grade na receita usa a grade dela (`withMaterialGrade`): a linha da Camiseta sai da conta e entra a combinação
     escolhida (custo, baixa e separação trocam a Camiseta pela combinação, × a quantidade da receita). Técnicas ficam no
     produto (`techniques`, com tecidos e cores aceitos, DTF por metro); no orçamento: tecido, tamanho, cor e técnica. A
