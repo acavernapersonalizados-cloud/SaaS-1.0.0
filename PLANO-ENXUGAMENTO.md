@@ -1028,6 +1028,18 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     pacote, com lotes e mínimo) ou "O saldo já está em itens"; avisa se há reserva ativa; só grava ao salvar. Você
     converte um material por vez. 500 testes, lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em
     Dia.
+32. **Grade na matéria-prima** (pedido em 16/11/2026, aprovado; substitui a grade no produto do item 30). Uma
+    matéria-prima "Camiseta" com tecidos, tamanhos e cores; saldo por combinação; no orçamento: tecido, cor, tamanho e
+    técnica; DTF como já existe (metragem digitada, estampas no arquivo e na camiseta). As camisetas antigas você apaga e
+    cadastra de novo (sem migração).
+    ✅ **Entrega 1, feita em 16/11/2026 (não publicada; falta o teste na tela):** "Tem grade (tecido, tamanho e cor)?" no
+    cadastro, com custo por tecido e tamanho. Cada combinação vira um item interno (`variantOf`, `variantKey`, id fixo)
+    com o próprio saldo e lotes; escondido nas listas e nos seletores. Matéria-prima mostra o total ("· grade"); Estoque
+    tem "Ver grade" com entrada e saída por combinação. Excluir apaga as combinações juntas. Custo mudado atualiza as
+    combinações sem tocar no saldo. Fica fora da Lista de Compras. 508 testes, lint, build. **Emulador não testado:**
+    porta 8080 ocupada pelo Beleza em Dia.
+    **Entrega 2, depois:** receita do produto com a "Camiseta"; orçamento escolhe tecido, cor, tamanho e técnica e baixa a
+    combinação; técnicas e cores por tecido no produto; a grade no produto sai.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

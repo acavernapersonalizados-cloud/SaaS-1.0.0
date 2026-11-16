@@ -533,6 +533,7 @@ export function Products({
   // ─── Derived data ────────────────────────────────────────────────────────────
   const filteredMaterialsSearch = materials.filter(
     m =>
+      !m.variantOf &&
       !newProduct.materials?.some(pm => pm.materialId === m.id) &&
       (!onlyInStock || (Number(m.stockQuantity) || 0) > 0) &&
       (m.name || '').toLowerCase().includes(materialSearchTerm.toLowerCase()),

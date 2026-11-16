@@ -417,7 +417,10 @@ export function PurchaseList() {
       // Sem nada digitado ainda: preenche com a sugestão (último preço pago) no modo escolhido.
       price: f.touched ? f.price : mode === 'unit' ? f.estUnit : f.estUnit * f.qty * purchasePack,
     }));
-  const notInList = materials.filter(m => !items.some(i => i.status === 'pending' && i.materialId === m.id));
+  // 16/11: matéria-prima com grade e as combinações entram pelo Estoque, não pela Lista de Compras.
+  const notInList = materials.filter(
+    m => !m.grade && !m.variantOf && !items.some(i => i.status === 'pending' && i.materialId === m.id),
+  );
 
   return (
     <div className="space-y-6">

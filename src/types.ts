@@ -108,6 +108,19 @@ export interface Material {
   gradeProductId?: string;
   /** Correção de 14/11: pacote com saldo, mínimo e lotes em itens (o pacote é só o jeito de comprar). */
   stockByItem?: boolean;
+  /** 16/11/2026: grade da matéria-prima (ex.: Camiseta). Cada combinação é um item com `variantOf` = este id. */
+  grade?: MaterialGrade | null;
+  /** Item de uma combinação da grade: o id da matéria-prima e a chave "tecido|tamanho|cor". */
+  variantOf?: string;
+  variantKey?: string;
+}
+
+/** 16/11/2026: grade da matéria-prima. Custo por "tecido|tamanho", igual para todas as cores. */
+export interface MaterialGrade {
+  fabrics: string[];
+  sizes: string[];
+  colors: string[];
+  costs: Record<string, number>;
 }
 
 export interface ProductMaterial {
