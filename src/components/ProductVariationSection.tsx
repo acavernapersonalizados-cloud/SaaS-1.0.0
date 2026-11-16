@@ -3,6 +3,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Material, Product, ProductVariation, ProductVariationOption } from '../types';
 import { QuantityInput } from './QuantityInput';
 import { MaterialPicker } from './MaterialPicker';
+import { gradeMaterialOf } from '../lib/materialGrade';
 
 const BOX =
   'px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-neutral-900';
@@ -22,7 +23,8 @@ export function ProductVariationSection({
   inKit: boolean;
 }) {
   // Kit não escolhe variação; com grade, a escolha é a da grade.
-  if (newProduct.isKit || newProduct.grade) return null;
+  // Item 32: com a Camiseta com grade na receita, a escolha é a da grade (tecido, tamanho, cor e técnica).
+  if (newProduct.isKit || newProduct.grade || gradeMaterialOf(newProduct, materials)) return null;
   const fromJob = (Number(newProduct.jobCostUnit) || 0) > 0;
   const recipe = newProduct.materials ?? [];
 

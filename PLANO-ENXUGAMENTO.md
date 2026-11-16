@@ -1042,8 +1042,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     retirada (`parkingCost`, `fuelCost` na tabela do DTF, editáveis na Base de Custos). Somam ao arquivo e se dividem
     pelas estampas dele (2 m, 40 estampas: R$ 3,00 → R$ 3,41 por estampa), e pelos "Arquivos nesta retirada"
     (`dtfFilesPerTrip`, começa em 1). Gravado no item. 511 testes, lint, build.
-    **Entrega 2, depois:** receita do produto com a "Camiseta"; orçamento escolhe tecido, cor, tamanho e técnica e baixa a
-    combinação; técnicas e cores por tecido no produto; a grade no produto sai.
+    ✅ **Entrega 2, feita em 16/11/2026 (aprovada; não publicada; falta o teste na tela):** produto com a "Camiseta" com
+    grade na receita usa a grade dela (`withMaterialGrade`): a linha da Camiseta sai da conta e entra a combinação
+    escolhida (custo, baixa e separação trocam a Camiseta pela combinação, × a quantidade da receita). Técnicas ficam no
+    produto (`techniques`, com tecidos e cores aceitos, DTF por metro); no orçamento: tecido, tamanho, cor e técnica. A
+    grade no próprio produto saiu do cadastro (produto antigo com ela mostra aviso e "Tirar a grade antiga"). 518 testes,
+    lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em Dia.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

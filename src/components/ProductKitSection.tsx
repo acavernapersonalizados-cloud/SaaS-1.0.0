@@ -9,6 +9,7 @@ import { CostBase, Material, Product } from '../types';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { kitSnapshot, kitSnapshotDiffers, kitTotals } from '../lib/kit';
 import { hasVariation } from '../lib/variation';
+import { withMaterialGrade } from '../lib/materialGrade';
 import { Gift, Plus, RefreshCw, Trash2 } from 'lucide-react';
 
 type SetProduct = React.Dispatch<React.SetStateAction<Partial<Product>>>;
@@ -46,7 +47,9 @@ export function ProductKitSection({
   const items = newProduct.kitItems || [];
   // Só produtos comuns da loja: o próprio produto e outros kits não entram.
   // Item 30: o kit não escolhe variação, então produto com variação fica de fora.
-  const choices = products.filter(p => p.id !== editingId && !p.isKit && !hasVariation(p));
+  const choices = products.filter(
+    p => p.id !== editingId && !p.isKit && !hasVariation(withMaterialGrade(p, materials)),
+  );
 
   return (
     <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-3">

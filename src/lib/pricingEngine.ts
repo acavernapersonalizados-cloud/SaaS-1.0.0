@@ -14,6 +14,7 @@ import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../t
 import { applyWholesale } from './wholesale';
 import { dtfPieceCost, dtfTableOf } from './dtf';
 import { chosenTechnique, gradeTechniqueMinutes, gradeUnitCost, hasGrade } from './grade';
+import { withMaterialGrade } from './materialGrade';
 import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
@@ -265,6 +266,8 @@ export function calcProductCost(
   /** Item 30: opção escolhida no orçamento; sem ela, vale a mais cara. */
   variationOptionId?: string | null,
 ): ProductCostResult {
+  // Item 32: a Camiseta com grade na receita vira a grade do produto (a combinação entra no lugar dela).
+  product = withMaterialGrade(product, materials);
   // Etapa 8C, item 4: produto criado de trabalho de calculadora. O custo é só o do trabalho, que já inclui
   // materiais, mão de obra, embalagem e máquina; tempo, embalagem e materiais do produto são só informação
   // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
@@ -371,6 +374,8 @@ export function calcQuoteItem(
   wholesaleTiers: WholesaleTier[] = [],
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
+  // Item 32: tecido, tamanho, cor e técnica vêm da matéria-prima com grade da receita.
+  product = withMaterialGrade(product, materials);
 
   const productCost = calcProductCost(product, materials, costs, item.variationOptionId);
   const { laborCost } = productCost;

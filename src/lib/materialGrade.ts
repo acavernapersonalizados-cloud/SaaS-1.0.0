@@ -3,7 +3,7 @@
  * combinação vira um item interno (`variantOf` = a Camiseta), escondido das listas, com o próprio saldo e lotes: reserva,
  * baixa e separação continuam funcionando como em qualquer material. O custo é por tecido e tamanho.
  */
-import type { Material, MaterialGrade } from '../types';
+import type { Material, MaterialGrade, Product } from '../types';
 import { addToLots, stockFields } from './stockLots';
 import { gradeCostKey, gradeKey, splitGradeKey } from './grade';
 
@@ -101,4 +101,43 @@ export function materialGradeChanges(
     }
   }
   return { create, update };
+}
+
+/** A matéria-prima com grade que está na receita do produto (a primeira, se houver mais de uma). */
+export function gradeMaterialOf(product: Pick<Partial<Product>, 'materials'>, materials: Material[]) {
+  for (const pm of product.materials ?? []) {
+    const m = materials.find(x => x.id === pm.materialId);
+    if (m && hasMaterialGrade(m)) return m;
+  }
+  return undefined;
+}
+
+/**
+ * Item 32, entrega 2 (16/11/2026): produto com uma matéria-prima com grade na receita (ex.: Camiseta). A conta e o
+ * orçamento usam a grade dela: a linha da Camiseta sai da receita e entra a combinação escolhida (custo, baixa e
+ * separação), com as técnicas do produto. Produto com a grade antiga, no próprio produto, fica como está.
+ */
+export function withMaterialGrade<T extends Partial<Product>>(product: T, materials: Material[]): T {
+  if (product.grade?.fabrics?.length) return product;
+  const parent = gradeMaterialOf(product, materials);
+  if (!parent?.grade) return product;
+  const recipe = product.materials ?? [];
+  const line = recipe.find(pm => pm.materialId === parent.id);
+  const g = parent.grade;
+  return {
+    ...product,
+    materials: recipe.filter(pm => pm.materialId !== parent.id),
+    grade: {
+      fabrics: g.fabrics,
+      sizes: g.sizes,
+      colors: g.colors,
+      costs: g.costs,
+      pieces: variantsOf(materials, parent)
+        .filter(v => v.variantKey)
+        .map(v => ({ key: v.variantKey as string, materialId: v.id, active: true })),
+      techniques: product.techniques ?? [],
+      pieceQuantity: num(line?.quantity) || 1,
+      replacesMaterialId: parent.id,
+    },
+  };
 }

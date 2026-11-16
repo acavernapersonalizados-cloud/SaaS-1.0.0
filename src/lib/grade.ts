@@ -111,12 +111,14 @@ export function gradeUnitCost(grade: ProductGrade | null | undefined, materials:
   if (!grade) return 0;
   const technique = techniqueForCost(grade, materials, key);
   const extra = technique ? techniqueCost(technique, materials) : 0;
+  // Item 32: peças da matéria-prima por unidade do produto (a quantidade da Camiseta na receita).
+  const pieces = num(grade.pieceQuantity ?? 1);
   const { fabric, size } = splitGradeKey(key);
   if (key && inLists(grade, key)) {
     const stock = materials.find(m => m.id === gradePieceOf(grade, key)?.materialId);
-    return (num(stock?.unitCost) || num(grade.costs[gradeCostKey(fabric, size)])) + extra;
+    return (num(stock?.unitCost) || num(grade.costs[gradeCostKey(fabric, size)])) * pieces + extra;
   }
-  return Math.max(0, ...Object.values(grade.costs).map(num)) + extra;
+  return Math.max(0, ...Object.values(grade.costs).map(num)) * pieces + extra;
 }
 
 /** Campos do item do orçamento. Escolha incompleta: nada, e o orçamento pede para terminar. */
@@ -135,7 +137,14 @@ export function gradeItemFields(grade: ProductGrade, key?: string | null): Parti
     variationLabel: [fabric, size, color, technique?.name].filter(Boolean).join(' · '),
     variationValue: num(technique?.additionalValue),
     // Peça sem cadastro: dá para orçar, mas não há o que baixar.
-    ...(materialId ? { variationMaterialId: materialId, variationQuantity: 1 } : {}),
+    ...(materialId
+      ? {
+          variationMaterialId: materialId,
+          variationQuantity: num(grade.pieceQuantity ?? 1),
+          // Item 32: a combinação escolhida troca a Camiseta da receita na baixa e na separação.
+          ...(grade.replacesMaterialId ? { variationReplacesMaterialId: grade.replacesMaterialId } : {}),
+        }
+      : {}),
     ...(supplies.length > 0 ? { variationMaterials: supplies } : {}),
   };
 }

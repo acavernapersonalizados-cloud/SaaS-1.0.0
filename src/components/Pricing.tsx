@@ -12,6 +12,7 @@ import {
 } from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
 import { dtfTableOf } from '../lib/dtf';
+import { withMaterialGrade } from '../lib/materialGrade';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { quoteTotals, ShippingPaidBy } from '../lib/shipping';
@@ -97,7 +98,9 @@ export function Pricing() {
     manualUnitPrice,
   };
 
-  const selectedProduct = products.find(p => p.id === selectedProductId);
+  // Item 32: com a Camiseta com grade na receita, o orçamento pede tecido, tamanho, cor e técnica.
+  const selectedProductRaw = products.find(p => p.id === selectedProductId);
+  const selectedProduct = selectedProductRaw ? withMaterialGrade(selectedProductRaw, materials) : undefined;
 
   // AI state
   const [aiAnalysis, setAiAnalysis] = useState('');

@@ -193,6 +193,9 @@ export interface ProductGrade {
   pieces: ProductGradePiece[];
   /** Item 30 B2: com alguma cadastrada, o orçamento exige escolher. Sem o campo, a grade funciona como no B1. */
   techniques?: ProductGradeTechnique[];
+  /** Item 32: grade vinda da matéria-prima da receita. Quantas peças por unidade e o id da matéria-prima trocada. */
+  pieceQuantity?: number;
+  replacesMaterialId?: string;
 }
 
 export interface Product {
@@ -213,6 +216,8 @@ export interface Product {
   variation?: ProductVariation | null;
   /** Item 30 B1: a peça escolhida soma à receita, como a opção da variação. */
   grade?: ProductGrade | null;
+  /** Item 32 (16/11/2026): técnicas do produto quando a receita tem uma matéria-prima com grade (ex.: Camiseta). */
+  techniques?: ProductGradeTechnique[];
   manualPrice?: number | null; // Preço manual definido pelo usuário
   suggestedPrice?: number | null; // Preço sugerido calculado pelo sistema
   aiPriceAnalysis?: string | null; // Análise IA sobre o preço manual
