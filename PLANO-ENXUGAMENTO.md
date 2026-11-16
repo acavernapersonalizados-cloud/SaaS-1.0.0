@@ -1028,7 +1028,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     pacote, com lotes e mínimo) ou "O saldo já está em itens"; avisa se há reserva ativa; só grava ao salvar. Você
     converte um material por vez. 500 testes, lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em
     Dia.
-32. **Grade na matéria-prima** (pedido em 16/11/2026, aprovado; substitui a grade no produto do item 30). **Desfeito em 16/11/2026** a seu pedido (erro ao cadastrar o produto e o DTF não aparecia; publicado sem teste na tela): o site voltou ao dia 14. Para retomar, testar no emulador antes. Uma
+32. **Grade na matéria-prima** (pedido em 16/11/2026, aprovado; substitui a grade no produto do item 30). **Desfeito em 16/11/2026** a seu pedido (erro ao cadastrar o produto e o DTF não aparecia; publicado sem teste na tela): o site voltou ao dia 14. Para retomar, testar no emulador antes. Recuperação das camisetas apagadas: arquivo `Downloads/restaurar_camisetas_de_2026-11-03.json` (só as 11 camisetas da T&N do backup de 03/11, mesmos ids), para você restaurar em Backup e Restauração; saldos são os de 03/11. Uma
     matéria-prima "Camiseta" com tecidos, tamanhos e cores; saldo por combinação; no orçamento: tecido, cor, tamanho e
     técnica; DTF como já existe (metragem digitada, estampas no arquivo e na camiseta). As camisetas antigas você apaga e
     cadastra de novo (sem migração).
