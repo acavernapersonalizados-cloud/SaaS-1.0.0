@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-C0GmxK1W.js` (16/11/2026: item 32 completo, grade na matéria-prima com orçamento e baixa pela combinação, e a retirada do DTF, publicados sem teste na tela, a seu pedido; 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-pxvzvWep.js` (16/11/2026: **volta ao código do dia 14**, commit 3a55dfc, a seu pedido: saíram o item 32 e a retirada do DTF, que deram erro no cadastro do produto; o código deles segue no histórico do git, commits 360cf80, 23365cb e e72cb4f. Antes: 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1028,7 +1028,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     pacote, com lotes e mínimo) ou "O saldo já está em itens"; avisa se há reserva ativa; só grava ao salvar. Você
     converte um material por vez. 500 testes, lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em
     Dia.
-32. **Grade na matéria-prima** (pedido em 16/11/2026, aprovado; substitui a grade no produto do item 30). Uma
+32. **Grade na matéria-prima** (pedido em 16/11/2026, aprovado; substitui a grade no produto do item 30). **Desfeito em 16/11/2026** a seu pedido (erro ao cadastrar o produto e o DTF não aparecia; publicado sem teste na tela): o site voltou ao dia 14. Para retomar, testar no emulador antes. Uma
     matéria-prima "Camiseta" com tecidos, tamanhos e cores; saldo por combinação; no orçamento: tecido, cor, tamanho e
     técnica; DTF como já existe (metragem digitada, estampas no arquivo e na camiseta). As camisetas antigas você apaga e
     cadastra de novo (sem migração).
