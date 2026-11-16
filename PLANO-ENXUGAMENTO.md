@@ -1038,6 +1038,10 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     tem "Ver grade" com entrada e saída por combinação. Excluir apaga as combinações juntas. Custo mudado atualiza as
     combinações sem tocar no saldo. Fica fora da Lista de Compras. 508 testes, lint, build. **Emulador não testado:**
     porta 8080 ocupada pelo Beleza em Dia.
+    ✅ **Retirada do DTF, feita em 16/11/2026 (aprovada; não publicada):** zona azul R$ 6,50 + combustível R$ 10,00 por
+    retirada (`parkingCost`, `fuelCost` na tabela do DTF, editáveis na Base de Custos). Somam ao arquivo e se dividem
+    pelas estampas dele (2 m, 40 estampas: R$ 3,00 → R$ 3,41 por estampa), e pelos "Arquivos nesta retirada"
+    (`dtfFilesPerTrip`, começa em 1). Gravado no item. 511 testes, lint, build.
     **Entrega 2, depois:** receita do produto com a "Camiseta"; orçamento escolhe tecido, cor, tamanho e técnica e baixa a
     combinação; técnicas e cores por tecido no produto; a grade no produto sai.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento

@@ -659,7 +659,8 @@ export function CostBaseSettings() {
           <div>
             <h2 className="text-sm font-bold text-neutral-700">DTF terceirizado (preço do fornecedor)</h2>
             <p className="text-[10px] text-neutral-400">
-              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte. A retirada
+              (zona azul e combustível) soma ao arquivo e se divide pelas estampas dele.
               {!costs.dtfTable?.tiers?.length && ' Valores padrão: confira e salve para gravar os desta loja.'}
             </p>
           </div>
@@ -676,6 +677,25 @@ export function CostBaseSettings() {
                 onChange={e => setDtfTable(table => ({ ...table, halfMeter: Number(e.target.value) }))}
               />
             </label>
+            {(
+              [
+                ['parkingCost', 'Zona azul por retirada (R$)'],
+                ['fuelCost', 'Combustível por retirada (R$)'],
+              ] as const
+            ).map(([field, label]) => (
+              <label key={field} className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase text-neutral-400">{label}</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  aria-label={label}
+                  className="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                  value={dtfTable[field] ?? 0}
+                  onChange={e => setDtfTable(table => ({ ...table, [field]: Number(e.target.value) }))}
+                />
+              </label>
+            ))}
             {dtfTable.tiers.map((t, i) => (
               <React.Fragment key={i}>
                 <label className="space-y-1">

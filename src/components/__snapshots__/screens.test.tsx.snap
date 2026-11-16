@@ -1276,7 +1276,7 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
             <p
               class="text-[10px] text-neutral-400"
             >
-              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte. A retirada (zona azul e combustível) soma ao arquivo e se divide pelas estampas dele.
                Valores padrão: confira e salve para gravar os desta loja.
             </p>
           </div>
@@ -1298,6 +1298,40 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
                 step="0.01"
                 type="number"
                 value="30"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Zona azul por retirada (R$)
+              </span>
+              <input
+                aria-label="Zona azul por retirada (R$)"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="6.5"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Combustível por retirada (R$)
+              </span>
+              <input
+                aria-label="Combustível por retirada (R$)"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="10"
               />
             </label>
             <label
@@ -65708,7 +65742,7 @@ exports[`Verificar taxas com IA > mostra as sugestões com a fonte; "Aplicar" gr
             <p
               class="text-[10px] text-neutral-400"
             >
-              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte. A retirada (zona azul e combustível) soma ao arquivo e se divide pelas estampas dele.
                Valores padrão: confira e salve para gravar os desta loja.
             </p>
           </div>
@@ -65730,6 +65764,40 @@ exports[`Verificar taxas com IA > mostra as sugestões com a fonte; "Aplicar" gr
                 step="0.01"
                 type="number"
                 value="30"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Zona azul por retirada (R$)
+              </span>
+              <input
+                aria-label="Zona azul por retirada (R$)"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="6.5"
+              />
+            </label>
+            <label
+              class="space-y-1"
+            >
+              <span
+                class="block text-[10px] font-bold uppercase text-neutral-400"
+              >
+                Combustível por retirada (R$)
+              </span>
+              <input
+                aria-label="Combustível por retirada (R$)"
+                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                min="0"
+                step="0.01"
+                type="number"
+                value="10"
               />
             </label>
             <label

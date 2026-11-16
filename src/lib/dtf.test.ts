@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import type { CostBase, Material, Product, ProductGrade } from '../types';
 import { calcQuoteItem } from './pricingEngine';
 import { gradeKey } from './grade';
-import { DEFAULT_DTF_TABLE as table, dtfBilledMeters, dtfFileCost, dtfPieceCost, dtfTableOf } from './dtf';
+import {
+  DEFAULT_DTF_TABLE as table,
+  dtfBilledMeters,
+  dtfFileCost,
+  dtfPieceCost,
+  dtfTableOf,
+  dtfTripCost,
+} from './dtf';
 
 describe('Item 30 B3: metragem e faixas', () => {
   it('arredonda para cima: meio metro ou metro inteiro', () => {
@@ -23,18 +30,29 @@ describe('Item 30 B3: metragem e faixas', () => {
     expect(dtfFileCost(table, 5.5)).toBe(300);
     expect(dtfFileCost(table, 0.7)).toBe(60);
   });
-  it('por peça: arquivo ÷ estampas × estampas na peça', () => {
-    expect(dtfPieceCost(table, { meters: 2, prints: 40 })).toBe(3);
-    expect(dtfPieceCost(table, { meters: 2, prints: 40, printsPerPiece: 2 })).toBe(6);
+  it('por peça: (arquivo + retirada) ÷ estampas × estampas na peça', () => {
+    expect(dtfPieceCost(table, { meters: 2, prints: 40 })).toBeCloseTo(136.5 / 40, 10);
+    expect(dtfPieceCost(table, { meters: 2, prints: 40, printsPerPiece: 2 })).toBeCloseTo((136.5 / 40) * 2, 10);
+  });
+  it('retirada: zona azul R$ 6,50 + combustível R$ 10,00, dividida pelos arquivos da mesma ida', () => {
+    expect(dtfTripCost(table)).toBe(16.5);
+    expect(dtfTripCost(table, 3)).toBeCloseTo(5.5, 10);
+    expect(dtfTripCost(table, 0)).toBe(16.5);
+    expect(dtfPieceCost(table, { meters: 2, prints: 40, filesPerTrip: 3 })).toBeCloseTo(125.5 / 40, 10);
+  });
+  it('a retirada pesa centavos por estampa, não reais por camiseta', () => {
+    const semRetirada = 120 / 40;
+    expect(dtfPieceCost(table, { meters: 2, prints: 40 })! - semRetirada).toBeCloseTo(0.4125, 10);
   });
   it('sem metragem ou sem estampas: não há conta', () => {
     expect(dtfPieceCost(table, { meters: 2, prints: 0 })).toBeNull();
     expect(dtfPieceCost(table, { meters: 0, prints: 10 })).toBeNull();
     expect(dtfPieceCost(table, {})).toBeNull();
   });
-  it('a tabela salva da loja vale sobre a padrão', () => {
+  it('a tabela salva da loja vale sobre a padrão; a retirada que faltar vem do padrão', () => {
     const own = { halfMeter: 35, tiers: [{ minMeters: 1, pricePerMeter: 70 }] };
-    expect(dtfTableOf({ dtfTable: own })).toBe(own);
+    expect(dtfTableOf({ dtfTable: own })).toEqual({ ...own, parkingCost: 6.5, fuelCost: 10 });
+    expect(dtfTableOf({ dtfTable: { ...own, parkingCost: 8, fuelCost: 0 } })).toMatchObject({ parkingCost: 8, fuelCost: 0 });
     expect(dtfTableOf(null)).toBe(table);
     expect(dtfTableOf({ dtfTable: { halfMeter: 1, tiers: [] } })).toBe(table);
   });
@@ -73,22 +91,29 @@ describe('Item 30 B3: no orçamento', () => {
     expect(item('dtf').variationMissing).toBe(true);
     expect(item('dtf', { dtfMeters: 2 }).variationMissing).toBe(true);
   });
-  it('custo soma à peça e leva o markup: (20 + 3) × 2 = R$ 46', () => {
+  it('custo soma à peça e leva o markup: (20 + 3,4125) × 2', () => {
     const r = item('dtf', { dtfMeters: 2, dtfPrints: 40, dtfPrintsPerPiece: 1 });
     expect(r.variationMissing).toBe(false);
-    expect(r.materialCost).toBe(23);
-    expect(r.productionCost).toBe(23);
-    expect(r.unitPrice).toBeCloseTo(46, 10);
+    expect(r.materialCost).toBeCloseTo(23.4125, 10);
+    expect(r.productionCost).toBeCloseTo(23.4125, 10);
+    expect(r.unitPrice).toBeCloseTo(46.825, 10);
   });
   it('frente e costas dobra o custo do DTF', () => {
-    expect(item('dtf', { dtfMeters: 2, dtfPrints: 40, dtfPrintsPerPiece: 2 }).productionCost).toBe(26);
+    expect(item('dtf', { dtfMeters: 2, dtfPrints: 40, dtfPrintsPerPiece: 2 }).productionCost).toBeCloseTo(26.825, 10);
+  });
+  it('três arquivos na mesma retirada: cada um leva um terço', () => {
+    expect(item('dtf', { dtfMeters: 2, dtfPrints: 40, dtfFilesPerTrip: 3 }).productionCost).toBeCloseTo(
+      20 + 125.5 / 40,
+      10,
+    );
   });
   it('o item grava a conta: a tabela mudar depois não muda a venda', () => {
     expect(item('dtf', { dtfMeters: 2, dtfPrints: 40 }).variationFields).toMatchObject({
       dtfMeters: 2,
       dtfPrints: 40,
       dtfPrintsPerPiece: 1,
-      dtfCostUnit: 3,
+      dtfFilesPerTrip: 1,
+      dtfCostUnit: 136.5 / 40,
     });
   });
   it('outra técnica ignora os campos do DTF', () => {

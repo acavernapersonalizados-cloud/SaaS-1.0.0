@@ -48,6 +48,9 @@ export interface CostBase {
 export interface DtfTable {
   halfMeter: number;
   tiers: Array<{ minMeters: number; pricePerMeter: number }>;
+  /** 16/11/2026: custo de buscar o DTF (zona azul e combustível), por retirada. Sem eles, vale o padrão de lib/dtf.ts. */
+  parkingCost?: number;
+  fuelCost?: number;
 }
 
 /** Faixa de atacado: a partir de minQty unidades no item, desconto de discountPct% sobre o varejo. */
@@ -439,6 +442,8 @@ export interface QuoteItem {
   dtfMeters?: number;
   dtfPrints?: number;
   dtfPrintsPerPiece?: number;
+  /** 16/11: arquivos buscados na mesma retirada (a zona azul e o combustível se dividem entre eles). */
+  dtfFilesPerTrip?: number;
   /** Custo do DTF por peça (R$), já somado ao custo do item. */
   dtfCostUnit?: number;
 }

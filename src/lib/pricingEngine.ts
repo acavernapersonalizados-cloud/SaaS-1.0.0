@@ -377,8 +377,14 @@ export function calcQuoteItem(
   // Item 30 B3: técnica por metro (DTF): o custo por peça soma ao custo e leva o markup, como um insumo.
   const perMeter = !!(product.grade && chosenTechnique(product.grade, item.variationOptionId)?.perMeter);
   const printsPerPiece = Number(item.dtfPrintsPerPiece) || 1;
+  const filesPerTrip = Math.max(1, Math.floor(Number(item.dtfFilesPerTrip) || 1));
   const dtfCost = perMeter
-    ? dtfPieceCost(dtfTableOf(costs), { meters: item.dtfMeters, prints: item.dtfPrints, printsPerPiece })
+    ? dtfPieceCost(dtfTableOf(costs), {
+        meters: item.dtfMeters,
+        prints: item.dtfPrints,
+        printsPerPiece,
+        filesPerTrip,
+      })
     : null;
   const materialCost = productCost.materialCost + (dtfCost ?? 0);
   const totalProductionCost = productCost.totalCost + (dtfCost ?? 0);
@@ -446,6 +452,7 @@ export function calcQuoteItem(
           dtfMeters: Number(item.dtfMeters),
           dtfPrints: Number(item.dtfPrints),
           dtfPrintsPerPiece: printsPerPiece,
+          dtfFilesPerTrip: filesPerTrip,
           dtfCostUnit: dtfCost,
         }
       : {}),

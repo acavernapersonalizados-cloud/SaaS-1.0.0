@@ -45,7 +45,7 @@ import { QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
 import { QuoteClientCard, QuoteItemsCard, QuoteSummary } from './QuoteForm';
 import { AddItemModal, GeneratedQuoteModal } from './QuoteModals';
 
-const EMPTY_DTF = { dtfMeters: 0, dtfPrints: 0, dtfPrintsPerPiece: 1 };
+const EMPTY_DTF = { dtfMeters: 0, dtfPrints: 0, dtfPrintsPerPiece: 1, dtfFilesPerTrip: 1 };
 
 export function Pricing() {
   const { activeStore } = useStore();
@@ -290,6 +290,7 @@ export function Pricing() {
       dtfMeters: item.dtfMeters ?? 0,
       dtfPrints: item.dtfPrints ?? 0,
       dtfPrintsPerPiece: item.dtfPrintsPerPiece ?? 1,
+      dtfFilesPerTrip: item.dtfFilesPerTrip ?? 1,
     });
     setCustomMarkup(item.customMarkup ?? null);
     setManualUnitPrice(item.manualUnitPrice ?? null);
