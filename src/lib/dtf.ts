@@ -13,31 +13,13 @@ export const DEFAULT_DTF_TABLE: DtfTable = {
     { minMeters: 51, pricePerMeter: 45 },
     { minMeters: 101, pricePerMeter: 38 },
   ],
-  // 16/11/2026: zona azul e combustível de cada ida ao fornecedor.
-  parkingCost: 6.5,
-  fuelCost: 10,
 };
 
 /** Limite do arquivo no fornecedor (250 cm): acima disso, é preciso separar. Só avisa; a conta não muda. */
 export const DTF_FILE_LIMIT_METERS = 2.5;
 
-/** Tabela salva da loja; a retirada que ela ainda não tiver vem do padrão. */
-export function dtfTableOf(costs: Pick<CostBase, 'dtfTable'> | null | undefined): DtfTable {
-  const saved = costs?.dtfTable;
-  if (!saved?.tiers?.length) return DEFAULT_DTF_TABLE;
-  return {
-    ...saved,
-    parkingCost: saved.parkingCost ?? DEFAULT_DTF_TABLE.parkingCost,
-    fuelCost: saved.fuelCost ?? DEFAULT_DTF_TABLE.fuelCost,
-  };
-}
-
-/**
- * Custo da retirada (zona azul + combustível) que cabe a um arquivo. Buscando vários arquivos na mesma ida, divide
- * entre eles: a retirada é da viagem, não da camiseta.
- */
-export const dtfTripCost = (table: DtfTable, filesPerTrip?: number | null) =>
-  ((Number(table.parkingCost) || 0) + (Number(table.fuelCost) || 0)) / Math.max(1, Math.floor(Number(filesPerTrip) || 1));
+export const dtfTableOf = (costs: Pick<CostBase, 'dtfTable'> | null | undefined): DtfTable =>
+  costs?.dtfTable?.tiers?.length ? costs.dtfTable : DEFAULT_DTF_TABLE;
 
 /** O fornecedor vende meio metro ou metros inteiros: arredonda para cima, nunca abaixo do que se paga. */
 export function dtfBilledMeters(meters: number) {
@@ -58,17 +40,10 @@ export function dtfFileCost(table: DtfTable, meters: number) {
 /** Custo por peça. Sem metragem ou sem estampas não há conta: null, e o orçamento trava até preencher. */
 export function dtfPieceCost(
   table: DtfTable,
-  input: {
-    meters?: number | null;
-    prints?: number | null;
-    printsPerPiece?: number | null;
-    filesPerTrip?: number | null;
-  },
+  input: { meters?: number | null; prints?: number | null; printsPerPiece?: number | null },
 ) {
   const prints = Number(input.prints) || 0;
   const meters = Number(input.meters) || 0;
   if (meters <= 0 || prints <= 0) return null;
-  // A retirada soma ao arquivo e se divide pelas estampas dele: pesa centavos por estampa, não reais por camiseta.
-  const file = dtfFileCost(table, meters) + dtfTripCost(table, input.filesPerTrip);
-  return (file / prints) * (Number(input.printsPerPiece) || 1);
+  return (dtfFileCost(table, meters) / prints) * (Number(input.printsPerPiece) || 1);
 }

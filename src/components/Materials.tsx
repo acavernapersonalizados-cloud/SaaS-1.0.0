@@ -10,7 +10,6 @@ import {
   where,
   updateDoc,
   getDocs,
-  writeBatch,
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material, Supplier } from '../types';
@@ -27,16 +26,6 @@ import {
   stockByItem,
 } from '../lib/packages';
 import { packageSize } from '../lib/utils';
-import {
-  gradeKeysOf,
-  gradeReferenceCost,
-  gradeStockTotal,
-  hasMaterialGrade,
-  materialGradeChanges,
-  materialGradeMissingCosts,
-  variantsOf,
-} from '../lib/materialGrade';
-import { MaterialGradeSection } from './MaterialGradeSection';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -155,86 +144,11 @@ export function Materials() {
     return () => unsubscribe();
   }, [activeStore]);
 
-  // 16/11/2026: matéria-prima com grade. O preço vem do custo por tecido e tamanho; cada combinação é um item interno
-  // (escondido das listas) com o próprio saldo, criado ou atualizado junto, numa gravação só. O saldo não é tocado.
-  const saveGradeMaterial = async () => {
-    if (!activeStore || !newMaterial.grade) return;
-    const grade = newMaterial.grade;
-    const name = (newMaterial.name || '').trim();
-    if (!name || !hasMaterialGrade(newMaterial)) {
-      addToast('Preencha o nome e os tecidos, tamanhos e cores da grade.', 'error');
-      return;
-    }
-    const missing = materialGradeMissingCosts(grade);
-    if (missing.length > 0) {
-      addToast(`Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`, 'error');
-      return;
-    }
-    if (gradeKeysOf(grade).length > 400) {
-      addToast('Grade grande demais para salvar de uma vez: no máximo 400 combinações.', 'error');
-      return;
-    }
-    const now = new Date().toISOString();
-    const ref = editingMaterial ? doc(db, 'materials', editingMaterial.id) : doc(collection(db, 'materials'));
-    const reference = gradeReferenceCost(grade);
-    const parentData = {
-      name,
-      unit: 'un',
-      purchasePrice: reference,
-      purchaseQuantity: 1,
-      unitCost: reference,
-      isPackage: false,
-      packageQuantity: 1,
-      supplierId: newMaterial.supplierId || null,
-      categoryIds: newMaterial.categoryIds || [],
-      storeId: activeStore.id,
-      grade,
-      stockByItem: false,
-      ...stockFields([]),
-      minStockQuantity: 0,
-    };
-    const changes = materialGradeChanges({ ...parentData, id: ref.id }, grade, variantsOf(materials, { id: ref.id }), now);
-    try {
-      const batch = writeBatch(db);
-      if (editingMaterial) batch.update(ref, { ...parentData, updatedAt: now });
-      else batch.set(ref, { ...parentData, createdAt: now });
-      changes.create.forEach(c => batch.set(doc(db, 'materials', c.id), c.data));
-      changes.update.forEach(u => batch.update(doc(db, 'materials', u.id), u.data));
-      await batch.commit();
-      setNewMaterial({
-        name: '',
-        unit: 'un',
-        purchasePrice: 0,
-        purchaseQuantity: 0,
-        isPackage: false,
-        packageQuantity: 1,
-        supplierId: '',
-        categoryIds: [],
-        stockQuantity: 0,
-        minStockQuantity: 0,
-      });
-      setEditingMaterial(null);
-      setPriceMode(null);
-      setIsModalOpen(false);
-      addToast(
-        `${editingMaterial ? 'Material atualizado' : 'Material cadastrado'}: ${gradeKeysOf(grade).length} combinação(ões). ` +
-          'Lance o saldo no Estoque, em "Ver grade".',
-        'success',
-      );
-    } catch (error) {
-      handleFirestoreError(error, editingMaterial ? OperationType.UPDATE : OperationType.CREATE, 'materials');
-    }
-  };
-
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
     const isActuallyPackage = isPackageMaterial(newMaterial);
     if (!activeStore) {
       addToast('Selecione uma loja antes de cadastrar materiais.', 'error');
-      return;
-    }
-    if (newMaterial.grade) {
-      await saveGradeMaterial();
       return;
     }
     if (!priceMode) {
@@ -352,7 +266,6 @@ export function Materials() {
       stockQuantity: material.stockQuantity || 0,
       minStockQuantity: material.minStockQuantity || 0,
       stockByItem: material.stockByItem ?? false,
-      grade: material.grade ?? null,
     });
     setPriceMode('total');
     setIsModalOpen(true);
@@ -408,8 +321,6 @@ export function Materials() {
   const gradePieceCount = materials.filter(m => m.gradeProductId).length;
   const filteredMaterials = materials
     .filter(m => showGradePieces || !m.gradeProductId)
-    // 16/11: as combinações da grade aparecem dentro da matéria-prima, no Estoque.
-    .filter(m => !m.variantOf)
     .filter(
       m =>
         (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -468,16 +379,7 @@ export function Materials() {
         return;
       }
 
-      // 16/11: matéria-prima com grade sai junto com os itens das combinações.
-      const variants = materials.filter(m => m.variantOf === materialToDelete);
-      if (variants.length > 0) {
-        const batch = writeBatch(db);
-        batch.delete(doc(db, 'materials', materialToDelete));
-        variants.forEach(v => batch.delete(doc(db, 'materials', v.id)));
-        await batch.commit();
-      } else {
-        await deleteDoc(doc(db, 'materials', materialToDelete));
-      }
+      await deleteDoc(doc(db, 'materials', materialToDelete));
       addToast('Material excluído com sucesso!', 'success');
       setMaterialToDelete(null);
     } catch (error) {
@@ -625,9 +527,7 @@ export function Materials() {
                     </span>
                   </td>
                   <td className="py-4 text-sm font-bold text-neutral-900">
-                    {hasMaterialGrade(material)
-                      ? `${formatQuantity(gradeStockTotal(materials, material.id))} un · grade`
-                      : packageStockText(material)}
+                    {packageStockText(material)}
                     {isLowStock(material) && (
                       <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                         BAIXO
@@ -733,16 +633,6 @@ export function Materials() {
                 </div>
               </div>
 
-              <MaterialGradeSection
-                key={editingMaterial?.id ?? 'novo'}
-                grade={newMaterial.grade}
-                onChange={grade => setNewMaterial({ ...newMaterial, grade })}
-                canEnable={!editingMaterial || (Number(editingMaterial.stockQuantity) || 0) === 0}
-                locked={!!editingMaterial?.grade}
-              />
-
-              {!newMaterial.grade && (
-                <>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-neutral-700">
@@ -993,9 +883,6 @@ export function Materials() {
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none"
                   />
                 </div>
-              )}
-
-                </>
               )}
 
               <div className="sticky -bottom-8 -mx-8 -mb-8 px-8 pb-8 pt-4 bg-white border-t border-neutral-100">

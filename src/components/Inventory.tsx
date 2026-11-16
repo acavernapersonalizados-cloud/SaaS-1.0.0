@@ -4,7 +4,6 @@ import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Material } from '../types';
 import { cn, formatCurrency, isLowStock, packageSize } from '../lib/utils';
 import { packageStockText, stockByItem } from '../lib/packages';
-import { gradeStockTotal, hasMaterialGrade, variantLabel, variantsOf } from '../lib/materialGrade';
 import {
   addToLots,
   changeLotExpiry,
@@ -97,11 +96,6 @@ export function Inventory() {
   const updateStock = async (id: string, delta: number, expiresAt: string | null = null) => {
     const material = materials.find(m => m.id === id);
     if (!material) return false;
-    // 16/11: a matéria-prima com grade não tem saldo próprio; o saldo é de cada combinação.
-    if (hasMaterialGrade(material)) {
-      addToast('Use "Ver grade" e lance na combinação (tecido, tamanho e cor).', 'error');
-      return false;
-    }
 
     try {
       // Transação: evita perda de atualização quando dois usuários mexem ao
@@ -275,14 +269,7 @@ export function Inventory() {
     }
   };
 
-  // 16/11: as combinações da grade ficam dentro da matéria-prima ("Ver grade").
-  const [openGrades, setOpenGrades] = useState<string[]>([]);
-  const filteredMaterials = materials.filter(
-    m => !m.variantOf && (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-  const rows = filteredMaterials.flatMap(m =>
-    hasMaterialGrade(m) && openGrades.includes(m.id) ? [m, ...variantsOf(materials, m)] : [m],
-  );
+  const filteredMaterials = materials.filter(m => (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
   const today = todayISO();
   const warnDays = expiryWarningDaysOf(costs);
@@ -423,22 +410,14 @@ export function Inventory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
-              {rows.map(material => {
+              {filteredMaterials.map(material => {
                 const lots = consumptionOrder(materialLots(material, today), today, true);
                 return (
                   <React.Fragment key={material.id}>
                     <tr className="group hover:bg-neutral-50 transition-colors">
-                      <td className="py-4 font-bold text-neutral-900">
-                        {material.variantOf ? (
-                          <span className="pl-3 text-sm font-medium text-neutral-700">↳ {variantLabel(material)}</span>
-                        ) : (
-                          material.name
-                        )}
-                      </td>
+                      <td className="py-4 font-bold text-neutral-900">{material.name}</td>
                       <td className="py-4 text-sm font-bold text-neutral-900">
-                        {hasMaterialGrade(material)
-                          ? `${formatQuantity(gradeStockTotal(materials, material.id))} un no total`
-                          : packageStockText(material)}
+                        {packageStockText(material)}
                         {isLowStock(material) && (
                           <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">
                             BAIXO
@@ -497,48 +476,28 @@ export function Inventory() {
                           </ul>
                         )}
                         {/* Abaixo do saldo (e não nas ações) para aparecer no celular sem rolar a tabela. */}
-                        {hasMaterialGrade(material) ? (
-                          <button
-                            type="button"
-                            aria-expanded={openGrades.includes(material.id)}
-                            onClick={() =>
-                              setOpenGrades(list =>
-                                list.includes(material.id)
-                                  ? list.filter(id => id !== material.id)
-                                  : [...list, material.id],
-                              )
-                            }
-                            className="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
-                          >
-                            {openGrades.includes(material.id) ? 'Esconder grade' : 'Ver grade'} (
-                            {variantsOf(materials, material).length})
-                          </button>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEntryFor(entryFor === material.id ? null : material.id);
-                                setEntryQty('');
-                                setEntryDate('');
-                              }}
-                              className="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
-                            >
-                              Entrada
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setExitFor(exitFor === material.id ? null : material.id);
-                                setExitQty('');
-                                setExitReason('uso');
-                              }}
-                              className="mt-1 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
-                            >
-                              Saída
-                            </button>
-                          </>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEntryFor(entryFor === material.id ? null : material.id);
+                            setEntryQty('');
+                            setEntryDate('');
+                          }}
+                          className="mt-2 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
+                        >
+                          Entrada
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExitFor(exitFor === material.id ? null : material.id);
+                            setExitQty('');
+                            setExitReason('uso');
+                          }}
+                          className="mt-1 block px-3 py-1.5 text-xs font-bold text-neutral-700 border border-neutral-200 hover:bg-neutral-100 rounded-lg transition-all"
+                        >
+                          Saída
+                        </button>
                       </td>
                       <td className="py-4 text-sm text-neutral-500">
                         {Number(material.minStockQuantity) > 0 ? `${material.minStockQuantity} ${material.unit}` : '—'}

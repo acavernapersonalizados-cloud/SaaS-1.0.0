@@ -48,9 +48,6 @@ export interface CostBase {
 export interface DtfTable {
   halfMeter: number;
   tiers: Array<{ minMeters: number; pricePerMeter: number }>;
-  /** 16/11/2026: custo de buscar o DTF (zona azul e combustível), por retirada. Sem eles, vale o padrão de lib/dtf.ts. */
-  parkingCost?: number;
-  fuelCost?: number;
 }
 
 /** Faixa de atacado: a partir de minQty unidades no item, desconto de discountPct% sobre o varejo. */
@@ -111,19 +108,6 @@ export interface Material {
   gradeProductId?: string;
   /** Correção de 14/11: pacote com saldo, mínimo e lotes em itens (o pacote é só o jeito de comprar). */
   stockByItem?: boolean;
-  /** 16/11/2026: grade da matéria-prima (ex.: Camiseta). Cada combinação é um item com `variantOf` = este id. */
-  grade?: MaterialGrade | null;
-  /** Item de uma combinação da grade: o id da matéria-prima e a chave "tecido|tamanho|cor". */
-  variantOf?: string;
-  variantKey?: string;
-}
-
-/** 16/11/2026: grade da matéria-prima. Custo por "tecido|tamanho", igual para todas as cores. */
-export interface MaterialGrade {
-  fabrics: string[];
-  sizes: string[];
-  colors: string[];
-  costs: Record<string, number>;
 }
 
 export interface ProductMaterial {
@@ -193,9 +177,6 @@ export interface ProductGrade {
   pieces: ProductGradePiece[];
   /** Item 30 B2: com alguma cadastrada, o orçamento exige escolher. Sem o campo, a grade funciona como no B1. */
   techniques?: ProductGradeTechnique[];
-  /** Item 32: grade vinda da matéria-prima da receita. Quantas peças por unidade e o id da matéria-prima trocada. */
-  pieceQuantity?: number;
-  replacesMaterialId?: string;
 }
 
 export interface Product {
@@ -216,8 +197,6 @@ export interface Product {
   variation?: ProductVariation | null;
   /** Item 30 B1: a peça escolhida soma à receita, como a opção da variação. */
   grade?: ProductGrade | null;
-  /** Item 32 (16/11/2026): técnicas do produto quando a receita tem uma matéria-prima com grade (ex.: Camiseta). */
-  techniques?: ProductGradeTechnique[];
   manualPrice?: number | null; // Preço manual definido pelo usuário
   suggestedPrice?: number | null; // Preço sugerido calculado pelo sistema
   aiPriceAnalysis?: string | null; // Análise IA sobre o preço manual
@@ -447,8 +426,6 @@ export interface QuoteItem {
   dtfMeters?: number;
   dtfPrints?: number;
   dtfPrintsPerPiece?: number;
-  /** 16/11: arquivos buscados na mesma retirada (a zona azul e o combustível se dividem entre eles). */
-  dtfFilesPerTrip?: number;
   /** Custo do DTF por peça (R$), já somado ao custo do item. */
   dtfCostUnit?: number;
 }

@@ -1276,7 +1276,7 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
             <p
               class="text-[10px] text-neutral-400"
             >
-              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte. A retirada (zona azul e combustível) soma ao arquivo e se divide pelas estampas dele.
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
                Valores padrão: confira e salve para gravar os desta loja.
             </p>
           </div>
@@ -1298,40 +1298,6 @@ exports[`Base de Custos: faixas de atacado > mostra as faixas padrão e grava as
                 step="0.01"
                 type="number"
                 value="30"
-              />
-            </label>
-            <label
-              class="space-y-1"
-            >
-              <span
-                class="block text-[10px] font-bold uppercase text-neutral-400"
-              >
-                Zona azul por retirada (R$)
-              </span>
-              <input
-                aria-label="Zona azul por retirada (R$)"
-                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
-                min="0"
-                step="0.01"
-                type="number"
-                value="6.5"
-              />
-            </label>
-            <label
-              class="space-y-1"
-            >
-              <span
-                class="block text-[10px] font-bold uppercase text-neutral-400"
-              >
-                Combustível por retirada (R$)
-              </span>
-              <input
-                aria-label="Combustível por retirada (R$)"
-                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
-                min="0"
-                step="0.01"
-                type="number"
-                value="10"
               />
             </label>
             <label
@@ -23849,23 +23815,6 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
               </div>
             </div>
             <div
-              class="space-y-3"
-            >
-              <label
-                class="flex items-center gap-2"
-              >
-                <input
-                  class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                  type="checkbox"
-                />
-                <span
-                  class="text-sm font-bold text-neutral-700"
-                >
-                  Tem grade (tecido, tamanho e cor)?
-                </span>
-              </label>
-            </div>
-            <div
               class="grid grid-cols-2 gap-4"
             >
               <div
@@ -24879,23 +24828,6 @@ exports[`Matéria-prima: preço por unidade ou valor total pago > novo: sem esco
                   </div>
                 </div>
               </div>
-            </div>
-            <div
-              class="space-y-3"
-            >
-              <label
-                class="flex items-center gap-2"
-              >
-                <input
-                  class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                  type="checkbox"
-                />
-                <span
-                  class="text-sm font-bold text-neutral-700"
-                >
-                  Tem grade (tecido, tamanho e cor)?
-                </span>
-              </label>
             </div>
             <div
               class="grid grid-cols-2 gap-4"
@@ -40331,6 +40263,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 class="space-y-3 pt-2 border-t border-neutral-100"
               >
                 <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
                   class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
                 >
                   Acabamentos (opcional)
@@ -42097,6 +42046,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                   </svg>
                    Adicionar opção
                 </button>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
               </div>
               <div
                 class="space-y-3 pt-2 border-t border-neutral-100"
@@ -44363,6 +44329,23 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                 class="space-y-3 pt-2 border-t border-neutral-100"
               >
                 <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
                   class="text-xs font-bold text-neutral-700 uppercase tracking-wider"
                 >
                   Acabamentos (opcional)
@@ -46405,6 +46388,23 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                   </svg>
                    Adicionar opção
                 </button>
+              </div>
+              <div
+                class="space-y-3 pt-2 border-t border-neutral-100"
+              >
+                <label
+                  class="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    class="w-5 h-5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                    type="checkbox"
+                  />
+                  <span
+                    class="text-sm font-bold text-neutral-700"
+                  >
+                    Este produto tem grade (tecido, tamanho e cor)?
+                  </span>
+                </label>
               </div>
               <div
                 class="space-y-3 pt-2 border-t border-neutral-100"
@@ -65674,7 +65674,7 @@ exports[`Verificar taxas com IA > mostra as sugestões com a fonte; "Aplicar" gr
             <p
               class="text-[10px] text-neutral-400"
             >
-              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte. A retirada (zona azul e combustível) soma ao arquivo e se divide pelas estampas dele.
+              Usado nas técnicas por metro. A metragem sobe para o meio metro ou o metro inteiro seguinte.
                Valores padrão: confira e salve para gravar os desta loja.
             </p>
           </div>
@@ -65696,40 +65696,6 @@ exports[`Verificar taxas com IA > mostra as sugestões com a fonte; "Aplicar" gr
                 step="0.01"
                 type="number"
                 value="30"
-              />
-            </label>
-            <label
-              class="space-y-1"
-            >
-              <span
-                class="block text-[10px] font-bold uppercase text-neutral-400"
-              >
-                Zona azul por retirada (R$)
-              </span>
-              <input
-                aria-label="Zona azul por retirada (R$)"
-                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
-                min="0"
-                step="0.01"
-                type="number"
-                value="6.5"
-              />
-            </label>
-            <label
-              class="space-y-1"
-            >
-              <span
-                class="block text-[10px] font-bold uppercase text-neutral-400"
-              >
-                Combustível por retirada (R$)
-              </span>
-              <input
-                aria-label="Combustível por retirada (R$)"
-                class="w-full px-2 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-neutral-900"
-                min="0"
-                step="0.01"
-                type="number"
-                value="10"
               />
             </label>
             <label

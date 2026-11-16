@@ -9,14 +9,14 @@ import { feeLabel } from '../lib/quoteFormat';
 import { formatQuantity } from '../lib/quantity';
 import { hasVariation } from '../lib/variation';
 import { gradeKey, gradePieceOf, hasGrade, splitGradeKey, techniquesFor } from '../lib/grade';
-import { dtfBilledMeters, dtfFileCost, dtfPieceCost, dtfTripCost, DTF_FILE_LIMIT_METERS } from '../lib/dtf';
+import { dtfBilledMeters, dtfFileCost, dtfPieceCost, DTF_FILE_LIMIT_METERS } from '../lib/dtf';
 import { QuantityInput } from './QuantityInput';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
 /** O gerador de PDF (jsPDF, ~400 KB) só é baixado quando um PDF é pedido. */
 const loadPdf = () => import('../lib/pdf');
 
-type DtfDraft = { dtfMeters: number; dtfPrints: number; dtfPrintsPerPiece: number; dtfFilesPerTrip: number };
+type DtfDraft = { dtfMeters: number; dtfPrints: number; dtfPrintsPerPiece: number };
 
 type ItemDraft = Partial<DtfDraft> & {
   productId: string;
@@ -65,7 +65,6 @@ function GradePicker({
     meters: dtf.dtfMeters,
     prints: dtf.dtfPrints,
     printsPerPiece: dtf.dtfPrintsPerPiece,
-    filesPerTrip: dtf.dtfFilesPerTrip,
   });
   return (
     <div className="space-y-2">
@@ -154,26 +153,11 @@ function GradePicker({
                 className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
               />
             </div>
-            <div className="space-y-2 min-w-0">
-              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider ml-1">
-                Arquivos nesta retirada
-              </label>
-              <input
-                type="number"
-                min="1"
-                aria-label="Arquivos nesta retirada"
-                value={dtf.dtfFilesPerTrip || ''}
-                onChange={e => setDtf({ ...dtf, dtfFilesPerTrip: Number(e.target.value) })}
-                className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
-              />
-            </div>
           </div>
           {pieceCost !== null && (
             <p className="text-xs font-bold text-emerald-700 ml-1">
               Fornecedor: {formatQuantity(dtfBilledMeters(dtf.dtfMeters))} m ={' '}
-              {formatCurrency(dtfFileCost(dtfTable, dtf.dtfMeters))} + retirada{' '}
-              {formatCurrency(dtfTripCost(dtfTable, dtf.dtfFilesPerTrip))} · custo do DTF {formatCurrency(pieceCost)} por
-              peça
+              {formatCurrency(dtfFileCost(dtfTable, dtf.dtfMeters))} · custo do DTF {formatCurrency(pieceCost)} por peça
             </p>
           )}
           {dtf.dtfMeters > DTF_FILE_LIMIT_METERS && (

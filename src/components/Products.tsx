@@ -24,7 +24,6 @@ import {
   markupOf,
 } from '../lib/pricingEngine';
 import { JOB_COLLECTIONS, unlinkProductFromJob } from '../lib/jobProduct';
-import { withMaterialGrade } from '../lib/materialGrade';
 import { catalogSyncFailureMessage, nextCatalogPrice } from '../lib/catalog';
 import { isAppOutdated } from '../lib/appUpdate';
 import { useStore } from '../contexts/StoreContext';
@@ -40,7 +39,7 @@ import { ProductFormModal } from './ProductFormModal';
 import { ProductCatalogSection, ProductPricingSection } from './ProductFormSections';
 import { ProductKitSection } from './ProductKitSection';
 import { ProductVariationSection } from './ProductVariationSection';
-import { ProductTechniquesSection } from './ProductTechniquesSection';
+import { ProductGradeSection } from './ProductGradeSection';
 import { cleanVariation } from '../lib/variation';
 import {
   cleanGradeTechniques,
@@ -245,22 +244,9 @@ export function Products({
         addToast('Preencha tecidos, tamanhos e cores da grade, ou desmarque a grade.', 'error');
         return;
       }
-      // Item 32: técnicas do produto que usa a Camiseta com grade; cada tecido e cor precisa de ao menos uma.
-      const fromMaterial = newProduct.grade?.fabrics?.length ? null : withMaterialGrade(newProduct, materials).grade;
-      let techniques = newProduct.techniques;
-      if (fromMaterial && (fromMaterial.techniques ?? []).length > 0) {
-        const clean = cleanGradeTechniques(fromMaterial);
-        const noTechnique = gradeFabricsWithoutTechnique(clean);
-        if (noTechnique.length > 0) {
-          addToast(`Marque uma técnica para: ${noTechnique.slice(0, 4).join(', ')}${noTechnique.length > 4 ? '…' : ''}.`, 'error');
-          return;
-        }
-        techniques = clean.techniques;
-      }
       const pricing = calcProductPricing(newProduct as Product, materials, costs);
       const productData = {
         ...newProduct,
-        ...(techniques !== undefined ? { techniques } : {}),
         // Item 30: só grava o campo em quem já teve variação; produto sem ela fica igual.
         ...(newProduct.variation !== undefined ? { variation: cleanVariation(newProduct.variation, materials) } : {}),
         categoryIds: newProduct.categoryIds || [],
@@ -547,7 +533,6 @@ export function Products({
   // ─── Derived data ────────────────────────────────────────────────────────────
   const filteredMaterialsSearch = materials.filter(
     m =>
-      !m.variantOf &&
       !newProduct.materials?.some(pm => pm.materialId === m.id) &&
       (!onlyInStock || (Number(m.stockQuantity) || 0) > 0) &&
       (m.name || '').toLowerCase().includes(materialSearchTerm.toLowerCase()),
@@ -788,7 +773,13 @@ export function Products({
             />
           }
           gradeSection={
-            <ProductTechniquesSection newProduct={newProduct} setNewProduct={setNewProduct} materials={materials} />
+            <ProductGradeSection
+              key={editingProduct?.id ?? 'novo'}
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              materials={materials}
+              inKit={products.some(p => p.kitItems?.some(k => k.productId === editingProduct?.id))}
+            />
           }
           pricingSection={
             <ProductPricingSection

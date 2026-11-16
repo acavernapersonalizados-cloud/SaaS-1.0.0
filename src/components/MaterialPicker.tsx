@@ -31,8 +31,6 @@ export function MaterialPicker({
   const selected = materials.find(m => m.id === value);
   const term = search.trim().toLowerCase();
   const list = materials
-    // 16/11: combinação da grade não aparece sozinha; escolhe-se a matéria-prima.
-    .filter(m => !m.variantOf)
     .filter(m => !term || (m.name || '').toLowerCase().includes(term))
     .filter(m => !onlyInStock || (Number(m.stockQuantity) || 0) > 0)
     .filter(m => categories.length === 0 || (m.categoryIds || []).some(id => categories.includes(id)));

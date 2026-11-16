@@ -12,7 +12,6 @@ import {
 } from '../lib/channels';
 import { wholesaleTiersOf } from '../lib/wholesale';
 import { dtfTableOf } from '../lib/dtf';
-import { withMaterialGrade } from '../lib/materialGrade';
 import { formatCurrency, formatPercent, cn } from '../lib/utils';
 import { calcQuoteItem, MAX_CHANNEL_FEE_PERCENT, MAX_MARKUP_PERCENT } from '../lib/pricingEngine';
 import { quoteTotals, ShippingPaidBy } from '../lib/shipping';
@@ -46,7 +45,7 @@ import { QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
 import { QuoteClientCard, QuoteItemsCard, QuoteSummary } from './QuoteForm';
 import { AddItemModal, GeneratedQuoteModal } from './QuoteModals';
 
-const EMPTY_DTF = { dtfMeters: 0, dtfPrints: 0, dtfPrintsPerPiece: 1, dtfFilesPerTrip: 1 };
+const EMPTY_DTF = { dtfMeters: 0, dtfPrints: 0, dtfPrintsPerPiece: 1 };
 
 export function Pricing() {
   const { activeStore } = useStore();
@@ -98,9 +97,7 @@ export function Pricing() {
     manualUnitPrice,
   };
 
-  // Item 32: com a Camiseta com grade na receita, o orçamento pede tecido, tamanho, cor e técnica.
-  const selectedProductRaw = products.find(p => p.id === selectedProductId);
-  const selectedProduct = selectedProductRaw ? withMaterialGrade(selectedProductRaw, materials) : undefined;
+  const selectedProduct = products.find(p => p.id === selectedProductId);
 
   // AI state
   const [aiAnalysis, setAiAnalysis] = useState('');
@@ -293,7 +290,6 @@ export function Pricing() {
       dtfMeters: item.dtfMeters ?? 0,
       dtfPrints: item.dtfPrints ?? 0,
       dtfPrintsPerPiece: item.dtfPrintsPerPiece ?? 1,
-      dtfFilesPerTrip: item.dtfFilesPerTrip ?? 1,
     });
     setCustomMarkup(item.customMarkup ?? null);
     setManualUnitPrice(item.manualUnitPrice ?? null);

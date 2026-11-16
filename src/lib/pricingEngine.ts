@@ -14,7 +14,6 @@ import type { Product, Material, CostBase, QuoteItem, WholesaleTier } from '../t
 import { applyWholesale } from './wholesale';
 import { dtfPieceCost, dtfTableOf } from './dtf';
 import { chosenTechnique, gradeTechniqueMinutes, gradeUnitCost, hasGrade } from './grade';
-import { withMaterialGrade } from './materialGrade';
 import { hasVariation, variationItemFields, variationMaterialCost } from './variation';
 
 // ─── Tipos auxiliares ─────────────────────────────────────────────────────────
@@ -266,8 +265,6 @@ export function calcProductCost(
   /** Item 30: opção escolhida no orçamento; sem ela, vale a mais cara. */
   variationOptionId?: string | null,
 ): ProductCostResult {
-  // Item 32: a Camiseta com grade na receita vira a grade do produto (a combinação entra no lugar dela).
-  product = withMaterialGrade(product, materials);
   // Etapa 8C, item 4: produto criado de trabalho de calculadora. O custo é só o do trabalho, que já inclui
   // materiais, mão de obra, embalagem e máquina; tempo, embalagem e materiais do produto são só informação
   // (e a baixa de estoque), nunca somados de novo (correção de 26/10/2026).
@@ -374,22 +371,14 @@ export function calcQuoteItem(
   wholesaleTiers: WholesaleTier[] = [],
 ): QuoteItemCalcResult | null {
   if (!product || !costs) return null;
-  // Item 32: tecido, tamanho, cor e técnica vêm da matéria-prima com grade da receita.
-  product = withMaterialGrade(product, materials);
 
   const productCost = calcProductCost(product, materials, costs, item.variationOptionId);
   const { laborCost } = productCost;
   // Item 30 B3: técnica por metro (DTF): o custo por peça soma ao custo e leva o markup, como um insumo.
   const perMeter = !!(product.grade && chosenTechnique(product.grade, item.variationOptionId)?.perMeter);
   const printsPerPiece = Number(item.dtfPrintsPerPiece) || 1;
-  const filesPerTrip = Math.max(1, Math.floor(Number(item.dtfFilesPerTrip) || 1));
   const dtfCost = perMeter
-    ? dtfPieceCost(dtfTableOf(costs), {
-        meters: item.dtfMeters,
-        prints: item.dtfPrints,
-        printsPerPiece,
-        filesPerTrip,
-      })
+    ? dtfPieceCost(dtfTableOf(costs), { meters: item.dtfMeters, prints: item.dtfPrints, printsPerPiece })
     : null;
   const materialCost = productCost.materialCost + (dtfCost ?? 0);
   const totalProductionCost = productCost.totalCost + (dtfCost ?? 0);
@@ -457,7 +446,6 @@ export function calcQuoteItem(
           dtfMeters: Number(item.dtfMeters),
           dtfPrints: Number(item.dtfPrints),
           dtfPrintsPerPiece: printsPerPiece,
-          dtfFilesPerTrip: filesPerTrip,
           dtfCostUnit: dtfCost,
         }
       : {}),
