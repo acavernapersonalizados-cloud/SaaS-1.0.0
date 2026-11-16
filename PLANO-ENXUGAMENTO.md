@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-aLmwVXLx.js` (14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-BIp0noLL.js` (16/11/2026: item 32 entrega 1, grade na matéria-prima, e a retirada do DTF, publicados sem teste na tela, a seu pedido; 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1032,13 +1032,13 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     matéria-prima "Camiseta" com tecidos, tamanhos e cores; saldo por combinação; no orçamento: tecido, cor, tamanho e
     técnica; DTF como já existe (metragem digitada, estampas no arquivo e na camiseta). As camisetas antigas você apaga e
     cadastra de novo (sem migração).
-    ✅ **Entrega 1, feita em 16/11/2026 (não publicada; falta o teste na tela):** "Tem grade (tecido, tamanho e cor)?" no
+    ✅ **Entrega 1, feita e publicada em 16/11/2026 (`index-BIp0noLL.js`; sem teste na tela, a seu pedido):** "Tem grade (tecido, tamanho e cor)?" no
     cadastro, com custo por tecido e tamanho. Cada combinação vira um item interno (`variantOf`, `variantKey`, id fixo)
     com o próprio saldo e lotes; escondido nas listas e nos seletores. Matéria-prima mostra o total ("· grade"); Estoque
     tem "Ver grade" com entrada e saída por combinação. Excluir apaga as combinações juntas. Custo mudado atualiza as
     combinações sem tocar no saldo. Fica fora da Lista de Compras. 508 testes, lint, build. **Emulador não testado:**
     porta 8080 ocupada pelo Beleza em Dia.
-    ✅ **Retirada do DTF, feita em 16/11/2026 (aprovada; não publicada):** zona azul R$ 6,50 + combustível R$ 10,00 por
+    ✅ **Retirada do DTF, feita e publicada em 16/11/2026 (`index-BIp0noLL.js`; sem teste na tela, a seu pedido):** zona azul R$ 6,50 + combustível R$ 10,00 por
     retirada (`parkingCost`, `fuelCost` na tabela do DTF, editáveis na Base de Custos). Somam ao arquivo e se dividem
     pelas estampas dele (2 m, 40 estampas: R$ 3,00 → R$ 3,41 por estampa), e pelos "Arquivos nesta retirada"
     (`dtfFilesPerTrip`, começa em 1). Gravado no item. 511 testes, lint, build.
