@@ -7,6 +7,7 @@ import { markupOf, ProductPricingResult, ReversePricingResult } from '../lib/pri
 import { channelsOf } from '../lib/channels';
 import { ProductImageUpload } from './ProductImageUpload';
 import { ChannelProfitTable } from './ChannelProfitTable';
+import { ExclusiveFields } from './ExclusiveFields';
 import { AlertCircle, DollarSign, Image, Loader2, Sparkles } from 'lucide-react';
 
 type SetProduct = React.Dispatch<React.SetStateAction<Partial<Product>>>;
@@ -254,6 +255,20 @@ export function ProductCatalogSection({
         />
       </div>
 
+      <ExclusiveFields
+        exclusive={!!newProduct.exclusive}
+        client={newProduct.exclusiveClient ?? ''}
+        onChange={({ exclusive, client }) =>
+          setNewProduct(p => ({
+            ...p,
+            exclusive,
+            exclusiveClient: exclusive ? client.trim() || null : null,
+            // Exclusivo sai do catálogo; desmarcado, continua oculto até marcar "Exibir no catálogo".
+            ...(exclusive ? { showInCatalog: false } : {}),
+          }))
+        }
+      />
+
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
@@ -269,10 +284,11 @@ export function ProductCatalogSection({
           />
         </div>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 cursor-pointer mt-5">
+          <label className={`flex items-center gap-2 mt-5 ${newProduct.exclusive ? 'opacity-40' : 'cursor-pointer'}`}>
             <input
               type="checkbox"
-              checked={newProduct.showInCatalog !== false}
+              disabled={!!newProduct.exclusive}
+              checked={!newProduct.exclusive && newProduct.showInCatalog !== false}
               onChange={e => setNewProduct(p => ({ ...p, showInCatalog: e.target.checked }))}
               className="w-4 h-4 rounded"
             />

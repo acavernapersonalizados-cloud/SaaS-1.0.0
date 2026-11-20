@@ -40022,6 +40022,12 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
             🟢 Excelente
              
           </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
+             
+          </button>
         </div>
       </div>
       <div
@@ -41405,6 +41411,26 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                   </textarea>
                 </div>
                 <div
+                  class="p-3 bg-violet-50 border border-violet-100 rounded-xl space-y-2"
+                >
+                  <label
+                    class="flex items-start gap-2 cursor-pointer"
+                  >
+                    <input
+                      class="w-4 h-4 rounded mt-0.5"
+                      type="checkbox"
+                    />
+                    <span
+                      class="text-xs text-violet-900"
+                    >
+                      <b>
+                        Produto exclusivo
+                      </b>
+                      : personalizado para um cliente; nunca aparece no catálogo.
+                    </span>
+                  </label>
+                </div>
+                <div
                   class="grid grid-cols-2 gap-3"
                 >
                   <div
@@ -41427,7 +41453,7 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     class="space-y-3"
                   >
                     <label
-                      class="flex items-center gap-2 cursor-pointer mt-5"
+                      class="flex items-center gap-2 mt-5 cursor-pointer"
                     >
                       <input
                         checked=""
@@ -41808,6 +41834,12 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -43608,6 +43640,26 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                   </textarea>
                 </div>
                 <div
+                  class="p-3 bg-violet-50 border border-violet-100 rounded-xl space-y-2"
+                >
+                  <label
+                    class="flex items-start gap-2 cursor-pointer"
+                  >
+                    <input
+                      class="w-4 h-4 rounded mt-0.5"
+                      type="checkbox"
+                    />
+                    <span
+                      class="text-xs text-violet-900"
+                    >
+                      <b>
+                        Produto exclusivo
+                      </b>
+                      : personalizado para um cliente; nunca aparece no catálogo.
+                    </span>
+                  </label>
+                </div>
+                <div
                   class="grid grid-cols-2 gap-3"
                 >
                   <div
@@ -43630,7 +43682,7 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     class="space-y-3"
                   >
                     <label
-                      class="flex items-center gap-2 cursor-pointer mt-5"
+                      class="flex items-center gap-2 mt-5 cursor-pointer"
                     >
                       <input
                         checked=""
@@ -44011,6 +44063,12 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -45935,6 +45993,26 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                   </textarea>
                 </div>
                 <div
+                  class="p-3 bg-violet-50 border border-violet-100 rounded-xl space-y-2"
+                >
+                  <label
+                    class="flex items-start gap-2 cursor-pointer"
+                  >
+                    <input
+                      class="w-4 h-4 rounded mt-0.5"
+                      type="checkbox"
+                    />
+                    <span
+                      class="text-xs text-violet-900"
+                    >
+                      <b>
+                        Produto exclusivo
+                      </b>
+                      : personalizado para um cliente; nunca aparece no catálogo.
+                    </span>
+                  </label>
+                </div>
+                <div
                   class="grid grid-cols-2 gap-3"
                 >
                   <div
@@ -45957,7 +46035,7 @@ exports[`Produtos (telas internas) > edição: preço manual (reversa), pacote, 
                     class="space-y-3"
                   >
                     <label
-                      class="flex items-center gap-2 cursor-pointer mt-5"
+                      class="flex items-center gap-2 mt-5 cursor-pointer"
                     >
                       <input
                         checked=""
@@ -46338,6 +46416,12 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -47254,6 +47338,26 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                   />
                 </div>
                 <div
+                  class="p-3 bg-violet-50 border border-violet-100 rounded-xl space-y-2"
+                >
+                  <label
+                    class="flex items-start gap-2 cursor-pointer"
+                  >
+                    <input
+                      class="w-4 h-4 rounded mt-0.5"
+                      type="checkbox"
+                    />
+                    <span
+                      class="text-xs text-violet-900"
+                    >
+                      <b>
+                        Produto exclusivo
+                      </b>
+                      : personalizado para um cliente; nunca aparece no catálogo.
+                    </span>
+                  </label>
+                </div>
+                <div
                   class="grid grid-cols-2 gap-3"
                 >
                   <div
@@ -47276,7 +47380,7 @@ exports[`Produtos (telas internas) > janela de novo produto 1`] = `
                     class="space-y-3"
                   >
                     <label
-                      class="flex items-center gap-2 cursor-pointer mt-5"
+                      class="flex items-center gap-2 mt-5 cursor-pointer"
                     >
                       <input
                         checked=""
@@ -47657,6 +47761,12 @@ exports[`Produtos (telas internas) > preço sugerido por canal 1`] = `
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -48124,6 +48234,12 @@ exports[`Produtos (telas internas) > tabela e ordenação por preço 1`] = `
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -48789,6 +48905,12 @@ exports[`Produtos (telas internas) > tabela e ordenação por preço 2`] = `
             🟢 Excelente
              
           </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
+             
+          </button>
         </div>
       </div>
       <div
@@ -49452,6 +49574,12 @@ exports[`Produtos > busca 1`] = `
             🟢 Excelente
              
           </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
+             
+          </button>
         </div>
       </div>
       <div
@@ -50040,6 +50168,12 @@ exports[`Produtos > lista 1`] = `
             class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
           >
             🟢 Excelente
+             
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-neutral-200 text-neutral-600 hover:border-neutral-400 bg-white"
+          >
+            ⭐ Exclusivos
              
           </button>
         </div>
@@ -51931,6 +52065,26 @@ exports[`Sublimação > 8C item 4: trabalho salvo vira produto só com confirma�
                   TESTE Presentes
                 </option>
               </select>
+            </div>
+            <div
+              class="p-3 bg-violet-50 border border-violet-100 rounded-xl space-y-2"
+            >
+              <label
+                class="flex items-start gap-2 cursor-pointer"
+              >
+                <input
+                  class="w-4 h-4 rounded mt-0.5"
+                  type="checkbox"
+                />
+                <span
+                  class="text-xs text-violet-900"
+                >
+                  <b>
+                    Produto exclusivo
+                  </b>
+                  : personalizado para um cliente; nunca aparece no catálogo.
+                </span>
+              </label>
             </div>
             <dl
               class="grid grid-cols-2 gap-2 text-sm"

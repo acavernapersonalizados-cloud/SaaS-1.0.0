@@ -18,6 +18,7 @@ import {
   productPriceUpdate,
 } from '../lib/jobProduct';
 import { useStore } from '../contexts/StoreContext';
+import { ExclusiveFields } from './ExclusiveFields';
 import { useToast } from '../contexts/ToastContext';
 import { useCategories } from '../hooks/useCategories';
 
@@ -48,11 +49,13 @@ export function useJobProduct(kind: JobKind, onOpenProduct?: (productId: string)
   const [target, setTarget] = useState<Target | null>(null);
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [exclusive, setExclusive] = useState({ exclusive: false, client: '' });
   const [saving, setSaving] = useState(false);
 
   const openCreate = (job: ConvertibleJob) => {
     setName(job.name);
     setCategoryId('');
+    setExclusive({ exclusive: false, client: '' });
     setTarget({ job, mode: 'create' });
   };
 
@@ -106,11 +109,18 @@ export function useJobProduct(kind: JobKind, onOpenProduct?: (productId: string)
             categoryName: category?.name,
             now,
             materialUnit,
+            exclusive: exclusive.exclusive,
+            exclusiveClient: exclusive.client,
           }),
         );
         // Trava 2: o trabalho guarda o id do produto (sem duplicados).
         await updateDoc(doc(db, JOB_COLLECTIONS[kind], job.id), { productId: ref.id });
-        addToast('Produto criado, oculto no catálogo. Marque "mostrar no catálogo" quando quiser.', 'success');
+        addToast(
+          exclusive.exclusive
+            ? 'Produto exclusivo criado: não aparece no catálogo.'
+            : 'Produto criado, oculto no catálogo. Marque "mostrar no catálogo" quando quiser.',
+          'success',
+        );
       } else if (job.productId) {
         await updateDoc(doc(db, 'products', job.productId), productPriceUpdate(kind, job, now, materialUnit));
         addToast('Preço do produto atualizado.', 'success');
@@ -205,6 +215,7 @@ export function useJobProduct(kind: JobKind, onOpenProduct?: (productId: string)
                 ))}
               </select>
             </div>
+            <ExclusiveFields exclusive={exclusive.exclusive} client={exclusive.client} onChange={setExclusive} />
             <dl className="grid grid-cols-2 gap-2 text-sm">
               <dt className="text-neutral-500">Custo por unidade</dt>
               <dd className="text-right font-bold text-neutral-900">{formatCurrency(jobUnitCost(target.job))}</dd>

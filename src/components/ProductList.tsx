@@ -7,6 +7,7 @@ import { formatCurrency, formatPercent } from '../lib/utils';
 import { markupOf, ProductPricingResult } from '../lib/pricingEngine';
 import { categoryNames } from '../hooks/useCategories';
 import { CALCULATOR_TABS } from '../lib/navigation';
+import { ExclusiveBadge } from './ExclusiveFields';
 import { AlertCircle, ArrowUpDown, Box, Calculator, CheckCircle2, Clock, Edit2, Layers, Trash2 } from 'lucide-react';
 
 export type SortField = 'name' | 'cost' | 'price' | 'margin' | 'profit';
@@ -69,7 +70,14 @@ export function ProductTable({
           <tbody className="divide-y divide-neutral-50">
             {filteredAndSorted.map(({ product: p, pricing }) => (
               <tr key={p.id} className="hover:bg-neutral-50 transition-colors group">
-                <td className="px-4 py-3 font-bold text-neutral-900">{p.name}</td>
+                <td className="px-4 py-3 font-bold text-neutral-900">
+                  {p.name}
+                  {p.exclusive && (
+                    <span className="ml-2 align-middle">
+                      <ExclusiveBadge client={p.exclusiveClient} />
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-neutral-500 text-xs">
                   {categoryNames(p.categoryIds, categories).join(', ') || p.category}
                 </td>
@@ -185,6 +193,7 @@ export function ProductCards({
                     Pacote {p.packageQuantity}
                   </span>
                 )}
+                {p.exclusive && <ExclusiveBadge client={p.exclusiveClient} />}
                 {pricing.effectivePrice > 0 && (
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${pricing.profitStatus.badge}`}>
                     {pricing.profitStatus.emoji} {pricing.profitStatus.label}

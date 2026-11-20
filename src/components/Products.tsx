@@ -80,7 +80,7 @@ import {
 } from 'lucide-react';
 
 type ViewMode = 'cards' | 'table' | 'channels';
-type FilterMode = 'all' | 'no_price' | 'loss' | 'risky' | 'low' | 'good' | 'excellent';
+type FilterMode = 'all' | 'no_price' | 'loss' | 'risky' | 'low' | 'good' | 'excellent' | 'exclusive';
 
 export function Products({
   openProductId,
@@ -271,7 +271,10 @@ export function Products({
         }
         const missing = gradeMissingCosts(grade, materials);
         if (missing.length > 0) {
-          addToast(`Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`, 'error');
+          addToast(
+            `Preencha o custo da grade: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}.`,
+            'error',
+          );
           return;
         }
         const productRef = editingProduct ? doc(db, 'products', editingProduct.id) : doc(collection(db, 'products'));
@@ -550,11 +553,14 @@ export function Products({
       const matchSearch =
         (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        categoryNames(p.categoryIds, categories).some(n => n.toLowerCase().includes(searchTerm.toLowerCase()));
+        categoryNames(p.categoryIds, categories).some(n => n.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (p.exclusiveClient || '').toLowerCase().includes(searchTerm.toLowerCase());
       if (!matchSearch) return false;
       // Categoria: mostra o produto se ele estiver em QUALQUER categoria marcada
       if (categoryFilter.length > 0 && !(p.categoryIds || []).some(id => categoryFilter.includes(id))) return false;
       if (filterMode === 'all') return true;
+      // Item 33, parte 3: só os produtos exclusivos (feitos para um cliente).
+      if (filterMode === 'exclusive') return !!p.exclusive;
       if (filterMode === 'no_price') return !pricing.hasCosts || pricing.effectivePrice === 0;
       return pricing.profitStatus.status === filterMode;
     })
@@ -678,6 +684,7 @@ export function Products({
               { id: 'low', label: '🟠 Margem Baixa', count: kpis.productsLowMargin },
               { id: 'good', label: '🟡 Bom', count: kpis.productsGood },
               { id: 'excellent', label: '🟢 Excelente', count: kpis.productsExcellent },
+              { id: 'exclusive', label: '⭐ Exclusivos', count: products.filter(p => p.exclusive).length },
             ].map(f => (
               <button
                 key={f.id}

@@ -108,3 +108,15 @@ describe('Mudanças para a cópia pública ficar igual aos produtos', () => {
     expect(publicCatalogChanges([produto], stored)).toEqual({ set: [], remove: [] });
   });
 });
+
+// Item 33, parte 3 (20/11/2026): produto exclusivo nunca vai para o catálogo.
+describe('Produto exclusivo', () => {
+  it('não gera cópia pública, mesmo marcado para o catálogo', () => {
+    expect(toPublicProduct({ ...produto, exclusive: true, showInCatalog: true })).toBeNull();
+    expect(toPublicProduct({ ...produto, exclusive: false })).not.toBeNull();
+  });
+  it('produto que virou exclusivo sai do catálogo público', () => {
+    const stored = new Map([['p1', toPublicProduct(produto)!]]);
+    expect(publicCatalogChanges([{ ...produto, exclusive: true }], stored)).toEqual({ set: [], remove: ['p1'] });
+  });
+});

@@ -207,6 +207,10 @@ export interface Product {
   description?: string | null;
   leadTimeDays?: number | null;
   showInCatalog?: boolean;
+  /** Item 33, parte 3: personalizado para um cliente; nunca vai para o catálogo público. */
+  exclusive?: boolean;
+  /** Cliente do produto exclusivo (opcional). */
+  exclusiveClient?: string | null;
   /** Preço público pré-calculado (evita expor custos no catálogo público) */
   catalogPrice?: number | null;
   showPrice?: boolean;

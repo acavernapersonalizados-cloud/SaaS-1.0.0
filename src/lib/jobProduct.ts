@@ -173,6 +173,9 @@ export function productFromJob(
     categoryName?: string;
     now: string;
     materialUnit?: (materialId: string) => string | undefined;
+    /** Item 33, parte 3: produto exclusivo (cliente opcional). */
+    exclusive?: boolean;
+    exclusiveClient?: string;
   },
 ): Omit<Product, 'id'> & { createdAt: string; updatedAt: string } {
   // Preço e custo em centavos: o campo de preço do produto (step 0,01) recusa mais casas.
@@ -193,6 +196,7 @@ export function productFromJob(
     catalogPrice: price,
     // Trava 3: nasce oculto; só aparece quando marcar "mostrar no catálogo".
     showInCatalog: false,
+    ...(opts.exclusive ? { exclusive: true, exclusiveClient: opts.exclusiveClient?.trim() || null } : {}),
     showPrice: true,
     createdAt: opts.now,
     updatedAt: opts.now,

@@ -54,7 +54,8 @@ export function Catalog() {
     const unsub = onSnapshot(
       query(collection(db, 'products'), where('storeId', '==', activeStore.id)),
       snap => {
-        setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product));
+        // Item 33, parte 3: produto exclusivo não entra no catálogo, então não aparece aqui.
+        setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Product).filter(p => !p.exclusive));
         setProductsLoaded(true);
         setLoading(false);
       },

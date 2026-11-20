@@ -26,7 +26,8 @@ export interface PublicProduct {
 
 /** Cópia pública do produto, ou null quando ele não deve aparecer no catálogo. */
 export function toPublicProduct(p: Partial<Product>): PublicProduct | null {
-  if (!p.storeId || p.showInCatalog === false) return null;
+  // Item 33, parte 3: produto exclusivo nunca vai para o catálogo, mesmo marcado.
+  if (!p.storeId || p.showInCatalog === false || p.exclusive) return null;
   return {
     storeId: p.storeId,
     name: p.name || '',

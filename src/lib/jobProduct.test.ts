@@ -221,3 +221,20 @@ describe('Produto criado a partir do trabalho', () => {
     });
   });
 });
+
+// Item 33, parte 3 (20/11/2026): criar da calculadora como produto exclusivo.
+describe('Produto exclusivo criado do trabalho', () => {
+  const base = { storeId: 'loja', name: 'Chaveiro da Ana', now: '2026-11-20T00:00:00.000Z' };
+  it('marca exclusivo, com o cliente digitado (sem espaços) ou sem cliente', () => {
+    const p = productFromJob('laser', job, { ...base, exclusive: true, exclusiveClient: '  Ana  ' });
+    expect(p.exclusive).toBe(true);
+    expect(p.exclusiveClient).toBe('Ana');
+    expect(p.showInCatalog).toBe(false);
+    expect(productFromJob('laser', job, { ...base, exclusive: true }).exclusiveClient).toBeNull();
+  });
+  it('sem marcar, igual a antes (sem os campos)', () => {
+    const p = productFromJob('laser', job, base);
+    expect('exclusive' in p).toBe(false);
+    expect('exclusiveClient' in p).toBe(false);
+  });
+});

@@ -1061,7 +1061,13 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     do produto". 3D: editando, não baixa o filamento de novo. Sublimação: trocar de prensa ao abrir não apaga produto,
     temperatura, tempo e pressão. 507 testes, lint, build; emulador 390 px: Laser (tag NFC 1 → 2, custo R$ 4,42 →
     R$ 6,82, mesmo trabalho, 1 produto), Sublimação vindo de outra prensa e 3D (sem opção de baixar), sem erro no console.
-    **Parte 3, depois:** produto exclusivo (nunca no catálogo; cliente opcional; filtro em Produtos).
+    ✅ **Parte 3, produto exclusivo, feita em 20/11/2026 (falta publicar):** caixa "Produto exclusivo" com cliente
+    opcional (digita ou escolhe dos clientes) no cadastro do produto e na janela "Criar produto" da calculadora.
+    Exclusivo nunca vai para o catálogo público (trava em `toPublicProduct`, a cópia pública some), não aparece na
+    tela Catálogo, e "Exibir no catálogo" fica desligado. Em Produtos: filtro "⭐ Exclusivos", selo com o cliente e
+    busca pelo nome do cliente. 511 testes, lint, build; emulador 390 px: Porta Retrato marcado exclusivo (cliente
+    TESTE Ana) saiu do catálogo público e aparece no filtro; "Teste de sistema" da Sublimação virou produto exclusivo
+    sem cliente; sem erro no console.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:
