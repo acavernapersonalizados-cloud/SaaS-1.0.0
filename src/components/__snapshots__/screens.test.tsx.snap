@@ -15704,6 +15704,20 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                Parâmetros de Impressão
             </h2>
             <div
+              class="space-y-2"
+            >
+              <div
+                class="flex flex-wrap items-center gap-2"
+              >
+                <button
+                  class="px-3 py-1.5 rounded-full text-xs font-bold border border-dashed border-neutral-300 text-neutral-600 hover:border-neutral-500"
+                  type="button"
+                >
+                  + Adicionar mesa
+                </button>
+              </div>
+            </div>
+            <div
               class="rounded-xl border border-neutral-200 bg-neutral-50 p-3 flex flex-wrap items-center gap-3"
             >
               <input
@@ -17138,6 +17152,20 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
               </svg>
                Parâmetros de Impressão
             </h2>
+            <div
+              class="space-y-2"
+            >
+              <div
+                class="flex flex-wrap items-center gap-2"
+              >
+                <button
+                  class="px-3 py-1.5 rounded-full text-xs font-bold border border-dashed border-neutral-300 text-neutral-600 hover:border-neutral-500"
+                  type="button"
+                >
+                  + Adicionar mesa
+                </button>
+              </div>
+            </div>
             <div
               class="rounded-xl border border-neutral-200 bg-neutral-50 p-3 flex flex-wrap items-center gap-3"
             >
@@ -18900,6 +18928,20 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
               </svg>
                Parâmetros de Impressão
             </h2>
+            <div
+              class="space-y-2"
+            >
+              <div
+                class="flex flex-wrap items-center gap-2"
+              >
+                <button
+                  class="px-3 py-1.5 rounded-full text-xs font-bold border border-dashed border-neutral-300 text-neutral-600 hover:border-neutral-500"
+                  type="button"
+                >
+                  + Adicionar mesa
+                </button>
+              </div>
+            </div>
             <div
               class="rounded-xl border border-neutral-200 bg-neutral-50 p-3 flex flex-wrap items-center gap-3"
             >

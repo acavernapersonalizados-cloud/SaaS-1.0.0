@@ -12,7 +12,7 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Material, PrintFilament, PrintJob, PrinterProfile, ProductMaterial } from '../types';
+import { PrintPlate, Material, PrintFilament, PrintJob, PrinterProfile, ProductMaterial } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
@@ -26,6 +26,7 @@ import {
   CUSTOM_PRINT_CHANNEL,
   filamentColorAt,
   filamentsFromGcode,
+  printPerProduct,
   filamentStockDeductions,
   NO_PRINT_FEES,
   parsePrintGcode,
@@ -114,6 +115,94 @@ function DurationFields({
   );
 }
 
+/**
+ * Item 35 (20/11/2026): mesas do produto. Com uma mesa que rende 1, só o botão "+ Adicionar mesa" (a tela fica como
+ * antes); com mais, abas por mesa, e a mesa aberta ganha nome, "rende quantos produtos" e remover.
+ */
+function PlateBar({
+  plates,
+  index,
+  onSelect,
+  onAdd,
+  onRemove,
+  onChange,
+}: {
+  plates: PrintPlate[];
+  index: number;
+  onSelect: (index: number) => void;
+  onAdd: () => void;
+  onRemove: () => void;
+  onChange: (patch: Partial<PrintPlate>) => void;
+}) {
+  const plate = plates[index]!;
+  const many = plates.length > 1;
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {many &&
+          plates.map((p, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-pressed={i === index}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
+                i === index
+                  ? 'bg-neutral-900 text-white border-neutral-900'
+                  : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+              }`}
+            >
+              {p.name.trim() || `Mesa ${i + 1}`}
+            </button>
+          ))}
+        <button
+          type="button"
+          onClick={onAdd}
+          className="px-3 py-1.5 rounded-full text-xs font-bold border border-dashed border-neutral-300 text-neutral-600 hover:border-neutral-500"
+        >
+          + Adicionar mesa
+        </button>
+      </div>
+      {(many || plate.yieldCount > 1) && (
+        <div className="grid grid-cols-2 gap-2 items-end">
+          <div className="space-y-1">
+            <label htmlFor="plate-name" className="text-[11px] font-bold text-neutral-600">
+              Nome da mesa {index + 1}
+            </label>
+            <input
+              id="plate-name"
+              value={plate.name}
+              onChange={e => onChange({ name: e.target.value })}
+              placeholder="Ex.: Tampa"
+              className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="plate-yield" className="text-[11px] font-bold text-neutral-600">
+              Rende quantos produtos
+            </label>
+            <input
+              id="plate-yield"
+              type="number"
+              min="1"
+              step="1"
+              value={plate.yieldCount || ''}
+              onChange={e => onChange({ yieldCount: Math.max(0, Math.floor(Number(e.target.value) || 0)) })}
+              className="w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm"
+            />
+          </div>
+          <p className="col-span-2 text-[11px] text-neutral-500 flex items-center justify-between gap-2">
+            <span>Tempo, filamento e G-code abaixo são desta mesa; o custo soma as mesas por produto.</span>
+            <button type="button" onClick={onRemove} className="text-red-600 font-bold shrink-0">
+              Remover mesa
+            </button>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId: string) => void } = {}) {
   // Etapa 8C, item 4: trabalho salvo vira produto (com confirmação).
   const jobProduct = useJobProduct('print3d', onOpenProduct);
@@ -149,13 +238,32 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   // Item 11: só conta como escolha o clique da pessoa; a marcação automática (uma impressora só) não.
   const printerChosen = useRef(false);
   const [jobName, setJobName] = useState('');
-  // Item 29: um ou mais filamentos na mesma peça.
-  const [filaments, setFilaments] = useState<PrintFilament[]>([
-    { name: 'PLA', color: filamentColorAt(0), costPerKg: 80, grams: 50, materialId: null },
+  // Item 35 (20/11/2026): o produto pode sair em várias mesas, cada uma com tempo, filamentos (item 29), purga e
+  // G-code próprios e "rende quantos produtos". Os campos da tela editam a mesa aberta.
+  const [plates, setPlates] = useState<PrintPlate[]>([
+    {
+      name: '',
+      // Item 24: tempo em minutos (com fração para os segundos do G-code).
+      printTimeMin: 120,
+      filaments: [{ name: 'PLA', color: filamentColorAt(0), costPerKg: 80, grams: 50, materialId: null }],
+      purgeG: 0,
+      yieldCount: 1,
+    },
   ]);
-  const [purgeG, setPurgeG] = useState(0);
-  // Item 24: tempo em minutos (com fração para os segundos do G-code).
-  const [printTimeMin, setPrintTimeMin] = useState(120);
+  const [plateIndex, setPlateIndex] = useState(0);
+  const plate = plates[plateIndex] ?? plates[0]!;
+  const updatePlate = (patch: Partial<PrintPlate>) =>
+    setPlates(current =>
+      current.map((p, i) => (i === Math.min(plateIndex, current.length - 1) ? { ...p, ...patch } : p)),
+    );
+  const filaments = plate.filaments;
+  const setFilaments = (value: PrintFilament[]) => updatePlate({ filaments: value });
+  const purgeG = plate.purgeG;
+  const setPurgeG = (value: number) => updatePlate({ purgeG: value });
+  const printTimeMin = plate.printTimeMin;
+  const setPrintTimeMin = (value: number) => updatePlate({ printTimeMin: value });
+  // Tempo, filamentos e purga POR PRODUTO (somando as mesas): é o que entra no custo, no trabalho e na baixa.
+  const perProduct = printPerProduct(plates);
   const [failureRatePct, setFailureRatePct] = useState(5);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.print3d.hourlyRate);
@@ -181,9 +289,15 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [fees, setFees] = useState(NO_PRINT_FEES);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [deductStock, setDeductStock] = useState(false);
-  const [gcodeInfo, setGcodeInfo] = useState('');
-  const [gcodeFileName, setGcodeFileName] = useState('');
-  const [gcodeSlicer, setGcodeSlicer] = useState<string | null>(null);
+  const gcodeInfo = plate.gcodeInfo ?? '';
+  const setGcodeInfo = (value: string) => updatePlate({ gcodeInfo: value });
+  const setGcodeFileName = (value: string) => updatePlate({ gcodeFileName: value || null });
+  const setGcodeSlicer = (value: string | null) => updatePlate({ gcodeSlicer: value });
+  const gcodeFileName = plates
+    .map(p => p.gcodeFileName)
+    .filter(Boolean)
+    .join(' + ');
+  const gcodeSlicer = plates.find(p => p.gcodeSlicer)?.gcodeSlicer ?? null;
   const fileRef = useRef<HTMLInputElement>(null);
   const [notes, setNotes] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -243,15 +357,15 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   }, [activeStore]);
 
   const selectedPrinter = printers.find(p => p.id === selectedPrinterId) ?? null;
-  const filamentTotals = printFilamentTotals(filaments, purgeG);
-  const filamentLabel = printFilamentLabel(filaments);
+  const filamentTotals = printFilamentTotals(perProduct.filaments, perProduct.purgeG);
+  const filamentLabel = printFilamentLabel(perProduct.filaments);
 
   const calc = () => {
-    if (!selectedPrinter || printTimeMin <= 0) return null;
+    if (!selectedPrinter || perProduct.printTimeMin <= 0) return null;
     return calculatePrintPrice({
       filamentUsedG: filamentTotals.usedG,
       filamentCostPerKg: filamentTotals.costPerKg,
-      printTimeMin,
+      printTimeMin: perProduct.printTimeMin,
       powerConsumptionW: selectedPrinter.powerConsumptionW,
       electricityRate,
       acquisitionCost: selectedPrinter.acquisitionCost,
@@ -385,21 +499,35 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     printerChosen.current = true;
     setSelectedPrinterId(j.printerId ?? '');
     setJobName(j.name ?? '');
-    setFilaments(
-      Array.isArray(j.filaments) && j.filaments.length
-        ? j.filaments
+    // Item 35: trabalho com mesas volta com elas; o de uma mesa (ou antigo) vira uma mesa com os campos de sempre.
+    setPlates(
+      Array.isArray(j.plates) && j.plates.length
+        ? (j.plates as PrintPlate[]).map(p => ({ ...p, gcodeInfo: '' }))
         : [
             {
-              name: j.filamentType || 'PLA',
-              color: filamentColorAt(0),
-              costPerKg: Number(j.filamentCostPerKg) || 0,
-              grams: Number(j.filamentUsedG) || 0,
-              materialId: j.materialId ?? null,
+              name: '',
+              printTimeMin: Number(j.printTimeMin) || Math.round((Number(j.printTimeH) || 0) * 60),
+              filaments:
+                Array.isArray(j.filaments) && j.filaments.length
+                  ? j.filaments
+                  : [
+                      {
+                        name: j.filamentType || 'PLA',
+                        color: filamentColorAt(0),
+                        costPerKg: Number(j.filamentCostPerKg) || 0,
+                        grams: Number(j.filamentUsedG) || 0,
+                        materialId: j.materialId ?? null,
+                      },
+                    ],
+              purgeG: Number(j.purgeG) || 0,
+              yieldCount: 1,
+              gcodeFileName: j.gcodeFileName ?? null,
+              gcodeSlicer: j.gcodeSlicer ?? null,
+              gcodeInfo: '',
             },
           ],
     );
-    setPurgeG(Number(j.purgeG) || 0);
-    setPrintTimeMin(Number(j.printTimeMin) || Math.round((Number(j.printTimeH) || 0) * 60));
+    setPlateIndex(0);
     setPostProcessMin(Number(j.postProcessMin) || Math.round((Number(j.postProcessHours) || 0) * 60));
     setFailureRatePct(Number(j.failureRatePct) || 0);
     setQuantity(Number(j.quantity) || 1);
@@ -408,9 +536,6 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     setExtraSupplies(j.extraSupplies ?? []);
     setManualPrice(j.manualPrice ?? null);
     setNotes(j.notes ?? '');
-    setGcodeFileName(j.gcodeFileName ?? '');
-    setGcodeSlicer(j.gcodeSlicer ?? null);
-    setGcodeInfo('');
     if (j.channelId) {
       setChannelId(j.channelId);
       setFees({
@@ -427,7 +552,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   };
 
   const handleSaveJob = async (createProduct = false) => {
-    if (!activeStore || !jobName || !selectedPrinter || printTimeMin <= 0) {
+    if (!activeStore || !jobName || !selectedPrinter || perProduct.printTimeMin <= 0) {
       addToast('Preencha nome e tempo de impressão.', 'error');
       return;
     }
@@ -445,16 +570,20 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         filamentType: filamentLabel,
         filamentCostPerKg: filamentTotals.costPerKg,
         filamentUsedG: filamentTotals.usedG,
-        filaments,
-        purgeG,
+        // Item 35: por produto (somando as mesas); as mesas vão em `plates` quando há mais de uma ou ela rende mais de 1.
+        filaments: perProduct.filaments,
+        purgeG: perProduct.purgeG,
+        ...(plates.length > 1 || (plates[0]?.yieldCount ?? 1) > 1
+          ? { plates: plates.map(({ gcodeInfo: _info, ...p }) => p) }
+          : { plates: null }),
         // Item 24: minutos; as horas continuam gravadas (= minutos ÷ 60) para quem lê horas.
-        printTimeMin,
-        printTimeH: printTimeMin / 60,
+        printTimeMin: perProduct.printTimeMin,
+        printTimeH: perProduct.printTimeMin / 60,
         failureRatePct,
         quantity,
         manualPrice: manualPrice ?? null,
         notes,
-        materialId: filaments.find(line => line.materialId)?.materialId ?? null,
+        materialId: perProduct.filaments.find(line => line.materialId)?.materialId ?? null,
         postProcessMin,
         postProcessHours: postProcessMin / 60,
         packagingCost,
@@ -478,7 +607,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       // Editando, o filamento já foi baixado quando o trabalho foi salvo: não baixa de novo.
       const deductions =
         deductStock && !editingJob
-          ? filamentStockDeductions(filaments, purgeG, quantity, id => materialOf(id)?.unit)
+          ? filamentStockDeductions(perProduct.filaments, perProduct.purgeG, quantity, id => materialOf(id)?.unit)
           : [];
       if (deductions.length > 0) {
         // O peso do filamento está em gramas: só dá para baixar de materiais em kg ou g.
@@ -683,6 +812,30 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <Layers className="w-3.5 h-3.5" /> Parâmetros de Impressão
             </h2>
 
+            <PlateBar
+              plates={plates}
+              index={Math.min(plateIndex, plates.length - 1)}
+              onSelect={setPlateIndex}
+              onAdd={() => {
+                setPlates(current => [
+                  ...current,
+                  {
+                    name: '',
+                    printTimeMin: 0,
+                    filaments: [{ ...filaments[0]!, grams: 0 }],
+                    purgeG: 0,
+                    yieldCount: 1,
+                  },
+                ]);
+                setPlateIndex(plates.length);
+              }}
+              onRemove={() => {
+                setPlates(current => current.filter((_, i) => i !== plateIndex));
+                setPlateIndex(0);
+              }}
+              onChange={updatePlate}
+            />
+
             <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3 flex flex-wrap items-center gap-3">
               <input
                 ref={fileRef}
@@ -736,7 +889,15 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 />
               </div>
 
-              <DurationFields label="Tempo de Impressão" minutes={printTimeMin} onChange={setPrintTimeMin} />
+              <DurationFields
+                label={
+                  plates.length > 1
+                    ? `Tempo de Impressão da mesa ${Math.min(plateIndex, plates.length - 1) + 1}`
+                    : 'Tempo de Impressão'
+                }
+                minutes={printTimeMin}
+                onChange={setPrintTimeMin}
+              />
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-600">Taxa de Falha / Buffer (%)</label>
@@ -755,12 +916,13 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </div>
             </div>
 
-            {printTimeMin > 0 && (
+            {perProduct.printTimeMin > 0 && (
               <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-neutral-500" />
                 <span className="text-sm font-bold text-neutral-700">
-                  {formatMinutes(printTimeMin)} de impressão · {formatQuantity(filamentTotals.usedG)} g de{' '}
+                  {formatMinutes(perProduct.printTimeMin)} de impressão · {formatQuantity(filamentTotals.usedG)} g de{' '}
                   {filamentLabel}
+                  {plates.length > 1 ? ` · por produto, somando ${plates.length} mesas` : ''}
                 </span>
               </div>
             )}
@@ -839,10 +1001,10 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 />
               </div>
             </div>
-            {!editingJob && filaments.some(line => line.materialId) && (
+            {!editingJob && perProduct.filaments.some(line => line.materialId) && (
               <label className="flex items-center gap-2 text-xs font-bold text-neutral-600">
                 <input type="checkbox" checked={deductStock} onChange={e => setDeductStock(e.target.checked)} /> Baixar
-                {filaments.length > 1 ? ' os filamentos vinculados' : ' o material'} do estoque ao salvar
+                {perProduct.filaments.length > 1 ? ' os filamentos vinculados' : ' o material'} do estoque ao salvar
               </label>
             )}
 
@@ -877,7 +1039,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               <button
                 type="button"
                 onClick={() => handleSaveJob()}
-                disabled={savingJob || !jobName || printTimeMin <= 0}
+                disabled={savingJob || !jobName || perProduct.printTimeMin <= 0}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white rounded-xl font-bold hover:bg-neutral-800 transition-all disabled:opacity-40"
               >
                 {savingJob ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -885,7 +1047,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </button>
               <SaveAndCreateProductButton
                 onClick={() => handleSaveJob(true)}
-                disabled={savingJob || !jobName || printTimeMin <= 0}
+                disabled={savingJob || !jobName || perProduct.printTimeMin <= 0}
               />
             </div>
           )}

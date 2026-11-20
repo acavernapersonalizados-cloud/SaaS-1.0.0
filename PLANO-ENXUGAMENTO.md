@@ -1077,6 +1077,14 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     pelo histórico de movimentos). 516 testes, lint, build; emulador 390 px: trabalho de Laser no orçamento por
     R$ 13,64 (o do trabalho), aprovado → reserva de argola 1 e tag NFC 2; trabalho 3D com filamento já baixado não
     reserva de novo; sem erro no console.
+35. **3D: produto em várias mesas** (pedido em 20/11/2026; não é mesa da impressora, é mesa de impressão do produto;
+    aprovado: cada mesa com tempo, filamentos, purga e G-code próprios e "rende quantos produtos"). ✅ **Feito em
+    20/11/2026 (falta publicar):** "+ Adicionar mesa" na 3D; com mais de uma, abas por mesa com nome, "rende quantos
+    produtos" e remover. O custo usa o total POR PRODUTO (`printPerProduct`: cada mesa ÷ o que rende; o mesmo
+    filamento vira uma linha). O trabalho grava as mesas (`plates`) e os totais por produto nos campos de sempre, então
+    "Virar produto", orçamento e baixa seguem iguais. Uma mesa que rende 1 = conta de antes. 521 testes, lint, build;
+    emulador 390 px: base 2 h/40 g + tampas 3 h/60 g rendendo 4 → "2 h 45 min · 55 g por produto", salvo com 165 min
+    e 55 g e 2 mesas; "Editar" traz as 2 mesas; trabalho antigo abre com uma mesa; sem erro no console.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

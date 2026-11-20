@@ -1,4 +1,4 @@
-import type { PrintFilament, SalesChannel } from '../types';
+import type { PrintFilament, PrintPlate, SalesChannel } from '../types';
 import { energyCost as energyFor, laborCostFromHours, priceForMarkup, wearCost } from './pricingEngine';
 
 export interface PrintChannelFees {
@@ -56,6 +56,45 @@ export function printFilamentTotals(lines: PrintFilament[], purgeG = 0) {
 
 /** "PLA + PETG": o nome que as listas e os trabalhos antigos leem. */
 export const printFilamentLabel = (lines: PrintFilament[]) => lines.map(line => line.name).join(' + ');
+
+/**
+ * Item 35 (20/11/2026): tempo, filamentos e purga POR PRODUTO a partir das mesas: cada mesa conta dividida pelo que
+ * ela rende. Uma mesa que rende 1 devolve os próprios valores (a conta fica igual à de antes). Com várias mesas, a
+ * purga de cada uma entra nas gramas dos seus filamentos, e o mesmo filamento (mesmo item do estoque, nome e R$/kg)
+ * vira uma linha só.
+ */
+export function printPerProduct(plates: PrintPlate[]): {
+  printTimeMin: number;
+  filaments: PrintFilament[];
+  purgeG: number;
+} {
+  const yieldOf = (plate: PrintPlate) => Math.max(1, Math.floor(safe(plate.yieldCount)) || 1);
+  if (plates.length === 1) {
+    const plate = plates[0]!;
+    const y = yieldOf(plate);
+    return {
+      printTimeMin: safe(plate.printTimeMin) / y,
+      filaments: y === 1 ? plate.filaments : plate.filaments.map(line => ({ ...line, grams: safe(line.grams) / y })),
+      purgeG: safe(plate.purgeG) / y,
+    };
+  }
+  const lines: PrintFilament[] = [];
+  let printTimeMin = 0;
+  for (const plate of plates) {
+    const y = yieldOf(plate);
+    printTimeMin += safe(plate.printTimeMin) / y;
+    const { gramsWithPurge } = printFilamentTotals(plate.filaments, plate.purgeG);
+    plate.filaments.forEach((line, index) => {
+      const grams = (gramsWithPurge[index] ?? 0) / y;
+      const same = lines.find(
+        l => l.materialId === line.materialId && l.name === line.name && safe(l.costPerKg) === safe(line.costPerKg),
+      );
+      if (same) same.grams += grams;
+      else lines.push({ ...line, grams });
+    });
+  }
+  return { printTimeMin, filaments: lines, purgeG: 0 };
+}
 
 /**
  * Item 29: o que sai do estoque, somado por material (o mesmo rolo pode estar em duas linhas). `amount` vem na unidade

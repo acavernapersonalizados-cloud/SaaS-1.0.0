@@ -323,6 +323,22 @@ export interface PrintFilament {
   materialId: string | null;
 }
 
+/**
+ * Item 35 (20/11/2026): uma mesa (impressão) do produto da 3D. Tempo e gramas são os da mesa inteira; ela rende
+ * `yieldCount` produtos (ex.: a mesa das tampas imprime 4 de uma vez).
+ */
+export interface PrintPlate {
+  name: string;
+  printTimeMin: number;
+  filaments: PrintFilament[];
+  purgeG: number;
+  yieldCount: number;
+  gcodeFileName?: string | null;
+  gcodeSlicer?: string | null;
+  /** Só a tela: o resumo do G-code importado. */
+  gcodeInfo?: string;
+}
+
 export interface PrintJob extends JobProductFields {
   id: string;
   storeId: string;
