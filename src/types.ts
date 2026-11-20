@@ -233,6 +233,8 @@ export type JobKind = 'laser' | 'print3d' | 'papelaria' | 'cestas' | 'sublimacao
 
 /** Campos gravados no trabalho salvo para ele virar produto sem recalcular (Etapa 8C, item 4). */
 export interface JobProductFields {
+  /** 19/11/2026: outros insumos por peça (Laser, 3D e Sublimação); vão para a receita do produto. */
+  extraSupplies?: ProductMaterial[];
   /** Custo por unidade mostrado na calculadora ao salvar. */
   totalCostUnit?: number;
   /** Preço por unidade que valia na calculadora ao salvar (o manual ou, sem ele, o sugerido). */

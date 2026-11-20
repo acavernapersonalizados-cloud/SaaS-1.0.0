@@ -57,6 +57,8 @@ export interface LaserJobInput {
   channelFeePct?: number;
   channelFixedFee?: number;
   manualPrice: number | null;
+  /** 19/11/2026: outros insumos por peça (R$), ex.: argola e tag NFC. */
+  suppliesCost?: number;
 }
 
 export function calcLaserJob(input: LaserJobInput) {
@@ -68,7 +70,8 @@ export function calcLaserJob(input: LaserJobInput) {
   const laborCost = laborCostFromMinutes(input.hourlyRate, totalTimeMin);
   const matPerUnit = input.materialCost / Math.max(input.quantity, 1);
   // Tempos são por peça: energia, desgaste e mão de obra se repetem em cada peça do lote.
-  const totalCostUnit = energy + wear + laborCost + matPerUnit;
+  const suppliesCost = Number(input.suppliesCost) || 0;
+  const totalCostUnit = energy + wear + laborCost + matPerUnit + suppliesCost;
   const totalCostBatch = totalCostUnit * Math.max(input.quantity, 1);
   const fee = input.channelFeePct ?? 0;
   const fixed = input.channelFixedFee ?? 0;
@@ -82,6 +85,7 @@ export function calcLaserJob(input: LaserJobInput) {
     wearCost: wear,
     laborCost,
     matPerUnit,
+    suppliesCost,
     totalCostUnit,
     totalCostBatch,
     suggestedUnit,
@@ -227,6 +231,8 @@ export interface SublimationJobInput {
   channelFeePct?: number;
   channelFixedFee?: number;
   manualPrice: number | null;
+  /** 19/11/2026: outros insumos por peça (R$). */
+  suppliesCost?: number;
 }
 
 export function calcSublimationJob(input: SublimationJobInput) {
@@ -236,7 +242,9 @@ export function calcSublimationJob(input: SublimationJobInput) {
   const energyTimeH = (input.pressTimeS + heatShareS) / 3600;
   const energy = energyCost(input.powerW, energyTimeH, input.electricityRate);
   const laborCost = laborCostFromMinutes(input.hourlyRate, input.laborMinPerPiece);
-  const totalCostUnit = input.baseCost + paperInkCost + energy + laborCost + input.packagingCost + input.otherCost;
+  const suppliesCost = Number(input.suppliesCost) || 0;
+  const totalCostUnit =
+    input.baseCost + paperInkCost + energy + laborCost + input.packagingCost + input.otherCost + suppliesCost;
   if (totalCostUnit <= 0) return null;
   const quantity = Math.max(input.quantity, 1);
   const totalCostBatch = totalCostUnit * quantity;
@@ -255,6 +263,7 @@ export function calcSublimationJob(input: SublimationJobInput) {
     laborCost,
     packagingCost: input.packagingCost,
     otherCost: input.otherCost,
+    suppliesCost,
     totalCostUnit,
     totalCostBatch,
     suggestedUnit,

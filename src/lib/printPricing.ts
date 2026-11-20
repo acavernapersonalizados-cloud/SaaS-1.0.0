@@ -132,6 +132,8 @@ export function calculatePrintPrice(input: {
   failureRatePct: number;
   packagingCost: number;
   extrasCost: number;
+  /** 19/11/2026: outros insumos por peça (R$), fora da taxa de falha. */
+  suppliesCost?: number;
   /** Markup sobre o custo (%). */
   markupPct: number;
   quantity: number;
@@ -158,7 +160,8 @@ export function calculatePrintPrice(input: {
     filamentCost +
     laborCost +
     safe(input.packagingCost) +
-    safe(input.extrasCost);
+    safe(input.extrasCost) +
+    safe(input.suppliesCost ?? 0);
   const feePercent = Math.min(95, safe(input.fees.commissionPercent) + safe(input.fees.paymentPercent));
   const fixedFees = safe(input.fees.fixedFee) + safe(input.fees.logisticsCost);
   // Margem sobre o preço, líquida das taxas do canal (percentuais e fixas).
@@ -179,6 +182,7 @@ export function calculatePrintPrice(input: {
     laborCost,
     packagingCost: safe(input.packagingCost),
     extrasCost: safe(input.extrasCost),
+    suppliesCost: safe(input.suppliesCost ?? 0),
     totalCostUnit,
     totalCostBatch: totalCostUnit * quantity,
     suggestedUnit,

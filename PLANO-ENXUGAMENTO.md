@@ -1048,6 +1048,15 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     produto (`techniques`, com tecidos e cores aceitos, DTF por metro); no orçamento: tecido, tamanho, cor e técnica. A
     grade no próprio produto saiu do cadastro (produto antigo com ela mostra aviso e "Tirar a grade antiga"). 518 testes,
     lint, build. **Emulador não testado:** porta 8080 ocupada pelo Beleza em Dia.
+33. **Calculadoras: insumos extras, editar trabalhos e produto exclusivo** (pedido em 19/11/2026, aprovado; uma
+    parte por vez, cada uma testada no emulador antes de publicar; exclusivo com cliente opcional).
+    ✅ **Parte 1, insumos extras, feita em 19/11/2026 (não publicada):** bloco "Outros insumos por peça" no Laser, 3D e
+    Sublimação (seletor com busca do estoque; `extraSupplies` no trabalho). Entram no custo com o markup (3D: fora da taxa
+    de falha) e na receita do produto criado do trabalho. Trabalho antigo igual. 507 testes, lint, build; emulador 390 px:
+    chaveiro NFC no Laser, argola R$ 0,35 + tag R$ 2,40 → custo R$ 4,42, sugerido R$ 8,84; produto criado com argola e
+    tag na receita; 3D e Sublimação com o bloco, sem estourar a tela.
+    **Parte 2, depois:** "Editar" nos trabalhos salvos (abre na calculadora e salva no mesmo trabalho).
+    **Parte 3, depois:** produto exclusivo (nunca no catálogo; cliente opcional; filtro em Produtos).
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

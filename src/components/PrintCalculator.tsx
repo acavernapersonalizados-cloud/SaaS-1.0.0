@@ -12,12 +12,14 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { Material, PrintFilament, PrintJob, PrinterProfile } from '../types';
+import { Material, PrintFilament, PrintJob, PrinterProfile, ProductMaterial } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { formatCurrency, formatPercent } from '../lib/utils';
 import { materialLots, stockFields, takeFromLots, todayISO } from '../lib/stockLots';
 import { formatQuantity } from '../lib/quantity';
 import { PrintFilaments } from './PrintFilaments';
+import { ExtraSupplies } from './ExtraSupplies';
+import { cleanSupplies, extraSuppliesCost } from '../lib/supplies';
 import { clampMarkup, realMargin, markupOf } from '../lib/pricingEngine';
 import {
   calculatePrintPrice,
@@ -162,6 +164,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [postProcessMin, setPostProcessMin] = useState(0);
   const [packagingCost, setPackagingCost] = useState(0);
   const [extrasCost, setExtrasCost] = useState(0);
+  // 19/11/2026: outros insumos por peça (ex.: argola, ímã).
+  const [extraSupplies, setExtraSupplies] = useState<ProductMaterial[]>([]);
   // Canais da tabela da loja (Base de Custos) + "Personalizado".
   const { costs } = useCostBase();
   // T2: abre com o valor da hora e o markup da Base de Custos da loja (campos continuam editáveis).
@@ -261,6 +265,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       failureRatePct,
       packagingCost,
       extrasCost,
+      suppliesCost: extraSuppliesCost(extraSupplies, materials),
       markupPct,
       quantity,
       manualPrice,
@@ -403,6 +408,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         postProcessHours: postProcessMin / 60,
         packagingCost,
         extrasCost,
+        extraSupplies: cleanSupplies(extraSupplies),
         gcodeFileName: gcodeFileName || null,
         gcodeSlicer,
         channelId,
@@ -781,6 +787,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </label>
             )}
 
+            <ExtraSupplies lines={extraSupplies} onChange={setExtraSupplies} materials={materials} />
+
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
@@ -848,6 +856,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                     { label: '👤 Mão de obra', val: result.laborCost },
                     { label: '📦 Embalagem', val: result.packagingCost },
                     { label: '➕ Outros custos', val: result.extrasCost },
+                    { label: '🧷 Outros insumos', val: result.suppliesCost },
                     { label: '🏷️ Taxas do canal', val: result.channelCost },
                   ].map(r => (
                     <div key={r.label} className="flex justify-between text-sm">

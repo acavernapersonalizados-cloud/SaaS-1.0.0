@@ -85,13 +85,15 @@ export function jobProductDetails(
   const j = job as unknown as Record<string, unknown>;
   const qty = Math.max(num(j.quantity), 1);
   const list = (v: unknown) => (Array.isArray(v) ? (v as Array<Record<string, unknown>>) : []);
+  // 19/11/2026: outros insumos por peça (Laser, 3D e Sublimação) entram na receita do produto.
+  const supplies = list(j.extraSupplies).map(m => ({ materialId: m.materialId, quantity: num(m.quantity) }));
   switch (kind) {
     case 'laser':
       // Estacionamento item 13: com material do estoque, o produto baixa a parte de uma peça; sem, nada (como antes).
       return {
         productionTime: round2(laserTotalTimeMin(num(j.cuttingTimeMin), num(j.engravingTimeMin), num(j.passes) || 1)),
         packagingCost: 0,
-        materials: stockMaterials([{ materialId: j.materialId, quantity: num(j.materialQty) / qty }]),
+        materials: stockMaterials([{ materialId: j.materialId, quantity: num(j.materialQty) / qty }, ...supplies]),
       };
     case 'papelaria':
       return {
@@ -126,12 +128,13 @@ export function jobProductDetails(
       return {
         productionTime: round2(num(j.postProcessHours) * 60),
         packagingCost: num(j.packagingCost),
-        materials: stockMaterials(
-          filamentStockDeductions(lines, num(j.purgeG), 1, materialUnit).map(d => ({
+        materials: stockMaterials([
+          ...filamentStockDeductions(lines, num(j.purgeG), 1, materialUnit).map(d => ({
             materialId: d.materialId,
             quantity: d.amount ?? 0,
           })),
-        ),
+          ...supplies,
+        ]),
       };
     }
     case 'sublimacao':
@@ -139,7 +142,9 @@ export function jobProductDetails(
         productionTime: round2(num(j.laborMinPerPiece)),
         packagingCost: num(j.packagingCost),
         materials:
-          j.baseMode === 'stock' ? stockMaterials([{ materialId: j.baseMaterialId, quantity: num(j.baseQty) }]) : [],
+          j.baseMode === 'stock'
+            ? stockMaterials([{ materialId: j.baseMaterialId, quantity: num(j.baseQty) }, ...supplies])
+            : stockMaterials(supplies),
       };
   }
 }

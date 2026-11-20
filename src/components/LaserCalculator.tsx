@@ -13,6 +13,9 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { JobHistoryList } from './JobHistoryList';
+import { ExtraSupplies } from './ExtraSupplies';
+import { cleanSupplies, extraSuppliesCost } from '../lib/supplies';
+import { ProductMaterial } from '../types';
 import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
@@ -90,6 +93,8 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
   const [stockMaterials, setStockMaterials] = useState<Material[]>([]);
   const [stockMaterialId, setStockMaterialId] = useState('');
   const [stockMaterialQty, setStockMaterialQty] = useState(0);
+  // 19/11/2026: outros insumos por peça (ex.: argola e tag NFC).
+  const [extraSupplies, setExtraSupplies] = useState<ProductMaterial[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(CALCULATOR_DEFAULTS.laser.hourlyRate);
   const [markupPct, setMarkupPct] = useState(CALCULATOR_DEFAULTS.laser.markupPct);
@@ -196,6 +201,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         channelFeePct,
         channelFixedFee,
         manualPrice,
+        suppliesCost: extraSuppliesCost(extraSupplies, stockMaterials),
       })
     : null;
 
@@ -301,6 +307,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         // Item 13: o produto criado deste trabalho baixa este material do estoque.
         materialId: stockMaterial ? stockMaterial.id : null,
         materialQty: stockMaterial ? stockMaterialQty : 0,
+        extraSupplies: cleanSupplies(extraSupplies),
         quantity,
         manualPrice: manualPrice ?? null,
         // Etapa 8C, item 4: custo e preço que valiam ao salvar (o trabalho vira produto sem recalcular).
@@ -682,6 +689,8 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               </select>
             </div>
 
+            <ExtraSupplies lines={extraSupplies} onChange={setExtraSupplies} materials={stockMaterials} />
+
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
@@ -777,6 +786,7 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                     { label: '🔧 Desgaste laser', val: result.wearCost },
                     { label: '👤 Mão de obra', val: result.laborCost },
                     { label: '📦 Material', val: result.matPerUnit },
+                    { label: '🧷 Outros insumos', val: result.suppliesCost },
                   ].map(r => (
                     <div key={r.label} className="flex justify-between text-sm">
                       <span className="text-neutral-600">{r.label}</span>

@@ -9672,6 +9672,34 @@ exports[`Corte a Laser > inicial, com máquina e histórico 1`] = `
                 </option>
               </select>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações (opcional)…"
@@ -10503,6 +10531,34 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                 </option>
               </select>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações (opcional)…"
@@ -10770,6 +10826,20 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 1`] = `
                     class="font-bold"
                   >
                     R$ 5,00
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between text-sm"
+                >
+                  <span
+                    class="text-neutral-600"
+                  >
+                    🧷 Outros insumos
+                  </span>
+                  <span
+                    class="font-bold"
+                  >
+                    R$ 0,00
                   </span>
                 </div>
                 <div
@@ -11581,6 +11651,34 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                 </option>
               </select>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações (opcional)…"
@@ -11848,6 +11946,20 @@ exports[`Corte a Laser > resultado (seção 12) e preço manual 2`] = `
                     class="font-bold"
                   >
                     R$ 5,00
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between text-sm"
+                >
+                  <span
+                    class="text-neutral-600"
+                  >
+                    🧷 Outros insumos
+                  </span>
+                  <span
+                    class="font-bold"
+                  >
+                    R$ 0,00
                   </span>
                 </div>
                 <div
@@ -15918,6 +16030,34 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                 />
               </div>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações…"
@@ -16239,6 +16379,20 @@ exports[`Impressão 3D > canal Shopee e preço manual 1`] = `
                     class="text-neutral-600"
                   >
                     ➕ Outros custos
+                  </span>
+                  <span
+                    class="font-bold"
+                  >
+                    R$ 0,00
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between text-sm"
+                >
+                  <span
+                    class="text-neutral-600"
+                  >
+                    🧷 Outros insumos
                   </span>
                   <span
                     class="font-bold"
@@ -17284,6 +17438,34 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                 />
               </div>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações…"
@@ -17605,6 +17787,20 @@ exports[`Impressão 3D > canal Shopee e preço manual 2`] = `
                     class="text-neutral-600"
                   >
                     ➕ Outros custos
+                  </span>
+                  <span
+                    class="font-bold"
+                  >
+                    R$ 0,00
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between text-sm"
+                >
+                  <span
+                    class="text-neutral-600"
+                  >
+                    🧷 Outros insumos
                   </span>
                   <span
                     class="font-bold"
@@ -18977,6 +19173,34 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                 />
               </div>
             </div>
+            <div
+              class="space-y-2"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold text-neutral-600"
+                >
+                  Outros insumos por peça (opcional)
+                </p>
+                <p
+                  class="text-[11px] text-neutral-400"
+                >
+                  Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+                </p>
+              </div>
+              <div
+                class="space-y-2 min-w-0"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-label="Adicionar outro insumo"
+                  class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                  type="button"
+                >
+                  Adicionar insumo…
+                </button>
+              </div>
+            </div>
             <textarea
               class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900 outline-none text-sm resize-none"
               placeholder="Observações…"
@@ -19298,6 +19522,20 @@ exports[`Impressão 3D > inicial com impressora: resultado padrão e histórico 
                     class="text-neutral-600"
                   >
                     ➕ Outros custos
+                  </span>
+                  <span
+                    class="font-bold"
+                  >
+                    R$ 0,00
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between text-sm"
+                >
+                  <span
+                    class="text-neutral-600"
+                  >
+                    🧷 Outros insumos
                   </span>
                   <span
                     class="font-bold"
@@ -50885,6 +51123,20 @@ exports[`Sublimação > 8C item 4: trabalho salvo vira produto só com confirma�
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -50940,6 +51192,34 @@ exports[`Sublimação > 8C item 4: trabalho salvo vira produto só com confirma�
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -52454,6 +52734,20 @@ exports[`Sublimação > custos da peça: exemplo à mão e peça base do estoque
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -52515,6 +52809,34 @@ exports[`Sublimação > custos da peça: exemplo à mão e peça base do estoque
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -53935,6 +54257,20 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -53990,6 +54326,34 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 1`]
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -55410,6 +55774,20 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -55465,6 +55843,34 @@ exports[`Sublimação > máquinas cadastradas e janela de edição da 4 em 1 2`]
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -57417,6 +57823,20 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -57472,6 +57892,34 @@ exports[`Sublimação > parâmetros: 4 em 1 (caneca e boné) e prensa plana 1`] 
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -58843,6 +59291,20 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -58904,6 +59366,34 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -60275,6 +60765,20 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -60669,6 +61173,34 @@ exports[`Sublimação > resultado: sugerido R$ 43,26 (Venda Direta) e R$ 66,57 (
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"
@@ -62714,6 +63246,20 @@ exports[`Sublimação > trabalhos salvos: histórico e salvar (limpa o formulár
               </span>
             </div>
             <div
+              class="flex justify-between text-sm"
+            >
+              <span
+                class="text-neutral-600"
+              >
+                Outros insumos
+              </span>
+              <span
+                class="font-bold"
+              >
+                R$ 0,00
+              </span>
+            </div>
+            <div
               class="border-t border-neutral-200 pt-1.5 flex justify-between font-black text-sm"
             >
               <span>
@@ -62775,6 +63321,34 @@ exports[`Sublimação > trabalhos salvos: histórico e salvar (limpa o formulár
               type="text"
               value=""
             />
+          </div>
+          <div
+            class="space-y-2"
+          >
+            <div>
+              <p
+                class="text-xs font-bold text-neutral-600"
+              >
+                Outros insumos por peça (opcional)
+              </p>
+              <p
+                class="text-[11px] text-neutral-400"
+              >
+                Ex.: argola e tag NFC no chaveiro. Entram no custo e, no produto, na baixa do estoque.
+              </p>
+            </div>
+            <div
+              class="space-y-2 min-w-0"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Adicionar outro insumo"
+                class="w-full px-3 py-2 bg-white border border-neutral-200 rounded-xl text-sm text-left truncate"
+                type="button"
+              >
+                Adicionar insumo…
+              </button>
+            </div>
           </div>
           <textarea
             class="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 text-sm resize-none"

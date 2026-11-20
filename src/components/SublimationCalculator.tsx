@@ -6,7 +6,9 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { cn, formatCurrency } from '../lib/utils';
-import { Material } from '../types';
+import { Material, ProductMaterial } from '../types';
+import { ExtraSupplies } from './ExtraSupplies';
+import { cleanSupplies, extraSuppliesCost } from '../lib/supplies';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
 import { useCostBase, useCostBaseDefaults } from '../hooks/useCostBase';
 import { clampMarkup, markupOf, MAX_MARKUP_PERCENT, realMargin } from '../lib/pricingEngine';
@@ -106,6 +108,8 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
   const [laborMinPerPiece, setLaborMinPerPiece] = useState(0);
   const [packagingCost, setPackagingCost] = useState(0);
   const [otherCost, setOtherCost] = useState(0);
+  // 19/11/2026: outros insumos por peça (ex.: caixinha, laço).
+  const [extraSupplies, setExtraSupplies] = useState<ProductMaterial[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [hourlyRate, setHourlyRate] = useState(D.hourlyRate);
   const [markupPct, setMarkupPct] = useState(D.markupPct);
@@ -218,6 +222,7 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
         channelFeePct,
         channelFixedFee,
         manualPrice,
+        suppliesCost: extraSuppliesCost(extraSupplies, stockMaterials),
       })
     : null;
 
@@ -276,6 +281,7 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
         hourlyRate,
         packagingCost,
         otherCost,
+        extraSupplies: cleanSupplies(extraSupplies),
         electricityRate,
         markupPct,
         quantity,
@@ -952,6 +958,7 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
                       { label: 'Mão de obra', val: result.laborCost },
                       { label: 'Embalagem', val: result.packagingCost },
                       { label: 'Outros', val: result.otherCost },
+                      { label: 'Outros insumos', val: result.suppliesCost },
                     ].map(r => (
                       <div key={r.label} className="flex justify-between text-sm">
                         <span className="text-neutral-600">{r.label}</span>
@@ -1004,6 +1011,7 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900"
                   />
                 </div>
+                <ExtraSupplies lines={extraSupplies} onChange={setExtraSupplies} materials={stockMaterials} />
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
