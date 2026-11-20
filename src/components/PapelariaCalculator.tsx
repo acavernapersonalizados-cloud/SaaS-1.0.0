@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus as Plus2 } from 'lucide-react';
-import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { updateDoc, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { PapelariaJob, PapelariaMaterialItem, Material } from '../types';
 import { CALCULATOR_DEFAULTS } from '../lib/defaults';
@@ -12,7 +12,7 @@ import { calcPapelariaJob, sumItemsCost } from '../lib/calculators';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { JobHistoryList } from './JobHistoryList';
+import { EditingJob, EditingJobBar, JobHistoryList, editingJobOf } from './JobHistoryList';
 import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
@@ -180,6 +180,27 @@ export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (produc
     setAiLoading(false);
   };
 
+  // Item 33, parte 2 (19/11/2026): abre um trabalho salvo para editar; salvar grava no mesmo trabalho.
+  const [editingJob, setEditingJob] = useState<EditingJob>(null);
+  const loadJob = (job: (typeof jobs)[number]) => {
+    const j = job as unknown as Record<string, any>;
+    setJobName(j.name ?? '');
+    setMaterials(j.materials ?? []);
+    setLaminationCost(Number(j.laminationCost) || 0);
+    setBindingCost(Number(j.bindingCost) || 0);
+    setAssemblyTimeMin(Number(j.assemblyTimeMin) || 0);
+    setFinishingTimeMin(Number(j.finishingTimeMin) || 0);
+    setPackagingTimeMin(Number(j.packagingTimeMin) || 0);
+    setHourlyRate(Number(j.hourlyRate) || hourlyRate);
+    setQuantity(Number(j.quantity) || 1);
+    setManualPrice(j.manualPrice ?? null);
+    setNotes(j.notes ?? '');
+    setChannelId(channels.find(c => c.name === j.channel)?.id ?? channelId);
+    setEditingJob(editingJobOf(job as never));
+    addToast(`Editando "${job.name}": confira e salve.`, 'info');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !jobName || (totalTimeMin <= 0 && materialsCost <= 0)) {
       addToast('Preencha nome, materiais e/ou tempos de produção.', 'error');
@@ -207,9 +228,22 @@ export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (produc
         notes,
         createdAt: new Date().toISOString(),
       };
-      const ref = await addDoc(collection(db, 'papelariaJobs'), job);
+      // Item 33, parte 2: editando, grava no mesmo trabalho (lançamento e produto ligado continuam); senão, cria outro.
+      const ref = editingJob
+        ? doc(db, 'papelariaJobs', editingJob.id)
+        : await addDoc(collection(db, 'papelariaJobs'), job);
+      if (editingJob) {
+        await updateDoc(ref, {
+          ...job,
+          createdAt: editingJob.createdAt ?? job.createdAt,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       addToast('Trabalho salvo!', 'success');
-      if (createProduct) jobProduct.createAfterSave({ ...job, id: ref.id });
+      if (createProduct && !editingJob?.productId) jobProduct.createAfterSave({ ...job, id: ref.id });
+      else if (createProduct)
+        addToast('Este trabalho já é produto: use "Atualizar preço do produto" na lista.', 'info');
+      setEditingJob(null);
       setJobName('');
       setMaterials([]);
       setAiAnalysis('');
@@ -624,7 +658,9 @@ export function PapelariaCalculator({ onOpenProduct }: { onOpenProduct?: (produc
         </div>
       </div>
 
+      <EditingJobBar job={editingJob} onCancel={() => setEditingJob(null)} />
       <JobHistoryList
+        onEdit={loadJob}
         title="Trabalhos Salvos"
         emptyText="Nenhum trabalho salvo."
         headers={['Trabalho', 'Qtd', 'Preço', '']}

@@ -43,6 +43,7 @@ import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
+import { EditJobButton, EditingJob, EditingJobBar, editingJobOf } from './JobHistoryList';
 import { ChannelProfitTable } from './ChannelProfitTable';
 import {
   Box,
@@ -376,6 +377,55 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     }
   };
 
+  // Item 33, parte 2 (19/11/2026): abre um trabalho salvo para editar; salvar grava no mesmo trabalho, sem baixar o
+  // filamento de novo.
+  const [editingJob, setEditingJob] = useState<EditingJob>(null);
+  const loadJob = (job: PrintJob) => {
+    const j = job as unknown as Record<string, any>;
+    printerChosen.current = true;
+    setSelectedPrinterId(j.printerId ?? '');
+    setJobName(j.name ?? '');
+    setFilaments(
+      Array.isArray(j.filaments) && j.filaments.length
+        ? j.filaments
+        : [
+            {
+              name: j.filamentType || 'PLA',
+              color: filamentColorAt(0),
+              costPerKg: Number(j.filamentCostPerKg) || 0,
+              grams: Number(j.filamentUsedG) || 0,
+              materialId: j.materialId ?? null,
+            },
+          ],
+    );
+    setPurgeG(Number(j.purgeG) || 0);
+    setPrintTimeMin(Number(j.printTimeMin) || Math.round((Number(j.printTimeH) || 0) * 60));
+    setPostProcessMin(Number(j.postProcessMin) || Math.round((Number(j.postProcessHours) || 0) * 60));
+    setFailureRatePct(Number(j.failureRatePct) || 0);
+    setQuantity(Number(j.quantity) || 1);
+    setPackagingCost(Number(j.packagingCost) || 0);
+    setExtrasCost(Number(j.extrasCost) || 0);
+    setExtraSupplies(j.extraSupplies ?? []);
+    setManualPrice(j.manualPrice ?? null);
+    setNotes(j.notes ?? '');
+    setGcodeFileName(j.gcodeFileName ?? '');
+    setGcodeSlicer(j.gcodeSlicer ?? null);
+    setGcodeInfo('');
+    if (j.channelId) {
+      setChannelId(j.channelId);
+      setFees({
+        commissionPercent: Number(j.channelCommissionPercent) || 0,
+        paymentPercent: Number(j.channelPaymentPercent) || 0,
+        fixedFee: Number(j.channelFixedFee) || 0,
+        logisticsCost: Number(j.logisticsCost) || 0,
+      });
+    }
+    setDeductStock(false);
+    setEditingJob(editingJobOf(job as never));
+    addToast(`Editando "${job.name}": confira e salve.`, 'info');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !jobName || !selectedPrinter || printTimeMin <= 0) {
       addToast('Preencha nome e tempo de impressão.', 'error');
@@ -383,7 +433,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     }
     setSavingJob(true);
     try {
-      const jobRef = doc(collection(db, 'printJobs'));
+      // Item 33, parte 2: editando, grava no mesmo trabalho (lançamento e produto ligado continuam).
+      const jobRef = editingJob ? doc(db, 'printJobs', editingJob.id) : doc(collection(db, 'printJobs'));
       const payload = {
         id: jobRef.id,
         storeId: activeStore.id,
@@ -420,12 +471,15 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         totalCostUnit: result?.totalCostUnit ?? 0,
         // Etapa 8C, item 4: preço que valia ao salvar (o trabalho vira produto sem recalcular).
         unitPrice: manualPrice ?? result?.suggestedUnit ?? 0,
-        createdAt: new Date().toISOString(),
+        createdAt: editingJob?.createdAt ?? new Date().toISOString(),
+        ...(editingJob ? { updatedAt: new Date().toISOString() } : {}),
       };
       const materialOf = (id: string) => materials.find(item => item.id === id);
-      const deductions = deductStock
-        ? filamentStockDeductions(filaments, purgeG, quantity, id => materialOf(id)?.unit)
-        : [];
+      // Editando, o filamento já foi baixado quando o trabalho foi salvo: não baixa de novo.
+      const deductions =
+        deductStock && !editingJob
+          ? filamentStockDeductions(filaments, purgeG, quantity, id => materialOf(id)?.unit)
+          : [];
       if (deductions.length > 0) {
         // O peso do filamento está em gramas: só dá para baixar de materiais em kg ou g.
         for (const { materialId, amount } of deductions) {
@@ -477,10 +531,14 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
           transaction.set(jobRef, payload);
         });
       } else {
-        await setDoc(jobRef, payload);
+        // merge: o trabalho editado mantém o produto ligado.
+        await setDoc(jobRef, payload, { merge: true });
       }
       addToast('Trabalho salvo!', 'success');
-      if (createProduct) jobProduct.createAfterSave(payload);
+      if (createProduct && !editingJob?.productId) jobProduct.createAfterSave(payload);
+      else if (createProduct)
+        addToast('Este trabalho já é produto: use "Atualizar preço do produto" na lista.', 'info');
+      setEditingJob(null);
       setJobName('');
       setAiAnalysis('');
       setManualPrice(null);
@@ -780,7 +838,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                 />
               </div>
             </div>
-            {filaments.some(line => line.materialId) && (
+            {!editingJob && filaments.some(line => line.materialId) && (
               <label className="flex items-center gap-2 text-xs font-bold text-neutral-600">
                 <input type="checkbox" checked={deductStock} onChange={e => setDeductStock(e.target.checked)} /> Baixar
                 {filaments.length > 1 ? ' os filamentos vinculados' : ' o material'} do estoque ao salvar
@@ -958,6 +1016,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         </div>
       </div>
 
+      <EditingJobBar job={editingJob} onCancel={() => setEditingJob(null)} />
       {/* History */}
       <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
         <h2 className="text-base font-bold text-neutral-900">Trabalhos Salvos</h2>
@@ -1002,6 +1061,7 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
                       {job.manualPrice ? formatCurrency(job.manualPrice) : '—'}
                     </td>
                     <td className="py-3 text-right">
+                      <EditJobButton name={job.name} onClick={() => loadJob(job)} />
                       <div className="inline-block align-middle mr-1">
                         {jobProduct.actions(
                           job,

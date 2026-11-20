@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, setDoc } from 'firebase/firestore';
+import {
+  updateDoc,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  setDoc,
+} from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { LaserJob, LaserMachineProfile, Material } from '../types';
 import { CALCULATOR_DEFAULTS, electricityRateOf } from '../lib/defaults';
@@ -12,7 +23,7 @@ import { calcLaserJob, laserStockMaterialCost, laserTotalTimeMin, machineToKeep 
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { JobHistoryList } from './JobHistoryList';
+import { EditingJob, EditingJobBar, JobHistoryList, editingJobOf } from './JobHistoryList';
 import { ExtraSupplies } from './ExtraSupplies';
 import { cleanSupplies, extraSuppliesCost } from '../lib/supplies';
 import { ProductMaterial } from '../types';
@@ -286,6 +297,30 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
     setAiLoading(false);
   };
 
+  // Item 33, parte 2 (19/11/2026): abre um trabalho salvo para editar; salvar grava no mesmo trabalho.
+  const [editingJob, setEditingJob] = useState<EditingJob>(null);
+  const loadJob = (job: (typeof jobs)[number]) => {
+    const j = job as unknown as Record<string, any>;
+    machineChosen.current = true;
+    setSelectedMachineId(j.machineId ?? '');
+    setJobName(j.name ?? '');
+    setMaterial(j.material ?? '');
+    setCuttingTimeMin(Number(j.cuttingTimeMin) || 0);
+    setEngravingTimeMin(Number(j.engravingTimeMin) || 0);
+    setPasses(Number(j.passes) || 1);
+    setMaterialCost(Number(j.materialCost) || 0);
+    setStockMaterialId(j.materialId ?? '');
+    setStockMaterialQty(Number(j.materialQty) || 0);
+    setExtraSupplies(j.extraSupplies ?? []);
+    setQuantity(Number(j.quantity) || 1);
+    setManualPrice(j.manualPrice ?? null);
+    setNotes(j.notes ?? '');
+    setChannelId(channels.find(c => c.name === j.channel)?.id ?? channelId);
+    setEditingJob(editingJobOf(job as never));
+    addToast(`Editando "${job.name}": confira e salve.`, 'info');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSaveJob = async (createProduct = false) => {
     if (!activeStore || !jobName || !usedMaterialName || !selectedMachine || totalTimeMin <= 0) {
       addToast('Preencha nome, material e tempo de corte/gravação.', 'error');
@@ -317,9 +352,20 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
         notes,
         createdAt: new Date().toISOString(),
       };
-      const ref = await addDoc(collection(db, 'laserJobs'), job);
+      // Item 33, parte 2: editando, grava no mesmo trabalho (lançamento e produto ligado continuam); senão, cria outro.
+      const ref = editingJob ? doc(db, 'laserJobs', editingJob.id) : await addDoc(collection(db, 'laserJobs'), job);
+      if (editingJob) {
+        await updateDoc(ref, {
+          ...job,
+          createdAt: editingJob.createdAt ?? job.createdAt,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       addToast('Trabalho salvo!', 'success');
-      if (createProduct) jobProduct.createAfterSave({ ...job, id: ref.id });
+      if (createProduct && !editingJob?.productId) jobProduct.createAfterSave({ ...job, id: ref.id });
+      else if (createProduct)
+        addToast('Este trabalho já é produto: use "Atualizar preço do produto" na lista.', 'info');
+      setEditingJob(null);
       setJobName('');
       setAiAnalysis('');
       setManualPrice(null);
@@ -832,7 +878,9 @@ export function LaserCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
       </div>
 
       {/* History table */}
+      <EditingJobBar job={editingJob} onCancel={() => setEditingJob(null)} />
       <JobHistoryList
+        onEdit={loadJob}
         title="Trabalhos Salvos"
         emptyText="Nenhum trabalho salvo."
         headers={['Trabalho', 'Máquina', 'Material', 'Qtd', 'Preço', '']}

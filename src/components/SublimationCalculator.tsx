@@ -1,6 +1,6 @@
 // Calculadora de Sublimação (Etapas 8D-1 e 8D-2): máquinas, parâmetros da tabela, custo e preço.
-import React, { useEffect, useState } from 'react';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
+import React, { useEffect, useRef, useState } from 'react';
+import { updateDoc, addDoc, collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { useStore } from '../contexts/StoreContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,7 +15,7 @@ import { clampMarkup, markupOf, MAX_MARKUP_PERCENT, realMargin } from '../lib/pr
 import { channelFees, channelsOf, findChannel } from '../lib/channels';
 import { ManualPriceCheck, SuggestedPrice } from './PriceResultCard';
 import { ChannelProfitTable } from './ChannelProfitTable';
-import { JobHistoryList } from './JobHistoryList';
+import { EditingJob, EditingJobBar, JobHistoryList, editingJobOf } from './JobHistoryList';
 import { SaveAndCreateProductButton, useJobProduct } from './JobProduct';
 import { calcSublimationJob } from '../lib/calculators';
 import {
@@ -232,11 +232,15 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
       selectedMachine?.heads.some(h => h.id === current) ? current : (selectedMachine?.heads[0]?.id ?? ''),
     );
   }, [selectedMachine]);
+  // Item 33, parte 2: abrindo um trabalho salvo, a troca de máquina devolve os valores dele em vez de limpar.
+  const restoreRef = useRef<{ product: string; tempC: number | ''; timeS: number | ''; pressure: string } | null>(null);
   useEffect(() => {
-    setProduct('');
-    setTempC('');
-    setTimeS('');
-    setPressure('');
+    const restore = restoreRef.current;
+    restoreRef.current = null;
+    setProduct(restore?.product ?? '');
+    setTempC(restore?.tempC ?? '');
+    setTimeS(restore?.timeS ?? '');
+    setPressure(restore?.pressure ?? '');
   }, [selectedMachineId, headId]);
 
   const chooseProduct = (name: string) => {
@@ -245,6 +249,50 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
     setTempC(r ? r.tempC : '');
     setTimeS(r ? r.timeS : '');
     setPressure(r?.pressure ?? '');
+  };
+
+  // Item 33, parte 2 (19/11/2026): abre um trabalho salvo para editar; salvar grava no mesmo trabalho.
+  const [editingJob, setEditingJob] = useState<EditingJob>(null);
+  const loadJob = (job: (typeof jobs)[number]) => {
+    const j = job as unknown as Record<string, any>;
+    // Máquina ou parte diferente: o efeito que limpa o produto devolve os valores do trabalho.
+    if (j.machineId !== selectedMachineId || j.headId !== headId) {
+      restoreRef.current = {
+        product: j.product ?? '',
+        tempC: j.tempC ?? '',
+        timeS: j.timeS ?? '',
+        pressure: j.pressure ?? '',
+      };
+    }
+    setSelectedMachineId(j.machineId ?? '');
+    setHeadId(j.headId ?? '');
+    setProduct(j.product ?? '');
+    setTempC(j.tempC ?? '');
+    setTimeS(j.timeS ?? '');
+    setPressure(j.pressure ?? '');
+    setBaseMode(j.baseMode === 'stock' ? 'stock' : 'manual');
+    setBaseMaterialId(j.baseMaterialId ?? '');
+    setBaseQty(Number(j.baseQty) || 1);
+    if (j.baseMode !== 'stock') setBaseManualCost(Number(j.baseCost) || 0);
+    setSheetCost(Number(j.sheetCost) || 0);
+    setPiecesPerSheet(Number(j.piecesPerSheet) || 1);
+    setHeatUpMin(Number(j.heatUpMin) || 0);
+    setPiecesPerBatch(Number(j.piecesPerBatch) || 1);
+    setLaborMinPerPiece(Number(j.laborMinPerPiece) || 0);
+    setHourlyRate(Number(j.hourlyRate) || hourlyRate);
+    setPackagingCost(Number(j.packagingCost) || 0);
+    setOtherCost(Number(j.otherCost) || 0);
+    setExtraSupplies(j.extraSupplies ?? []);
+    setElectricityRate(Number(j.electricityRate) || electricityRate);
+    setMarkupPct(Number(j.markupPct) || markupPct);
+    setQuantity(Number(j.quantity) || 1);
+    setManualPrice(j.manualPrice ?? null);
+    setJobName(j.name ?? '');
+    setNotes(j.notes ?? '');
+    setChannelId(channels.find(c => c.name === j.channel)?.id ?? channelId);
+    setEditingJob(editingJobOf(job as never));
+    addToast(`Editando "${job.name}": confira e salve.`, 'info');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSaveJob = async (createProduct = false) => {
@@ -293,9 +341,22 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
         notes: notes.trim(),
         createdAt: new Date().toISOString(),
       };
-      const ref = await addDoc(collection(db, 'sublimationJobs'), job);
+      // Item 33, parte 2: editando, grava no mesmo trabalho (lançamento e produto ligado continuam); senão, cria outro.
+      const ref = editingJob
+        ? doc(db, 'sublimationJobs', editingJob.id)
+        : await addDoc(collection(db, 'sublimationJobs'), job);
+      if (editingJob) {
+        await updateDoc(ref, {
+          ...job,
+          createdAt: editingJob.createdAt ?? job.createdAt,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       addToast('Trabalho salvo!', 'success');
-      if (createProduct) jobProduct.createAfterSave({ ...job, id: ref.id });
+      if (createProduct && !editingJob?.productId) jobProduct.createAfterSave({ ...job, id: ref.id });
+      else if (createProduct)
+        addToast('Este trabalho já é produto: use "Atualizar preço do produto" na lista.', 'info');
+      setEditingJob(null);
       setJobName('');
       setNotes('');
       setManualPrice(null);
@@ -1033,7 +1094,9 @@ export function SublimationCalculator({ onOpenProduct }: { onOpenProduct?: (prod
             </div>
           )}
 
+          <EditingJobBar job={editingJob} onCancel={() => setEditingJob(null)} />
           <JobHistoryList
+            onEdit={loadJob}
             title="Trabalhos Salvos"
             emptyText="Nenhum trabalho salvo."
             headers={['Trabalho', 'Máquina', 'Produto', 'Qtd', 'Preço', '']}
