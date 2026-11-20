@@ -434,6 +434,8 @@ export interface QuoteItem {
   dtfPrintsPerPiece?: number;
   /** Custo do DTF por peça (R$), já somado ao custo do item. */
   dtfCostUnit?: number;
+  /** Item 34: item que veio de um trabalho de calculadora; a receita por peça do trabalho (reserva e baixa). */
+  jobRecipe?: ProductMaterial[];
 }
 
 export interface Quote {

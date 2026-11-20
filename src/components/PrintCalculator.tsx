@@ -528,7 +528,8 @@ export function PrintCalculator({ onOpenProduct }: { onOpenProduct?: (productId:
               createdAt: new Date().toISOString(),
             });
           });
-          transaction.set(jobRef, payload);
+          // Item 34: marca que o filamento já saiu do estoque (o orçamento não baixa de novo).
+          transaction.set(jobRef, { ...payload, filamentDeducted: true });
         });
       } else {
         // merge: o trabalho editado mantém o produto ligado.

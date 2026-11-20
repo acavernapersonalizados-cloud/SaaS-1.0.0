@@ -1068,6 +1068,15 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     busca pelo nome do cliente. 511 testes, lint, build; emulador 390 px: Porta Retrato marcado exclusivo (cliente
     TESTE Ana) saiu do catálogo público e aparece no filtro; "Teste de sistema" da Sublimação virou produto exclusivo
     sem cliente; sem erro no console.
+34. **Orçamento puxa trabalhos das calculadoras** (pedido em 20/11/2026: "nem preciso ficar criando mil produtos";
+    aprovado: preço do trabalho; receita baixa o estoque como produto). ✅ **Feito em 20/11/2026 (falta publicar):**
+    na janela de item do orçamento, a lista tem "Produtos" e "Trabalhos das calculadoras" (os 5 tipos; os que têm
+    custo e preço e ainda não são produto). O trabalho entra com o custo e o preço gravados (nada vai para Produtos);
+    dá para trocar o preço no orçamento como sempre. O item grava a receita do trabalho (`jobRecipe`), que reserva e
+    baixa ao aprovar. 3D: filamento já baixado ao salvar o trabalho sai da receita (novo `filamentDeducted`; os antigos
+    pelo histórico de movimentos). 516 testes, lint, build; emulador 390 px: trabalho de Laser no orçamento por
+    R$ 13,64 (o do trabalho), aprovado → reserva de argola 1 e tag NFC 2; trabalho 3D com filamento já baixado não
+    reserva de novo; sem erro no console.
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
     com 100% das solicitações verificadas (51/51) e "Básico: aplicado". Pedido original:

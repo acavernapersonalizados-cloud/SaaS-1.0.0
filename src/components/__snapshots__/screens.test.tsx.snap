@@ -30222,13 +30222,26 @@ exports[`Precificação > atacado: 30 unidades com 20% sobre o varejo, gravado n
                 <option
                   value=""
                 >
-                  Selecione um produto
+                  Selecione um produto ou trabalho
                 </option>
-                <option
-                  value="chaveiro"
+                <optgroup
+                  label="Produtos"
                 >
-                  TESTE Chaveiro
-                </option>
+                  <option
+                    value="chaveiro"
+                  >
+                    TESTE Chaveiro
+                  </option>
+                </optgroup>
+                <optgroup
+                  label="Trabalhos das calculadoras"
+                >
+                  <option
+                    value="job:sublimacao:sub-job-1"
+                  >
+                    TESTE 10 canecas de porcelana (trabalho Sublimação)
+                  </option>
+                </optgroup>
               </select>
             </div>
             <div
@@ -31077,13 +31090,26 @@ exports[`Precificação > atacado: markup personalizado baixo para no piso e avi
                 <option
                   value=""
                 >
-                  Selecione um produto
+                  Selecione um produto ou trabalho
                 </option>
-                <option
-                  value="chaveiro"
+                <optgroup
+                  label="Produtos"
                 >
-                  TESTE Chaveiro
-                </option>
+                  <option
+                    value="chaveiro"
+                  >
+                    TESTE Chaveiro
+                  </option>
+                </optgroup>
+                <optgroup
+                  label="Trabalhos das calculadoras"
+                >
+                  <option
+                    value="job:sublimacao:sub-job-1"
+                  >
+                    TESTE 10 canecas de porcelana (trabalho Sublimação)
+                  </option>
+                </optgroup>
               </select>
             </div>
             <div
@@ -35993,13 +36019,26 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <option
                   value=""
                 >
-                  Selecione um produto
+                  Selecione um produto ou trabalho
                 </option>
-                <option
-                  value="chaveiro"
+                <optgroup
+                  label="Produtos"
                 >
-                  TESTE Chaveiro
-                </option>
+                  <option
+                    value="chaveiro"
+                  >
+                    TESTE Chaveiro
+                  </option>
+                </optgroup>
+                <optgroup
+                  label="Trabalhos das calculadoras"
+                >
+                  <option
+                    value="job:sublimacao:sub-job-1"
+                  >
+                    TESTE 10 canecas de porcelana (trabalho Sublimação)
+                  </option>
+                </optgroup>
               </select>
             </div>
             <div
@@ -37908,13 +37947,26 @@ exports[`Precificação > item com acabamento, acessório e markup; quantidade e
                 <option
                   value=""
                 >
-                  Selecione um produto
+                  Selecione um produto ou trabalho
                 </option>
-                <option
-                  value="chaveiro"
+                <optgroup
+                  label="Produtos"
                 >
-                  TESTE Chaveiro
-                </option>
+                  <option
+                    value="chaveiro"
+                  >
+                    TESTE Chaveiro
+                  </option>
+                </optgroup>
+                <optgroup
+                  label="Trabalhos das calculadoras"
+                >
+                  <option
+                    value="job:sublimacao:sub-job-1"
+                  >
+                    TESTE 10 canecas de porcelana (trabalho Sublimação)
+                  </option>
+                </optgroup>
               </select>
             </div>
             <div

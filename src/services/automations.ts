@@ -11,7 +11,7 @@ import {
   runTransaction,
 } from 'firebase/firestore';
 import { db, notifyError } from '../firebase';
-import { QuoteStatus, Quote, StockReservation, Product, CostBase, Material } from '../types';
+import { QuoteStatus, Quote, StockReservation, Product, CostBase, Material, ProductMaterial } from '../types';
 import { productionDeadline } from '../lib/productionDeadline';
 import { materialLots, stockFields, suggestLots, takeFromLots, todayISO } from '../lib/stockLots';
 import { itemMaterials } from '../lib/variation';
@@ -133,9 +133,14 @@ async function buildReservations(quoteData: Quote): Promise<ReservationLine[]> {
 
   for (const item of quoteData.items || []) {
     try {
-      const productSnap = await getDoc(doc(db, 'products', item.productId));
-      if (!productSnap.exists()) continue;
-      const product = productSnap.data();
+      // Item 34: item de trabalho de calculadora usa a receita gravada no item (não há produto).
+      let product: { materials?: ProductMaterial[] };
+      if (item.jobRecipe) product = { materials: item.jobRecipe };
+      else {
+        const productSnap = await getDoc(doc(db, 'products', item.productId));
+        if (!productSnap.exists()) continue;
+        product = productSnap.data() as { materials?: ProductMaterial[] };
+      }
 
       // Item 30: a variação escolhida no orçamento baixa junto com a receita.
       for (const pm of itemMaterials(product.materials, item)) {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import React, { useState, useEffect, useMemo } from 'react';
+import { collection, addDoc, doc, getDoc, getDocs, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product, Material, CostBase, Quote, Client, QuoteItem } from '../types';
 import {
@@ -42,6 +42,9 @@ import {
 } from 'lucide-react';
 
 import { QUOTE_VALIDITY_DAYS } from '../lib/quoteFormat';
+import { JOB_COLLECTIONS, type ConvertibleJob } from '../lib/jobProduct';
+import { jobAsQuoteProduct, jobItemFields } from '../lib/quoteJobs';
+import type { JobKind } from '../types';
 import { QuoteClientCard, QuoteItemsCard, QuoteSummary } from './QuoteForm';
 import { AddItemModal, GeneratedQuoteModal } from './QuoteModals';
 
@@ -51,7 +54,29 @@ export function Pricing() {
   const { activeStore } = useStore();
   const { user, isAdmin } = useAuth();
   const { addToast } = useToast();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [realProducts, setProducts] = useState<Product[]>([]);
+  // Item 34 (20/11/2026): trabalhos das calculadoras entram no orçamento sem virar produto.
+  const [jobsByKind, setJobsByKind] = useState<Partial<Record<JobKind, ConvertibleJob[]>>>({});
+  // Trabalhos da 3D que já baixaram o filamento ao salvar (não baixa de novo ao aprovar).
+  const [printJobsDeducted, setPrintJobsDeducted] = useState<Set<string>>(new Set());
+  const products = useMemo(() => {
+    if (!activeStore) return realProducts;
+    const fromJobs = (Object.entries(jobsByKind) as Array<[JobKind, ConvertibleJob[]]>).flatMap(([kind, jobs]) =>
+      jobs
+        .map(job =>
+          jobAsQuoteProduct(
+            kind,
+            job,
+            activeStore.id,
+            kind === 'print3d' &&
+              (!!(job as { filamentDeducted?: boolean }).filamentDeducted || printJobsDeducted.has(job.id)),
+          ),
+        )
+        .filter((p): p is Product => !!p),
+    );
+    fromJobs.sort((a, b) => a.name.localeCompare(b.name));
+    return [...realProducts, ...fromJobs];
+  }, [realProducts, jobsByKind, printJobsDeducted, activeStore]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [costs, setCosts] = useState<CostBase | null>(null);
@@ -166,10 +191,34 @@ export function Pricing() {
     };
     fetchCosts();
 
+    // Item 34: trabalhos salvos das 5 calculadoras (os que têm custo e preço e ainda não são produto).
+    const unsubscribeJobs = (Object.entries(JOB_COLLECTIONS) as Array<[JobKind, string]>).map(([kind, col]) =>
+      onSnapshot(
+        query(collection(db, col), where('storeId', '==', activeStore.id)),
+        snapshot =>
+          setJobsByKind(current => ({
+            ...current,
+            [kind]: snapshot.docs.map(d => ({ ...d.data(), id: d.id }) as ConvertibleJob),
+          })),
+        () => setJobsByKind(current => ({ ...current, [kind]: [] })),
+      ),
+    );
+    // A 3D baixa o filamento ao salvar (se marcado): os trabalhos com baixa no histórico não baixam de novo.
+    getDocs(
+      query(collection(db, 'stockMovements'), where('storeId', '==', activeStore.id), where('type', '==', 'deduction')),
+    )
+      .then(snap =>
+        setPrintJobsDeducted(
+          new Set(snap.docs.map(d => d.data().printJobId).filter((id): id is string => typeof id === 'string')),
+        ),
+      )
+      .catch(() => undefined);
+
     return () => {
       unsubscribeP();
       unsubscribeM();
       unsubscribeC();
+      unsubscribeJobs.forEach(u => u());
     };
   }, [activeStore]);
 
@@ -444,6 +493,8 @@ export function Pricing() {
           wholesaleDiscountPct: r.wholesaleDiscountPct,
           wholesaleFloorApplied: r.wholesaleFloorApplied,
           ...r.variationFields,
+          // Item 34: item de trabalho grava a receita do trabalho (reserva e baixa ao aprovar).
+          ...jobItemFields(r.productId, products),
         })),
         totalAmount: isFinite(totalAmount) ? totalAmount : 0,
         // Etapa 8C: total no crédito (Pix ÷ 0,95), só nos orçamentos novos. Item 26: com o frete do cliente.

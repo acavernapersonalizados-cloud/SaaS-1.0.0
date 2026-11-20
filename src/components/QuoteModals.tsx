@@ -10,6 +10,7 @@ import { formatQuantity } from '../lib/quantity';
 import { hasVariation } from '../lib/variation';
 import { gradeKey, gradePieceOf, hasGrade, splitGradeKey, techniquesFor } from '../lib/grade';
 import { dtfBilledMeters, dtfFileCost, dtfPieceCost, DTF_FILE_LIMIT_METERS } from '../lib/dtf';
+import { isJobItemId } from '../lib/quoteJobs';
 import { QuantityInput } from './QuantityInput';
 import { AlertCircle, CheckCircle2, Download, FileText, Plus, Sparkles, X } from 'lucide-react';
 
@@ -172,8 +173,8 @@ function GradePicker({
           {technique?.perMeter && complete && pieceCost === null
             ? 'Preencha a metragem e as estampas do arquivo para calcular.'
             : complete
-            ? 'Esta peça não tem custo na grade: preencha no cadastro do produto.'
-            : `Escolha tecido, tamanho, cor${hasTechniques ? ' e técnica' : ''} para calcular.`}
+              ? 'Esta peça não tem custo na grade: preencha no cadastro do produto.'
+              : `Escolha tecido, tamanho, cor${hasTechniques ? ' e técnica' : ''} para calcular.`}
         </p>
       ) : stock ? (
         <p className="text-xs font-bold text-emerald-700 ml-1">
@@ -267,12 +268,28 @@ export function AddItemModal({
               onChange={e => setSelectedProductId(e.target.value)}
               className="w-full px-5 py-4 bg-neutral-50 border-2 border-transparent rounded-2xl text-neutral-900 outline-none focus:bg-white focus:border-neutral-900 transition-all"
             >
-              <option value="">Selecione um produto</option>
-              {products.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
+              <option value="">Selecione um produto ou trabalho</option>
+              {/* Item 34: os trabalhos das calculadoras ficam num grupo à parte. */}
+              <optgroup label="Produtos">
+                {products
+                  .filter(p => !isJobItemId(p.id))
+                  .map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+              </optgroup>
+              {products.some(p => isJobItemId(p.id)) && (
+                <optgroup label="Trabalhos das calculadoras">
+                  {products
+                    .filter(p => isJobItemId(p.id))
+                    .map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                </optgroup>
+              )}
             </select>
           </div>
 
@@ -501,11 +518,11 @@ export function AddItemModal({
             )}
             {(currentItemResults?.manualUnitPrice != null || currentItemResults?.productManualPrice != null) &&
               currentItemResults.belowCost && (
-              <p role="alert" className="text-xs font-bold text-red-700">
-                Abaixo do custo: prejuízo de{' '}
-                {formatCurrency(-currentItemResults.itemProfit / currentItemResults.quantity)} por unidade.
-              </p>
-            )}
+                <p role="alert" className="text-xs font-bold text-red-700">
+                  Abaixo do custo: prejuízo de{' '}
+                  {formatCurrency(-currentItemResults.itemProfit / currentItemResults.quantity)} por unidade.
+                </p>
+              )}
             {currentItemResults?.manualUnitPrice != null &&
               !currentItemResults.belowCost &&
               currentItemResults.belowGoal && (
