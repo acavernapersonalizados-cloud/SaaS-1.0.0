@@ -40,7 +40,7 @@
 
 **Onde paramos (3/11/2026): ✅ PROJETO CONCLUÍDO (Etapas 0 a 9 e Estacionamento 2 a 28).**
 
-- **No ar:** `index-DNLzrvGo.js` (19/11/2026: item 33 parte 1, outros insumos nas calculadoras, testada no emulador). Antes, `index-pxvzvWep.js` (16/11/2026: **volta ao código do dia 14**, commit 3a55dfc, a seu pedido: saíram o item 32 e a retirada do DTF, que deram erro no cadastro do produto; o código deles segue no histórico do git, commits 360cf80, 23365cb e e72cb4f. Antes: 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
+- **No ar:** `index-CmAbBScB.js` (20/11/2026: item 33 parte 2, editar trabalhos salvos, testada no emulador). Antes, `index-DNLzrvGo.js` (19/11/2026: item 33 parte 1, outros insumos). Antes, `index-pxvzvWep.js` (16/11/2026: **volta ao código do dia 14**, commit 3a55dfc, a seu pedido: saíram o item 32 e a retirada do DTF, que deram erro no cadastro do produto; o código deles segue no histórico do git, commits 360cf80, 23365cb e e72cb4f. Antes: 14/11/2026: item 31, pacote com estoque por item, e o botão "Editar como produto normal", os dois publicados sem teste na tela, a seu pedido; item 30 completo: variações, grade com peças do estoque, técnicas, DTF e as correções de 6/11; 4/11: item 29, Calculadora 3D multicor; antes, itens 21 a 28, a correção do valor do estoque e a da 3D em h/min/s).
 - **Projeto:** Etapas 0 a 9 e Estacionamento 2 a 28 feitos. 9C desligada. Item 16 entregue por você no console em
   3/11/2026 (sem código).
 - **Próxima fase:** item 29 (Calculadora 3D multicor) ✅ feito e publicado em 4/11/2026 (G-code real do Creality Print conferido). Item 30 (variações de produto): completo e publicado, com as correções de 6/11. Falta você recadastrar a caneca e as técnicas e salvar a tabela do DTF em cada loja. Depois a Etapa 10.
@@ -1055,7 +1055,7 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     de falha) e na receita do produto criado do trabalho. Trabalho antigo igual. 507 testes, lint, build; emulador 390 px:
     chaveiro NFC no Laser, argola R$ 0,35 + tag R$ 2,40 → custo R$ 4,42, sugerido R$ 8,84; produto criado com argola e
     tag na receita; 3D e Sublimação com o bloco, sem estourar a tela.
-    ✅ **Parte 2, editar trabalhos salvos, feita em 19/11/2026 (falta publicar):** lápis "Editar" na lista das 5
+    ✅ **Parte 2, editar trabalhos salvos, feita e publicada em 20/11/2026 (`index-CmAbBScB.js`):** lápis "Editar" na lista das 5
     calculadoras; abre o trabalho na calculadora com tudo preenchido e uma barra "Editando… / Cancelar"; salvar grava
     no mesmo trabalho (mantém data de criação e o produto ligado). Já é produto: não cria outro, usa "Atualizar preço
     do produto". 3D: editando, não baixa o filamento de novo. Sublimação: trocar de prensa ao abrir não apaga produto,
