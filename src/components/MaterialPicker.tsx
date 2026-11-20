@@ -5,6 +5,9 @@ import { formatQuantity } from '../lib/quantity';
 import { CategoryFilterBar } from './CategoryPicker';
 
 const stockText = (m: Material) => `saldo ${formatQuantity(m.stockQuantity)} ${m.unit}`;
+const hasStock = (m: Material) => (Number(m.stockQuantity) || 0) > 0;
+/** Busca sem diferença de maiúscula e acento ("agua" acha "Água"). */
+const plain = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Item 30: escolher material com busca, categoria e "só com saldo" (a lista simples ficava longa demais). */
 export function MaterialPicker({
@@ -29,11 +32,14 @@ export function MaterialPicker({
   const [onlyInStock, setOnlyInStock] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
   const selected = materials.find(m => m.id === value);
-  const term = search.trim().toLowerCase();
-  const list = materials
-    .filter(m => !term || (m.name || '').toLowerCase().includes(term))
-    .filter(m => !onlyInStock || (Number(m.stockQuantity) || 0) > 0)
+  const term = plain(search.trim());
+  const found = materials
+    .filter(m => !term || plain(m.name || '').includes(term))
     .filter(m => categories.length === 0 || (m.categoryIds || []).some(id => categories.includes(id)));
+  const withStock = found.filter(hasStock);
+  // 20/11/2026: com "Só o que tem saldo" e nada com saldo, mostra os sem saldo (antes sumiam e parecia que não existia).
+  const showingNoStock = onlyInStock && withStock.length === 0 && found.length > 0;
+  const list = onlyInStock && !showingNoStock ? withStock : found;
   const choose = (id: string | null) => {
     onChange(id);
     setOpen(false);
@@ -71,6 +77,11 @@ export function MaterialPicker({
           <div className="min-w-0 overflow-x-auto">
             <CategoryFilterBar scope="material" selected={categories} onChange={setCategories} />
           </div>
+          {showingNoStock && (
+            <p className="px-2 text-[11px] font-bold text-amber-700">
+              Nenhum com saldo; estes estão sem saldo no estoque:
+            </p>
+          )}
           <div className="max-h-48 overflow-y-auto divide-y divide-neutral-50">
             {clearable && (
               <button
@@ -89,7 +100,11 @@ export function MaterialPicker({
                 className="w-full text-left px-2 py-2 hover:bg-neutral-50 flex items-center justify-between gap-2"
               >
                 <span className="text-sm font-medium text-neutral-900 min-w-0 truncate">{m.name}</span>
-                <span className="text-[11px] font-bold text-neutral-400 shrink-0">{stockText(m)}</span>
+                <span
+                  className={`text-[11px] font-bold shrink-0 ${hasStock(m) ? 'text-neutral-400' : 'text-amber-600'}`}
+                >
+                  {stockText(m)}
+                </span>
               </button>
             ))}
             {list.length === 0 && (
