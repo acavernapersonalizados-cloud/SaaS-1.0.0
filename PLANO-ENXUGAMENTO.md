@@ -1055,7 +1055,12 @@ e checkpoint completo; publicação só quando você pedir, juntando vários ite
     de falha) e na receita do produto criado do trabalho. Trabalho antigo igual. 507 testes, lint, build; emulador 390 px:
     chaveiro NFC no Laser, argola R$ 0,35 + tag R$ 2,40 → custo R$ 4,42, sugerido R$ 8,84; produto criado com argola e
     tag na receita; 3D e Sublimação com o bloco, sem estourar a tela.
-    **Parte 2, depois:** "Editar" nos trabalhos salvos (abre na calculadora e salva no mesmo trabalho).
+    ✅ **Parte 2, editar trabalhos salvos, feita em 19/11/2026 (falta publicar):** lápis "Editar" na lista das 5
+    calculadoras; abre o trabalho na calculadora com tudo preenchido e uma barra "Editando… / Cancelar"; salvar grava
+    no mesmo trabalho (mantém data de criação e o produto ligado). Já é produto: não cria outro, usa "Atualizar preço
+    do produto". 3D: editando, não baixa o filamento de novo. Sublimação: trocar de prensa ao abrir não apaga produto,
+    temperatura, tempo e pressão. 507 testes, lint, build; emulador 390 px: Laser (tag NFC 1 → 2, custo R$ 4,42 →
+    R$ 6,82, mesmo trabalho, 1 produto), Sublimação vindo de outra prensa e 3D (sem opção de baixar), sem erro no console.
     **Parte 3, depois:** produto exclusivo (nunca no catálogo; cliente opcional; filtro em Produtos).
 16. ✅ **Entregue em 3/11/2026 (você, no console; sem código):** AI Studio do projeto saas-1-0-0 no pré-pagamento
     com saldo (sem recarga automática); "Análise IA" testada e funcionando no site; App Check do Firebase AI Logic
