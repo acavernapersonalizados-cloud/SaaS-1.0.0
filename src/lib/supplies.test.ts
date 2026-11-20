@@ -96,7 +96,14 @@ describe('Outros insumos', () => {
     expect(after.suppliesCost).toBe(2.75);
   });
   it('produto criado do trabalho leva os insumos na receita, por peça', () => {
-    const job = { id: 'j', name: 'Chaveiro NFC', quantity: 10, materialId: 'mdf', materialQty: 2, extraSupplies: nfcLines };
+    const job = {
+      id: 'j',
+      name: 'Chaveiro NFC',
+      quantity: 10,
+      materialId: 'mdf',
+      materialQty: 2,
+      extraSupplies: nfcLines,
+    };
     expect(jobProductDetails('laser', job as never).materials).toEqual([
       { materialId: 'mdf', quantity: 0.2 },
       { materialId: 'argola', quantity: 1 },
